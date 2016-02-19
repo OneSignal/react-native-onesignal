@@ -1,0 +1,32 @@
+{
+  "name": "react-native-onesignal",
+  "version": "1.0.2",
+  "description": "React Native OneSignal Component",
+  "main": "index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react-component",
+    "react-native",
+    "ios",
+    "android",
+    "notifications",
+    "push",
+    "apns",
+    "gcm",
+    "onesignal"
+  ],
+  "bugs": {
+    "url": "https://github.com/geektimecoil/react-native-onesignal/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://git@github.com:geektimecoil/react-native-onesignal.git"
+  },
+  "peerDependencies": {
+    "react-native": ">=0.19"
+  },
+  "author": "Geektime <http://www.geektime.co.il>",
+  "license": "MIT"
+}
