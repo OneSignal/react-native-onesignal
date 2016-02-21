@@ -1,6 +1,7 @@
 package com.geektime.reactnativeonesignal;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +25,7 @@ import org.json.JSONObject;
 /**
  * Created by Avishay on 1/31/16.
  */
-public class RNOneSignal extends ReactContextBaseJavaModule {
+public class RNOneSignal extends ReactContextBaseJavaModule implements Application.ActivityLifecycleCallbacks {
     public static final String NOTIFICATION_OPENED_INTENT_FILTER = "GTNotificatinOpened";
 
     private ReactContext mReactContext;
@@ -39,6 +40,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule {
                 .setNotificationOpenedHandler(new NotificationOpenedHandler(reactContext))
                 .init();
         OneSignal.enableNotificationsWhenActive(true);
+
+        activity.getApplication().registerActivityLifecycleCallbacks(this);
 
         registerNotificationsReceiveNotification();
     }
@@ -101,5 +104,42 @@ public class RNOneSignal extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return "RNOneSignal";
+    }
+
+    @Override
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityResumed(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityPaused(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityStopped(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
+        if (activity.equals(mActivity)) {
+            OneSignal.removeNotificationOpenedHandler();
+        }
     }
 }
