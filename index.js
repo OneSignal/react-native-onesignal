@@ -15,6 +15,7 @@ var Notifications = {
 	loaded: false,
 };
 
+var _pendingNotifications = [];
 var _notifHandlers = new Map();
 var DEVICE_NOTIF_EVENT = 'remoteNotificationOpened';
 
@@ -22,6 +23,12 @@ Notifications.addEventListener = function(type: string, handler: Function) {
 	var listener;
 	if (type === 'notification') {
 		console.log('Regsitered notification event listener at', Date.now());
+		if (_pendingNotifications.length > 0) {
+			console.log('Found pending notification!')
+			var notification = _pendingNotifications.pop();
+			handler(notification.message, notification.data, notification.isActive);
+		}
+
 		listener =  DeviceEventEmitter.addListener(
 			DEVICE_NOTIF_EVENT,
 			function(notifData) {
@@ -74,9 +81,12 @@ Notifications.unregister = function() {
 };
 
 Notifications._onNotificationOpened = function(message, data, isActive) {
-	if ( this.onNotificationOpened !== false ) {
-		this.onNotificationOpened(message, data, isActive);
+	if ( this.onNotificationOpened === false ) {
+		var notification = {message: message, data: data, isActive: isActive};
+		_pendingNotifications.push(notification);
+		return;
 	}
+	this.onNotificationOpened(message, data, isActive);
 };
 
 Notifications.sendTag = function(key, value) {
