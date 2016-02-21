@@ -14,7 +14,6 @@ var Notifications = {
 };
 
 var _pendingNotifications = [];
-var _notifHandlers = new Map();
 var DEVICE_NOTIF_EVENT = 'remoteNotificationOpened';
 
 /**
@@ -32,7 +31,6 @@ Notifications.configure = function(options: Object) {
 		this.onNotificationOpened = options.onNotificationOpened;
 
 		if (_pendingNotifications.length > 0) {
-			console.log('Found pending notification!')
 			var notification = _pendingNotifications.pop();
 			this._onNotificationOpened(notification.message, notification.data, notification.isActive);
 		}

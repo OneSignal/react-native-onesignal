@@ -20,7 +20,6 @@ RCT_EXPORT_MODULE(OneSignal)
 }
 
 - (void)setBridge:(RCTBridge *)receivedBridge {
-    NSLog(@"setBridge");
     _bridge = receivedBridge;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -37,8 +36,6 @@ RCT_EXPORT_MODULE(OneSignal)
                  initWithLaunchOptions:launchOptions
                  appId:appId
                  handleNotification:^(NSString* message, NSDictionary* additionalData, BOOL isActive) {
-                     NSLog(@"OneSignal Notification opened:\nMessage: %@", message);
-                     
                      NSDictionary *dictionary = @{
                         @"message"     : message,
                         @"additionalData" : additionalData,
@@ -53,16 +50,11 @@ RCT_EXPORT_MODULE(OneSignal)
 }
 
 + (void)didReceiveRemoteNotification:(NSDictionary *)dictionary {
-    NSLog(@"didReceiveRemoteNotification: %@", dictionary);
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                         object:self userInfo:dictionary];
 }
 
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification {
-    NSLog(@"handleRemoteNotificationReceived: %@", notification);
-    if (_bridge == nil) {
-        NSLog(@"WARNING BRIDGE IS NULL");
-    }
     [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationOpened" body:notification.userInfo];
 }
 
