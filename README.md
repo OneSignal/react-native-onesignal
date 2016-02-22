@@ -34,7 +34,7 @@ In your `AndroidManifest.xml`
             <category android:name="${applicationId}" />
         </intent-filter>
     </receiver>
-    
+
     .....
 ```
 
@@ -104,13 +104,15 @@ public class MainActivity extends ReactActivity {
  * Drag the file `RCTOneSignal.xcodeproj` from `/node_modules/react-native-onesignal/ios` into the `Libraries` group in the Project navigator. Ensure that `Copy items if needed` is UNCHECKED!
 
   ![Add Files To...](http://i.imgur.com/puxHiIg.png)
-  
+
   ![Library Imported Successfuly](http://i.imgur.com/YJPQLPD.png)
 
  * Ensure that `libRTCOneSignal.a` is linked through `Link Binary With Libraries` on `Build Phases`:
 
   ![Add Files To...](http://i.imgur.com/IxIQ4s8.png)
-  
+
+ * Ensure that `Header Search Paths` on `Build Settings` has the path `$(SRCROOT)/../node_modules/react-native-onesignal` set to `recursive`:
+
 ### Adding the Code
 
  * When you reach `AppDelegate.m` instructions on the OneSignal documentation, stop and enter this following code snippets instead:
@@ -125,22 +127,36 @@ public class MainActivity extends ReactActivity {
         ```objc
         @synthesize oneSignal = _oneSignal;
         ```
-        
+
     * On the `application didFinishLaunchingWithOptions` method, insert the following code (replace YOUR_ONESIGNAL_APP_ID with your OneSignal app ID):
-    
+
         ```objc
         self.oneSignal = [[RCTOneSignal alloc] initWithLaunchOptions:launchOptions
-                                                                appId:@"YOUR_ONESIGNAL_APP_ID"];
+                                                               appId:@"YOUR_ONESIGNAL_APP_ID"];
         ```
 
     * After `application ` insert the code for the notification event:
 
         ```objc
         // Required for the notification event.
-        * (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification {
+        - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification {
             [RCTOneSignal didReceiveRemoteNotification:notification];
         }
         ```
+
+* on `AppDelegate.h`:
+   * Import `RCTOneSignal.h`:
+
+       ```objc
+       #import <RCTOneSignal.h>
+       ```
+
+   * Declare the `RCTOneSignal` property:
+
+       ```objc
+       @property (strong, nonatomic) RCTOneSignal* oneSignal;
+       ```
+
  * You're All Set!
 
 
