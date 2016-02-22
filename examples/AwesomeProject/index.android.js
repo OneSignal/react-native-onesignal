@@ -11,6 +11,17 @@ import React, {
   View
 } from 'react-native';
 
+import OneSignal from 'react-native-onesignal'; // Import package from node modules
+
+OneSignal.configure({
+  onNotificationOpened: function(message, data, isActive) {
+      // Handle payload
+      console.log('MESSAGE: ', message);
+      console.log('DATA: ', data);
+      console.log('ISACTIVE: ', isActive);
+  }
+});
+
 class AwesomeProject extends Component {
   render() {
     return (

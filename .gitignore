@@ -1,3 +1,9 @@
 android/build
 ios/RCTOneSignal.xcodeproj/xcuserdata
 examples/AwesomeProject/node_modules
+*.iml
+local.properties
+examples/AwesomeProject/android/app/build
+examples/AwesomeProject/android/.gradle
+examples/AwesomeProject/android/.idea
+examples/AwesomeProject/android/build
