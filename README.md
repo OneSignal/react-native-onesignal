@@ -68,6 +68,24 @@ dependencies {
 }
 ```
 
+In `node_modules/react-native-onesignal/android/build.gradle`
+
+```gradle
+...
+
+android {
+    ...
+    defaultConfig {
+        ...
+        manifestPlaceholders = [manifestApplicationId: "${applicationId}",
+                                onesignal_app_id: "YOUR_ONESIGNAL_ID",
+                                onesignal_google_project_number: "YOUR_GOOGLE_PROJECT_NUMBER"]
+    }
+}
+```
+
+That step is neccesary right now due to OneSignal SDK tests being performed at build. until we'll find a better solution you'll have to include this snippet twice, Once in your app build.gradle and in the module build.gradle as well.
+
 Register module (in `MainActivity.java`)
 
 ```java
