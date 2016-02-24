@@ -257,13 +257,25 @@ We exposed the tags API of OneSignal (currently on Android) in order to segment 
 // Sending the tags for the device
 OneSignal.sendTags(missingTags);
 
-//Getting the tags from the server and use the recieved object
+//Getting the tags from the server and use the received object
 OneSignal.getTags((receivedTags) => {
-    console.log(recievedTags);
+    console.log(receivedTags);
 });
 
 //Delete a tag
 OneSignal.deleteTag(tag);
+````
+
+## Getting Player ID and Push Token
+
+We exposed the idsAvailable API of OneSignal (both Android & iOS) as a callback so you can handle it further yourself.
+
+````javascript
+// Getting idsAvailable
+OneSignal.idsAvailable((idsAvailable) => {
+    console.log(idsAvailable.pushToken);
+    console.log(idsAvailable.playerId);
+});
 ````
 
 The following example is from our own App and needs to be customized in order to work.
