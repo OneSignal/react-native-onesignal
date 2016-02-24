@@ -67,6 +67,10 @@ Notifications.deleteTag = function(key) {
 	RNOneSignal.deleteTag(key);
 }
 
+Notifications.idsAvailable = function(idsAvailable) {
+	RNOneSignal.idsAvailable(idsAvailable);
+}
+
 DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
 		var message = notifData.message;
 		var data = (notifData.additionalData !== null && typeof notifData.additionalData === 'object') ? notifData.additionalData : JSON.parse(notifData.additionalData);

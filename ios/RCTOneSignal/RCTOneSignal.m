@@ -63,6 +63,22 @@ RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
     [oneSignal sendTag:key value:value];
 }
 
+RCT_EXPORT_METHOD(idsAvailable:(RCTResponseSenderBlock)callback) {
+    [oneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
+        NSLog(@"UserId:%@", userId);
+        if (pushToken != nil) {
+            NSLog(@"pushToken:%@", pushToken);
+            NSDictionary *value = @{
+                                    @"pushToken": pushToken,
+                                    @"playerId" : userId
+                                    };
+            callback(@[value]);
+        } else {
+            NSLog(@"Cannot Get Push Token");
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(sendTags:(NSDictionary *)properties) {
     [oneSignal sendTags:properties onSuccess:^(NSDictionary *sucess) {
         NSLog(@"Send Tags Success");

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -76,6 +77,26 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Applicati
         });
     }
 
+    @ReactMethod
+    public void idsAvailable(final Callback callback) {
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            public void idsAvailable(String userId, String registrationId) {
+                if (registrationId != null) {
+                    Log.d("debug", "User:" + userId);
+                    Log.d("debug", "registrationId:" + registrationId);
+
+                    final WritableMap value = Arguments.createMap();
+                    value.putString("userId", userId);
+                    value.putString("pushToken", registrationId);
+                    
+                    callback.invoke(value);
+                } else {
+                    Log.d("debug", "Cannot Fetch Push Token");
+                }
+            }
+        });
+    }
+    
     @ReactMethod
     public void deleteTag(String key) {
         OneSignal.deleteTag(key);
