@@ -22,6 +22,10 @@ OneSignal.configure({
   }
 });
 
+OneSignal.idsAvailable((idsAvailable) => { 
+    console.log(idsAvailable);
+});
+
 class AwesomeProject extends Component {
   render() {
     return (
