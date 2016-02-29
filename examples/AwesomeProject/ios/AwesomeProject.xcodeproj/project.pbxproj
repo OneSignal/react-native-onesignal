@@ -22,6 +22,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		B9455D8F1C8489620031CC74 /* OneSignal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9455D8E1C8489620031CC74 /* OneSignal.framework */; };
 		BC67C1FDF1585E230E44E078 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94FB48AA10DEEEE41EC677F4 /* libPods.a */; };
 		FD9E0A6F1C7AF68D0078C1AB /* libRCTOneSignal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD9E0A691C7AF66D0078C1AB /* libRCTOneSignal.a */; };
 /* End PBXBuildFile section */
@@ -137,6 +138,7 @@
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		94FB48AA10DEEEE41EC677F4 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A366340053FAF18E98A09B78 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		B9455D8E1C8489620031CC74 /* OneSignal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OneSignal.framework; path = Pods/OneSignal/iOS_SDK/Framework/OneSignal.framework; sourceTree = "<group>"; };
 		FAFF07B6D284A292ABE41132 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		FD9E0A5F1C7AF66C0078C1AB /* RCTOneSignal.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTOneSignal.xcodeproj; path = "../node_modules/react-native-onesignal/ios/RCTOneSignal.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -163,6 +165,7 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
+				B9455D8F1C8489620031CC74 /* OneSignal.framework in Frameworks */,
 				BC67C1FDF1585E230E44E078 /* libPods.a in Frameworks */,
 				FD9E0A6F1C7AF68D0078C1AB /* libRCTOneSignal.a in Frameworks */,
 			);
@@ -335,6 +338,7 @@
 		C01A48DF7A2A58C537C31938 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B9455D8E1C8489620031CC74 /* OneSignal.framework */,
 				94FB48AA10DEEEE41EC677F4 /* libPods.a */,
 			);
 			name = Frameworks;
@@ -727,6 +731,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/OneSignal/iOS_SDK/Framework",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -748,6 +756,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/OneSignal/iOS_SDK/Framework",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
