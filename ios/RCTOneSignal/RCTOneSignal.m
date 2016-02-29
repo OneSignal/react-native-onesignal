@@ -46,7 +46,7 @@ RCT_EXPORT_MODULE(RNOneSignal)
                                                                               object:self userInfo:dictionary];
                       }];
     
-    [oneSignal enableInAppAlertNotification:YES];
+    [oneSignal enableInAppAlertNotification:NO];
     return self;
 }
 
