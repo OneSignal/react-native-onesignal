@@ -61,11 +61,32 @@ Notifications.sendTags = function(tags) {
 
 Notifications.getTags = function(next) {
 	RNOneSignal.getTags(next);
-}
+};
 
 Notifications.deleteTag = function(key) {
 	RNOneSignal.deleteTag(key);
-}
+};
+
+Notifications.enableVibrate = function(enable) {
+	RNOneSignal.enableVibrate(enable);
+};
+
+Notifications.enableSound = function(enable) {
+	RNOneSignal.enableSound(enable);
+};
+
+Notifications.enableNotificationsWhenActive = function(enable) {
+	RNOneSignal.enableNotificationsWhenActive(enable);
+};
+
+Notifications.enableNotificationsWhenActive = function(enable) {
+	RNOneSignal.enableNotificationsWhenActive(enable);
+};
+
+Notifications.setSubscription = function(enable) {
+	RNOneSignal.setSubscription(enable);
+};
+
 
 Notifications.idsAvailable = function(idsAvailable) {
 	RNOneSignal.idsAvailable(idsAvailable);
