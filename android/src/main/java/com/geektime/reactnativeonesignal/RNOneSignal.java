@@ -102,6 +102,31 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Applicati
         OneSignal.deleteTag(key);
     }
 
+    @ReactMethod
+    public void enableVibrate(Boolean enable) {
+        OneSignal.enableVibrate(enable);
+    }
+
+    @ReactMethod
+    public void enableSound(Boolean enable) {
+        OneSignal.enableSound(enable);
+    }
+
+    @ReactMethod
+    public void enableNotificationsWhenActive(Boolean enable) {
+        OneSignal.enableNotificationsWhenActive(enable);
+    }
+
+    @ReactMethod
+    public void enableInAppAlertNotification(Boolean enable) {
+        OneSignal.enableInAppAlertNotification(enable);
+    }
+
+    @ReactMethod
+    public void setSubscription(Boolean enable) {
+        OneSignal.setSubscription(enable);
+    }
+
     private void registerNotificationsReceiveNotification() {
         IntentFilter intentFilter = new IntentFilter(NOTIFICATION_OPENED_INTENT_FILTER);
 
