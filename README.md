@@ -313,5 +313,4 @@ _syncOneSignal = () => {
 ```
 
 ### TODO
- * [ ] Add `getTags` iOS support
- * [ ] Fix a bug on Android: When back button is pressed, notification does not go to payload (kill the activity?).
+ * [ ] Tell us?
