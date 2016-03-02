@@ -79,10 +79,6 @@ Notifications.enableNotificationsWhenActive = function(enable) {
 	RNOneSignal.enableNotificationsWhenActive(enable);
 };
 
-Notifications.enableNotificationsWhenActive = function(enable) {
-	RNOneSignal.enableNotificationsWhenActive(enable);
-};
-
 Notifications.setSubscription = function(enable) {
 	RNOneSignal.setSubscription(enable);
 };
