@@ -36,12 +36,21 @@ RCT_EXPORT_MODULE(RNOneSignal)
     oneSignal = [[OneSignal alloc]
                       initWithLaunchOptions:launchOptions
                       appId:appId
-                      handleNotification:^(NSString* message, NSDictionary* additionalData, BOOL isActive) {
-                          NSDictionary *dictionary = @{
-                                                       @"message"     : message,
-                                                       @"additionalData" : additionalData,
-                                                       @"isActive" : [NSNumber numberWithBool:isActive]
-                                                       };
+                 handleNotification:^(NSString* message, NSDictionary* additionalData, BOOL isActive) {
+                          NSDictionary *dictionary;
+                          if (additionalData) {
+                              dictionary = @{
+                                  @"message"     : message,
+                                  @"additionalData" : additionalData,
+                                  @"isActive" : [NSNumber numberWithBool:isActive]
+                                  };
+                          } else {
+                              dictionary = @{
+                                             @"message"     : message,
+                                             @"additionalData" : [[NSDictionary alloc] init],
+                                             @"isActive" : [NSNumber numberWithBool:isActive]
+                                             };
+                          }
                           [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                                               object:self userInfo:dictionary];
                       }];
