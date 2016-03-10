@@ -24,9 +24,6 @@
     "type": "git",
     "url": "git://git@github.com:geektimecoil/react-native-onesignal.git"
   },
-  "peerDependencies": {
-    "react-native": ">=0.19"
-  },
   "author": "Geektime <http://www.geektime.co.il>",
   "license": "MIT"
 }
