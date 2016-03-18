@@ -29,7 +29,12 @@ RCT_EXPORT_MODULE(RNOneSignal)
                                                object:nil];
 }
 
-- (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId  {
+- (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId{
+    
+    return [self initWithLaunchOptions:launchOptions appId:appId autoRegister:YES];
+}
+
+- (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId autoRegister:(BOOL)autoRegister {
     // Eanble logging to help debug issues. visualLevel will show alert dialog boxes.
     [OneSignal setLogLevel:ONE_S_LL_NONE visualLevel:ONE_S_LL_NONE];
     
@@ -53,7 +58,8 @@ RCT_EXPORT_MODULE(RNOneSignal)
                           }
                           [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                                               object:self userInfo:dictionary];
-                      }];
+                      }
+                 autoRegister:autoRegister];
     
     [oneSignal enableInAppAlertNotification:NO];
     return self;
@@ -66,6 +72,11 @@ RCT_EXPORT_MODULE(RNOneSignal)
 
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification {
     [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationOpened" body:notification.userInfo];
+}
+
+RCT_EXPORT_METHOD(registerForPushNotifications){
+    
+    [oneSignal registerForPushNotifications];
 }
 
 RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
