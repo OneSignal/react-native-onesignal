@@ -3,7 +3,7 @@
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 
-NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
+NSString *const OSRemoteNotificationReceived = @"RemoteNotificationReceived";
 
 @interface RCTOneSignal()
 
@@ -25,7 +25,7 @@ RCT_EXPORT_MODULE(RNOneSignal)
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleRemoteNotificationReceived:)
-                                                 name:RCTRemoteNotificationReceived
+                                                 name:OSRemoteNotificationReceived
                                                object:nil];
 }
 
@@ -51,7 +51,7 @@ RCT_EXPORT_MODULE(RNOneSignal)
                                              @"isActive" : [NSNumber numberWithBool:isActive]
                                              };
                           }
-                          [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
+                          [[NSNotificationCenter defaultCenter] postNotificationName:OSRemoteNotificationReceived
                                                                               object:self userInfo:dictionary];
                       }];
     
@@ -60,7 +60,7 @@ RCT_EXPORT_MODULE(RNOneSignal)
 }
 
 + (void)didReceiveRemoteNotification:(NSDictionary *)dictionary {
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
+    [[NSNotificationCenter defaultCenter] postNotificationName:OSRemoteNotificationReceived
                                                         object:self userInfo:dictionary];
 }
 
