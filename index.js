@@ -42,6 +42,11 @@ Notifications.unregister = function() {
 	this.onNotificationOpened = false;
 };
 
+Notifications.registerForPushNotifications = function(){
+
+	RNOneSignal.registerForPushNotifications();
+}
+
 Notifications._onNotificationOpened = function(message, data, isActive) {
 	if ( this.onNotificationOpened === false ) {
 		var notification = {message: message, data: data, isActive: isActive};
