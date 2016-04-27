@@ -120,4 +120,8 @@ RCT_EXPORT_METHOD(deleteTag:(NSString *)key) {
     [oneSignal deleteTag:key];
 }
 
+RCT_EXPORT_METHOD(setSubscription:(BOOL)enable) {
+    [oneSignal setSubscription:enable];
+}
+
 @end
