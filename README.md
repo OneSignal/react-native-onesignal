@@ -113,7 +113,7 @@ public class MainActivity extends ReactActivity {
 
 ## iOS Installation
 
- * Follow the steps according the official OneSignal SDK Installation here: https://documentation.onesignal.com/docs/installing-the-onesignal-ios-sdk
+ * Follow the steps according to the official OneSignal SDK Installation here: https://documentation.onesignal.com/docs/installing-the-onesignal-ios-sdk
  * Make sure you installed the OneSignal Pod.
  * Once you've finished, Open your project in Xcode.
 
