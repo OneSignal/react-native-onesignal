@@ -94,6 +94,7 @@ RCT_EXPORT_METHOD(idsAvailable:(RCTResponseSenderBlock)callback) {
                                     };
             callback(@[value]);
         } else {
+            callback(@[@{}]);
             NSLog(@"Cannot Get Push Token");
         }
     }];
