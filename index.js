@@ -4,7 +4,7 @@
 
 'use strict';
 
-import { NativeModules, DeviceEventEmitter } from 'react-native';
+import { NativeModules, DeviceEventEmitter, NetInfo } from 'react-native';
 
 const { RNOneSignal } = NativeModules;
 
@@ -88,9 +88,15 @@ Notifications.setSubscription = function(enable) {
 	RNOneSignal.setSubscription(enable);
 };
 
-
 Notifications.idsAvailable = function(idsAvailable) {
-	RNOneSignal.idsAvailable(idsAvailable);
+    NetInfo.isConnected.fetch().then(isConnected => {
+        if (isConnected == true) {
+            RNOneSignal.idsAvailable(idsAvailable);
+        }
+        else {
+            return;
+        }
+    });
 }
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
