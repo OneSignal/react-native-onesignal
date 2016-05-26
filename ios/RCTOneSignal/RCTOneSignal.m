@@ -14,6 +14,8 @@ NSString *const OSRemoteNotificationReceived = @"RemoteNotificationReceived";
 static OneSignal *oneSignal;
 @synthesize bridge = _bridge;
 
+NSDictionary* launchDict;
+
 RCT_EXPORT_MODULE(RNOneSignal)
 
 - (void)dealloc {
@@ -22,6 +24,11 @@ RCT_EXPORT_MODULE(RNOneSignal)
 
 - (void)setBridge:(RCTBridge *)receivedBridge {
     _bridge = receivedBridge;
+
+    if (launchDict) {
+        NSLog(@"launchDict:%@", launchDict);
+        [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationOpened" body:launchDict];
+    }
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleRemoteNotificationReceived:)
@@ -35,39 +42,34 @@ RCT_EXPORT_MODULE(RNOneSignal)
 }
 
 - (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId autoRegister:(BOOL)autoRegister {
-    // Eanble logging to help debug issues. visualLevel will show alert dialog boxes.
-    [OneSignal setLogLevel:ONE_S_LL_NONE visualLevel:ONE_S_LL_NONE];
-    
     oneSignal = [[OneSignal alloc]
-                      initWithLaunchOptions:launchOptions
-                      appId:appId
+                 initWithLaunchOptions:launchOptions
+                 appId:appId
                  handleNotification:^(NSString* message, NSDictionary* additionalData, BOOL isActive) {
-                          NSDictionary *dictionary;
-                          if (additionalData) {
-                              dictionary = @{
-                                  @"message"     : message,
-                                  @"additionalData" : additionalData,
-                                  @"isActive" : [NSNumber numberWithBool:isActive]
-                                  };
-                          } else {
-                              dictionary = @{
-                                             @"message"     : message,
-                                             @"additionalData" : [[NSDictionary alloc] init],
-                                             @"isActive" : [NSNumber numberWithBool:isActive]
-                                             };
-                          }
-                          [[NSNotificationCenter defaultCenter] postNotificationName:OSRemoteNotificationReceived
-                                                                              object:self userInfo:dictionary];
-                      }
+                     if (additionalData) {
+                         launchDict = @{
+                                        @"message"     : message,
+                                        @"additionalData" : additionalData,
+                                        @"isActive" : [NSNumber numberWithBool:isActive]
+                                        };
+                     } else {
+                         launchDict = @{
+                                        @"message"     : message,
+                                        @"additionalData" : [[NSDictionary alloc] init],
+                                        @"isActive" : [NSNumber numberWithBool:isActive]
+                                        };
+                     }
+                     [[NSNotificationCenter defaultCenter] postNotificationName:OSRemoteNotificationReceived
+                                                                         object:self userInfo:launchDict];
+                 }
                  autoRegister:autoRegister];
     
-    [oneSignal enableInAppAlertNotification:NO];
     return self;
 }
 
+// This isn't required, the iOS native SDK already hooks into this event.
 + (void)didReceiveRemoteNotification:(NSDictionary *)dictionary {
-    [[NSNotificationCenter defaultCenter] postNotificationName:OSRemoteNotificationReceived
-                                                        object:self userInfo:dictionary];
+    // Keeping empty method around so developers do not get compile errors when updating versions.
 }
 
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification {
