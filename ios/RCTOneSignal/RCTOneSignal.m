@@ -127,4 +127,8 @@ RCT_EXPORT_METHOD(setSubscription:(BOOL)enable) {
     [oneSignal setSubscription:enable];
 }
 
+RCT_EXPORT_METHOD(enableInAppAlertNotification:(BOOL)enable){
+    [oneSignal enableInAppAlertNotification:enable];
+}
+
 @end

@@ -80,8 +80,8 @@ Notifications.enableSound = function(enable) {
 	RNOneSignal.enableSound(enable);
 };
 
-Notifications.enableNotificationsWhenActive = function(enable) {
-	RNOneSignal.enableNotificationsWhenActive(enable);
+Notifications.enableInAppAlertNotification = function(enable) {
+	RNOneSignal.enableInAppAlertNotification(enable);
 };
 
 Notifications.setSubscription = function(enable) {
