@@ -14,28 +14,11 @@ In your `AndroidManifest.xml`
 
 ```xml
 .....
-<!-- Add the necessary permissions and receivers -->
-<permission
-    android:name="${applicationId}.permission.C2D_MESSAGE"
-    android:protectionLevel="signature" />
-<uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
-<uses-permission android:name="android.permission.WAKE_LOCK" />
-<uses-permission android:name="android.permission.VIBRATE" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<!-- Add the necessary permissions -->
 
 <application ....>
     <activity
         android:launchMode="singleTop"> <!-- Add this parameter -->
-    <receiver
-        android:name="com.google.android.gms.gcm.GcmReceiver"
-        android:exported="true"
-        android:permission="com.google.android.c2dm.permission.SEND" >
-        <intent-filter>
-            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            <category android:name="${applicationId}" />
-        </intent-filter>
-    </receiver>
-
     .....
 ```
 
@@ -257,7 +240,7 @@ We exposed the idsAvailable API of OneSignal (both Android & iOS) as a callback 
 // Getting idsAvailable
 OneSignal.idsAvailable((idsAvailable) => {
     console.log(idsAvailable.pushToken);
-    console.log(idsAvailable.playerId);
+    console.log(idsAvailable.userId);
 });
 ````
 

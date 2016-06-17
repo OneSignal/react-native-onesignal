@@ -92,7 +92,7 @@ RCT_EXPORT_METHOD(idsAvailable:(RCTResponseSenderBlock)callback) {
             NSLog(@"pushToken:%@", pushToken);
             NSDictionary *value = @{
                                     @"pushToken": pushToken,
-                                    @"playerId" : userId
+                                    @"userId" : userId
                                     };
             callback(@[value]);
         } else {
