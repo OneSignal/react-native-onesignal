@@ -284,5 +284,9 @@ _syncOneSignal = () => {
 };
 ```
 
+### CREDITS
+Thanks for all the awesome fellows that contributed to this repository!
+@danpe, @lunchieapp, @gaykov, @williamrijksen, @adrienbrault, @kennym, @dunghuynh, @holmesal, @joshuapinter
+
 ### TODO
  * [ ] Tell us?
