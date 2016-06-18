@@ -11,10 +11,12 @@ const { RNOneSignal } = NativeModules;
 var Notifications = {
 	onError: false,
 	onNotificationOpened: false,
+	onNotificationsRegistered: false
 };
 
 var _pendingNotifications = [];
 var DEVICE_NOTIF_EVENT = 'remoteNotificationOpened';
+var DEVICE_NOTIF_REG_EVENT = 'remoteNotificationsRegistered';
 
 /**
  * Configure local and remote notifications
@@ -35,6 +37,10 @@ Notifications.configure = function(options: Object) {
 			this._onNotificationOpened(notification.message, notification.data, notification.isActive);
 		}
 	}
+	
+	if( typeof options.onNotificationsRegistered !== 'undefined' ) {
+		this.onNotificationsRegistered = options.onNotificationsRegistered;
+	}
 };
 
 /* Unregister */
@@ -42,10 +48,28 @@ Notifications.unregister = function() {
 	this.onNotificationOpened = false;
 };
 
+Notifications.requestPermissions = function(permissions) {
+	var requestedPermissions = {};
+	if (permissions) {
+		requestedPermissions = {
+			alert: !!permissions.alert,
+			badge: !!permissions.badge,
+			sound: !!permissions.sound
+		};
+	} else {
+		requestedPermissions = {
+			alert: true,
+			badge: true,
+			sound: true
+		};
+	}
+	RNOneSignal.requestPermissions(requestedPermissions);
+};
+
 Notifications.registerForPushNotifications = function(){
 
 	RNOneSignal.registerForPushNotifications();
-}
+};
 
 Notifications._onNotificationOpened = function(message, data, isActive) {
 	if ( this.onNotificationOpened === false ) {
@@ -54,6 +78,13 @@ Notifications._onNotificationOpened = function(message, data, isActive) {
 		return;
 	}
 	this.onNotificationOpened(message, data, isActive);
+};
+
+Notifications._onNotificationsRegistered = function(payload) {
+	if ( this.onNotificationsRegistered === false ) {
+		return;
+ 	}
+ 	this.onNotificationsRegistered(payload);
 };
 
 Notifications.sendTag = function(key, value) {
@@ -101,14 +132,17 @@ Notifications.idsAvailable = function(idsAvailable) {
             return;
         }
     });
-}
+};
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
-		var message = notifData.message;
-		var data = (notifData.additionalData !== null && typeof notifData.additionalData === 'object') ? notifData.additionalData : JSON.parse(notifData.additionalData);
-		var isActive = notifData.isActive;
-		Notifications._onNotificationOpened(message, data, isActive);
-	}
-);
+	var message = notifData.message;
+	var data = (notifData.additionalData !== null && typeof notifData.additionalData === 'object') ? notifData.additionalData : JSON.parse(notifData.additionalData);
+	var isActive = notifData.isActive;
+	Notifications._onNotificationOpened(message, data, isActive);
+});
+
+DeviceEventEmitter.addListener(DEVICE_NOTIF_REG_EVENT, function(notifData) {
+	Notifications._onNotificationsRegistered(notifData)
+});
 
 module.exports = Notifications;
