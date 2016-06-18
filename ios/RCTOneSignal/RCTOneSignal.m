@@ -23,17 +23,20 @@ RCT_EXPORT_MODULE(RNOneSignal)
 }
 
 - (void)setBridge:(RCTBridge *)receivedBridge {
+    BOOL firstBridge = (_bridge == nil);
     _bridge = receivedBridge;
 
     if (launchDict) {
         NSLog(@"launchDict:%@", launchDict);
         [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationOpened" body:launchDict];
+        launchDict = nil;
     }
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleRemoteNotificationReceived:)
-                                                 name:OSRemoteNotificationReceived
-                                               object:nil];
+    if (firstBridge)
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleRemoteNotificationReceived:)
+                                                     name:OSRemoteNotificationReceived
+                                                   object:nil];
 }
 
 - (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId{
