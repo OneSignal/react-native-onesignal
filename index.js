@@ -88,6 +88,10 @@ Notifications.setSubscription = function(enable) {
 	RNOneSignal.setSubscription(enable);
 };
 
+Notifications.promptLocation = function() {
+	RNOneSignal.promptLocation();
+};
+
 Notifications.idsAvailable = function(idsAvailable) {
     NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected == true) {

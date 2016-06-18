@@ -14,7 +14,13 @@ In your `AndroidManifest.xml`
 
 ```xml
 .....
-<!-- Add the necessary permissions -->
+
+<!-- Optional - Add the necessary permissions (Choose one of those) -->
+
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/> <!-- Approximate location - If you want to use promptLocation for letting OneSignal know the user location. -->
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/> <!--  Precise location If you want to use promptLocation for letting OneSignal know the user location. -->
+
+<!-- End optional permissions -->
 
 <application ....>
     <activity

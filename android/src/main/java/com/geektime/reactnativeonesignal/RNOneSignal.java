@@ -81,16 +81,17 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Applicati
     public void idsAvailable(final Callback callback) {
         OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
             public void idsAvailable(String userId, String registrationId) {
+                final WritableMap value = Arguments.createMap();
                 if (registrationId != null) {
                     Log.d("debug", "User:" + userId);
                     Log.d("debug", "registrationId:" + registrationId);
 
-                    final WritableMap value = Arguments.createMap();
                     value.putString("userId", userId);
                     value.putString("pushToken", registrationId);
                     
                     callback.invoke(value);
                 } else {
+                    callback.invoke(value);
                     Log.d("debug", "Cannot Fetch Push Token");
                 }
             }
@@ -125,6 +126,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Applicati
     @ReactMethod
     public void setSubscription(Boolean enable) {
         OneSignal.setSubscription(enable);
+    }
+
+    @ReactMethod
+    public void promptLocation() {
+        OneSignal.promptLocation();
     }
 
     private void registerNotificationsReceiveNotification() {
