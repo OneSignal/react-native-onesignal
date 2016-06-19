@@ -256,9 +256,7 @@ OneSignal.idsAvailable((idsAvailable) => {
 
 We exposed the enableVibrate API of OneSignal (Android only).
 
-*You can call this from your UI from a button press for example to give your user's options for your notifications.
-
-By default OneSignal always vibrates the device when a notification is displayed unless the device is in a total silent mode. Passing false means that the device will only vibrate lightly when the device is in it's vibrate only mode.*
+*You can call this from your UI from a button press for example to give your user's options for your notifications. By default OneSignal always vibrates the device when a notification is displayed unless the device is in a total silent mode. Passing false means that the device will only vibrate lightly when the device is in it's vibrate only mode.*
 
 ````javascript
 // Setting enableVibrate
@@ -269,9 +267,7 @@ OneSignal.enableVibrate(true);
 
 We exposed the enableSound API of OneSignal (Android only).
 
-*You can call this from your UI from a button press for example to give your user's options for your notifications.
-
-By default OneSignal plays the system's default notification sound when the device's notification system volume is turned on. Passing false means that the device will only vibrate unless the device is set to a total silent mode.*
+*You can call this from your UI from a button press for example to give your user's options for your notifications. By default OneSignal plays the system's default notification sound when the device's notification system volume is turned on. Passing false means that the device will only vibrate unless the device is set to a total silent mode.*
 
 ````javascript
 // Setting enableSound
