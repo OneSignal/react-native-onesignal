@@ -4,7 +4,7 @@
 
 'use strict';
 
-import { NativeModules, DeviceEventEmitter, NetInfo } from 'react-native';
+import { NativeModules, DeviceEventEmitter, NetInfo, Platform } from 'react-native';
 
 const { RNOneSignal } = NativeModules;
 
@@ -50,25 +50,32 @@ Notifications.unregister = function() {
 
 Notifications.requestPermissions = function(permissions) {
 	var requestedPermissions = {};
-	if (permissions) {
-		requestedPermissions = {
-			alert: !!permissions.alert,
-			badge: !!permissions.badge,
-			sound: !!permissions.sound
-		};
+	if (Platform.OS == 'ios') {
+		if (permissions) {
+			requestedPermissions = {
+				alert: !!permissions.alert,
+				badge: !!permissions.badge,
+				sound: !!permissions.sound
+			};
+		} else {
+			requestedPermissions = {
+				alert: true,
+				badge: true,
+				sound: true
+			};
+		}
+		RNOneSignal.requestPermissions(requestedPermissions);
 	} else {
-		requestedPermissions = {
-			alert: true,
-			badge: true,
-			sound: true
-		};
+		console.log("This function is not supported on Android");
 	}
-	RNOneSignal.requestPermissions(requestedPermissions);
 };
 
 Notifications.registerForPushNotifications = function(){
-
-	RNOneSignal.registerForPushNotifications();
+	if (Platform.OS == 'ios') {
+		RNOneSignal.registerForPushNotifications();
+	} else {
+		console.log("This function is not supported on Android");
+	}
 };
 
 Notifications._onNotificationOpened = function(message, data, isActive) {
@@ -120,7 +127,11 @@ Notifications.setSubscription = function(enable) {
 };
 
 Notifications.promptLocation = function() {
-	RNOneSignal.promptLocation();
+	if (Platform.OS == 'android') {
+		RNOneSignal.promptLocation();
+	} else {
+		console.log("This function is not supported on iOS");
+	}
 };
 
 Notifications.idsAvailable = function(idsAvailable) {
