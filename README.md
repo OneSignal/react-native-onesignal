@@ -242,12 +242,110 @@ OneSignal.deleteTag(tag);
 
 We exposed the idsAvailable API of OneSignal (both Android & iOS) as a callback so you can handle it further yourself.
 
+_Lets you retrieve the OneSignal user id and push token. Your callback block is called after the device is successfully registered with OneSignal. pushToken will be nil if the user did not accept push notifications._
+
 ````javascript
 // Getting idsAvailable
 OneSignal.idsAvailable((idsAvailable) => {
     console.log(idsAvailable.pushToken);
     console.log(idsAvailable.userId);
 });
+````
+
+## Enable Vibration
+
+We exposed the enableVibrate API of OneSignal (Android only).
+
+_You can call this from your UI from a button press for example to give your user's options for your notifications.
+
+By default OneSignal always vibrates the device when a notification is displayed unless the device is in a total silent mode. Passing false means that the device will only vibrate lightly when the device is in it's vibrate only mode._
+
+````javascript
+// Setting enableVibrate
+OneSignal.enableVibrate(true);
+````
+
+## Enable Sound
+
+We exposed the enableSound API of OneSignal (Android only).
+
+_You can call this from your UI from a button press for example to give your user's options for your notifications.
+
+By default OneSignal plays the system's default notification sound when the device's notification system volume is turned on. Passing false means that the device will only vibrate unless the device is set to a total silent mode._
+
+````javascript
+// Setting enableSound
+OneSignal.enableSound(true);
+````
+
+## Enable Notification When App Active
+
+We exposed the enableNotificationsWhenActive API of OneSignal (Android only).
+
+_By default this is false and notifications will not be shown when the user is in your app, instead the NotificationOpenedHandler is fired. If set to true notifications will always show in the notification area and NotificationOpenedHandler will not fire until the user taps on the notification._
+
+````javascript
+// Setting enableNotificationsWhenActive
+OneSignal.enableNotificationsWhenActive(true);
+````
+
+## Enable In-App Alert Notification
+
+We exposed the enableInAppAlertNotification API of OneSignal (both Android & iOS).
+
+_By default this is false and notifications will not be shown when the user is in your app, instead the OneSignalHandleNotificationBlock is fired. If set to true notifications will be shown as native alert boxes if a notification is received when the user is in your app. The OneSignalHandleNotificationBlock is then fired after the alert box is closed._
+
+````javascript
+// Setting enableInAppAlertNotification
+OneSignal.enableInAppAlertNotification(true);
+````
+
+## Change User Subscription Status
+
+We exposed the setSubscription API of OneSignal (both Android & iOS).
+
+_You can call this method with false to opt users out of receiving all notifications through OneSignal. You can pass true later to opt users back into notifications_
+
+````javascript
+// Setting setSubscription
+OneSignal.setSubscription(true);
+````
+
+## Prompt Location (Android Only)
+
+We exposed the promptLocation API of OneSignal (currently supported only on Android).
+
+_Prompts the user for location permissions. This allows for geotagging so you can send notifications to users based on location.
+Note: Make sure you also have the required location permission in your AndroidManifest.xml._
+
+````javascript
+// Calling promptLocation
+OneSignal.promptLocation();
+````
+
+## Request Push Notification Permissions
+
+We exposed the requestPermissions API of OneSignal (currently supported only on iOS).
+
+````javascript
+// Setting requestPermissions
+permissions = {
+    alert: true,
+    badge: true,
+    sound: true
+};
+OneSignal.requestPermissions(permissions);
+````
+
+## Register For Push Notifications
+
+We exposed the registerForPushNotifications API of OneSignal (currently supported only on iOS).
+
+_Call when you want to prompt the user to accept push notifications. Only call once and only if you passed false to **initWithLaunchOptions autoRegister**:._
+
+````javascript
+// Calling registerForPushNotifications
+OneSignal.registerForPushNotifications();
 ````
 
 The following example is from our own App and needs to be customized in order to work.

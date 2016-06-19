@@ -111,11 +111,27 @@ Notifications.deleteTag = function(key) {
 };
 
 Notifications.enableVibrate = function(enable) {
-	RNOneSignal.enableVibrate(enable);
+	if (Platform.OS == 'android') {
+		RNOneSignal.enableVibrate(enable);
+	} else {
+		console.log("This function is not supported on iOS");
+	}
 };
 
 Notifications.enableSound = function(enable) {
-	RNOneSignal.enableSound(enable);
+	if (Platform.OS == 'android') {
+		RNOneSignal.enableSound(enable);
+	} else {
+		console.log("This function is not supported on iOS");
+	}
+};
+
+Notifications.enableNotificationsWhenActive = function(enable) {
+	if (Platform.OS == 'android') {
+		RNOneSignal.enableNotificationsWhenActive(enable);
+	} else {
+		console.log("This function is not supported on iOS");
+	}
 };
 
 Notifications.enableInAppAlertNotification = function(enable) {
