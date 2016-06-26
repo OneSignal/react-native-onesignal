@@ -78,7 +78,7 @@ def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"  // This is good for in-process dex (faster)
 
     defaultConfig {
         applicationId "com.awesomeproject"
