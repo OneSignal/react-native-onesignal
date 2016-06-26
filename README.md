@@ -28,12 +28,35 @@ In your `AndroidManifest.xml`
     .....
 ```
 
+In `android/gradle/wrapper`
+````javascript
+...
+
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https://services.gradle.org/distributions/gradle-2.10-all.zip
+```
+
 In `android/settings.gradle`
 ```gradle
 ...
 
 include ':react-native-onesignal'
 project(':react-native-onesignal').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-onesignal/android')
+```
+
+In `android/build.gradle`
+```gradle
+...
+
+dependencies {
+    classpath 'com.android.tools.build:gradle:2.1.0' // Upgrade gradle
+
+    // NOTE: Do not place your application dependencies here; they belong
+    // in the individual module build.gradle files
+}
 ```
 
 In `android/app/build.gradle`
