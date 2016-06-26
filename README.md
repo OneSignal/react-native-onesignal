@@ -28,7 +28,7 @@ In your `AndroidManifest.xml`
     .....
 ```
 
-In `android/gradle/wrapper`
+In `android/gradle/wrapper/gradle-wrapper.properties`
 ````javascript
 ...
 
