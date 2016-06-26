@@ -1,1 +1,3 @@
-pod 'OneSignal'
+target "AwesomeProject" do
+    pod 'OneSignal'
+end

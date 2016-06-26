@@ -3,9 +3,9 @@
  * https://github.com/facebook/react-native
  */
 'use strict';
-import React, {
+import React, { Component } from 'react';
+import {
   AppRegistry,
-  Component,
   StyleSheet,
   Text,
   View
@@ -42,7 +42,7 @@ OneSignal.configure({
     }
 });
 
-OneSignal.idsAvailable((idsAvailable) => { 
+OneSignal.idsAvailable((idsAvailable) => {
     console.log(idsAvailable);
 });
 

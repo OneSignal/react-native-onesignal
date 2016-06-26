@@ -19,7 +19,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <objc/runtime.h>
 
 typedef void (^OneSignalResultSuccessBlock)(NSDictionary* result);
 typedef void (^OneSignalFailureBlock)(NSError* error);
@@ -61,9 +60,13 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 
 - (id)initWithLaunchOptions:(NSDictionary*)launchOptions autoRegister:(BOOL)autoRegister;
 
+- (id)initWithLaunchOptions:(NSDictionary*)launchOptions appId:(NSString*)appId;
+
 - (id)initWithLaunchOptions:(NSDictionary*)launchOptions handleNotification:(OneSignalHandleNotificationBlock)callback;
 
 - (id)initWithLaunchOptions:(NSDictionary*)launchOptions appId:(NSString*)appId handleNotification:(OneSignalHandleNotificationBlock)callback;
+
+- (id)initWithLaunchOptions:(NSDictionary*)launchOptions handleNotification:(OneSignalHandleNotificationBlock)callback autoRegister:(BOOL)autoRegister;
 
 - (id)initWithLaunchOptions:(NSDictionary*)launchOptions appId:(NSString*)appId handleNotification:(OneSignalHandleNotificationBlock)callback autoRegister:(BOOL)autoRegister;
 
@@ -81,6 +84,8 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 - (void)sendTags:(NSDictionary*)keyValuePair onSuccess:(OneSignalResultSuccessBlock)successBlock onFailure:(OneSignalFailureBlock)failureBlock;
 - (void)sendTags:(NSDictionary*)keyValuePair;
 - (void)sendTagsWithJsonString:(NSString*)jsonString;
+
+- (void)setEmail:(NSString*)email;
 
 - (void)getTags:(OneSignalResultSuccessBlock)successBlock onFailure:(OneSignalFailureBlock)failureBlock;
 - (void)getTags:(OneSignalResultSuccessBlock)successBlock;
@@ -100,6 +105,10 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 - (void)postNotification:(NSDictionary*)jsonData;
 - (void)postNotification:(NSDictionary*)jsonData onSuccess:(OneSignalResultSuccessBlock)successBlock onFailure:(OneSignalFailureBlock)failureBlock;
 - (void)postNotificationWithJsonString:(NSString*)jsonData onSuccess:(OneSignalResultSuccessBlock)successBlock onFailure:(OneSignalFailureBlock)failureBlock;
+
+- (void)promptLocation;
+
++ (void) onesignal_Log:(ONE_S_LOG_LEVEL)logLevel message:(NSString*)message;
 
 @end
 
