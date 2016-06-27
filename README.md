@@ -6,6 +6,36 @@ React Native Push Notifications support with OneSignal integration.
 [![npm version](https://img.shields.io/npm/v/react-native-onesignal.svg?style=flat-square)](https://www.npmjs.com/package/react-native-onesignal)
 [![npm downloads](https://img.shields.io/npm/dm/react-native-onesignal.svg?style=flat-square)](https://www.npmjs.com/package/react-native-onesignal)
 
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [React Native OneSignal](#react-native-onesignal)
+	- [Installation](#installation)
+	- [Android Installation](#android-installation)
+	- [iOS Installation](#ios-installation)
+		- [Importing The Library](#importing-the-library)
+		- [Adding the Code](#adding-the-code)
+	- [Android Usage](#android-usage)
+	- [iOS Usage](#ios-usage)
+	- [API](#api)
+		- [Handling Notifications](#handling-notifications)
+		- [Sending and Getting OneSignal Tags](#sending-and-getting-onesignal-tags)
+		- [Getting Player ID and Push Token](#getting-player-id-and-push-token)
+		- [Enable Vibration](#enable-vibration)
+		- [Enable Sound](#enable-sound)
+		- [Enable Notification When App Active](#enable-notification-when-app-active)
+		- [Enable In-App Alert Notification](#enable-in-app-alert-notification)
+		- [Change User Subscription Status](#change-user-subscription-status)
+		- [Prompt Location (Android Only)](#prompt-location-android-only)
+		- [Request Push Notification Permissions](#request-push-notification-permissions)
+		- [Register For Push Notifications](#register-for-push-notifications)
+	- [FAQ / Repeating Issues](#faq-repeating-issues)
+		- [Issue 1 - Multiple dex files define:](#issue-1-multiple-dex-files-define)
+		- [Issue 2 - Multiple dex files define (Again):](#issue-2-multiple-dex-files-define-again)
+	- [CREDITS](#credits)
+	- [TODO](#todo)
+
+<!-- /TOC -->
+
 ## Installation
 `npm install react-native-onesignal`
 
@@ -234,7 +264,9 @@ OneSignal.configure({
 });
 ```
 
-## Handling Notifications
+## API
+
+### Handling Notifications
 When any notification is opened or received the callback `onNotification` is called passing an object with the notification data.
 
 Notification object example:
@@ -246,7 +278,7 @@ Notification object example:
 }
 ```
 
-## Sending and Getting OneSignal Tags
+### Sending and Getting OneSignal Tags
 
 We exposed the tags API of OneSignal (currently on Android) in order to segment people in a better way.
 
@@ -263,7 +295,7 @@ OneSignal.getTags((receivedTags) => {
 OneSignal.deleteTag(tag);
 ````
 
-## Getting Player ID and Push Token
+### Getting Player ID and Push Token
 
 We exposed the idsAvailable API of OneSignal (both Android & iOS) as a callback so you can handle it further yourself.
 
@@ -277,7 +309,7 @@ OneSignal.idsAvailable((idsAvailable) => {
 });
 ````
 
-## Enable Vibration
+### Enable Vibration
 
 We exposed the enableVibrate API of OneSignal (Android only).
 
@@ -288,7 +320,7 @@ We exposed the enableVibrate API of OneSignal (Android only).
 OneSignal.enableVibrate(true);
 ````
 
-## Enable Sound
+### Enable Sound
 
 We exposed the enableSound API of OneSignal (Android only).
 
@@ -299,7 +331,7 @@ We exposed the enableSound API of OneSignal (Android only).
 OneSignal.enableSound(true);
 ````
 
-## Enable Notification When App Active
+### Enable Notification When App Active
 
 We exposed the enableNotificationsWhenActive API of OneSignal (Android only).
 
@@ -310,7 +342,7 @@ We exposed the enableNotificationsWhenActive API of OneSignal (Android only).
 OneSignal.enableNotificationsWhenActive(true);
 ````
 
-## Enable In-App Alert Notification
+### Enable In-App Alert Notification
 
 We exposed the enableInAppAlertNotification API of OneSignal (both Android & iOS).
 
@@ -321,7 +353,7 @@ We exposed the enableInAppAlertNotification API of OneSignal (both Android & iOS
 OneSignal.enableInAppAlertNotification(true);
 ````
 
-## Change User Subscription Status
+### Change User Subscription Status
 
 We exposed the setSubscription API of OneSignal (both Android & iOS).
 
@@ -332,7 +364,7 @@ We exposed the setSubscription API of OneSignal (both Android & iOS).
 OneSignal.setSubscription(true);
 ````
 
-## Prompt Location (Android Only)
+### Prompt Location (Android Only)
 
 We exposed the promptLocation API of OneSignal (currently supported only on Android).
 
@@ -344,7 +376,7 @@ Note: Make sure you also have the required location permission in your AndroidMa
 OneSignal.promptLocation();
 ````
 
-## Request Push Notification Permissions
+### Request Push Notification Permissions
 
 We exposed the requestPermissions API of OneSignal (currently supported only on iOS).
 
@@ -358,7 +390,7 @@ permissions = {
 OneSignal.requestPermissions(permissions);
 ````
 
-## Register For Push Notifications
+### Register For Push Notifications
 
 We exposed the registerForPushNotifications API of OneSignal (currently supported only on iOS).
 
@@ -403,9 +435,62 @@ _syncOneSignal = () => {
 };
 ```
 
-### CREDITS
+## FAQ / Repeating Issues
+The following issues has been marked as repeating, therefore we decided to devote them a separate section.
+
+### Issue 1 - Multiple dex files define:
+```gradle
+> com.android.build.api.transform.TransformException: com.android.ide.common.process.ProcessException: java.util.concurrent.ExecutionException: com.android.dex.DexException: Multiple dex files define Lcom/google/android/gms/internal/zzr;
+```
+
+Solution: Update all your Google Play Services dependencies to the latest version rather than to a specific version.
+
+From the Google Play Services documentation:
+*Be sure you update this version number each time Google Play services is updated https://developers.google.com/android/guides/setup#add_google_play_services_to_your_project*
+
+In `android/app/build.gradle`
+```gradle
+...
+dependencies {
+    ...
+    compile "com.google.android.gms:play-services-base:+"
+    compile "com.google.android.gms:play-services-location:+"
+    complie "com.google.android.gms:play-services-ads:+"
+}
+```
+
+### Issue 2 - Multiple dex files define (Again):
+```gradle
+:app:dexRelease
+Unknown source file : UNEXPECTED TOP-LEVEL EXCEPTION:
+Unknown source file : com.android.dex.DexException: Multiple dex files define Landroid/support/v7/appcompat/R$anim;````
+```
+
+Solution: Upgrade your gradle to properly handle the dex tasks:
+
+In `android/build.gradle`
+```gradle
+...
+dependencies {
+    classpath 'com.android.tools.build:gradle:2.1.0'
+
+    // NOTE: Do not place your application dependencies here; they belong
+    // in the individual module build.gradle files
+}
+```
+
+In `android/gradle/wrapper/gradle-wrapper.properties`
+````javascript
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https://services.gradle.org/distributions/gradle-2.10-all.zip
+````
+
+## CREDITS
 Thanks for all the awesome fellows that contributed to this repository!
 @danpe, @lunchieapp, @gaykov, @williamrijksen, @adrienbrault, @kennym, @dunghuynh, @holmesal, @joshuapinter
 
-### TODO
+## TODO
  * [ ] Tell us?
