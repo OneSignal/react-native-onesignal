@@ -151,14 +151,17 @@ Notifications.promptLocation = function() {
 };
 
 Notifications.idsAvailable = function(idsAvailable) {
-    NetInfo.isConnected.fetch().then(isConnected => {
-        if (isConnected == true) {
-            RNOneSignal.idsAvailable(idsAvailable);
-        }
-        else {
-            return;
-        }
-    });
+  function handleConnectionStateChange(isConnected) {
+    if(!isConnected) return;
+
+    RNOneSignal.idsAvailable(idsAvailable);
+    NetInfo.isConnected.removeEventListener('change', handleConnectionStateChange);
+  }
+
+  NetInfo.isConnected.fetch().then(isConnected => {
+    if(isConnected) return RNOneSignal.idsAvailable(idsAvailable);
+    NetInfo.isConnected.addEventListener('change', handleConnectionStateChange);
+  });
 };
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
