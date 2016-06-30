@@ -25,6 +25,7 @@ React Native Push Notifications support with OneSignal integration.
 		- [Enable Notification When App Active](#enable-notification-when-app-active)
 		- [Enable In-App Alert Notification](#enable-in-app-alert-notification)
 		- [Change User Subscription Status](#change-user-subscription-status)
+		- [Post Notification (Peer-to-Peer Notifications)](#post-notification-peer-to-peer-notifications)
 		- [Prompt Location (Android Only)](#prompt-location-android-only)
 		- [Request Push Notification Permissions](#request-push-notification-permissions)
 		- [Register For Push Notifications](#register-for-push-notifications)
