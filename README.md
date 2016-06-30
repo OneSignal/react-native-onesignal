@@ -364,6 +364,27 @@ We exposed the setSubscription API of OneSignal (both Android & iOS).
 OneSignal.setSubscription(true);
 ````
 
+### Post Notification (Peer-to-Peer Notifications)
+
+We exposed the postNotification API of OneSignal, currently supports one Player ID to send a notification to.
+We call it internally P2P Notification, and therefore there is a special attribute to listen to while receiving the notification.
+
+*Allows you to send notifications from user to user or schedule ones in the future to be delivered to the current device.*
+
+````javascript
+// Calling postNotification
+OneSignal.postNotification(contents, data, player_id);
+
+// Listening to postNotification using OneSignal.Configure:
+onNotificationOpened: function(message, data, isActive) {
+	if (data.p2p_notification) {
+		for (var num in data.p2p_notification) {
+			// console.log(data.p2p_notification[num]);
+		}
+	}
+}
+````
+
 ### Prompt Location (Android Only)
 
 We exposed the promptLocation API of OneSignal (currently supported only on Android).
