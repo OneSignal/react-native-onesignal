@@ -150,18 +150,23 @@ Notifications.promptLocation = function() {
 	}
 };
 
+Notifications.postNotification = function(contents, data, player_id) {
+	if (Platform.OS == 'android') {
+		RNOneSignal.postNotification(JSON.stringify(contents), JSON.stringify(data), player_id);
+	} else {
+		RNOneSignal.postNotification(contents, data, player_id);
+	}
+};
+
 Notifications.idsAvailable = function(idsAvailable) {
-  function handleConnectionStateChange(isConnected) {
-    if(!isConnected) return;
-
-    RNOneSignal.idsAvailable(idsAvailable);
-    NetInfo.isConnected.removeEventListener('change', handleConnectionStateChange);
-  }
-
-  NetInfo.isConnected.fetch().then(isConnected => {
-    if(isConnected) return RNOneSignal.idsAvailable(idsAvailable);
-    NetInfo.isConnected.addEventListener('change', handleConnectionStateChange);
-  });
+    NetInfo.isConnected.fetch().then(isConnected => {
+        if (isConnected == true) {
+            RNOneSignal.idsAvailable(idsAvailable);
+        }
+        else {
+            return;
+        }
+    });
 };
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {

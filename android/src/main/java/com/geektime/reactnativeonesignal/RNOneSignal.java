@@ -21,6 +21,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.onesignal.OneSignal;
 
 import org.json.JSONObject;
+import org.json.JSONException;
 
 
 /**
@@ -132,6 +133,26 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Applicati
     public void promptLocation() {
         OneSignal.promptLocation();
     }
+
+    @ReactMethod
+    public void postNotification(String contents, String data, String player_id) {
+        try {
+          OneSignal.postNotification(new JSONObject("{'contents': " + contents + ", 'data': {'p2p_notification': " + data +"}, 'include_player_ids': ['" + player_id + "']}"),
+             new OneSignal.PostNotificationResponseHandler() {
+               @Override
+               public void onSuccess(JSONObject response) {
+                 Log.i("OneSignal", "postNotification Success: " + response.toString());
+               }
+
+               @Override
+               public void onFailure(JSONObject response) {
+                 Log.e("OneSignal", "postNotification Failure: " + response.toString());
+               }
+             });
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+    }    
 
     private void registerNotificationsReceiveNotification() {
         IntentFilter intentFilter = new IntentFilter(NOTIFICATION_OPENED_INTENT_FILTER);
