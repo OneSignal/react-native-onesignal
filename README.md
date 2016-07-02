@@ -2,6 +2,11 @@
 
 React Native Push Notifications support with OneSignal integration.
 
+## Notice Regarding RN 0.29 Support
+
+In RN 0.29 FB changed the way RN libraries should be included in Android, and listen to application life cycle.
+
+Version 1.1.9 would include all features and will support RN version < 0.29, while version 1.2.0 and up will support RN 0.29 and up. New features will be supported only on RN 0.29 and up.
 
 [![npm version](https://img.shields.io/npm/v/react-native-onesignal.svg?style=flat-square)](https://www.npmjs.com/package/react-native-onesignal)
 [![npm downloads](https://img.shields.io/npm/dm/react-native-onesignal.svg?style=flat-square)](https://www.npmjs.com/package/react-native-onesignal)
@@ -114,6 +119,8 @@ dependencies {
 }
 ```
 
+### RN < 0.29, Version < 1.2.0
+
 Register module (in `MainActivity.java`)
 
 ```java
@@ -137,6 +144,40 @@ public class MainActivity extends ReactActivity {
   ......
 
 }
+```
+
+### RN >= 0.29, Version >= 1.2.0
+
+Register module (in `MainApplication.java`)
+
+```java
+import com.geektime.reactnativeonesignal.ReactNativeOneSignalPackage;  // <--- Import
+
+public class MainApplication extends Application implements ReactApplication {
+
+	private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+  		......
+
+	      /**
+	     * A list of packages used by the app. If the app uses additional views
+	     * or modules besides the default ones, add more packages here.
+	     */
+	    @Override
+	    protected List<ReactPackage> getPackages() {
+	        ...
+	        return Arrays.<ReactPackage>asList(
+	                new MainReactPackage(),
+	                new ReactNativeOneSignalPackage() // Add this line
+	        );
+	    }
+	};
+	......
+	@Override
+	public ReactNativeHost getReactNativeHost() {
+    	return mReactNativeHost;
+	}
+};
+
 ```
 
 ## iOS Installation
