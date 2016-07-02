@@ -1,6 +1,5 @@
 package com.geektime.reactnativeonesignal;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,13 +29,17 @@ import org.json.JSONException;
 public class RNOneSignal extends ReactContextBaseJavaModule implements LifecycleEventListener {
     public static final String NOTIFICATION_OPENED_INTENT_FILTER = "GTNotificatinOpened";
 
-    final ReactContext mReactContext;
-    final Activity currentActivity = getCurrentActivity();
+    private ReactContext mReactContext;
 
     public RNOneSignal(ReactApplicationContext reactContext) {
         super(reactContext);
         mReactContext = reactContext;
         mReactContext.addLifecycleEventListener(this);
+        OneSignal.startInit(mReactContext)
+                .setNotificationOpenedHandler(new NotificationOpenedHandler(mReactContext))
+                .init();
+        OneSignal.enableNotificationsWhenActive(true);
+        registerNotificationsReceiveNotification();
     }
 
     private void sendEvent(String eventName, Object params) {
@@ -143,7 +146,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
     private void registerNotificationsReceiveNotification() {
         IntentFilter intentFilter = new IntentFilter(NOTIFICATION_OPENED_INTENT_FILTER);
-
         mReactContext.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -178,11 +180,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
     @Override
     public void onHostResume() {
-        OneSignal.startInit(currentActivity)
-                .setNotificationOpenedHandler(new NotificationOpenedHandler(mReactContext))
-                .init();
-        OneSignal.enableNotificationsWhenActive(true);
-        registerNotificationsReceiveNotification();
+
     }
 
 }
