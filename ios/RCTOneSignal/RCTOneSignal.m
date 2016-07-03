@@ -43,7 +43,7 @@ RCT_EXPORT_MODULE(RNOneSignal)
         [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationOpened" body:launchDict];
         launchDict = nil;
     }
-    
+
     if (firstBridge) {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                 selector:@selector(handleRemoteNotificationReceived:)
@@ -57,7 +57,7 @@ RCT_EXPORT_MODULE(RNOneSignal)
 }
 
 - (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId{
-    
+
     return [self initWithLaunchOptions:launchOptions appId:appId autoRegister:YES];
 }
 
@@ -83,7 +83,7 @@ RCT_EXPORT_MODULE(RNOneSignal)
                                                                          object:self userInfo:launchDict];
                  }
                  autoRegister:autoRegister];
-    
+
     return self;
 }
 
@@ -139,20 +139,15 @@ RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
     [oneSignal sendTag:key value:value];
 }
 
-RCT_EXPORT_METHOD(idsAvailable:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(configure) {
     [oneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
-        NSLog(@"UserId:%@", userId);
-        if (pushToken != nil) {
-            NSLog(@"pushToken:%@", pushToken);
-            NSDictionary *value = @{
-                                    @"pushToken": pushToken,
-                                    @"userId" : userId
-                                    };
-            callback(@[value]);
-        } else {
-            callback(@[@{}]);
-            NSLog(@"Cannot Get Push Token");
-        }
+
+        NSDictionary *value = @{
+          @"pushToken": pushToken ?: [NSNull null],
+          @"userId" : userId ?: [NSNull null]
+        };
+
+        [_bridge.eventDispatcher sendDeviceEventWithName:@"idsAvailable" body:value];
     }];
 }
 
@@ -185,12 +180,4 @@ RCT_EXPORT_METHOD(enableInAppAlertNotification:(BOOL)enable) {
     [oneSignal enableInAppAlertNotification:enable];
 }
 
-RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSString*)player_id) {
-    [oneSignal postNotification:@{
-                                  @"contents" : contents,
-                                  @"data" : @{@"p2p_notification": data},
-                                  @"include_player_ids": @[player_id]
-                                  }];
-}
-                  
 @end

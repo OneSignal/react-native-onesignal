@@ -214,6 +214,10 @@ import OneSignal from 'react-native-onesignal'; // Import package from node modu
 // var _navigator; // If applicable, declare a variable for accessing your navigator object to handle payload.
 
 OneSignal.configure({
+	onIdsAvailable: function(device) {
+		console.log('UserId = ', device.userId);
+		console.log('PushToken = ', device.pushToken);
+	},
   onNotificationOpened: function(message, data, isActive) {
       console.log('MESSAGE: ', message);
       console.log('DATA: ', data);
@@ -252,16 +256,20 @@ var pendingNotifications = [];
 // }
 
 OneSignal.configure({
-    onNotificationOpened: function(message, data, isActive) {
-        var notification = {message: message, data: data, isActive: isActive};
-        console.log('NOTIFICATION OPENED: ', notification);
-        //if (!_navigator) { // Check if there is a navigator object. If not, waiting with the notification.
-        //    console.log('Navigator is null, adding notification to pending list...');
-            pendingNotifications.push(notification);
-        //    return;
-        // }
-        handleNotification(notification);
-    }
+	onIdsAvailable: function(device) {
+		console.log('UserId = ', device.userId);
+		console.log('PushToken = ', device.pushToken);
+	},
+  onNotificationOpened: function(message, data, isActive) {
+      var notification = {message: message, data: data, isActive: isActive};
+      console.log('NOTIFICATION OPENED: ', notification);
+      //if (!_navigator) { // Check if there is a navigator object. If not, waiting with the notification.
+      //    console.log('Navigator is null, adding notification to pending list...');
+          pendingNotifications.push(notification);
+      //    return;
+      // }
+      handleNotification(notification);
+  }
 });
 ```
 
@@ -298,15 +306,16 @@ OneSignal.deleteTag(tag);
 
 ### Getting Player ID and Push Token
 
-We exposed the idsAvailable API of OneSignal (both Android & iOS) as a callback so you can handle it further yourself.
-
-*Lets you retrieve the OneSignal user id and push token. Your callback block is called after the device is successfully registered with OneSignal. pushToken will be nil if the user did not accept push notifications.*
+We exposed the idsAvailable API of OneSignal (both Android & iOS) as an event.
+Just define a onIdsAvailable callback in the configure options.
 
 ````javascript
 // Getting idsAvailable
-OneSignal.idsAvailable((idsAvailable) => {
-    console.log(idsAvailable.pushToken);
-    console.log(idsAvailable.userId);
+OneSignal.configure({
+	onIdsAvailable: function(device) {
+		console.log('UserId = ', device.userId);
+		console.log('PushToken = ', device.pushToken);
+	}
 });
 ````
 

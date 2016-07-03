@@ -79,26 +79,19 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Applicati
     }
 
     @ReactMethod
-    public void idsAvailable(final Callback callback) {
+    public void configure() {
         OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
             public void idsAvailable(String userId, String registrationId) {
                 final WritableMap value = Arguments.createMap();
-                if (registrationId != null) {
-                    Log.d("debug", "User:" + userId);
-                    Log.d("debug", "registrationId:" + registrationId);
 
-                    value.putString("userId", userId);
-                    value.putString("pushToken", registrationId);
-                    
-                    callback.invoke(value);
-                } else {
-                    callback.invoke(value);
-                    Log.d("debug", "Cannot Fetch Push Token");
-                }
+                value.putString("userId", userId);
+                value.putString("pushToken", registrationId);
+
+                sendEvent("idsAvailable", params);
             }
         });
     }
-    
+
     @ReactMethod
     public void deleteTag(String key) {
         OneSignal.deleteTag(key);
@@ -152,7 +145,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Applicati
         } catch (JSONException e) {
           e.printStackTrace();
         }
-    }    
+    }
 
     private void registerNotificationsReceiveNotification() {
         IntentFilter intentFilter = new IntentFilter(NOTIFICATION_OPENED_INTENT_FILTER);

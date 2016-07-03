@@ -17,6 +17,7 @@ var Notifications = {
 var _pendingNotifications = [];
 var DEVICE_NOTIF_EVENT = 'remoteNotificationOpened';
 var DEVICE_NOTIF_REG_EVENT = 'remoteNotificationsRegistered';
+var DEVICE_IDS_AVAILABLE = 'idsAvailable';
 
 /**
  * Configure local and remote notifications
@@ -37,10 +38,26 @@ Notifications.configure = function(options: Object) {
 			this._onNotificationOpened(notification.message, notification.data, notification.isActive);
 		}
 	}
-	
+
 	if( typeof options.onNotificationsRegistered !== 'undefined' ) {
 		this.onNotificationsRegistered = options.onNotificationsRegistered;
 	}
+
+	if( typeof options.onIdsAvailable !== 'undefined' ) {
+		this.onIdsAvailable = options.onIdsAvailable;
+	}
+
+	function handleConnectionStateChange(isConnected) {
+    if(!isConnected) return;
+
+    RNOneSignal.configure();
+    NetInfo.isConnected.removeEventListener('change', handleConnectionStateChange);
+  }
+
+  NetInfo.isConnected.fetch().then(isConnected => {
+    if(isConnected) return RNOneSignal.configure();
+    NetInfo.isConnected.addEventListener('change', handleConnectionStateChange);
+  });
 };
 
 /* Unregister */
@@ -150,23 +167,8 @@ Notifications.promptLocation = function() {
 	}
 };
 
-Notifications.postNotification = function(contents, data, player_id) {
-	if (Platform.OS == 'android') {
-		RNOneSignal.postNotification(JSON.stringify(contents), JSON.stringify(data), player_id);
-	} else {
-		RNOneSignal.postNotification(contents, data, player_id);
-	}
-};
-
 Notifications.idsAvailable = function(idsAvailable) {
-    NetInfo.isConnected.fetch().then(isConnected => {
-        if (isConnected == true) {
-            RNOneSignal.idsAvailable(idsAvailable);
-        }
-        else {
-            return;
-        }
-    });
+	console.log('Please use the onIdsAvailable event instead, it can be defined in the register options');
 };
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
@@ -178,6 +180,12 @@ DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_REG_EVENT, function(notifData) {
 	Notifications._onNotificationsRegistered(notifData)
+});
+
+DeviceEventEmitter.addListener(DEVICE_IDS_AVAILABLE, function(idsAvailable) {
+	if (Notifications.onIdsAvailable) {
+		Notifications.onIdsAvailable(idsAvailable);
+	}
 });
 
 module.exports = Notifications;
