@@ -142,12 +142,12 @@ RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
 RCT_EXPORT_METHOD(configure) {
     [oneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
 
-        NSDictionary *value = @{
+        NSDictionary *params = @{
           @"pushToken": pushToken ?: [NSNull null],
           @"userId" : userId ?: [NSNull null]
         };
 
-        [_bridge.eventDispatcher sendDeviceEventWithName:@"idsAvailable" body:value];
+        [_bridge.eventDispatcher sendDeviceEventWithName:@"idsAvailable" body:params];
     }];
 }
 

@@ -82,10 +82,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Applicati
     public void configure() {
         OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
             public void idsAvailable(String userId, String registrationId) {
-                final WritableMap value = Arguments.createMap();
+                final WritableMap params = Arguments.createMap();
 
-                value.putString("userId", userId);
-                value.putString("pushToken", registrationId);
+                params.putString("userId", userId);
+                params.putString("pushToken", registrationId);
 
                 sendEvent("idsAvailable", params);
             }
