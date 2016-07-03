@@ -113,7 +113,7 @@ dependencies {
 }
 ```
 
-### RN < 0.29, Version < 1.2.0
+### RN < 0.29
 
 Register module (in `MainActivity.java`)
 
@@ -140,7 +140,9 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-### RN >= 0.29, Version >= 1.2.0
+### RN >= 0.29
+
+In RN 0.29 FB changed the way RN libraries should be included in Android, and listen to application life cycle.
 
 Register module (in `MainApplication.java`)
 
