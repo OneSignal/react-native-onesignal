@@ -1,7 +1,5 @@
 package com.geektime.reactnativeonesignal;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +9,7 @@ import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -27,29 +26,20 @@ import org.json.JSONException;
 /**
  * Created by Avishay on 1/31/16.
  */
-public class RNOneSignal extends ReactContextBaseJavaModule implements Application.ActivityLifecycleCallbacks {
+public class RNOneSignal extends ReactContextBaseJavaModule implements LifecycleEventListener {
     public static final String NOTIFICATION_OPENED_INTENT_FILTER = "GTNotificatinOpened";
 
     private ReactContext mReactContext;
-    private Activity mActivity;
-
-    public RNOneSignal(ReactApplicationContext reactContext, Activity activity) {
-        super(reactContext);
-        mActivity = activity;
-        mReactContext = reactContext;
-
-        OneSignal.startInit(mActivity)
-                .setNotificationOpenedHandler(new NotificationOpenedHandler(reactContext))
-                .init();
-        OneSignal.enableNotificationsWhenActive(true);
-
-        activity.getApplication().registerActivityLifecycleCallbacks(this);
-
-        registerNotificationsReceiveNotification();
-    }
 
     public RNOneSignal(ReactApplicationContext reactContext) {
         super(reactContext);
+        mReactContext = reactContext;
+        mReactContext.addLifecycleEventListener(this);
+        OneSignal.startInit(mReactContext)
+                .setNotificationOpenedHandler(new NotificationOpenedHandler(mReactContext))
+                .init();
+        OneSignal.enableNotificationsWhenActive(true);
+        registerNotificationsReceiveNotification();
     }
 
     private void sendEvent(String eventName, Object params) {
@@ -156,7 +146,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Applicati
 
     private void registerNotificationsReceiveNotification() {
         IntentFilter intentFilter = new IntentFilter(NOTIFICATION_OPENED_INTENT_FILTER);
-
         mReactContext.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -180,39 +169,18 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Applicati
     }
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    public void onHostDestroy() {
+        OneSignal.removeNotificationOpenedHandler();
+    }
+
+    @Override
+    public void onHostPause() {
 
     }
 
     @Override
-    public void onActivityStarted(Activity activity) {
+    public void onHostResume() {
 
     }
 
-    @Override
-    public void onActivityResumed(Activity activity) {
-
-    }
-
-    @Override
-    public void onActivityPaused(Activity activity) {
-
-    }
-
-    @Override
-    public void onActivityStopped(Activity activity) {
-
-    }
-
-    @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-
-    }
-
-    @Override
-    public void onActivityDestroyed(Activity activity) {
-        if (activity.equals(mActivity)) {
-            OneSignal.removeNotificationOpenedHandler();
-        }
-    }
 }
