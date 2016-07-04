@@ -132,7 +132,7 @@ public class MainActivity extends ReactActivity {
         ...
         return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
-                new ReactNativeOneSignalPackage(this) // Add this line
+                new ReactNativeOneSignalPackage() // Add this line
         );
     }
   ......
