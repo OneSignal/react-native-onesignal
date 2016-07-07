@@ -100,6 +100,33 @@ RCT_EXPORT_MODULE(RNOneSignal)
     [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistered" body:notification.userInfo];
 }
 
+RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
+{
+    if (RCTRunningInAppExtension()) {
+        callback(@[@{@"alert": @NO, @"badge": @NO, @"sound": @NO}]);
+        return;
+    }
+    
+    NSUInteger types = 0;
+    if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
+        types = [RCTSharedApplication() currentUserNotificationSettings].types;
+    } else {
+        
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+        
+        types = [RCTSharedApplication() enabledRemoteNotificationTypes];
+        
+#endif
+        
+    }
+    
+    callback(@[@{
+                   @"alert": @((types & UIUserNotificationTypeAlert) > 0),
+                   @"badge": @((types & UIUserNotificationTypeBadge) > 0),
+                   @"sound": @((types & UIUserNotificationTypeSound) > 0),
+                   }]);
+}
+
 RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     if (RCTRunningInAppExtension()) {
         return;

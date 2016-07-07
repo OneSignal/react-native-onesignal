@@ -5,6 +5,7 @@
 'use strict';
 
 import { NativeModules, DeviceEventEmitter, NetInfo, Platform } from 'react-native';
+import invariant from 'invariant';
 
 const { RNOneSignal } = NativeModules;
 
@@ -90,6 +91,18 @@ Notifications.requestPermissions = function(permissions) {
 Notifications.registerForPushNotifications = function(){
 	if (Platform.OS == 'ios') {
 		RNOneSignal.registerForPushNotifications();
+	} else {
+		console.log("This function is not supported on Android");
+	}
+};
+
+Notifications.checkPermissions = function(callback: Function) {
+	if (Platform.OS == 'ios') {
+		invariant(
+			typeof callback === 'function',
+			'Must provide a valid callback'
+		);
+		RNOneSignal.checkPermissions(callback);
 	} else {
 		console.log("This function is not supported on Android");
 	}
