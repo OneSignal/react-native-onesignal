@@ -28,12 +28,13 @@ React Native Push Notifications support with OneSignal integration.
 		- [Change User Subscription Status](#change-user-subscription-status)
 		- [Post Notification (Peer-to-Peer Notifications)](#post-notification-peer-to-peer-notifications)
 		- [Prompt Location (Android Only)](#prompt-location-android-only)
-		- [Check Push Notification Permissions](#check-push-notification-permissions)
-		- [Request Push Notification Permissions](#request-push-notification-permissions)
-		- [Register For Push Notifications](#register-for-push-notifications)
+		- [Check Push Notification Permissions (iOS Only)](#check-push-notification-permissions-ios-only)
+		- [Request Push Notification Permissions (iOS Only)](#request-push-notification-permissions-ios-only)
+		- [Register For Push Notifications (iOS Only)](#register-for-push-notifications-ios-only)
 	- [FAQ / Repeating Issues](#faq-repeating-issues)
 		- [Issue 1 - Multiple dex files define:](#issue-1-multiple-dex-files-define)
 		- [Issue 2 - Multiple dex files define (Again):](#issue-2-multiple-dex-files-define-again)
+		- [Issue 3 - symbol(s) not found for architecture x86_64 and/or OneSignal/OneSignal.h file not found](#issue-3-symbols-not-found-for-architecture-x8664-andor-onesignalonesignalh-file-not-found)
 	- [CREDITS](#credits)
 	- [TODO](#todo)
 
@@ -447,9 +448,9 @@ Note: Make sure you also have the required location permission in your AndroidMa
 OneSignal.promptLocation();
 ````
 
-### Check Push Notification Permissions
+### Check Push Notification Permissions (iOS Only)
 
-See what push permissions are currently enabled. callback will be invoked with a permissions object:
+See what push permissions are currently enabled. callback will be invoked with a permissions object (currently supported only on iOS).
 
 ````javascript
 // Requesting permissions
@@ -458,7 +459,7 @@ OneSignal.checkPermissions((permissions) => {
 });
 ````
 
-### Request Push Notification Permissions
+### Request Push Notification Permissions (iOS Only)
 
 We exposed the requestPermissions method (currently supported only on iOS).
 
@@ -472,7 +473,7 @@ permissions = {
 OneSignal.requestPermissions(permissions);
 ````
 
-### Register For Push Notifications
+### Register For Push Notifications (iOS Only)
 
 We exposed the registerForPushNotifications API of OneSignal (currently supported only on iOS).
 
@@ -569,6 +570,26 @@ zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 distributionUrl=https://services.gradle.org/distributions/gradle-2.10-all.zip
 ````
+
+### Issue 3 - symbol(s) not found for architecture x86_64 and/or OneSignal/OneSignal.h file not found
+
+Solution: Go to your Podfile file, located within the ios folder on the root of your project.
+Add the line pod 'OneSignal' as follows:
+````
+target 'YourApp' do
+...
+pod 'OneSignal'
+
+end
+
+target 'YourAppTests' do
+
+end
+````
+
+Then head to the terminal, ls to the ios folder on the root of your project, then type `pod install` to install the pods. After that, make sure to drag `OneSignal.framework` from your Pods project on Xcode to the Frameworks folder on your Xcode workspace. Make sure that your `Link Binary With Libraries` on the `Build Phases` section of your target contains the `Onesignal.framework` file as follows.
+
+![OneSignal Framework On Link Binary With Libraries](http://i.imgur.com/r0dgrAH.png)
 
 ## CREDITS
 Thanks for all the awesome fellows that contributed to this repository!
