@@ -10,6 +10,8 @@ React Native Push Notifications support with OneSignal integration.
 - [React Native OneSignal](#react-native-onesignal)
 	- [Installation](#installation)
 	- [Android Installation](#android-installation)
+		- [RN < 0.29](#rn-029)
+		- [RN >= 0.29](#rn-029)
 	- [iOS Installation](#ios-installation)
 		- [Importing The Library](#importing-the-library)
 		- [Adding the Code](#adding-the-code)
@@ -26,6 +28,7 @@ React Native Push Notifications support with OneSignal integration.
 		- [Change User Subscription Status](#change-user-subscription-status)
 		- [Post Notification (Peer-to-Peer Notifications)](#post-notification-peer-to-peer-notifications)
 		- [Prompt Location (Android Only)](#prompt-location-android-only)
+		- [Check Push Notification Permissions](#check-push-notification-permissions)
 		- [Request Push Notification Permissions](#request-push-notification-permissions)
 		- [Register For Push Notifications](#register-for-push-notifications)
 	- [FAQ / Repeating Issues](#faq-repeating-issues)
@@ -444,9 +447,20 @@ Note: Make sure you also have the required location permission in your AndroidMa
 OneSignal.promptLocation();
 ````
 
+### Check Push Notification Permissions
+
+See what push permissions are currently enabled. callback will be invoked with a permissions object:
+
+````javascript
+// Requesting permissions
+OneSignal.checkPermissions((permissions) => {
+	console.log(permissions);
+});
+````
+
 ### Request Push Notification Permissions
 
-We exposed the requestPermissions API of OneSignal (currently supported only on iOS).
+We exposed the requestPermissions method (currently supported only on iOS).
 
 ````javascript
 // Setting requestPermissions
