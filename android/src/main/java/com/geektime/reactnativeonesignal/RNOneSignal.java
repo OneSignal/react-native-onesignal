@@ -143,7 +143,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
-    public void cancelNotification(id) {
+    public void cancelNotification(int id) {
         OneSignal.cancelNotification(id);
     }
 
