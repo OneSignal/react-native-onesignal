@@ -207,4 +207,12 @@ RCT_EXPORT_METHOD(enableInAppAlertNotification:(BOOL)enable) {
     [oneSignal enableInAppAlertNotification:enable];
 }
 
+RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSString*)player_id) {
+    [oneSignal postNotification:@{
+                                  @"contents" : contents,
+                                  @"data" : @{@"p2p_notification": data},
+                                  @"include_player_ids": @[player_id]
+                                  }];
+}
+
 @end

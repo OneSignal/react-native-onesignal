@@ -28,6 +28,8 @@ React Native Push Notifications support with OneSignal integration.
 		- [Change User Subscription Status](#change-user-subscription-status)
 		- [Post Notification (Peer-to-Peer Notifications)](#post-notification-peer-to-peer-notifications)
 		- [Prompt Location (Android Only)](#prompt-location-android-only)
+		- [Clear Notifications (Android Only)](#clear-notifications-android-only)
+		- [Cancel Notifications (Android Only)](#cancel-notifications-android-only)
 		- [Check Push Notification Permissions (iOS Only)](#check-push-notification-permissions-ios-only)
 		- [Request Push Notification Permissions (iOS Only)](#request-push-notification-permissions-ios-only)
 		- [Register For Push Notifications (iOS Only)](#register-for-push-notifications-ios-only)
@@ -446,6 +448,28 @@ Note: Make sure you also have the required location permission in your AndroidMa
 ````javascript
 // Calling promptLocation
 OneSignal.promptLocation();
+````
+
+### Clear Notifications (Android Only)
+
+We exposed the clearOneSignalNotifications API of OneSignal (currently supported only on Android).
+
+*Removes all OneSignal notifications from the Notification Shade.*
+
+````javascript
+// Calling clearOneSignalNotifications
+OneSignal.clearOneSignalNotifications();
+````
+
+### Cancel Notifications (Android Only)
+
+We exposed the cancelNotification API of OneSignal (currently supported only on Android).
+
+*Cancels a single OneSignal notification based on its Android notification integer id. You can get the notification Id when invoking OneSignal.onNotificationOpened while receiving a notification.*
+
+````javascript
+// Calling cancelNotification
+OneSignal.cancelNotification(id);
 ````
 
 ### Check Push Notification Permissions (iOS Only)

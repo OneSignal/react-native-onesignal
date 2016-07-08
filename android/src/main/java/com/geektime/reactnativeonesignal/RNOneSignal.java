@@ -137,6 +137,16 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
         }
     }
 
+    @ReactMethod
+    public void clearOneSignalNotifications() {
+        OneSignal.clearOneSignalNotifications();
+    }
+
+    @ReactMethod
+    public void cancelNotification(id) {
+        OneSignal.cancelNotification(id);
+    }
+
     private void registerNotificationsReceiveNotification() {
         IntentFilter intentFilter = new IntentFilter(NOTIFICATION_OPENED_INTENT_FILTER);
         mReactContext.registerReceiver(new BroadcastReceiver() {

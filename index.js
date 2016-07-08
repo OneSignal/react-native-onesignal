@@ -180,6 +180,30 @@ Notifications.promptLocation = function() {
 	}
 };
 
+Notifications.postNotification = function(contents, data, player_id) {
+	if (Platform.OS == 'android') {
+		RNOneSignal.postNotification(JSON.stringify(contents), JSON.stringify(data), player_id);
+	} else {
+		RNOneSignal.postNotification(contents, data, player_id);
+	}
+};
+
+Notifications.clearOneSignalNotifications = function() {
+	if (Platform.OS == 'android') {
+		RNOneSignal.clearOneSignalNotifications();
+	} else {
+		console.log("This function is not supported on iOS");
+	}
+};
+
+Notifications.cancelNotification = function(id) {
+	if (Platform.OS == 'android') {
+		RNOneSignal.cancelNotification(id);
+	} else {
+		console.log("This function is not supported on iOS");
+	}
+};
+
 Notifications.idsAvailable = function(idsAvailable) {
 	console.log('Please use the onIdsAvailable event instead, it can be defined in the register options');
 };
