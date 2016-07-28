@@ -332,19 +332,22 @@ Notification object example:
 
 ### Sending and Getting OneSignal Tags
 
-We exposed the tags API of OneSignal (currently on Android) in order to segment people in a better way.
+We exposed the tags API of OneSignal to allow you to target users with notification later.
 
 ````javascript
-// Sending the tags for the device
-OneSignal.sendTags(missingTags);
+// Sending single tag
+OneSignal.sendTags("key", "value");
 
-//Getting the tags from the server and use the received object
+// Sending multiple tags
+OneSignal.sendTags({key: "value", key2: "value2"});
+
+//G etting the tags from the server and use the received object
 OneSignal.getTags((receivedTags) => {
     console.log(receivedTags);
 });
 
-//Delete a tag
-OneSignal.deleteTag(tag);
+// Delete a tag
+OneSignal.deleteTag("key");
 ````
 
 ### Getting Player ID and Push Token
