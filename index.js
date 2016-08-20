@@ -165,7 +165,12 @@ Notifications.enableNotificationsWhenActive = function(enable) {
 };
 
 Notifications.enableInAppAlertNotification = function(enable) {
-	RNOneSignal.enableInAppAlertNotification(enable);
+	if (Platform.OS == 'android') {
+		RNOneSignal.enableInAppAlertNotification(enable);
+	}
+	else {
+		console.log("This function is no longer supported on 2.* SDK on iOS. Pass in an init setting kOSSettingsInAppAlertsEnabled instead.");	
+	}
 };
 
 Notifications.setSubscription = function(enable) {
@@ -173,11 +178,8 @@ Notifications.setSubscription = function(enable) {
 };
 
 Notifications.promptLocation = function() {
-	if (Platform.OS == 'android') {
-		RNOneSignal.promptLocation();
-	} else {
-		console.log("This function is not supported on iOS");
-	}
+	//Supported in both iOS & Android
+	RNOneSignal.promptLocation();
 };
 
 Notifications.postNotification = function(contents, data, player_id) {
