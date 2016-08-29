@@ -144,14 +144,21 @@ typedef enum : NSUInteger {
  requires remote-notification within UIBackgroundModes array of the Info.plist */
 @property(readonly, getter=isSilentNotification)BOOL silentNotification;
 
+
+/* Convert object into an NSString that can be convertible into a custom Dictionary / JSON Object */
+- (NSString*)stringify;
+
 @end
 
 
-@interface OSNotificationResult : NSObject
+@interface OSNotificationOpenedResult : NSObject
 
 @property(readonly)OSNotification* notification;
 
 @property(readonly)OSNotificationAction *action;
+
+/* Convert object into an NSString that can be convertible into a custom Dictionary / JSON Object */
+- (NSString*)stringify;
 
 @end;
 
@@ -165,7 +172,7 @@ typedef void (^OSIdsAvailableBlock)(NSString* userId, NSString* pushToken);
 typedef void (^OSHandleNotificationReceivedBlock)(OSNotification* notification);
 
 /*Block for handling a user reaction to a notification*/
-typedef void (^OSHandleNotificationActionBlock)(OSNotificationResult * result);
+typedef void (^OSHandleNotificationActionBlock)(OSNotificationOpenedResult * result);
 
 /*Dictionary of keys to pass alongside the init serttings*/
     
@@ -193,7 +200,7 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 };
 
 ///--------------------
-/// @name Initialize
+/// @name Initialize`
 ///--------------------
 
 /**

@@ -21,11 +21,9 @@ public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHa
 	}
 
     @Override
-    public void notificationOpened(String s, JSONObject jsonObject, boolean b) {
+    public void notificationOpened(OSNotificationOpenResult result) {
 		Bundle bundle = new Bundle();
-		bundle.putString("message", s);
-		bundle.putString("additionalData", jsonObject.toString());
-		bundle.putBoolean("isActive", b);
+		bundle.putString("result", result.stringify());
 
 		final Intent intent = new Intent(RNOneSignal.NOTIFICATION_OPENED_INTENT_FILTER);
 		intent.putExtras(bundle);
