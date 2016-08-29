@@ -4,19 +4,26 @@
 
 'use strict';
 
-import { NativeModules, DeviceEventEmitter, NetInfo, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, NetInfo, Platform } from 'react-native';
 import invariant from 'invariant';
 
 const { RNOneSignal } = NativeModules;
 
 var Notifications = {
 	onError: false,
+	onNotificationReceived: false,
 	onNotificationOpened: false,
 	onNotificationsRegistered: false
 };
 
-var _pendingNotifications = [];
-var DEVICE_NOTIF_EVENT = 'remoteNotificationOpened';
+//Holds an array of stringified OSNotification objects
+var _pendingNotificationsReceived = [];
+
+//Holds an array of stringified OSNotificationResult objects
+var _pendingNotificationsOpened = [];
+
+var DEVICE_NOTIF_RECEIVED_EVENT = 'remoteNotificationReceived';
+var DEVICE_NOTIF_OPENED_EVENT = 'remoteNotificationOpened';
 var DEVICE_NOTIF_REG_EVENT = 'remoteNotificationsRegistered';
 var DEVICE_IDS_AVAILABLE = 'idsAvailable';
 
@@ -25,18 +32,27 @@ var DEVICE_IDS_AVAILABLE = 'idsAvailable';
  * @param {Object}		options
  * @param {function}	options.onNotificationOpened - Fired when a remote notification is received.
  * @param {function} 	options.onError - None
- */
+ */             
 Notifications.configure = function(options: Object) {
 	if ( typeof options.onError !== 'undefined' ) {
 		this.onError = options.onError;
 	}
 
+	if ( typeof options.onNotificationReceived !== 'undefined' ) {
+		this.onNotificationReceived = options.onNotificationReceived;
+
+		if (_pendingNotifications.length > 0) {
+			var notification = _pendingNotificationsReceived.pop();
+			this._onNotificationReceived(JSON.parse(notification));
+		}
+	}
+
 	if ( typeof options.onNotificationOpened !== 'undefined' ) {
 		this.onNotificationOpened = options.onNotificationOpened;
 
-		if (_pendingNotifications.length > 0) {
-			var notification = _pendingNotifications.pop();
-			this._onNotificationOpened(notification.message, notification.data, notification.isActive);
+		if (_pendingNotificationsOpened.length > 0) {
+			var result = _pendingNotificationsOpened.pop();
+			this._onNotificationOpened(JSON.parse(result));
 		}
 	}
 
@@ -49,11 +65,11 @@ Notifications.configure = function(options: Object) {
 	}
 
 	function handleConnectionStateChange(isConnected) {
-    if(!isConnected) return;
+    	if(!isConnected) return;
 
-    RNOneSignal.configure();
-    NetInfo.isConnected.removeEventListener('change', handleConnectionStateChange);
-  }
+    	RNOneSignal.configure();
+    	NetInfo.isConnected.removeEventListener('change', handleConnectionStateChange);
+  	}
 
   NetInfo.isConnected.fetch().then(isConnected => {
     if(isConnected) return RNOneSignal.configure();
@@ -108,13 +124,22 @@ Notifications.checkPermissions = function(callback: Function) {
 	}
 };
 
-Notifications._onNotificationOpened = function(message, data, isActive) {
-	if ( this.onNotificationOpened === false ) {
-		var notification = {message: message, data: data, isActive: isActive};
-		_pendingNotifications.push(notification);
+//notification is a stringified JSON object of type OSNotification
+Notifications._onNotificationReceived = function(notification) {
+	if ( this.onNotificationReceived === false) {
+		_pendingNotificationsReceived.push(notification);
 		return;
 	}
-	this.onNotificationOpened(message, data, isActive);
+	this.onNotificationReceived(JSON.parse(notification));
+};
+
+//result is a stringified JSON object of type OSNOtificationResult
+Notifications._onNotificationOpened = function(result) {
+	if ( this.onNotificationOpened === false ) {
+		_pendingNotificationsOpened.push(result);
+		return;
+	}
+	this.onNotificationOpened(JSON.parse(result));
 };
 
 Notifications._onNotificationsRegistered = function(payload) {
@@ -164,15 +189,6 @@ Notifications.enableNotificationsWhenActive = function(enable) {
 	}
 };
 
-Notifications.enableInAppAlertNotification = function(enable) {
-	if (Platform.OS == 'android') {
-		RNOneSignal.enableInAppAlertNotification(enable);
-	}
-	else {
-		console.log("This function is no longer supported on 2.* SDK on iOS. Pass in an init setting kOSSettingsInAppAlertsEnabled instead.");	
-	}
-};
-
 Notifications.setSubscription = function(enable) {
 	RNOneSignal.setSubscription(enable);
 };
@@ -210,11 +226,22 @@ Notifications.idsAvailable = function(idsAvailable) {
 	console.log('Please use the onIdsAvailable event instead, it can be defined in the register options');
 };
 
-DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
-	var message = notifData.message;
-	var data = (notifData.additionalData !== null && typeof notifData.additionalData === 'object') ? notifData.additionalData : JSON.parse(notifData.additionalData);
-	var isActive = notifData.isActive;
-	Notifications._onNotificationOpened(message, data, isActive);
+//Sends MD5 and SHA1 hashes of the user's email address (https://documentation.onesignal.com/docs/ios-sdk-api#section-synchashedemail)
+Notifications.syncHashedEmail = function(email) {
+	RNOneSignal.syncHashedEmail(email);
+}
+
+Notifications.setLogLevel = function(nsLogLevel, visualLogLevel) {
+	RNOneSignal.setLogLevel(nsLogLevel, visualLogLevel);
+}
+
+// Listen to events of notification received, opened, device registered and IDSAvailable.
+DeviceEventEmitter.addListener(DEVICE_NOTIF_RECEIVED_EVENT, function(notification) {
+	Notifications._onNotificationReceived(notification);
+});
+
+DeviceEventEmitter.addListener(DEVICE_NOTIF_OPENED_EVENT, function(result) {
+	Notifications._onNotificationOpened(result);
 });
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_REG_EVENT, function(notifData) {
