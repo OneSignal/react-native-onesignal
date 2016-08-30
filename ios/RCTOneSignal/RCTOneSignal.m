@@ -60,6 +60,11 @@ RCT_EXPORT_MODULE(RNOneSignal)
     return self;
 }
 
+// This isn't required, the iOS native SDK already hooks into this event.
++ (void)didReceiveRemoteNotification:(NSDictionary *)dictionary {
+    // Keeping empty method around so developers do not get compile errors when updating versions.
+}
+
 - (void)handleRemoteNotificationReceived:(NSString *)notification {
     [self.bridge.eventDispatcher sendAppEventWithName:@"remoteNotificationReceived" body:notification];
 }

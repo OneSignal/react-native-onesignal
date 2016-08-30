@@ -41,7 +41,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
                 .setNotificationOpenedHandler(new NotificationOpenedHandler(mReactContext))
                 .setNotificationReceivedHandler(new NotificationReceivedHandler(mReactContext))
                 .init();
-        OneSignal.enableNotificationsWhenActive(false);
         registerNotificationsOpenedNotification();
         registerNotificationsReceivedNotification();
     }
@@ -107,11 +106,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
-    public void enableNotificationsWhenActive(Boolean enable) {
-        OneSignal.enableNotificationsWhenActive(enable);
-    }
-
-    @ReactMethod
     public void setSubscription(Boolean enable) {
         OneSignal.setSubscription(enable);
     }
@@ -127,8 +121,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
-    public void setlogLevel(OneSignal.LOGLEVEL logLevel, OneSignal.LOGLEVEL visualLogLevel) {
-        OneSignal.setlogLevel(loglevel, visualLogLevel);
+    public void setlogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLogLevel) {
+        OneSignal.setLogLevel(logLevel, visualLogLevel);
     }
 
     @ReactMethod
@@ -201,6 +195,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     @Override
     public void onHostDestroy() {
         OneSignal.removeNotificationOpenedHandler();
+
+        //Added to latest Android release
         OneSignal.removeNotificationReceivedHandler();
     }
 

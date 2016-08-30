@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
+import com.onesignal.OSNotification;
 import com.onesignal.OneSignal;
 
 import org.json.JSONObject;
@@ -16,7 +17,7 @@ public class NotificationReceivedHandler implements OneSignal.NotificationReceiv
 
 	private ReactContext mReactContext;
 
-	public NotificationReceived(ReactContext reactContext) {
+	public NotificationReceivedHandler(ReactContext reactContext) {
 		mReactContext = reactContext;
 	}
 

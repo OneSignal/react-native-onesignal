@@ -4,7 +4,7 @@
 
 'use strict';
 
-import { NativeModules, NativeEventEmitter, NetInfo, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, DeviceEventEmitter, NetInfo, Platform } from 'react-native';
 import invariant from 'invariant';
 
 const { RNOneSignal } = NativeModules;
@@ -181,13 +181,6 @@ Notifications.enableSound = function(enable) {
 	}
 };
 
-Notifications.enableNotificationsWhenActive = function(enable) {
-	if (Platform.OS == 'android') {
-		RNOneSignal.enableNotificationsWhenActive(enable);
-	} else {
-		console.log("This function is not supported on iOS");
-	}
-};
 
 Notifications.setSubscription = function(enable) {
 	RNOneSignal.setSubscription(enable);
@@ -200,7 +193,7 @@ Notifications.promptLocation = function() {
 
 //Android only: Set Display option of the notifications. displayOption is of type OSInFocusDisplayOption
 // 0 -> None, 1 -> InAppAlert, 2 -> Notification
-Notification.inFocusDisplaying = function(displayOption) {
+Notifications.inFocusDisplaying = function(displayOption) {
 	if (Platform.OS == 'android') {
 		RNOneSignal.inFocusDisplaying(displayOption);
 	}
