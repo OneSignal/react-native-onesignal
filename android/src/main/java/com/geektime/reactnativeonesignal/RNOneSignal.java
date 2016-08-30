@@ -87,6 +87,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
+    public void inFocusDisplaying(OneSignal.OSInFocusDisplayOption displayOption) {
+        OneSignal.setInFocusDisplaying(displayOption);
+    }
+
+    @ReactMethod
     public void deleteTag(String key) {
         OneSignal.deleteTag(key);
     }

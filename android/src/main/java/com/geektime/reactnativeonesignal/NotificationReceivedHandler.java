@@ -12,7 +12,7 @@ import org.json.JSONObject;
 /**
  * Created by Avishay on 1/31/16.
  */
-public class NotificationOpenedHandler implements OneSignal.NotificationReceivedHandler {
+public class NotificationReceivedHandler implements OneSignal.NotificationReceivedHandler {
 
 	private ReactContext mReactContext;
 

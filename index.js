@@ -198,6 +198,14 @@ Notifications.promptLocation = function() {
 	RNOneSignal.promptLocation();
 };
 
+//Android only: Set Display option of the notifications. displayOption is of type OSInFocusDisplayOption
+// 0 -> None, 1 -> InAppAlert, 2 -> Notification
+Notification.inFocusDisplaying = function(displayOption) {
+	if (Platform.OS == 'android') {
+		RNOneSignal.inFocusDisplaying(displayOption);
+	}
+}
+
 Notifications.postNotification = function(contents, data, player_id) {
 	if (Platform.OS == 'android') {
 		RNOneSignal.postNotification(JSON.stringify(contents), JSON.stringify(data), player_id);
