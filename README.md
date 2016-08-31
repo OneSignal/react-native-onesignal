@@ -185,7 +185,7 @@ public class MainApplication extends Application implements ReactApplication {
 ## iOS Installation
 
  * Follow the steps according to the official OneSignal SDK Installation here: https://documentation.onesignal.com/docs/installing-the-onesignal-ios-sdk
- * Make sure you installed the OneSignal Pod.
+ * Make sure you installed the OneSignal Pod (Version 1.13.3).
  * Once you've finished, Open your project in Xcode.
 
 ### Importing The Library
@@ -605,7 +605,7 @@ Add the line pod 'OneSignal' as follows:
 ````
 target 'YourApp' do
 ...
-pod 'OneSignal'
+pod 'OneSignal', '1.13.3'
 
 end
 
