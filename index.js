@@ -58,7 +58,7 @@ Notifications.configure = function(options: Object) {
   NetInfo.isConnected.fetch().then(isConnected => {
     if(isConnected) return RNOneSignal.configure();
     NetInfo.isConnected.addEventListener('change', handleConnectionStateChange);
-  });
+  }).catch((...args)=>this.onError(args));
 };
 
 /* Unregister */
