@@ -565,7 +565,7 @@ dependencies {
     ...
     compile "com.google.android.gms:play-services-base:+"
     compile "com.google.android.gms:play-services-location:+"
-    complie "com.google.android.gms:play-services-ads:+"
+    compile "com.google.android.gms:play-services-ads:+"
 }
 ```
 
