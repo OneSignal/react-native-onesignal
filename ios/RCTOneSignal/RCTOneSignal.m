@@ -4,8 +4,6 @@
 #import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
 
-#import <OneSignal/OneSignal.h>
-
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
 #define UIUserNotificationTypeAlert UIRemoteNotificationTypeAlert
@@ -23,16 +21,9 @@
 
 @synthesize bridge = _bridge;
 
-RCT_EXPORT_MODULE(RNOneSignal)
+RCT_EXPORT_MODULE(RCTOneSignal)
 
-/**
-* Override this method to return an array of supported event names. Attempting
-* to observe or send an event that isn't included in this list will result in
-* an error.
-*/
-- (NSArray<NSString *> *)supportedEvents {
-    return @[@"remoteNotificationReceived", @"remoteNotificationOpened", @"remoteNotificationsRegistered", @"idsAvailable"];
-}
+@synthesize bridge = _bridge;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -66,11 +57,27 @@ RCT_EXPORT_MODULE(RNOneSignal)
 }
 
 - (void)handleRemoteNotificationReceived:(NSString *)notification {
-    [self.bridge.eventDispatcher sendAppEventWithName:@"remoteNotificationReceived" body:notification];
+    
+    NSError *jsonError;
+    NSData *objectData = [notification dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:&jsonError];
+
+    
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"remoteNotificationReceived" body:json];
 }
 
 - (void)handleRemoteNotificationOpened:(NSString *)result {
-    [self.bridge.eventDispatcher sendAppEventWithName:@"remoteNotificationOpened" body:result];
+    
+    NSError *jsonError;
+    NSData *objectData = [result dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:&jsonError];
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"remoteNotificationOpened" body:json];
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification {

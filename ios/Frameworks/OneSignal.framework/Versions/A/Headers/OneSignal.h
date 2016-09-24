@@ -61,22 +61,31 @@
 #endif
 
 /* The action type associated to an OSNotificationAction object */
-typedef enum : NSUInteger {
-    Opened,
-    ActionTaken
-} OSNotificationActionType;
+typedef NS_ENUM(NSUInteger, OSNotificationActionType)  {
+    OSNotificationActionTypeOpened,
+    OSNotificationActionTypeActionTaken
+} ;
 
 /* The way a notification was displayed to the user */
-typedef enum : NSUInteger {
-    /*iOS native notification display*/
-    Notification,
-
-    /*Default UIAlertView display*/
-    InAppAlert,
-    
+typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
     /*Notification is silent, or app is in focus but InAppAlertNotifications are disabled*/
-    None
-} OSNotificationDisplayType;
+    OSNotificationDisplayTypeNone,
+    
+    /*Default UIAlertView display*/
+    OSNotificationDisplayTypeInAppAlert,
+    
+    /*iOS native notification display*/
+    OSNotificationDisplayTypeNotification
+} ;
+
+
+
+/* iOS 10+
+ Used as value type for `kOSSettingsKeyInFocusDisplayOption`
+ for setting the display option of a notification received while the app was in focus
+ */
+typedef OSNotificationDisplayType OSInFocusDisplayOption;
+
 
 @interface OSNotificationAction : NSObject
 
@@ -184,6 +193,12 @@ extern NSString * const kOSSettingsKeyInAppAlerts;
 
 /*Enable In-App display of Launch URLs*/
 extern NSString * const kOSSettingsKeyInAppLaunchURL;
+
+/* iOS10+ - 
+ Set notificaion's in-focus display option.
+ Value must be an OSNotificationDisplayType enum
+*/
+extern NSString * const kOSSettingsKeyInFocusDisplayOption;
 
 /**
     OneSignal provides a high level interface to interact with OneSignal's push service.

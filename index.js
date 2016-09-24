@@ -1,10 +1,7 @@
-/**
- * @providesModule Notifications
- */
 
 'use strict';
 
-import { NativeModules, NativeEventEmitter, DeviceEventEmitter, NetInfo, Platform } from 'react-native';
+import { NativeModules, DeviceEventEmitter, NetInfo, Platform } from 'react-native';
 import invariant from 'invariant';
 
 const { RNOneSignal } = NativeModules;
@@ -28,9 +25,10 @@ var DEVICE_NOTIF_REG_EVENT = 'remoteNotificationsRegistered';
 var DEVICE_IDS_AVAILABLE = 'idsAvailable';
 
 /**
- * Configure local and remote notifications
+ * Configure remote notifications
  * @param {Object}		options
- * @param {function}	options.onNotificationOpened - Fired when a remote notification is received.
+ * @param {function}	options.onNotificationReceived - Fired when a remote notification is received.
+ * @param {function}	options.onNotificationOpened - Fired when a remote notification is opened.
  * @param {function} 	options.onError - None
  */             
 Notifications.configure = function(options: Object) {
@@ -237,22 +235,25 @@ Notifications.setLogLevel = function(nsLogLevel, visualLogLevel) {
 }
 
 // Listen to events of notification received, opened, device registered and IDSAvailable.
-DeviceEventEmitter.addListener(DEVICE_NOTIF_RECEIVED_EVENT, function(notification) {
-	Notifications._onNotificationReceived(notification);
+
+DeviceEventEmitter.addListener(DEVICE_NOTIF_RECEIVED_EVENT, (notification) => { 
+	if (Notifications.onNotificationReceived)
+		Notifications.onNotificationReceived(notification)
 });
 
-DeviceEventEmitter.addListener(DEVICE_NOTIF_OPENED_EVENT, function(result) {
-	Notifications._onNotificationOpened(result);
+DeviceEventEmitter.addListener(DEVICE_NOTIF_OPENED_EVENT, (result) => { 
+	if (Notifications.onNotificationOpened)
+		Notifications.onNotificationOpened(result)
 });
 
-DeviceEventEmitter.addListener(DEVICE_NOTIF_REG_EVENT, function(notifData) {
-	Notifications._onNotificationsRegistered(notifData)
+DeviceEventEmitter.addListener(DEVICE_NOTIF_REG_EVENT, (notifData) => { 
+	if (Notifications.onNotificationsRegistered)
+		Notifications.onNotificationsRegistered(notifData)
 });
 
-DeviceEventEmitter.addListener(DEVICE_IDS_AVAILABLE, function(idsAvailable) {
-	if (Notifications.onIdsAvailable) {
-		Notifications.onIdsAvailable(idsAvailable);
-	}
+DeviceEventEmitter.addListener(DEVICE_IDS_AVAILABLE, (ids) => {
+	if (Notifications.onIdsAvailable)
+		Notifications.onIdsAvailable(ids)
 });
 
 module.exports = Notifications;
