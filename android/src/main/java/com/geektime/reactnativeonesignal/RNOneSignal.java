@@ -38,7 +38,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
         OneSignal.startInit(mReactContext)
                 .setNotificationOpenedHandler(new NotificationOpenedHandler(mReactContext))
                 .init();
-        OneSignal.enableNotificationsWhenActive(true);
+        OneSignal.enableNotificationsWhenActive(false);
         registerNotificationsReceiveNotification();
     }
 
