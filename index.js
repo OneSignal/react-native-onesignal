@@ -210,8 +210,9 @@ Notifications.idsAvailable = function(idsAvailable) {
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
 	var message = notifData.message;
-	var hasAdditionalData = notifData.additionalData !== null && typeof notifData.additionalData === 'object';
-	var data = hasAdditionalData ? notifData.additionalData : null;
+	var additionalData = notifData.additionalData !== '{}' ? JSON.parse(notifData.additionalData) : null;
+	var hasAdditionalData = additionalData !== null && typeof additionalData === 'object';
+	var data = hasAdditionalData ? additionalData : null;
 	var isActive = notifData.isActive;
 	Notifications._onNotificationOpened(message, data, isActive);
 });
