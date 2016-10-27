@@ -209,7 +209,9 @@ Notifications.idsAvailable = function(idsAvailable) {
 };
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
+	console.log('notifData->', notifData);
 	var message = notifData.message;
+	console.log('notifData.additionalData->', notifData.additionalData);
 	var additionalData = notifData.additionalData !== '{}' ? JSON.parse(notifData.additionalData) : null;
 	var hasAdditionalData = additionalData !== null && typeof additionalData === 'object';
 	var data = hasAdditionalData ? additionalData : null;
