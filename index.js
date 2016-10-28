@@ -210,8 +210,14 @@ Notifications.idsAvailable = function(idsAvailable) {
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
 	var message = notifData.message;
-	var hasAdditionalData = notifData.additionalData !== null && typeof notifData.additionalData === 'object';
-	var data = hasAdditionalData ? notifData.additionalData : null;
+	var data = null;
+	if (notifData.additionalData != null && notifData.additionalData != '{}') {
+		if (typeof notifData.additionalData === 'object') {
+			data = notifData.additionalData;
+		} else {
+			data = JSON.parse(notifData.additionalData);	
+		}
+    	}
 	var isActive = notifData.isActive;
 	Notifications._onNotificationOpened(message, data, isActive);
 });
