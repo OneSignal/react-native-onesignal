@@ -209,20 +209,17 @@ Notifications.idsAvailable = function(idsAvailable) {
 };
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_EVENT, function(notifData) {
-    console.log('notifData->', notifData);
-    var message = notifData.message;
-    console.log('notifData.additionalData->', notifData.additionalData);
-    var data = null;
-    console.log('typeof->', typeof notifData.additionalData === 'object');
-    if (notifData.additionalData != null && notifData.additionalData != '{}') {
-        if (typeof notifData.additionalData === 'object')
-            data = notifData.additionalData;
-        else
-            data = JSON.parse(notifData.additionalData);
-    }
-    console.log('data->', data);
-    var isActive = notifData.isActive;
-    Notifications._onNotificationOpened(message, data, isActive);
+	var message = notifData.message;
+	var data = null;
+	if (notifData.additionalData != null && notifData.additionalData != '{}') {
+		if (typeof notifData.additionalData === 'object') {
+			data = notifData.additionalData;
+		} else {
+			data = JSON.parse(notifData.additionalData);	
+		}
+    	}
+	var isActive = notifData.isActive;
+	Notifications._onNotificationOpened(message, data, isActive);
 });
 
 DeviceEventEmitter.addListener(DEVICE_NOTIF_REG_EVENT, function(notifData) {
