@@ -8,7 +8,9 @@ import invariant from 'invariant';
 var RNOneSignal = NativeModules.OneSignal;
 
 var Notifications = {
-	onError: false,
+	onError: function(an_error) {
+		console.error(an_error);
+	},
 	onNotificationReceived: false,
 	onNotificationOpened: false,
 	onNotificationsRegistered: false

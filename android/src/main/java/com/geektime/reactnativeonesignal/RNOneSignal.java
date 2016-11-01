@@ -1,5 +1,6 @@
 package com.geektime.reactnativeonesignal;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,13 +32,31 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     public static final String NOTIFICATION_RECEIVED_INTENT_FILTER = "GTNotificationReceived";
 
     private ReactContext mReactContext;
+    private boolean oneSignalInitDone;
 
     public RNOneSignal(ReactApplicationContext reactContext) {
         super(reactContext);
         mReactContext = reactContext;
         mReactContext.addLifecycleEventListener(this);
+        initOneSignal();
+    }
+
+    // Initialize OneSignal only once when an Activity is available.
+    // React creates an instance of this class to late for OneSignal to get the current Activity
+    //   based on registerActivityLifecycleCallbacks it uses to listen for the first Activity.
+    // However it seems it is also to soon to call getCurrentActivity() from the reactContext as well.
+    // This will normally succeed when onHostResume fires instead.
+    private void initOneSignal() {
+        Activity activity = mReactContext.getCurrentActivity();
+        if (activity == null || oneSignalInitDone)
+            return;
+
+        // Uncomment to debug init issues.
+        // OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.ERROR);
+
+        oneSignalInitDone = true;
         OneSignal.sdkType = "react";
-        OneSignal.startInit(mReactContext)
+        OneSignal.startInit(activity)
                 .setNotificationOpenedHandler(new NotificationOpenedHandler(mReactContext))
                 .setNotificationReceivedHandler(new NotificationReceivedHandler(mReactContext))
                 .init();
@@ -86,7 +105,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
-    public void inFocusDisplaying(OneSignal.OSInFocusDisplayOption displayOption) {
+    public void inFocusDisplaying(int displayOption) {
         OneSignal.setInFocusDisplaying(displayOption);
     }
 
@@ -121,7 +140,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
-    public void setlogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLogLevel) {
+    public void setlogLevel(int logLevel, int visualLogLevel) {
         OneSignal.setLogLevel(logLevel, visualLogLevel);
     }
 
@@ -176,27 +195,31 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     private void notifyNotificationReceived(Bundle bundle) {
-        final WritableMap params = Arguments.createMap();
-        params.putString("notification", bundle.getString("notification"));
-        sendEvent("remoteNotificationReceived", params);
+        try {
+            JSONObject jsonObject = new JSONObject(bundle.getString("notification"));
+            sendEvent("remoteNotificationReceived", RNUtils.jsonToWritableMap(jsonObject));
+        } catch(Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     private void notifyNotificationOpened(Bundle bundle) {
-        final WritableMap params = Arguments.createMap();
-        params.putString("result", bundle.getString("result"));
-        sendEvent("remoteNotificationOpened", params);
+        try {
+            JSONObject jsonObject = new JSONObject(bundle.getString("result"));
+            sendEvent("remoteNotificationOpened",  RNUtils.jsonToWritableMap(jsonObject));
+        } catch(Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     @Override
     public String getName() {
-        return "RNOneSignal";
+        return "OneSignal";
     }
 
     @Override
     public void onHostDestroy() {
         OneSignal.removeNotificationOpenedHandler();
-
-        //Added to latest Android release
         OneSignal.removeNotificationReceivedHandler();
     }
 
@@ -207,7 +230,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
     @Override
     public void onHostResume() {
-
+        initOneSignal();
     }
 
 }

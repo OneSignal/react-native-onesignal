@@ -20,9 +20,10 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [manifestApplicationId: "123",
-                        onesignal_app_id: "123",
-                        onesignal_google_project_number: "123"]
+        // Do not set onesignal_app_id here, it will be set in the app project.
+        // Leave onesignal_google_project_number as it is now pulled from the dashboard.
+        manifestPlaceholders = [onesignal_app_id: "",
+                                onesignal_google_project_number: "REMOTE"]
     }
     buildTypes {
         release {

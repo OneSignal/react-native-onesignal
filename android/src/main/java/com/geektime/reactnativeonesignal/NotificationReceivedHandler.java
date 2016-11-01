@@ -24,7 +24,7 @@ public class NotificationReceivedHandler implements OneSignal.NotificationReceiv
     @Override
     public void notificationReceived(OSNotification notification) {
 		Bundle bundle = new Bundle();
-		bundle.putString("message", notification.stringify());
+		bundle.putString("notification", notification.toJSONObject().toString());
 		
 		final Intent intent = new Intent(RNOneSignal.NOTIFICATION_RECEIVED_INTENT_FILTER);
 		intent.putExtras(bundle);

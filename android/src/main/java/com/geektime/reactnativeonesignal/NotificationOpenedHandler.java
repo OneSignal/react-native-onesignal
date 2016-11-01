@@ -24,7 +24,7 @@ public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHa
     @Override
     public void notificationOpened(OSNotificationOpenResult result) {
 		Bundle bundle = new Bundle();
-		bundle.putString("result", result.stringify());
+		bundle.putString("result", result.toJSONObject().toString());
 
 		final Intent intent = new Intent(RNOneSignal.NOTIFICATION_OPENED_INTENT_FILTER);
 		intent.putExtras(bundle);

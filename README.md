@@ -105,9 +105,8 @@ android {
     ...
     defaultConfig {
         ...
-        manifestPlaceholders = [manifestApplicationId: "${applicationId}",
-                                onesignal_app_id: "YOUR_ONESIGNAL_ID",
-                                onesignal_google_project_number: "YOUR_GOOGLE_PROJECT_NUMBER"]
+        manifestPlaceholders = [onesignal_app_id: "YOUR_ONESIGNAL_ID",
+                                onesignal_google_project_number: "REMOTE"]
     }
 }
 
@@ -184,7 +183,7 @@ public class MainApplication extends Application implements ReactApplication {
 ## iOS Installation
 
  * Follow the steps according to the official OneSignal SDK Installation here: https://documentation.onesignal.com/docs/ios-sdk-setup
- * Make sure you installed the OneSignal Pod (Version 1.13.3).
+ * Make sure you installed the OneSignal Pod
  * Once you've finished, Open your project in Xcode.
 
 ### Importing The Library
@@ -261,12 +260,13 @@ OneSignal.configure({
 		console.log('PushToken = ', device.pushToken);
 	},
   onNotificationReceived: function(notification) {
-    console.log('MESSAGE RECEIVED: ', notification.notificationID;
+    console.log("notification recieved: ", notification);
   },
   onNotificationOpened: function(openResult) {
       console.log('MESSAGE: ', openResult.notification.payload.body);
       console.log('DATA: ', openResult.notification.payload.additionalData);
       console.log('ISACTIVE: ', openResult.notification.isAppInFocus);
+      console.log('openResult: ', openResult);
       // Do whatever you want with the objects here
       // _navigator.to('main.post', data.title, { // If applicable
       //  article: {
@@ -392,15 +392,17 @@ We exposed the enableSound API of OneSignal (Android only).
 OneSignal.enableSound(true);
 ````
 
-### Enable Notification When App Active
+### Set in app focus behavoir
 
-We exposed the enableNotificationsWhenActive API of OneSignal (Android only).
+We exposed the inFocusDisplaying API of OneSignal (Android only).
 
-*By default this is false and notifications will not be shown when the user is in your app, instead the NotificationOpenedHandler is fired. If set to true notifications will always show in the notification area and NotificationOpenedHandler will not fire until the user taps on the notification.*
+ - `0` = `None`         - Will not display a notification, instead only `onNotificationReceived` will fire where you can display your own in app messages.
+ - `1` = `InAppAlert`   - *(Default)* Will display an Android AlertDialog with the message containts.
+ - `2` = `Notification` - Notification will display in the Notification Shade. Same as when the app is not in focus.
 
 ````javascript
-// Setting enableNotificationsWhenActive
-OneSignal.enableNotificationsWhenActive(true);
+// Example, always display notifiation in shade.
+OneSignal.inFocusDisplaying(2);
 ````
 
 ### Change User Subscription Status
@@ -599,7 +601,7 @@ Add the line pod 'OneSignal' as follows:
 ````
 target 'YourApp' do
 ...
-pod 'OneSignal', '1.13.3'
+pod 'OneSignal', '~> 2.0'
 
 end
 
@@ -614,7 +616,7 @@ Then head to the terminal, ls to the ios folder on the root of your project, the
 
 ## CREDITS
 Thanks for all the awesome fellows that contributed to this repository!
-@danpe, @lunchieapp, @gaykov, @williamrijksen, @adrienbrault, @kennym, @dunghuynh, @holmesal, @joshuapinter
+@danpe, @lunchieapp, @gaykov, @williamrijksen, @adrienbrault, @kennym, @dunghuynh, @holmesal, @joshuapinter, @jkasten2, @JKalash
 
 ## TODO
  * [ ] Tell us?
