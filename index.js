@@ -4,7 +4,8 @@
 import { NativeModules, DeviceEventEmitter, NetInfo, Platform } from 'react-native';
 import invariant from 'invariant';
 
-const { RNOneSignal } = NativeModules;
+//SHOULD remove 'RCT' from the beginning as React omits it from the name
+var RNOneSignal = NativeModules.OneSignal;
 
 var Notifications = {
 	onError: false,
@@ -39,7 +40,7 @@ Notifications.configure = function(options: Object) {
 	if ( typeof options.onNotificationReceived !== 'undefined' ) {
 		this.onNotificationReceived = options.onNotificationReceived;
 
-		if (_pendingNotifications.length > 0) {
+		if (_pendingNotificationsReceived.length > 0) {
 			var notification = _pendingNotificationsReceived.pop();
 			this._onNotificationReceived(JSON.parse(notification));
 		}

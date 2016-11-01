@@ -23,8 +23,6 @@
 
 RCT_EXPORT_MODULE(RCTOneSignal)
 
-@synthesize bridge = _bridge;
-
 static RCTBridge *curRCTBridge;
 
 OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
