@@ -47,7 +47,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     // However it seems it is also to soon to call getCurrentActivity() from the reactContext as well.
     // This will normally succeed when onHostResume fires instead.
     private void initOneSignal() {
-        Activity activity = mReactContext.getCurrentActivity();
+        Activity activity = getCurrentActivity();
         if (activity == null || oneSignalInitDone)
             return;
 
@@ -55,13 +55,15 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
         // OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.ERROR);
 
         oneSignalInitDone = true;
+
+        registerNotificationsOpenedNotification();
+        registerNotificationsReceivedNotification();
+
         OneSignal.sdkType = "react";
         OneSignal.startInit(activity)
                 .setNotificationOpenedHandler(new NotificationOpenedHandler(mReactContext))
                 .setNotificationReceivedHandler(new NotificationReceivedHandler(mReactContext))
                 .init();
-        registerNotificationsOpenedNotification();
-        registerNotificationsReceivedNotification();
     }
 
     private void sendEvent(String eventName, Object params) {
