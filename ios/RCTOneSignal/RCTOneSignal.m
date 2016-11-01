@@ -25,28 +25,43 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 @synthesize bridge = _bridge;
 
+static RCTBridge *curRCTBridge;
+
+OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
+
+- (void)setBridge:(RCTBridge *)receivedBridge {
+    _bridge = receivedBridge;
+    curRCTBridge = receivedBridge;
+    
+    if (coldStartOSNotificationOpenedResult) {
+        [self handleRemoteNotificationOpened:[coldStartOSNotificationOpenedResult stringify]];
+        coldStartOSNotificationOpenedResult = nil;
+    }
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId {
-
     return [self initWithLaunchOptions:launchOptions appId:appId settings:nil];
 }
 
 - (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId settings:(NSDictionary*)settings {
     
     [OneSignal setValue:@"react" forKey:@"mSDKType"];
-    
     [OneSignal initWithLaunchOptions:launchOptions
                                appId:appId
           handleNotificationReceived:^(OSNotification* notification) {
               [self handleRemoteNotificationReceived:[notification stringify]];
-                 }
-            handleNotificationAction:^(OSNotificationOpenedResult * result) {
-                [self handleRemoteNotificationOpened:[result stringify]];
-            }
-                 settings:settings];
+          }
+          handleNotificationAction:^(OSNotificationOpenedResult *result) {
+              if (!curRCTBridge)
+                  coldStartOSNotificationOpenedResult = result;
+              else
+                  [self handleRemoteNotificationOpened:[result stringify]];
+          }
+          settings:settings];
 
     return self;
 }
@@ -66,7 +81,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
     
     
-    [self.bridge.eventDispatcher sendAppEventWithName:@"remoteNotificationReceived" body:json];
+    [curRCTBridge.eventDispatcher sendAppEventWithName:@"remoteNotificationReceived" body:json];
 }
 
 - (void)handleRemoteNotificationOpened:(NSString *)result {
@@ -77,7 +92,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
                                                          options:NSJSONReadingMutableContainers
                                                            error:&jsonError];
     
-    [self.bridge.eventDispatcher sendAppEventWithName:@"remoteNotificationOpened" body:json];
+    [curRCTBridge.eventDispatcher sendAppEventWithName:@"remoteNotificationOpened" body:json];
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification {

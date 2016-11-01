@@ -261,18 +261,18 @@ OneSignal.configure({
 		console.log('PushToken = ', device.pushToken);
 	},
   onNotificationReceived: function(notification) {
-    console.log('MESSAGE RECEIVED: ', notification["notification"]["notificationID"];
+    console.log('MESSAGE RECEIVED: ', notification.notificationID;
   },
   onNotificationOpened: function(openResult) {
-      console.log('MESSAGE: ', openResult["notification"]["payload"]["body"]);
-      console.log('DATA: ', openResult["notification"]["payload"]["additionalData"]);
-      console.log('ISACTIVE: ', openResult["notification"]["isAppInFocus"]);
+      console.log('MESSAGE: ', openResult.notification.payload.body);
+      console.log('DATA: ', openResult.notification.payload.additionalData);
+      console.log('ISACTIVE: ', openResult.notification.isAppInFocus);
       // Do whatever you want with the objects here
       // _navigator.to('main.post', data.title, { // If applicable
       //  article: {
-      //    title: openResult["notification"]["payload"]["body"],
-      //    link: openResult["notification"]["payload"]["launchURL"],
-      //    action: data.openResult["notification"]["action"]["actionSelected"]
+      //    title: openResult.notification.payload.body,
+      //    link: openResult.notification.payload.launchURL,
+      //    action: data.openResult.notification.action.actionSelected
       //  }
       // });
   }
@@ -291,11 +291,11 @@ import OneSignal from 'react-native-onesignal'; // Import package from node modu
 var pendingNotifications = [];
 // var _navigator; // If applicable, declare a variable for accessing your navigator object to handle payload.
 // function handleNotificationAction (openResult) { // If you want to handle the notification with a payload.
-    // _navigator.to('main.post', openResult["notification"]["payload"]["title"], {
+    // _navigator.to('main.post', openResult.notification.payload.title, {
     //  article: {
-    //    title: openResult["notification"]["payload"]["title"],
-    //    link: openResult["notification"]["payload"]["launchURL"],
-    //    action: openResult["notification"]["action"]["actionSelected"]
+    //    title: openResult.notification.payload.title,
+    //    link: openResult.notification.payload.launchURL,
+    //    action: openResult.notification.action.actionSelected
     //  }
     //});
 // }
@@ -309,13 +309,13 @@ OneSignal.configure({
 
   },
   onNotificationOpened: function(openResult) {
-      console.log('NOTIFICATION OPENED: ', notification);
+      console.log('NOTIFICATION OPENED: ', openResult);
       //if (!_navigator) { // Check if there is a navigator object. If not, waiting with the notification.
       //    console.log('Navigator is null, adding notification to pending list...');
           pendingNotifications.push(notification);
       //    return;
       // }
-      handleNotificationOpened(openResult);
+      handleNotificationAction(openResult);
   }
 });
 ```
@@ -341,12 +341,12 @@ We exposed the tags API of OneSignal to allow you to target users with notificat
 
 ````javascript
 // Sending single tag
-OneSignal.sendTags("key", "value");
+OneSignal.sendTag("key", "value");
 
 // Sending multiple tags
 OneSignal.sendTags({key: "value", key2: "value2"});
 
-//G etting the tags from the server and use the received object
+// Getting the tags from the server and use the received object
 OneSignal.getTags((receivedTags) => {
     console.log(receivedTags);
 });
