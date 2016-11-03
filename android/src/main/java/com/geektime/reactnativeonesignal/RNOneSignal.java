@@ -1,5 +1,6 @@
 package com.geektime.reactnativeonesignal;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -27,19 +28,42 @@ import org.json.JSONException;
  * Created by Avishay on 1/31/16.
  */
 public class RNOneSignal extends ReactContextBaseJavaModule implements LifecycleEventListener {
-    public static final String NOTIFICATION_OPENED_INTENT_FILTER = "GTNotificatinOpened";
+    public static final String NOTIFICATION_OPENED_INTENT_FILTER = "GTNotificationOpened";
+    public static final String NOTIFICATION_RECEIVED_INTENT_FILTER = "GTNotificationReceived";
 
     private ReactContext mReactContext;
+    private boolean oneSignalInitDone;
 
     public RNOneSignal(ReactApplicationContext reactContext) {
         super(reactContext);
         mReactContext = reactContext;
         mReactContext.addLifecycleEventListener(this);
-        OneSignal.startInit(mReactContext)
+        initOneSignal();
+    }
+
+    // Initialize OneSignal only once when an Activity is available.
+    // React creates an instance of this class to late for OneSignal to get the current Activity
+    // based on registerActivityLifecycleCallbacks it uses to listen for the first Activity.
+    // However it seems it is also to soon to call getCurrentActivity() from the reactContext as well.
+    // This will normally succeed when onHostResume fires instead.
+    private void initOneSignal() {
+        Activity activity = getCurrentActivity();
+        if (activity == null || oneSignalInitDone)
+            return;
+
+        // Uncomment to debug init issues.
+        // OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.ERROR);
+
+        oneSignalInitDone = true;
+
+        registerNotificationsOpenedNotification();
+        registerNotificationsReceivedNotification();
+
+        OneSignal.sdkType = "react";
+        OneSignal.startInit(activity)
                 .setNotificationOpenedHandler(new NotificationOpenedHandler(mReactContext))
+                .setNotificationReceivedHandler(new NotificationReceivedHandler(mReactContext))
                 .init();
-        OneSignal.enableNotificationsWhenActive(false);
-        registerNotificationsReceiveNotification();
     }
 
     private void sendEvent(String eventName, Object params) {
@@ -83,6 +107,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
+    public void inFocusDisplaying(int displayOption) {
+        OneSignal.setInFocusDisplaying(displayOption);
+    }
+
+    @ReactMethod
     public void deleteTag(String key) {
         OneSignal.deleteTag(key);
     }
@@ -98,16 +127,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
-    public void enableNotificationsWhenActive(Boolean enable) {
-        OneSignal.enableNotificationsWhenActive(enable);
-    }
-
-    @ReactMethod
-    public void enableInAppAlertNotification(Boolean enable) {
-        OneSignal.enableInAppAlertNotification(enable);
-    }
-
-    @ReactMethod
     public void setSubscription(Boolean enable) {
         OneSignal.setSubscription(enable);
     }
@@ -115,6 +134,16 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     @ReactMethod
     public void promptLocation() {
         OneSignal.promptLocation();
+    }
+
+    @ReactMethod
+    public void syncHashedEmail(String email) {
+        OneSignal.syncHashedEmail(email);
+    }
+
+    @ReactMethod
+    public void setlogLevel(int logLevel, int visualLogLevel) {
+        OneSignal.setLogLevel(logLevel, visualLogLevel);
     }
 
     @ReactMethod
@@ -147,33 +176,52 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
         OneSignal.cancelNotification(id);
     }
 
-    private void registerNotificationsReceiveNotification() {
-        IntentFilter intentFilter = new IntentFilter(NOTIFICATION_OPENED_INTENT_FILTER);
+    private void registerNotificationsReceivedNotification() {
+        IntentFilter intentFilter = new IntentFilter(NOTIFICATION_RECEIVED_INTENT_FILTER);
         mReactContext.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                notifyNotification(intent.getExtras());
+                notifyNotificationReceived(intent.getExtras());
             }
         }, intentFilter);
     }
 
-    private void notifyNotification(Bundle bundle) {
-        final WritableMap params = Arguments.createMap();
-        params.putString("message", bundle.getString("message"));
-        params.putString("additionalData", bundle.getString("additionalData"));
-        params.putBoolean("isActive", bundle.getBoolean("isActive"));
+    private void registerNotificationsOpenedNotification() {
+        IntentFilter intentFilter = new IntentFilter(NOTIFICATION_OPENED_INTENT_FILTER);
+        mReactContext.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                notifyNotificationOpened(intent.getExtras());
+            }
+        }, intentFilter);
+    }
 
-        sendEvent("remoteNotificationOpened", params);
+    private void notifyNotificationReceived(Bundle bundle) {
+        try {
+            JSONObject jsonObject = new JSONObject(bundle.getString("notification"));
+            sendEvent("remoteNotificationReceived", RNUtils.jsonToWritableMap(jsonObject));
+        } catch(Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    private void notifyNotificationOpened(Bundle bundle) {
+        try {
+            JSONObject jsonObject = new JSONObject(bundle.getString("result"));
+            sendEvent("remoteNotificationOpened",  RNUtils.jsonToWritableMap(jsonObject));
+        } catch(Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     @Override
     public String getName() {
-        return "RNOneSignal";
+        return "OneSignal";
     }
 
     @Override
     public void onHostDestroy() {
-        OneSignal.removeNotificationOpenedHandler();
+
     }
 
     @Override
@@ -183,7 +231,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
     @Override
     public void onHostResume() {
-
+        initOneSignal();
     }
 
 }

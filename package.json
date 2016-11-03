@@ -1,10 +1,13 @@
 {
   "name": "react-native-onesignal",
-  "version": "1.2.3",
+  "version": "2.0.0",
   "description": "React Native OneSignal Component",
   "main": "index",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "invariant": "^2.2.1"
   },
   "keywords": [
     "react-component",

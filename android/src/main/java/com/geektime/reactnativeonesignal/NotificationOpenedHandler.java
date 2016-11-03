@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
+import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OneSignal;
 
 import org.json.JSONObject;
@@ -21,11 +22,9 @@ public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHa
 	}
 
     @Override
-    public void notificationOpened(String s, JSONObject jsonObject, boolean b) {
+    public void notificationOpened(OSNotificationOpenResult result) {
 		Bundle bundle = new Bundle();
-		bundle.putString("message", s);
-		bundle.putString("additionalData", jsonObject.toString());
-		bundle.putBoolean("isActive", b);
+		bundle.putString("result", result.toJSONObject().toString());
 
 		final Intent intent = new Intent(RNOneSignal.NOTIFICATION_OPENED_INTENT_FILTER);
 		intent.putExtras(bundle);
