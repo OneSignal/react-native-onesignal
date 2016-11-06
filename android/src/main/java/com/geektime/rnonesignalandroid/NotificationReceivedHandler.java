@@ -1,4 +1,4 @@
-package com.geektime.reactnativeonesignal;
+package com.geektime.rnonesignalandroid;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,8 +7,6 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.onesignal.OSNotification;
 import com.onesignal.OneSignal;
-
-import org.json.JSONObject;
 
 /**
  * Created by Avishay on 1/31/16.

@@ -1,4 +1,4 @@
-package com.geektime.reactnativeonesignal;
+package com.geektime.rnonesignalandroid;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;

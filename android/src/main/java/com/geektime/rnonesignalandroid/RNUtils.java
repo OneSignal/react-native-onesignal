@@ -1,4 +1,4 @@
-package com.geektime.reactnativeonesignal;
+package com.geektime.rnonesignalandroid;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
