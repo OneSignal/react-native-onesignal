@@ -204,12 +204,22 @@ public class MainApplication extends Application implements ReactApplication {
 
 ### Adding the Code
 
- * When you reach `AppDelegate.m` instructions on the OneSignal documentation, stop and enter this following code snippets instead:
-    * Import `RCTOneSignal.h`:
+When you reach the `AppDelegate.m` instructions on the OneSignal documentation, stop and do the following instead:
 
-        ```objc
-        #import "RCTOneSignal.h"
-        ```
+ * in `AppDelegate.h`:
+   * Import `RCTOneSignal.h`:
+
+       ```objc
+       #import <RCTOneSignal.h>
+       ```
+
+   * Declare the `RCTOneSignal` property:
+
+       ```objc
+       @property (strong, nonatomic) RCTOneSignal* oneSignal;
+       ```
+
+ * in `AppDelegate.m`:
 
     * Synthesize `oneSignal` after `@implementation AppDelegate`
 
@@ -232,19 +242,6 @@ public class MainApplication extends Application implements ReactApplication {
             [RCTOneSignal didReceiveRemoteNotification:notification];
         }
         ```
-
-* on `AppDelegate.h`:
-   * Import `RCTOneSignal.h`:
-
-       ```objc
-       #import <RCTOneSignal.h>
-       ```
-
-   * Declare the `RCTOneSignal` property:
-
-       ```objc
-       @property (strong, nonatomic) RCTOneSignal* oneSignal;
-       ```
 
  * You're All Set!
 
