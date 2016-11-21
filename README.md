@@ -424,7 +424,7 @@ We call it internally P2P Notification, and therefore there is a special attribu
 
 *Allows you to send notifications from user to user or schedule ones in the future to be delivered to the current device.*
 
-The [OneSignal documentation](https://documentation.onesignal.com/docs/android-native-sdk#section--postnotification-) shows how to pass  the [parameters](https://documentation.onesignal.com/reference#create-notification) as here:
+The [OneSignal documentation](https://documentation.onesignal.com/docs/android-native-sdk#section--postnotification-) shows how to pass the [parameters](https://documentation.onesignal.com/reference#create-notification) as here:
 
 ````javascript
 // Calling postNotification
