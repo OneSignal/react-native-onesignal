@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "invariant": "^2.2.2"
+  },
   "keywords": [
     "react-component",
     "react-native",
