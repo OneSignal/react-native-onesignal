@@ -338,7 +338,7 @@ OneSignal.sendTags("key", "value");
 // Sending multiple tags
 OneSignal.sendTags({key: "value", key2: "value2"});
 
-//G etting the tags from the server and use the received object
+// Getting the tags from the server and use the received object
 OneSignal.getTags((receivedTags) => {
     console.log(receivedTags);
 });
