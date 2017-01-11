@@ -196,7 +196,7 @@ public class MainApplication extends Application implements ReactApplication {
 
   ![Library Imported Successfuly](http://i.imgur.com/YJPQLPD.png)
 
- * Ensure that `libRTCOneSignal.a` is linked through `Link Binary With Libraries` on `Build Phases`:
+ * Ensure that `libRCTOneSignal.a` is linked through `Link Binary With Libraries` on `Build Phases`:
 
   ![Add Files To...](http://i.imgur.com/IxIQ4s8.png)
 
