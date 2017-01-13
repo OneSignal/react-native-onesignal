@@ -1,4 +1,4 @@
-package com.geektime.reactnativeonesignal;
+package com.geektime.rnonesignalandroid;
 
 import org.junit.Test;
 
