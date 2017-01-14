@@ -8,12 +8,12 @@ React Native Push Notifications support with OneSignal integration.
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [React Native OneSignal](#react-native-onesignal)
+	- [Running Example project](#running-example-project)
 	- [Installation](#installation)
+	- [Automatic Linking](#automatic-linking)
 	- [Android Installation](#android-installation)
-		- [RN < 0.29](#rn-029)
-		- [RN >= 0.29](#rn-029)
+		- [Adding the Code](#adding-the-code)
 	- [iOS Installation](#ios-installation)
-		- [Importing The Library](#importing-the-library)
 		- [Adding the Code](#adding-the-code)
 	- [Android Usage](#android-usage)
 	- [iOS Usage](#ios-usage)
@@ -23,11 +23,10 @@ React Native Push Notifications support with OneSignal integration.
 		- [Getting Player ID and Push Token](#getting-player-id-and-push-token)
 		- [Enable Vibration](#enable-vibration)
 		- [Enable Sound](#enable-sound)
-		- [Enable Notification When App Active](#enable-notification-when-app-active)
-		- [Enable In-App Alert Notification](#enable-in-app-alert-notification)
+		- [Set In App Focus Behavior](#set-in-app-focus-behavior)
 		- [Change User Subscription Status](#change-user-subscription-status)
 		- [Post Notification (Peer-to-Peer Notifications)](#post-notification-peer-to-peer-notifications)
-		- [Prompt Location (Android Only)](#prompt-location-android-only)
+		- [Prompt Location](#prompt-location)
 		- [Clear Notifications (Android Only)](#clear-notifications-android-only)
 		- [Cancel Notifications (Android Only)](#cancel-notifications-android-only)
 		- [Check Push Notification Permissions (iOS Only)](#check-push-notification-permissions-ios-only)
@@ -42,10 +41,29 @@ React Native Push Notifications support with OneSignal integration.
 
 <!-- /TOC -->
 
+## Running Example project
+
+For your convenience, we created an example project, based on React Native 0.36.1.
+You can run this project to test configurations, debug, and build upon it.
+
+ * `git clone https://github.com/geektimecoil/react-native-onesignal`
+ * `cd react-native-onesignal && cd examples && cd OneSignalRNExample`
+ * `npm install && cd ios && pod install && cd ..`
+ * Running the iOS example app: `react-native run-ios`
+ * Running the Android example app: `react-native run-android`
+
 ## Installation
-`npm install react-native-onesignal`
+`npm install --save react-native-onesignal`
+
+## Automatic Linking
+`react-native link react-native-onesignal`
 
 ## Android Installation
+
+* Follow OneSignal's instructions on generating a Google Server API Key: https://documentation.onesignal.com/docs/generate-a-google-server-api-key
+
+### Adding the Code
+
 In your `AndroidManifest.xml`
 
 ```xml
@@ -72,15 +90,7 @@ distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
-distributionUrl=https://services.gradle.org/distributions/gradle-2.10-all.zip
-```
-
-In `android/settings.gradle`
-```gradle
-...
-
-include ':react-native-onesignal'
-project(':react-native-onesignal').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-onesignal/android')
+distributionUrl=https://services.gradle.org/distributions/gradle-2.14-all.zip
 ```
 
 In `android/build.gradle`
@@ -88,7 +98,7 @@ In `android/build.gradle`
 ...
 
 dependencies {
-    classpath 'com.android.tools.build:gradle:2.1.0' // Upgrade gradle
+    classpath 'com.android.tools.build:gradle:2.2.2' // Upgrade gradle
 
     // NOTE: Do not place your application dependencies here; they belong
     // in the individual module build.gradle files
@@ -106,101 +116,26 @@ android {
     ...
     defaultConfig {
         ...
-        manifestPlaceholders = [manifestApplicationId: "${applicationId}",
-                                onesignal_app_id: "YOUR_ONESIGNAL_ID",
-                                onesignal_google_project_number: "YOUR_GOOGLE_PROJECT_NUMBER"]
+        manifestPlaceholders = [onesignal_app_id: "YOUR_ONESIGNAL_ID",
+                                onesignal_google_project_number: "REMOTE"]
     }
 }
-
-dependencies {
-    ...
-
-    compile project(':react-native-onesignal')
-}
-```
-
-### RN < 0.29
-
-Register module (in `MainActivity.java`)
-
-```java
-import com.geektime.reactnativeonesignal.ReactNativeOneSignalPackage;  // <--- Import
-
-public class MainActivity extends ReactActivity {
-  ......
-
-      /**
-     * A list of packages used by the app. If the app uses additional views
-     * or modules besides the default ones, add more packages here.
-     */
-    @Override
-    protected List<ReactPackage> getPackages() {
-        ...
-        return Arrays.<ReactPackage>asList(
-                new MainReactPackage(),
-                new ReactNativeOneSignalPackage() // Add this line
-        );
-    }
-  ......
-
-}
-```
-
-### RN >= 0.29
-
-In RN 0.29 FB changed the way RN libraries should be included in Android, and listen to application life cycle.
-
-Register module (in `MainApplication.java`)
-
-```java
-import com.geektime.reactnativeonesignal.ReactNativeOneSignalPackage;  // <--- Import
-
-public class MainApplication extends Application implements ReactApplication {
-
-	private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
-  		......
-
-	      /**
-	     * A list of packages used by the app. If the app uses additional views
-	     * or modules besides the default ones, add more packages here.
-	     */
-	    @Override
-	    protected List<ReactPackage> getPackages() {
-	        ...
-	        return Arrays.<ReactPackage>asList(
-	                new MainReactPackage(),
-	                new ReactNativeOneSignalPackage() // Add this line
-	        );
-	    }
-	};
-	......
-	@Override
-	public ReactNativeHost getReactNativeHost() {
-    	return mReactNativeHost;
-	}
-};
-
 ```
 
 ## iOS Installation
-
- * Follow the steps according to the official OneSignal SDK Installation here: https://documentation.onesignal.com/docs/ios-sdk-setup
- * Make sure you installed the OneSignal Pod (Version 1.13.3).
- * Once you've finished, Open your project in Xcode.
-
-### Importing The Library
-
- * Drag the file `RCTOneSignal.xcodeproj` from `/node_modules/react-native-onesignal/ios` into the `Libraries` group in the Project navigator. Ensure that `Copy items if needed` is UNCHECKED!
-
-  ![Add Files To...](http://i.imgur.com/puxHiIg.png)
-
-  ![Library Imported Successfuly](http://i.imgur.com/YJPQLPD.png)
-
- * Ensure that `libRTCOneSignal.a` is linked through `Link Binary With Libraries` on `Build Phases`:
-
-  ![Add Files To...](http://i.imgur.com/IxIQ4s8.png)
-
- * Ensure that `Header Search Paths` on `Build Settings` has the path `$(SRCROOT)/../node_modules/react-native-onesignal` set to `recursive`:
+ * Open OneSignal account here: https://onesignal.com/
+ * Follow OneSignal's instructions on generating an iOS Push Certificate: https://documentation.onesignal.com/docs/generate-an-ios-push-certificate
+ * If you haven't done so, initialize CocoaPods:
+     * `cd ios`
+     * `sudo gem install cocoapods`
+     * `pod setup`
+     * `pod init`
+ * Install the OneSignal Pod
+     * `open -a Xcode Podfile`
+     * Add the following line: `pod OneSignal` inside the `target 'YourProject' do` block.
+     * Remove the `target 'YourProjectTests' do` block entirely from your podfile.
+     * `pod install`
+ * Once you've finished, Open your workspace in Xcode.
 
 ### Adding the Code
 
@@ -258,16 +193,20 @@ OneSignal.configure({
 		console.log('UserId = ', device.userId);
 		console.log('PushToken = ', device.pushToken);
 	},
-  onNotificationOpened: function(message, data, isActive) {
-      console.log('MESSAGE: ', message);
-      console.log('DATA: ', data);
-      console.log('ISACTIVE: ', isActive);
+  onNotificationReceived: function(notification) {
+    console.log("notification received: ", notification);
+  },
+  onNotificationOpened: function(openResult) {
+      console.log('MESSAGE: ', openResult.notification.payload.body);
+      console.log('DATA: ', openResult.notification.payload.additionalData);
+      console.log('ISACTIVE: ', openResult.notification.isAppInFocus);
+      console.log('openResult: ', openResult);
       // Do whatever you want with the objects here
       // _navigator.to('main.post', data.title, { // If applicable
       //  article: {
-      //    title: data.title,
-      //    link: data.url,
-      //    action: data.actionSelected
+      //    title: openResult.notification.payload.body,
+      //    link: openResult.notification.payload.launchURL,
+      //    action: data.openResult.notification.action.actionSelected
       //  }
       // });
   }
@@ -285,12 +224,12 @@ import OneSignal from 'react-native-onesignal'; // Import package from node modu
 
 var pendingNotifications = [];
 // var _navigator; // If applicable, declare a variable for accessing your navigator object to handle payload.
-// function handleNotification (notification) { // If you want to handle the notifiaction with a payload.
-    // _navigator.to('main.post', notification.data.title, {
+// function handleNotificationAction (openResult) { // If you want to handle the notification with a payload.
+    // _navigator.to('main.post', openResult.notification.payload.title, {
     //  article: {
-    //    title: notification.data.title,
-    //    link: notification.data.url,
-    //    action: notification.data.actionSelected
+    //    title: openResult.notification.payload.title,
+    //    link: openResult.notification.payload.launchURL,
+    //    action: openResult.notification.action.actionSelected
     //  }
     //});
 // }
@@ -300,15 +239,17 @@ OneSignal.configure({
 		console.log('UserId = ', device.userId);
 		console.log('PushToken = ', device.pushToken);
 	},
-  onNotificationOpened: function(message, data, isActive) {
-      var notification = {message: message, data: data, isActive: isActive};
-      console.log('NOTIFICATION OPENED: ', notification);
+  onNotificationReceived: function(notification) {
+      console.log('NOTIFICATION RECEIVED: ', notification);
+  },
+  onNotificationOpened: function(openResult) {
+      console.log('NOTIFICATION OPENED: ', openResult);
       //if (!_navigator) { // Check if there is a navigator object. If not, waiting with the notification.
       //    console.log('Navigator is null, adding notification to pending list...');
           pendingNotifications.push(notification);
       //    return;
       // }
-      handleNotification(notification);
+      handleNotificationAction(openResult);
   }
 });
 ```
@@ -316,14 +257,15 @@ OneSignal.configure({
 ## API
 
 ### Handling Notifications
-When any notification is opened or received the callback `onNotification` is called passing an object with the notification data.
+When any notification is opened or received the callback `onNotificationOpened` or `onNotificationReceived` is called passing an OSNotificationOpenResult or an OSNOtification object encapsulating the event data.
 
-Notification object example:
+Notification object received example:
 ```javascript
 {
-    isActive: false, // BOOLEAN: If the notification was received in foreground or not
-    message: 'My Notification Message', // STRING: The notification message
-    data: {}, // OBJECT: The push data
+    shown: true, // BOOLEAN: If the notification was displayed to the user or not
+    payload: {notificationID : "", contentAvailable : false, badge : 1, sound : "default", title : "Hello!", body : "World", launchURL : "", }, // OBJECT; the push data
+    displayType: 1, //The display method of a received notification
+    silentNotification: false // BOOLEAN : Wether the received notification was a silent one
 }
 ```
 
@@ -333,7 +275,7 @@ We exposed the tags API of OneSignal to allow you to target users with notificat
 
 ````javascript
 // Sending single tag
-OneSignal.sendTags("key", "value");
+OneSignal.sendTag("key", "value");
 
 // Sending multiple tags
 OneSignal.sendTags({key: "value", key2: "value2"});
@@ -384,26 +326,17 @@ We exposed the enableSound API of OneSignal (Android only).
 OneSignal.enableSound(true);
 ````
 
-### Enable Notification When App Active
+### Set In App Focus Behavior
 
-We exposed the enableNotificationsWhenActive API of OneSignal (Android only).
+We exposed the inFocusDisplaying API of OneSignal (Android only).
 
-*By default this is false and notifications will not be shown when the user is in your app, instead the NotificationOpenedHandler is fired. If set to true notifications will always show in the notification area and NotificationOpenedHandler will not fire until the user taps on the notification.*
-
-````javascript
-// Setting enableNotificationsWhenActive
-OneSignal.enableNotificationsWhenActive(true);
-````
-
-### Enable In-App Alert Notification
-
-We exposed the enableInAppAlertNotification API of OneSignal (both Android & iOS).
-
-*By default this is false and notifications will not be shown when the user is in your app, instead the OneSignalHandleNotificationBlock is fired. If set to true notifications will be shown as native alert boxes if a notification is received when the user is in your app. The OneSignalHandleNotificationBlock is then fired after the alert box is closed.*
+ - `0` = `None`         - Will not display a notification, instead only `onNotificationReceived` will fire where you can display your own in app messages.
+ - `1` = `InAppAlert`   - *(Default)* Will display an Android AlertDialog with the message contains.
+ - `2` = `Notification` - Notification will display in the Notification Shade. Same as when the app is not in focus.
 
 ````javascript
-// Setting enableInAppAlertNotification
-OneSignal.enableInAppAlertNotification(true);
+// Example, always display notification in shade.
+OneSignal.inFocusDisplaying(2);
 ````
 
 ### Change User Subscription Status
@@ -445,12 +378,12 @@ onNotificationOpened: function(message, data, isActive) {
 }
 ````
 
-### Prompt Location (Android Only)
+### Prompt Location
 
-We exposed the promptLocation API of OneSignal (currently supported only on Android).
+We exposed the promptLocation API of OneSignal.
 
 *Prompts the user for location permissions. This allows for geotagging so you can send notifications to users based on location.
-Note: Make sure you also have the required location permission in your AndroidManifest.xml.*
+Note: Make sure you also have the required location permission in your AndroidManifest.xml. For iOS, make sure you set the NSLocationWhenInUseUsageDescription or the NSLocationAlwaysUsageDescription in your info.plist. (Location Always also requires the location background mode capability)*
 
 ````javascript
 // Calling promptLocation
@@ -609,11 +542,7 @@ Add the line pod 'OneSignal' as follows:
 ````
 target 'YourApp' do
 ...
-pod 'OneSignal', '1.13.3'
-
-end
-
-target 'YourAppTests' do
+pod 'OneSignal', '~> 2.0'
 
 end
 ````
@@ -624,7 +553,7 @@ Then head to the terminal, ls to the ios folder on the root of your project, the
 
 ## CREDITS
 Thanks for all the awesome fellows that contributed to this repository!
-@danpe, @lunchieapp, @gaykov, @williamrijksen, @adrienbrault, @kennym, @dunghuynh, @holmesal, @joshuapinter
+@danpe, @lunchieapp, @gaykov, @williamrijksen, @adrienbrault, @kennym, @dunghuynh, @holmesal, @joshuapinter, @jkasten2, @JKalash
 
 ## TODO
  * [ ] Tell us?
