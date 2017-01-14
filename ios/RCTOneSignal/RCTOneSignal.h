@@ -1,5 +1,5 @@
-#import "RCTBridgeModule.h"
-#import "RCTEventEmitter.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTRootView.h>
 
 #import <OneSignal/OneSignal.h>
 
