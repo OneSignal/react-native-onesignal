@@ -8,6 +8,7 @@ React Native Push Notifications support with OneSignal integration.
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [React Native OneSignal](#react-native-onesignal)
+	- [Note Regarding 0.39 <= React Native >= 0.40 Support](#note-regarding-039-react-native-040-support)
 	- [Running Example project](#running-example-project)
 	- [Installation](#installation)
 	- [Automatic Linking](#automatic-linking)
@@ -40,6 +41,11 @@ React Native Push Notifications support with OneSignal integration.
 	- [TODO](#todo)
 
 <!-- /TOC -->
+
+## Note Regarding 0.39 <= React Native >= 0.40 Support
+
+For React Native >= 0.40, use version 3+.
+For React Native <= 0.39, use version 2+.
 
 ## Running Example project
 
