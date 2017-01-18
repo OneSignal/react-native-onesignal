@@ -525,7 +525,7 @@ In `android/build.gradle`
 ```gradle
 ...
 dependencies {
-    classpath 'com.android.tools.build:gradle:2.1.0'
+    classpath 'com.android.tools.build:gradle:2.2.3'
 
     // NOTE: Do not place your application dependencies here; they belong
     // in the individual module build.gradle files
@@ -538,7 +538,7 @@ distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
-distributionUrl=https://services.gradle.org/distributions/gradle-2.10-all.zip
+distributionUrl=https://services.gradle.org/distributions/gradle-2.14.1-all.zip
 ````
 
 ### Issue 3 - symbol(s) not found for architecture x86_64 and/or OneSignal/OneSignal.h file not found
