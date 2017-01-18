@@ -145,6 +145,9 @@ android {
 
 ### Adding the Code
 
+Make sure that on your target `Header Search Paths`, you have the following line after linking the project:
+`$(SRCROOT)/../node_modules/react-native-onesignal/ios/RCTOneSignal` set to `non-recursive`.
+
 When you reach the `AppDelegate.m` instructions on the OneSignal documentation, stop and do the following instead:
 
  * in `AppDelegate.h`:
@@ -372,7 +375,6 @@ let contents = {
 	'en': 'You got notification from user'
 }
 OneSignal.postNotification(contents, data, playerId);
-
 
 // Listening to postNotification using OneSignal.Configure:
 onNotificationOpened: function(message, data, isActive) {
