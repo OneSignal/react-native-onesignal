@@ -150,6 +150,8 @@ android {
   If your dont want to use cocoapods add in the `Framework Search Paths` the following line before build the project:
   `$(SRCROOT)/../node_modules/react-native-onesignal` set to `recursive`.
 
+  And add to your project the OneSignal.framework which is on YOUR_PROJECT/node_modules/react-native-onesignal/ios/frameworks/OneSignal.framwork
+
 ### Adding the Code
 
 Make sure that on your target `Header Search Paths`, you have the following line after linking the project:
