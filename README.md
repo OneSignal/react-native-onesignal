@@ -146,7 +146,7 @@ android {
      * `pod install`
  * Once you've finished, Open your workspace in Xcode.
 
- ### Without CocoaPods
+### Without CocoaPods
   If your dont want to use cocoapods add in the `Framework Search Paths` the following line before build the project:
   `$(SRCROOT)/../node_modules/react-native-onesignal` set to `recursive`.
 
