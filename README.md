@@ -139,16 +139,16 @@ android {
      * `pod setup`
      * `pod init`
 
-### Without CocoaPods
- * If your dont want to use cocoapods add in the `Framework Search Paths` the following line before build the project:
- `$(SRCROOT)/../node_modules/react-native-onesignal` set to `recursive`.
-
  * Install the OneSignal Pod
      * `open -a Xcode Podfile`
      * Add the following line: `pod OneSignal` inside the `target 'YourProject' do` block.
      * Remove the `target 'YourProjectTests' do` block entirely from your podfile.
      * `pod install`
  * Once you've finished, Open your workspace in Xcode.
+
+ ### Without CocoaPods
+  If your dont want to use cocoapods add in the `Framework Search Paths` the following line before build the project:
+  `$(SRCROOT)/../node_modules/react-native-onesignal` set to `recursive`.
 
 ### Adding the Code
 
