@@ -52,31 +52,34 @@
 #define XC8_AVAILABLE 1
 #import <UserNotifications/UserNotifications.h>
 
-@protocol OSUserNotificationCenterDelegate <NSObject>
-@optional
-- (void)userNotificationCenter:(id)center willPresentNotification:(id)notification withCompletionHandler:(void (^)(NSUInteger options))completionHandler;
-- (void)userNotificationCenter:(id)center didReceiveNotificationResponse:(id)response withCompletionHandler:(void (^)())completionHandler;
-@end
-
 #endif
 
 /* The action type associated to an OSNotificationAction object */
-typedef enum : NSUInteger {
-    Opened,
-    ActionTaken
-} OSNotificationActionType;
+typedef NS_ENUM(NSUInteger, OSNotificationActionType)  {
+    OSNotificationActionTypeOpened,
+    OSNotificationActionTypeActionTaken
+} ;
 
 /* The way a notification was displayed to the user */
-typedef enum : NSUInteger {
-    /*iOS native notification display*/
-    Notification,
-
-    /*Default UIAlertView display*/
-    InAppAlert,
-    
+typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
     /*Notification is silent, or app is in focus but InAppAlertNotifications are disabled*/
-    None
-} OSNotificationDisplayType;
+    OSNotificationDisplayTypeNone,
+    
+    /*Default UIAlertView display*/
+    OSNotificationDisplayTypeInAppAlert,
+    
+    /*iOS native notification display*/
+    OSNotificationDisplayTypeNotification
+} ;
+
+
+
+/*
+ Used as value type for `kOSSettingsKeyInFocusDisplayOption`
+   for setting the display option of a notification received while the app was in focus.
+ */
+typedef OSNotificationDisplayType OSInFocusDisplayOption;
+
 
 @interface OSNotificationAction : NSObject
 
@@ -119,7 +122,7 @@ typedef enum : NSUInteger {
 @property(readonly)NSDictionary* attachments;
 
 /* Action buttons passed */
-@property(readonly)NSDictionary *actionButtons;
+@property(readonly)NSArray *actionButtons;
 
 /* Holds the original payload received
  Keep the raw value for users that would like to root the push */
@@ -139,19 +142,35 @@ typedef enum : NSUInteger {
  Set to false when app is in focus and in-app alerts are disabled, or the remote notification is silent. */
 @property(readonly, getter=wasShown)BOOL shown;
 
+/* Set to true if the app was in focus when the notification  */
+@property(readonly, getter=wasAppInFocus)BOOL isAppInFocus;
+
 /* Set to true when the received notification is silent
  Silent means there is no alert, sound, or badge payload in the aps dictionary
  requires remote-notification within UIBackgroundModes array of the Info.plist */
 @property(readonly, getter=isSilentNotification)BOOL silentNotification;
 
+/* iOS 10+: Indicates wether or not the received notification has mutableContent : 1 assigned to its payload
+ Used for UNNotificationServiceExtension to launch extension.
+*/
+#if XC8_AVAILABLE
+@property(readonly, getter=hasMutableContent)BOOL mutableContent;
+#endif
+
+/* Convert object into an NSString that can be convertible into a custom Dictionary / JSON Object */
+- (NSString*)stringify;
+
 @end
 
 
-@interface OSNotificationResult : NSObject
+@interface OSNotificationOpenedResult : NSObject
 
 @property(readonly)OSNotification* notification;
 
 @property(readonly)OSNotificationAction *action;
+
+/* Convert object into an NSString that can be convertible into a custom Dictionary / JSON Object */
+- (NSString*)stringify;
 
 @end;
 
@@ -165,7 +184,7 @@ typedef void (^OSIdsAvailableBlock)(NSString* userId, NSString* pushToken);
 typedef void (^OSHandleNotificationReceivedBlock)(OSNotification* notification);
 
 /*Block for handling a user reaction to a notification*/
-typedef void (^OSHandleNotificationActionBlock)(OSNotificationResult * result);
+typedef void (^OSHandleNotificationActionBlock)(OSNotificationOpenedResult * result);
 
 /*Dictionary of keys to pass alongside the init serttings*/
     
@@ -177,6 +196,12 @@ extern NSString * const kOSSettingsKeyInAppAlerts;
 
 /*Enable In-App display of Launch URLs*/
 extern NSString * const kOSSettingsKeyInAppLaunchURL;
+
+/* iOS10+ - 
+ Set notificaion's in-focus display option.
+ Value must be an OSNotificationDisplayType enum
+*/
+extern NSString * const kOSSettingsKeyInFocusDisplayOption;
 
 /**
     OneSignal provides a high level interface to interact with OneSignal's push service.
@@ -193,7 +218,7 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 };
 
 ///--------------------
-/// @name Initialize
+/// @name Initialize`
 ///--------------------
 
 /**
@@ -208,7 +233,7 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 + (id)initWithLaunchOptions:(NSDictionary*)launchOptions appId:(NSString*)appId handleNotificationReceived:(OSHandleNotificationReceivedBlock)receivedCallback handleNotificationAction:(OSHandleNotificationActionBlock)actionCallback settings:(NSDictionary*)settings;
 
 + (NSString*)app_id;
-    
+
 // Only use if you passed FALSE to autoRegister
 + (void)registerForPushNotifications;
 
@@ -234,25 +259,20 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 + (void)IdsAvailable:(OSIdsAvailableBlock)idsAvailableBlock;
 
 // - Alerting
-// + (void)enableInAppAlertNotification:(BOOL)enable;
 + (void)setSubscription:(BOOL)enable;
 
 // - Posting Notification
 + (void)postNotification:(NSDictionary*)jsonData;
 + (void)postNotification:(NSDictionary*)jsonData onSuccess:(OSResultSuccessBlock)successBlock onFailure:(OSFailureBlock)failureBlock;
 + (void)postNotificationWithJsonString:(NSString*)jsonData onSuccess:(OSResultSuccessBlock)successBlock onFailure:(OSFailureBlock)failureBlock;
++ (NSString*)parseNSErrorAsJsonString:(NSError*)error;
 
 // - Request and track user's location
 + (void)promptLocation;
++ (void)setLocationShared:(BOOL)enable;
 
 // - Sends the MD5 and SHA1 of the provided email
 // Optional method that sends us the user's email as an anonymized hash so that we can better target and personalize notifications sent to that user across their devices.
 + (void)syncHashedEmail:(NSString*)email;
-
-// - iOS 10 BETA features currently only available on XCode 8 & iOS 10.0+
-#if XC8_AVAILABLE
-+ (void)setNotificationCenterDelegate:(id<OSUserNotificationCenterDelegate>)delegate;
-+ (id<OSUserNotificationCenterDelegate>)notificationCenterDelegate;
-#endif
 
 @end
