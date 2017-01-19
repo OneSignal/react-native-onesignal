@@ -148,6 +148,9 @@ android {
 Make sure that on your target `Header Search Paths`, you have the following line after linking the project:
 `$(SRCROOT)/../node_modules/react-native-onesignal/ios/RCTOneSignal` set to `non-recursive`.
 
+And add in the `Framework Search Paths` the following line before build the project:
+`$(SRCROOT)/../node_modules/react-native-onesignal`
+
 When you reach the `AppDelegate.m` instructions on the OneSignal documentation, stop and do the following instead:
 
  * in `AppDelegate.h`:
