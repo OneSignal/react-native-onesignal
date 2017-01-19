@@ -61,31 +61,22 @@
 #endif
 
 /* The action type associated to an OSNotificationAction object */
-typedef NS_ENUM(NSUInteger, OSNotificationActionType)  {
-    OSNotificationActionTypeOpened,
-    OSNotificationActionTypeActionTaken
-} ;
+typedef enum : NSUInteger {
+    Opened,
+    ActionTaken
+} OSNotificationActionType;
 
 /* The way a notification was displayed to the user */
-typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
-    /*Notification is silent, or app is in focus but InAppAlertNotifications are disabled*/
-    OSNotificationDisplayTypeNone,
-    
-    /*Default UIAlertView display*/
-    OSNotificationDisplayTypeInAppAlert,
-    
+typedef enum : NSUInteger {
     /*iOS native notification display*/
-    OSNotificationDisplayTypeNotification
-} ;
+    Notification,
 
-
-
-/* iOS 10+
- Used as value type for `kOSSettingsKeyInFocusDisplayOption`
- for setting the display option of a notification received while the app was in focus
- */
-typedef OSNotificationDisplayType OSInFocusDisplayOption;
-
+    /*Default UIAlertView display*/
+    InAppAlert,
+    
+    /*Notification is silent, or app is in focus but InAppAlertNotifications are disabled*/
+    None
+} OSNotificationDisplayType;
 
 @interface OSNotificationAction : NSObject
 
@@ -153,21 +144,14 @@ typedef OSNotificationDisplayType OSInFocusDisplayOption;
  requires remote-notification within UIBackgroundModes array of the Info.plist */
 @property(readonly, getter=isSilentNotification)BOOL silentNotification;
 
-
-/* Convert object into an NSString that can be convertible into a custom Dictionary / JSON Object */
-- (NSString*)stringify;
-
 @end
 
 
-@interface OSNotificationOpenedResult : NSObject
+@interface OSNotificationResult : NSObject
 
 @property(readonly)OSNotification* notification;
 
 @property(readonly)OSNotificationAction *action;
-
-/* Convert object into an NSString that can be convertible into a custom Dictionary / JSON Object */
-- (NSString*)stringify;
 
 @end;
 
@@ -181,7 +165,7 @@ typedef void (^OSIdsAvailableBlock)(NSString* userId, NSString* pushToken);
 typedef void (^OSHandleNotificationReceivedBlock)(OSNotification* notification);
 
 /*Block for handling a user reaction to a notification*/
-typedef void (^OSHandleNotificationActionBlock)(OSNotificationOpenedResult * result);
+typedef void (^OSHandleNotificationActionBlock)(OSNotificationResult * result);
 
 /*Dictionary of keys to pass alongside the init serttings*/
     
@@ -193,12 +177,6 @@ extern NSString * const kOSSettingsKeyInAppAlerts;
 
 /*Enable In-App display of Launch URLs*/
 extern NSString * const kOSSettingsKeyInAppLaunchURL;
-
-/* iOS10+ - 
- Set notificaion's in-focus display option.
- Value must be an OSNotificationDisplayType enum
-*/
-extern NSString * const kOSSettingsKeyInFocusDisplayOption;
 
 /**
     OneSignal provides a high level interface to interact with OneSignal's push service.
@@ -215,7 +193,7 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 };
 
 ///--------------------
-/// @name Initialize`
+/// @name Initialize
 ///--------------------
 
 /**
