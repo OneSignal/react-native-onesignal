@@ -1,6 +1,4 @@
 #import <React/RCTBridgeModule.h>
-#import <React/RCTRootView.h>
-
 #import <OneSignal/OneSignal.h>
 
 @interface RCTOneSignal : NSObject <RCTBridgeModule>
