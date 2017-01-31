@@ -141,7 +141,7 @@ android {
 
  * Install the OneSignal Pod
      * `open -a Xcode Podfile`
-     * Add the following line: `pod OneSignal` inside the `target 'YourProject' do` block.
+     * Add the following line: `pod 'OneSignal'` inside the `target 'YourProject' do` block.
      * Remove the `target 'YourProjectTests' do` block entirely from your podfile.
      * `pod install`
  * Once you've finished, Open your workspace in Xcode.
