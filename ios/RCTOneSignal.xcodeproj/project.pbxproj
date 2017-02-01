@@ -217,12 +217,12 @@
 		3245CE021BFEE35C00EABF68 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks/**";
+				FRAMEWORK_SEARCH_PATHS = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../react-native/React/**",
-					"\"$(SRCROOT)/../../../ios/Pods/Headers/Public/OneSignal\"",
+					"$(SRCROOT)/../../../ios/Pods/Headers/Public/OneSignal",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -233,12 +233,12 @@
 		3245CE031BFEE35C00EABF68 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks/**";
+				FRAMEWORK_SEARCH_PATHS = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../react-native/React/**",
-					"\"$(SRCROOT)/../../../ios/Pods/Headers/Public/OneSignal\"",
+					"$(SRCROOT)/../../../ios/Pods/Headers/Public/OneSignal",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

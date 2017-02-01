@@ -142,8 +142,9 @@ android {
  * Install the OneSignal Pod
      * `open -a Xcode Podfile`
      * Add the following line: `pod 'OneSignal'` inside the `target 'YourProject' do` block.
-     * Remove the `target 'YourProjectTests' do` block entirely from your podfile.
+     * Go to your `YourAppTests` target `Build Settings`, and add the flag `-lc++` to `Other Linker Flags`.
      * `pod install`
+
  * Once you've finished, Open your workspace in Xcode.
 
 ### Without CocoaPods
