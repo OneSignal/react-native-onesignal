@@ -2932,9 +2932,9 @@ react-deep-force-update@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7"
 
-react-native-onesignal@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-3.0.0.tgz#b50acb764e80971c4e10be3a0bdf08abfa29122b"
+react-native-onesignal@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-3.0.1.tgz#60eb1971b53c3baacb116163197c9106e8a2e793"
   dependencies:
     invariant "^2.2.2"
 
