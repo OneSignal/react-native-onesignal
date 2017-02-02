@@ -49,17 +49,17 @@ For React Native <= 0.39, use version 2+.
 
 ## Running Example project
 
-For your convenience, we created an example project, based on React Native 0.36.1.
+For your convenience, we created an example project, based on React Native 0.40.0.
 You can run this project to test configurations, debug, and build upon it.
 
  * `git clone https://github.com/geektimecoil/react-native-onesignal`
- * `cd react-native-onesignal && cd examples && cd OneSignalRNExample`
- * `npm install && cd ios && pod install && cd ..`
+ * `cd react-native-onesignal && cd examples && cd RNOneSignal`
+ * `yarn && cd ios && pod update && cd ..`
  * Running the iOS example app: `react-native run-ios`
  * Running the Android example app: `react-native run-android`
 
 ## Installation
-`npm install --save react-native-onesignal`
+`yarn add react-native-onesignal` or `npm install --save react-native-onesignal`
 
 ## Automatic Linking
 `react-native link react-native-onesignal`
