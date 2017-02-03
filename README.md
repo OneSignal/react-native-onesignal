@@ -223,7 +223,7 @@ export default class App extends Component {
         OneSignal.removeEventListener('ids', this.onIds);
     }
 
-        onReceived(notification) {
+    onReceived(notification) {
         console.log("Notification received: ", notification);
     }
 
