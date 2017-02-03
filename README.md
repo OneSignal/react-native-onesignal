@@ -200,77 +200,51 @@ When you reach the `AppDelegate.m` instructions on the OneSignal documentation, 
  * You're All Set!
 
 
-## Android Usage
+## Usage
 
-In your `index.android.js`:
+In your `index.android.js` or `index.ios.js`:
 ```javascript
+import React, { Component } from 'react';
 import OneSignal from 'react-native-onesignal'; // Import package from node modules
-// var _navigator; // If applicable, declare a variable for accessing your navigator object to handle payload.
+...
 
-OneSignal.configure({
-	onIdsAvailable: function(device) {
-		console.log('UserId = ', device.userId);
-		console.log('PushToken = ', device.pushToken);
-	},
-  onNotificationReceived: function(notification) {
-    console.log("notification received: ", notification);
-  },
-  onNotificationOpened: function(openResult) {
-      console.log('MESSAGE: ', openResult.notification.payload.body);
-      console.log('DATA: ', openResult.notification.payload.additionalData);
-      console.log('ISACTIVE: ', openResult.notification.isAppInFocus);
+export default class App extends Component {
+    
+    componentWillMount() {
+        OneSignal.addEventListener('received', this.onReceived);
+        OneSignal.addEventListener('opened', this.onOpened);
+        OneSignal.addEventListener('registered', this.onRegistered);
+        OneSignal.addEventListener('ids', this.onIds);
+    }
+
+    componentWillUnmount() {
+        OneSignal.removeEventListener('received', this.onReceived);
+        OneSignal.removeEventListener('opened', this.onOpened);
+        OneSignal.removeEventListener('registered', this.onRegistered);
+        OneSignal.removeEventListener('ids', this.onIds);
+    }
+
+        onReceived(notification) {
+        console.log("Notification received: ", notification);
+    }
+
+    onOpened(openResult) {
+      console.log('Message: ', openResult.notification.payload.body);
+      console.log('Data: ', openResult.notification.payload.additionalData);
+      console.log('isActive: ', openResult.notification.isAppInFocus);
       console.log('openResult: ', openResult);
-      // Do whatever you want with the objects here
-      // _navigator.to('main.post', data.title, { // If applicable
-      //  article: {
-      //    title: openResult.notification.payload.body,
-      //    link: openResult.notification.payload.launchURL,
-      //    action: data.openResult.notification.action.actionSelected
-      //  }
-      // });
-  }
-});
-```
+    }
 
-## iOS Usage
+    onRegistered(notifData) {
+        console.log("Device had been registered for push notifications!", notifData);
+    }
 
-In iOS, we have to wait a little bit before fetching the notification. The reason is that notification is coming too fast, before the main view of the app is being rendered.
-Therefore, the notification could get lost. We solve it in an ugly way, but working one.
+    onIds(device) {
+		console.log('Device info: ', device);
+    }
+    ...
+}
 
-In your `index.ios.js`:
-```javascript
-import OneSignal from 'react-native-onesignal'; // Import package from node modules
-
-var pendingNotifications = [];
-// var _navigator; // If applicable, declare a variable for accessing your navigator object to handle payload.
-// function handleNotificationAction (openResult) { // If you want to handle the notification with a payload.
-    // _navigator.to('main.post', openResult.notification.payload.title, {
-    //  article: {
-    //    title: openResult.notification.payload.title,
-    //    link: openResult.notification.payload.launchURL,
-    //    action: openResult.notification.action.actionSelected
-    //  }
-    //});
-// }
-
-OneSignal.configure({
-	onIdsAvailable: function(device) {
-		console.log('UserId = ', device.userId);
-		console.log('PushToken = ', device.pushToken);
-	},
-  onNotificationReceived: function(notification) {
-      console.log('NOTIFICATION RECEIVED: ', notification);
-  },
-  onNotificationOpened: function(openResult) {
-      console.log('NOTIFICATION OPENED: ', openResult);
-      //if (!_navigator) { // Check if there is a navigator object. If not, waiting with the notification.
-      //    console.log('Navigator is null, adding notification to pending list...');
-          pendingNotifications.push(notification);
-      //    return;
-      // }
-      handleNotificationAction(openResult);
-  }
-});
 ```
 
 ## API
