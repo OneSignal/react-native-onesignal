@@ -347,7 +347,9 @@ OneSignal.enableSound(true);
 
 ### Set In App Focus Behavior
 
-We exposed the inFocusDisplaying API of OneSignal (Android only).
+We exposed the inFocusDisplaying API of OneSignal.
+
+*Android:*
 
  - `0` = `None`         - Will not display a notification, instead only `onNotificationReceived` will fire where you can display your own in app messages.
  - `1` = `InAppAlert`   - *(Default)* Will display an Android AlertDialog with the message contains.
@@ -357,6 +359,20 @@ We exposed the inFocusDisplaying API of OneSignal (Android only).
 // Example, always display notification in shade.
 OneSignal.inFocusDisplaying(2);
 ````
+
+*iOS:*
+
+On the init function in `AppDelegate.m`, add the settings parameter to specify custom settings. In this case, it would be the kOSSettingsKeyInFocusDisplayOption which can be set to 3 options:
+
+1. `OSNotificationDisplayTypeNotification` - Display the native notification display.
+2. `OSNotificationDisplayTypeInAppAlert` - Display an alert with the notification. Default value.
+3. `OSNotificationDisplayTypeNone` - Silent. Do not display any notification when the app is in focus.
+
+```objc
+self.oneSignal = [[RCTOneSignal alloc] initWithLaunchOptions:launchOptions
+                     appId:@"YOUR APP ID"
+                     settings:@{kOSSettingsKeyInFocusDisplayOption : @(OSNotificationDisplayTypeNone), kOSSettingsKeyAutoPrompt : @YES}];
+```
 
 ### Change User Subscription Status
 
@@ -459,7 +475,8 @@ OneSignal.requestPermissions(permissions);
 
 We exposed the registerForPushNotifications API of OneSignal (currently supported only on iOS).
 
-*Call when you want to prompt the user to accept push notifications. Only call once and only if you passed false to **initWithLaunchOptions autoRegister**:.*
+*Call when you want to prompt the user to accept push notifications. Only call once and only if you passed @YES to `kOSSettingsKeyAutoPrompt` on init.
+
 
 ````javascript
 // Calling registerForPushNotifications
