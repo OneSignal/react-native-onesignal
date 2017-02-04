@@ -349,7 +349,7 @@ OneSignal.enableSound(true);
 
 We exposed the inFocusDisplaying API of OneSignal.
 
-*Android:*
+#### Android:
 
  - `0` = `None`         - Will not display a notification, instead only `onNotificationReceived` will fire where you can display your own in app messages.
  - `1` = `InAppAlert`   - *(Default)* Will display an Android AlertDialog with the message contains.
@@ -360,9 +360,9 @@ We exposed the inFocusDisplaying API of OneSignal.
 OneSignal.inFocusDisplaying(2);
 ````
 
-*iOS:*
+#### iOS:
 
-On the init function in `AppDelegate.m`, add the settings parameter to specify custom settings. In this case, it would be the kOSSettingsKeyInFocusDisplayOption which can be set to 3 options:
+On the init function in `AppDelegate.m`, add the settings parameter to specify custom settings. In this case, it would be the `kOSSettingsKeyInFocusDisplayOption` which can be set to 3 options:
 
 1. `OSNotificationDisplayTypeNotification` - Display the native notification display.
 2. `OSNotificationDisplayTypeInAppAlert` - Display an alert with the notification. Default value.
