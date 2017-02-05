@@ -284,16 +284,20 @@ OneSignal.deleteTag("key");
 ### Getting Player ID and Push Token
 
 We exposed the idsAvailable API of OneSignal (both Android & iOS) as an event.
-Just define a onIdsAvailable callback in the configure options.
+Listen for `ids` event and define a callback to handle the returned object.
 
 ````javascript
-// Getting idsAvailable
-OneSignal.configure({
-	onIdsAvailable: function(device) {
-		console.log('UserId = ', device.userId);
-		console.log('PushToken = ', device.pushToken);
-	}
-});
+componentWillMount() {
+    OneSignal.addEventListener('ids', this.onIds);
+}
+
+componentWillUnmount() {
+    OneSignal.removeEventListener('ids', this.onIds);
+}
+
+onIds(device) {
+    console.log('Device info: ', device);
+}
 ````
 
 ### Enable Vibration
