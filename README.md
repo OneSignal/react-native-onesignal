@@ -249,7 +249,30 @@ export default class App extends Component {
 ## API
 
 ### Handling Notifications
-When any notification is opened or received the callback `onNotificationOpened` or `onNotificationReceived` is called passing an OSNotificationOpenResult or an OSNOtification object encapsulating the event data.
+When any notification is opened or received the `opened` and `received` are activated and calling their callback functions defined in the listeners, passing an OSNotificationOpenResult or an OSNotification object encapsulating the event data.
+
+```javascript
+componentWillMount() {
+    OneSignal.addEventListener('received', this.onReceived);
+    OneSignal.addEventListener('opened', this.onOpened);
+}
+
+componentWillUnmount() {
+    OneSignal.removeEventListener('received', this.onReceived);
+    OneSignal.removeEventListener('opened', this.onOpened);
+}
+
+onReceived(notification) {
+    console.log("Notification received: ", notification);
+}
+
+onOpened(openResult) {
+    console.log('Message: ', openResult.notification.payload.body);
+    console.log('Data: ', openResult.notification.payload.additionalData);
+    console.log('isActive: ', openResult.notification.isAppInFocus);
+    console.log('openResult: ', openResult);
+}
+```
 
 Notification object received example:
 ```javascript
