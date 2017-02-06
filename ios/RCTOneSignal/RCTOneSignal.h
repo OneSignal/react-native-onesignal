@@ -1,4 +1,9 @@
+#if __has_include(<React/RCTBridgeModule.h>)
 #import <React/RCTBridgeModule.h>
+#elif __has_include("RCTBridgeModule.h")
+#import "RCTBridgeModule.h"
+#endif
+
 #import <OneSignal/OneSignal.h>
 
 @interface RCTOneSignal : NSObject <RCTBridgeModule>
