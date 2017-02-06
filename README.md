@@ -50,11 +50,11 @@ Make sure you read this documentation carefully, as the usage instructions had b
 
 TL;DR - Install the latest version, doesn't matter on what RN version you are.
 
-Since version 3.0.2, this module supports backwards compatibiltiy with RN39 and below, without installing a custom version. Everyone should now update to the latest version available for this module.
+Since version 3.0.2, this module supports backwards compatibiltiy with React Native 0.39 and below, without installing a custom version. Everyone should now update to the latest version available for this module.
 
 ## Running Example project
 
-For your convenience, we created an example project, based on React Native 0.40.0.
+For your convenience, we created an example project, based on React Native 0.41.2.
 You can run this project to test configurations, debug, and build upon it.
 
  * `git clone https://github.com/geektimecoil/react-native-onesignal`
