@@ -52,12 +52,6 @@
 #define XC8_AVAILABLE 1
 #import <UserNotifications/UserNotifications.h>
 
-@protocol OSUserNotificationCenterDelegate <NSObject>
-@optional
-- (void)userNotificationCenter:(id)center willPresentNotification:(id)notification withCompletionHandler:(void (^)(NSUInteger options))completionHandler;
-- (void)userNotificationCenter:(id)center didReceiveNotificationResponse:(id)response withCompletionHandler:(void (^)())completionHandler;
-@end
-
 #endif
 
 /* The action type associated to an OSNotificationAction object */
@@ -80,9 +74,9 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 
 
 
-/* iOS 10+
+/*
  Used as value type for `kOSSettingsKeyInFocusDisplayOption`
- for setting the display option of a notification received while the app was in focus
+   for setting the display option of a notification received while the app was in focus.
  */
 typedef OSNotificationDisplayType OSInFocusDisplayOption;
 
@@ -128,7 +122,7 @@ typedef OSNotificationDisplayType OSInFocusDisplayOption;
 @property(readonly)NSDictionary* attachments;
 
 /* Action buttons passed */
-@property(readonly)NSDictionary *actionButtons;
+@property(readonly)NSArray *actionButtons;
 
 /* Holds the original payload received
  Keep the raw value for users that would like to root the push */
@@ -148,11 +142,20 @@ typedef OSNotificationDisplayType OSInFocusDisplayOption;
  Set to false when app is in focus and in-app alerts are disabled, or the remote notification is silent. */
 @property(readonly, getter=wasShown)BOOL shown;
 
+/* Set to true if the app was in focus when the notification  */
+@property(readonly, getter=wasAppInFocus)BOOL isAppInFocus;
+
 /* Set to true when the received notification is silent
  Silent means there is no alert, sound, or badge payload in the aps dictionary
  requires remote-notification within UIBackgroundModes array of the Info.plist */
 @property(readonly, getter=isSilentNotification)BOOL silentNotification;
 
+/* iOS 10+: Indicates wether or not the received notification has mutableContent : 1 assigned to its payload
+ Used for UNNotificationServiceExtension to launch extension.
+*/
+#if XC8_AVAILABLE
+@property(readonly, getter=hasMutableContent)BOOL mutableContent;
+#endif
 
 /* Convert object into an NSString that can be convertible into a custom Dictionary / JSON Object */
 - (NSString*)stringify;
@@ -230,7 +233,7 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 + (id)initWithLaunchOptions:(NSDictionary*)launchOptions appId:(NSString*)appId handleNotificationReceived:(OSHandleNotificationReceivedBlock)receivedCallback handleNotificationAction:(OSHandleNotificationActionBlock)actionCallback settings:(NSDictionary*)settings;
 
 + (NSString*)app_id;
-    
+
 // Only use if you passed FALSE to autoRegister
 + (void)registerForPushNotifications;
 
@@ -256,25 +259,20 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 + (void)IdsAvailable:(OSIdsAvailableBlock)idsAvailableBlock;
 
 // - Alerting
-// + (void)enableInAppAlertNotification:(BOOL)enable;
 + (void)setSubscription:(BOOL)enable;
 
 // - Posting Notification
 + (void)postNotification:(NSDictionary*)jsonData;
 + (void)postNotification:(NSDictionary*)jsonData onSuccess:(OSResultSuccessBlock)successBlock onFailure:(OSFailureBlock)failureBlock;
 + (void)postNotificationWithJsonString:(NSString*)jsonData onSuccess:(OSResultSuccessBlock)successBlock onFailure:(OSFailureBlock)failureBlock;
++ (NSString*)parseNSErrorAsJsonString:(NSError*)error;
 
 // - Request and track user's location
 + (void)promptLocation;
++ (void)setLocationShared:(BOOL)enable;
 
 // - Sends the MD5 and SHA1 of the provided email
 // Optional method that sends us the user's email as an anonymized hash so that we can better target and personalize notifications sent to that user across their devices.
 + (void)syncHashedEmail:(NSString*)email;
-
-// - iOS 10 BETA features currently only available on XCode 8 & iOS 10.0+
-#if XC8_AVAILABLE
-+ (void)setNotificationCenterDelegate:(id<OSUserNotificationCenterDelegate>)delegate;
-+ (id<OSUserNotificationCenterDelegate>)notificationCenterDelegate;
-#endif
 
 @end

@@ -12,7 +12,6 @@ React Native Push Notifications support with OneSignal integration.
 	- [Note Regarding 0.39 <= React Native >= 0.40 Support](#note-regarding-039-react-native-040-support)
 	- [Running Example project](#running-example-project)
 	- [Installation](#installation)
-	- [Automatic Linking](#automatic-linking)
 	- [Android Installation](#android-installation)
 		- [Adding the Code](#adding-the-code)
 	- [iOS Installation](#ios-installation)
@@ -63,12 +62,15 @@ You can run this project to test configurations, debug, and build upon it.
  * Running the iOS example app: `react-native run-ios`
  * Running the Android example app: `react-native run-android`
 
+
 ## Installation
-`yarn add react-native-onesignal` or `npm install --save react-native-onesignal`
+1. Add library to project
+   - `yarn add react-native-onesignal`
+   - OR `npm install --save react-native-onesignal`
+2. Link library to project
+   - `react-native link react-native-onesignal`
 
-## Automatic Linking
-`react-native link react-native-onesignal`
-
+<br>
 ## Android Installation
 
 * Follow OneSignal's instructions on generating a Google Server API Key: https://documentation.onesignal.com/docs/generate-a-google-server-api-key
@@ -132,38 +134,27 @@ android {
     }
 }
 ```
-
-## iOS Installation
+<br>
+## iOS Push Certificate
  * Open OneSignal account here: https://onesignal.com/
  * Follow OneSignal's instructions on generating an iOS Push Certificate: https://documentation.onesignal.com/docs/generate-an-ios-push-certificate
 
-### With CocoaPods
- * If you haven't done so, initialize CocoaPods:
-     * `cd ios`
-     * `sudo gem install cocoapods`
-     * `pod setup`
-     * `pod init`
+### Linking OneSignal.framework
+1. Open `ios/YourProject.xcodeproj`.
+2. Expand `Libraries` > `RCTOneSignal.xcodeproj`.
+3. Drag and drop `OneSignal.framework to the top of your root project.
+![image](https://cloud.githubusercontent.com/assets/645861/22726730/ddf23a18-ed89-11e6-8e3f-90ef5dc434fb.png)
+4. Leave settings default and press `Finish`.
+5. Select your root project and go to `Build Settings`.
+6. Search for `framework search`
+7. Enter the following path.
+`$(SRCROOT)/../node_modules/react-native-onesignal/ios/Frameworks`
+![image](https://cloud.githubusercontent.com/assets/645861/22726912/d46b5bea-ed8a-11e6-982c-396783fc4502.png)
 
- * Install the OneSignal Pod
-     * `open -a Xcode Podfile`
-     * Add the following line: `pod 'OneSignal'` inside the `target 'YourProject' do` block.
-     * Go to your `YourAppTests` target `Build Settings`, and add the flag `-lc++` to `Other Linker Flags`.
-     * `pod install`
-
- * Once you've finished, Open your workspace in Xcode.
-
-### Without CocoaPods
-  If your dont want to use cocoapods add in the `Framework Search Paths` the following line before build the project:
-  `$(SRCROOT)/../node_modules/react-native-onesignal` set to `recursive`.
-
-  And add to your project the OneSignal.framework which is on YOUR_PROJECT/node_modules/react-native-onesignal/ios/frameworks/OneSignal.framework
-
-### Adding the Code
-
-Make sure that on your target `Header Search Paths`, you have the following line after linking the project:
+7. Seach for `Header Search Paths` and add the following.
 `$(SRCROOT)/../node_modules/react-native-onesignal/ios/RCTOneSignal` set to `non-recursive`.
 
-When you reach the `AppDelegate.m` instructions on the OneSignal documentation, stop and do the following instead:
+### Adding the Code
 
  * in `AppDelegate.h`:
    * Import `RCTOneSignal.h`:
@@ -568,30 +559,26 @@ dependencies {
 ```
 
 In `android/gradle/wrapper/gradle-wrapper.properties`
-````javascript
+```javascript
 distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 distributionUrl=https://services.gradle.org/distributions/gradle-2.14.1-all.zip
-````
+```
 
 ### Issue 3 - symbol(s) not found for architecture x86_64 and/or OneSignal/OneSignal.h file not found
+Please double check the [iOS Installation](#ios-installation) section as missing a step or entering an incorrect path will create these errors.
 
-Solution: Go to your Podfile file, located within the ios folder on the root of your project.
-Add the line pod 'OneSignal' as follows:
-````
-target 'YourApp' do
-...
-pod 'OneSignal', '~> 2.0'
+### Manually updating OneSignal.framwork
+When you install `react-native-onesignal` it will automaticly include a specific version of the `OneSignal.framwork` that is know to work with it. Only follow the instructions below if there is a native OneSignal SDK fix you need that isn't included already in the latest `react-native-onesignal` update.
 
-end
-````
+1. Download the [latest OneSiganl iOS native](https://github.com/OneSignal/OneSignal-iOS-SDK/releases) release.
+2. Delete `node_modules/react-native-onesignal/ios/Frameworks/OneSignal.framework` from your project.
+3. Extract `OneSignal.framework` from `iOS_SDK/Framework` as replacement.
 
-Then head to the terminal, ls to the ios folder on the root of your project, then type `pod install` to install the pods. After that, make sure to drag `OneSignal.framework` from your Pods project on Xcode to the Frameworks folder on your Xcode workspace. Make sure that your `Link Binary With Libraries` on the `Build Phases` section of your target contains the `Onesignal.framework` file as follows.
 
-![OneSignal Framework On Link Binary With Libraries](http://i.imgur.com/r0dgrAH.png)
-
+<br>
 ## CREDITS
 Thanks for all the awesome fellows that contributed to this repository!
 @danpe, @lunchieapp, @gaykov, @williamrijksen, @adrienbrault, @kennym, @dunghuynh, @holmesal, @joshuapinter, @jkasten2, @JKalash
