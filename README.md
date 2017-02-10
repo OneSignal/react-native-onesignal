@@ -146,6 +146,12 @@ android {
 2. Next Enable "Background Modes" and check "Remote notifications".
 ![](https://files.readme.io/VflTGOPzRDu2YmhiRgiV_Xcode%20capabilities.png)
 
+### Adding Search Paths
+1. Select your root project and go to `Build Settings`.
+2. Search for `Header Search Paths`.
+4. Add `$(SRCROOT)/../node_modules/react-native-onesignal/ios` and set it as `recursive`.
+![image](https://cloud.githubusercontent.com/assets/645861/22847689/77819cda-efa3-11e6-81c9-bb08baf9460e.png)
+
 ### Adding the Code
 
  * in `AppDelegate.h`:
