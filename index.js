@@ -23,7 +23,7 @@ function handleConnectionStateChange(isConnected) {
 NetInfo.isConnected.fetch().then(isConnected => {
     if (isConnected) return OneSignal.configure();
     NetInfo.isConnected.addEventListener('change', handleConnectionStateChange);
-}).catch((...args) => console.error("Error: ", args));
+}).catch((...args) => console.warn("Error: ", args));
 
 
 export default class OneSignal {
