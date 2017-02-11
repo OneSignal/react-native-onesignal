@@ -1,0 +1,34 @@
+machine:
+  node:
+    version: 7
+dependencies:
+  override:
+    - npm install
+    - ? |
+        case $CIRCLE_NODE_INDEX in
+          2)
+            cd examples
+            cd RNOneSignal
+            npm install
+            ;;
+        esac
+      :
+        parallel: true
+test:
+  override:
+    - ? |
+        case $CIRCLE_NODE_INDEX in
+          0)
+            node node_modules/eslint/bin/eslint index.js src/ test/ -o $CIRCLE_TEST_REPORTS/eslint/eslint.xml -f junit
+            ;;
+          1)
+            MOCHA_FILE=$CIRCLE_TEST_REPORTS/mocha/junit.xml npm test -- --reporter mocha-junit-reporter
+            ;;
+          2)
+            cd examples
+            cd RNOneSignal
+            npm run jest
+            ;;
+        esac
+      :
+        parallel: true
