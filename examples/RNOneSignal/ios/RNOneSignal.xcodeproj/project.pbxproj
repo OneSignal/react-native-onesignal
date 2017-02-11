@@ -13,7 +13,6 @@
 		00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302DC1ABCB9D200DB3ED1 /* libRCTNetwork.a */; };
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* RNOneSignalTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* RNOneSignalTests.m */; };
-		10B3FA7C53908D261A1436D6 /* libPods-RNOneSignal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D201CF0DB49AAB2652181F9 /* libPods-RNOneSignal.a */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
 		139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
@@ -25,7 +24,6 @@
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
-		B5897210EFFF6FAAEEDEDF17 /* libPods-RNOneSignalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 100C24ECB131242C53C2A734 /* libPods-RNOneSignalTests.a */; };
 		FDD5B6271E429B5500C9594F /* libRCTOneSignal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDD5B59B1E4294D500C9594F /* libRCTOneSignal.a */; };
 /* End PBXBuildFile section */
 
@@ -231,7 +229,6 @@
 		00E356EE1AD99517003FC87E /* RNOneSignalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNOneSignalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RNOneSignalTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNOneSignalTests.m; sourceTree = "<group>"; };
-		100C24ECB131242C53C2A734 /* libPods-RNOneSignalTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNOneSignalTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* RNOneSignal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNOneSignal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -245,12 +242,7 @@
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
-		9D201CF0DB49AAB2652181F9 /* libPods-RNOneSignal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNOneSignal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A26D37EAE836D69B662E5813 /* Pods-RNOneSignal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignal.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNOneSignal/Pods-RNOneSignal.release.xcconfig"; sourceTree = "<group>"; };
 		A429477DB49947A88EA14D8A /* RCTOneSignal.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTOneSignal.xcodeproj; path = "../node_modules/react-native-onesignal/ios/RCTOneSignal.xcodeproj"; sourceTree = "<group>"; };
-		A96CEDCFF958558DBAFB1ECD /* Pods-RNOneSignalTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignalTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNOneSignalTests/Pods-RNOneSignalTests.release.xcconfig"; sourceTree = "<group>"; };
-		DFCC94500BE92DC238D8FDDF /* Pods-RNOneSignal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNOneSignal/Pods-RNOneSignal.debug.xcconfig"; sourceTree = "<group>"; };
-		F19A5FC1D4E0005F6EEDECB4 /* Pods-RNOneSignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNOneSignalTests/Pods-RNOneSignalTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -259,7 +251,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */,
-				B5897210EFFF6FAAEEDEDF17 /* libPods-RNOneSignalTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,7 +270,6 @@
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				FDD5B6271E429B5500C9594F /* libRCTOneSignal.a in Frameworks */,
-				10B3FA7C53908D261A1436D6 /* libPods-RNOneSignal.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -392,17 +382,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		4166CD5F498AADD5E37DFC51 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				DFCC94500BE92DC238D8FDDF /* Pods-RNOneSignal.debug.xcconfig */,
-				A26D37EAE836D69B662E5813 /* Pods-RNOneSignal.release.xcconfig */,
-				F19A5FC1D4E0005F6EEDECB4 /* Pods-RNOneSignalTests.debug.xcconfig */,
-				A96CEDCFF958558DBAFB1ECD /* Pods-RNOneSignalTests.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		5E91572E1DD0AC6500FF2AA8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -456,8 +435,6 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* RNOneSignalTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
-				4166CD5F498AADD5E37DFC51 /* Pods */,
-				C397A87240F02A46E5723705 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -470,15 +447,6 @@
 				00E356EE1AD99517003FC87E /* RNOneSignalTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		C397A87240F02A46E5723705 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				9D201CF0DB49AAB2652181F9 /* libPods-RNOneSignal.a */,
-				100C24ECB131242C53C2A734 /* libPods-RNOneSignalTests.a */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		FDD5B58D1E4294D400C9594F /* Products */ = {
@@ -496,12 +464,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "RNOneSignalTests" */;
 			buildPhases = (
-				7F19E715C061C9CA81355F1D /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				233EA28E31F29D0CF36CBEAF /* [CP] Embed Pods Frameworks */,
-				70AE585EC5C8162617C9A37B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -517,13 +482,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RNOneSignal" */;
 			buildPhases = (
-				E6229686E0962E9D01EC8392 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				8AF38C6ACD572003FA32387E /* [CP] Embed Pods Frameworks */,
-				B6224389B14ADA976F00562A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -837,96 +799,6 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/packager/react-native-xcode.sh";
 		};
-		233EA28E31F29D0CF36CBEAF /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RNOneSignalTests/Pods-RNOneSignalTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		70AE585EC5C8162617C9A37B /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RNOneSignalTests/Pods-RNOneSignalTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7F19E715C061C9CA81355F1D /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		8AF38C6ACD572003FA32387E /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RNOneSignal/Pods-RNOneSignal-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B6224389B14ADA976F00562A /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RNOneSignal/Pods-RNOneSignal-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E6229686E0962E9D01EC8392 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -972,7 +844,6 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F19A5FC1D4E0005F6EEDECB4 /* Pods-RNOneSignalTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1000,7 +871,6 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A96CEDCFF958558DBAFB1ECD /* Pods-RNOneSignalTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -1025,16 +895,13 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DFCC94500BE92DC238D8FDDF /* Pods-RNOneSignal.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/OneSignal\"",
-					"\"$(SRCROOT)/../node_modules/react-native-onesignal/ios/RCTOneSignal\"",
+					"\"$(SRCROOT)/../node_modules/react-native-onesignal/ios/\"/**",
 				);
 				INFOPLIST_FILE = RNOneSignal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1050,15 +917,12 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A26D37EAE836D69B662E5813 /* Pods-RNOneSignal.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/OneSignal\"",
-					"\"$(SRCROOT)/../node_modules/react-native-onesignal/ios/RCTOneSignal\"",
+					"\"$(SRCROOT)/../node_modules/react-native-onesignal/ios/\"/**",
 				);
 				INFOPLIST_FILE = RNOneSignal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
