@@ -4,7 +4,7 @@
 #import "RCTBridgeModule.h"
 #endif
 
-#import <OneSignal/OneSignal.h>
+#import "OneSignal.h"
 
 @interface RCTOneSignal : NSObject <RCTBridgeModule>
 
