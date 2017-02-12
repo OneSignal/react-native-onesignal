@@ -4,8 +4,6 @@ machine:
 dependencies:
   override:
     - cd examples && cd RNOneSignal && npm install
-    - npm install -g react-native-cli
 test:
   override:
-    - npm test
-    - cd examples && cd RNOneSignal && react-native bundle --minify
+    - cd examples && cd RNOneSignal && npm test
