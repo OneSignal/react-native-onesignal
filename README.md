@@ -4,6 +4,7 @@ React Native Push Notifications support with OneSignal integration.
 
 [![npm version](https://img.shields.io/npm/v/react-native-onesignal.svg?style=flat-square)](https://www.npmjs.com/package/react-native-onesignal)
 [![npm downloads](https://img.shields.io/npm/dm/react-native-onesignal.svg?style=flat-square)](https://www.npmjs.com/package/react-native-onesignal)
+[![Build Status](https://travis-ci.org/geektimecoil/react-native-onesignal.svg?branch=master)](https://travis-ci.org/geektimecoil/react-native-onesignal)
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
