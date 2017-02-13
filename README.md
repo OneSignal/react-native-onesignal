@@ -11,7 +11,7 @@ React Native Push Notifications support with OneSignal integration.
 
 - [React Native OneSignal](#react-native-onesignal)
 	- [Breaking Change](#breaking-change)
-	- [Note Regarding 0.39 <= React Native >= 0.40 Support](#note-regarding-039-react-native-040-support)
+	- [Note Regarding 0.39 <= React Native >= 0.40 Support](#note-regarding-039--react-native--040-support)
 	- [Running Example project](#running-example-project)
 	- [Installation](#installation)
 	- [Android Installation](#android-installation)
@@ -34,10 +34,11 @@ React Native Push Notifications support with OneSignal integration.
 		- [Check Push Notification Permissions (iOS Only)](#check-push-notification-permissions-ios-only)
 		- [Request Push Notification Permissions (iOS Only)](#request-push-notification-permissions-ios-only)
 		- [Register For Push Notifications (iOS Only)](#register-for-push-notifications-ios-only)
-	- [FAQ / Repeating Issues](#faq-repeating-issues)
-		- [Issue 1 - Multiple dex files define:](#issue-1-multiple-dex-files-define)
-		- [Issue 2 - Multiple dex files define (Again):](#issue-2-multiple-dex-files-define-again)
-		- [Issue 3 - symbol(s) not found for architecture x86_64 and/or OneSignal/OneSignal.h file not found](#issue-3-symbols-not-found-for-architecture-x8664-andor-onesignalonesignalh-file-not-found)
+	- [FAQ / Repeating Issues](#faq--repeating-issues)
+		- [Issue 1 - Multiple dex files define:](#issue-1---multiple-dex-files-define)
+		- [Issue 2 - Multiple dex files define (Again):](#issue-2---multiple-dex-files-define-again)
+		- [Issue 3 - symbol(s) not found for architecture x86_64 and/or OneSignal/OneSignal.h file not found](#issue-3---symbols-not-found-for-architecture-x86_64-andor-onesignalonesignalh-file-not-found)
+		- [Issue 4 - Make react-native-onesignal work with react-native-maps](#issue-4---make-react-native-onesignal-work-with-react-native-maps)
 	- [CREDITS](#credits)
 	- [TODO](#todo)
 
@@ -568,6 +569,18 @@ distributionUrl=https://services.gradle.org/distributions/gradle-2.14.1-all.zip
 
 ### Issue 3 - symbol(s) not found for architecture x86_64 and/or OneSignal/OneSignal.h file not found
 Please double check the [iOS Installation](#ios-installation) section as missing a step or entering an incorrect path will create these errors.
+
+### Issue 4 - Make `react-native-onesignal` work with `react-native-maps`
+If you have both `react native maps` and `react-native-onesignal` make sure you compile `react-native-maps` in the following way (android/app/build.gradle).
+
+```gradle
+compile(project(':react-native-maps')){
+    exclude group: 'com.google.android.gms', module: 'play-services-base'
+    exclude group: 'com.google.android.gms', module: 'play-services-maps'
+  }
+  compile 'com.google.android.gms:play-services-base:+'
+  compile 'com.google.android.gms:play-services-maps:+'
+```
 
 ### Manually updating iOS OneSignalNativeSDK
 When you install `react-native-onesignal` it will automaticly include a specific version of the OneSignal iOS native SDK that is known to work with it. Only follow the instructions below if there is a native OneSignal SDK fix you need that isn't included already in the latest `react-native-onesignal` update.
