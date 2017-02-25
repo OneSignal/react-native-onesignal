@@ -23,6 +23,7 @@ React Native Push Notifications support with OneSignal integration.
 		- [Handling Notifications](#handling-notifications)
 		- [Sending and Getting OneSignal Tags](#sending-and-getting-onesignal-tags)
 		- [Getting Player ID and Push Token](#getting-player-id-and-push-token)
+		- [Set Email for Better Targeting](#set-email-for-better-targeting)
 		- [Enable Vibration](#enable-vibration)
 		- [Enable Sound](#enable-sound)
 		- [Set In App Focus Behavior](#set-in-app-focus-behavior)
@@ -285,7 +286,7 @@ Notification object received example:
 
 We exposed the tags API of OneSignal to allow you to target users with notification later.
 
-````javascript
+```javascript
 // Sending single tag
 OneSignal.sendTag("key", "value");
 
@@ -299,7 +300,15 @@ OneSignal.getTags((receivedTags) => {
 
 // Delete a tag
 OneSignal.deleteTag("key");
-````
+```
+
+### Set Email for Better Targeting
+
+Sync hashed email if you have a login system or collect it. Will be used to reach the user at the most optimal time of day.
+
+```javascript
+OneSignal.syncHashedEmail("test@domain.com");
+```
 
 ### Getting Player ID and Push Token
 
