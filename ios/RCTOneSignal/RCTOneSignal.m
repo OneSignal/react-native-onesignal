@@ -10,6 +10,12 @@
 #import "RCTUtils.h"
 #endif
 
+#if __has_include(<OneSignal/OneSignal.h>)
+#import <OneSignal/OneSignal.h>
+#else
+#import "OneSignal.h"
+#endif
+
 #import "RCTOneSignal.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
