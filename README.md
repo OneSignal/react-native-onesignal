@@ -99,7 +99,7 @@ In your `AndroidManifest.xml`
 ```
 
 In `android/gradle/wrapper/gradle-wrapper.properties`
-````javascript
+```javascript
 ...
 
 distributionBase=GRADLE_USER_HOME
@@ -315,7 +315,7 @@ OneSignal.syncHashedEmail("test@domain.com");
 We exposed the idsAvailable API of OneSignal (both Android & iOS) as an event.
 Listen for `ids` event and define a callback to handle the returned object.
 
-````javascript
+```javascript
 componentWillMount() {
     OneSignal.addEventListener('ids', this.onIds);
 }
@@ -327,7 +327,7 @@ componentWillUnmount() {
 onIds(device) {
     console.log('Device info: ', device);
 }
-````
+```
 
 ### Enable Vibration
 
@@ -335,10 +335,10 @@ We exposed the enableVibrate API of OneSignal (Android only).
 
 *You can call this from your UI from a button press for example to give your user's options for your notifications. By default OneSignal always vibrates the device when a notification is displayed unless the device is in a total silent mode. Passing false means that the device will only vibrate lightly when the device is in it's vibrate only mode.*
 
-````javascript
+```javascript
 // Setting enableVibrate
 OneSignal.enableVibrate(true);
-````
+```
 
 ### Enable Sound
 
@@ -346,10 +346,10 @@ We exposed the enableSound API of OneSignal (Android only).
 
 *You can call this from your UI from a button press for example to give your user's options for your notifications. By default OneSignal plays the system's default notification sound when the device's notification system volume is turned on. Passing false means that the device will only vibrate unless the device is set to a total silent mode.*
 
-````javascript
+```javascript
 // Setting enableSound
 OneSignal.enableSound(true);
-````
+```
 
 ### Set In App Focus Behavior
 
@@ -361,10 +361,10 @@ We exposed the inFocusDisplaying API of OneSignal.
  - `1` = `InAppAlert`   - *(Default)* Will display an Android AlertDialog with the message contains.
  - `2` = `Notification` - Notification will display in the Notification Shade. Same as when the app is not in focus.
 
-````javascript
+```javascript
 // Example, always display notification in shade.
 OneSignal.inFocusDisplaying(2);
-````
+```
 
 #### iOS:
 
@@ -386,10 +386,10 @@ We exposed the setSubscription API of OneSignal (both Android & iOS).
 
 *You can call this method with false to opt users out of receiving all notifications through OneSignal. You can pass true later to opt users back into notifications*
 
-````javascript
+```javascript
 // Setting setSubscription
 OneSignal.setSubscription(true);
-````
+```
 
 ### Post Notification (Peer-to-Peer Notifications)
 
@@ -400,7 +400,7 @@ We call it internally P2P Notification, and therefore there is a special attribu
 
 The [OneSignal documentation](https://documentation.onesignal.com/docs/android-native-sdk#section--postnotification-) shows how to pass the [parameters](https://documentation.onesignal.com/reference#create-notification) as here:
 
-````javascript
+```javascript
 // Calling postNotification
 let data = arr // some array as payload
 let contents = {
@@ -416,7 +416,7 @@ onNotificationOpened: function(message, data, isActive) {
 		}
 	}
 }
-````
+```
 
 ### Prompt Location
 
@@ -425,10 +425,10 @@ We exposed the promptLocation API of OneSignal.
 *Prompts the user for location permissions. This allows for geotagging so you can send notifications to users based on location.
 Note: Make sure you also have the required location permission in your AndroidManifest.xml. For iOS, make sure you set the NSLocationWhenInUseUsageDescription or the NSLocationAlwaysUsageDescription in your info.plist. (Location Always also requires the location background mode capability)*
 
-````javascript
+```javascript
 // Calling promptLocation
 OneSignal.promptLocation();
-````
+```
 
 ### Clear Notifications (Android Only)
 
@@ -436,10 +436,10 @@ We exposed the clearOneSignalNotifications API of OneSignal (currently supported
 
 *Removes all OneSignal notifications from the Notification Shade.*
 
-````javascript
+```javascript
 // Calling clearOneSignalNotifications
 OneSignal.clearOneSignalNotifications();
-````
+```
 
 ### Cancel Notifications (Android Only)
 
@@ -447,27 +447,27 @@ We exposed the cancelNotification API of OneSignal (currently supported only on 
 
 *Cancels a single OneSignal notification based on its Android notification integer id. You can get the notification Id when invoking OneSignal.onNotificationOpened while receiving a notification.*
 
-````javascript
+```javascript
 // Calling cancelNotification
 OneSignal.cancelNotification(id);
-````
+```
 
 ### Check Push Notification Permissions (iOS Only)
 
 See what push permissions are currently enabled. callback will be invoked with a permissions object (currently supported only on iOS).
 
-````javascript
+```javascript
 // Requesting permissions
 OneSignal.checkPermissions((permissions) => {
 	console.log(permissions);
 });
-````
+```
 
 ### Request Push Notification Permissions (iOS Only)
 
 We exposed the requestPermissions method (currently supported only on iOS).
 
-````javascript
+```javascript
 // Setting requestPermissions
 permissions = {
     alert: true,
@@ -475,7 +475,7 @@ permissions = {
     sound: true
 };
 OneSignal.requestPermissions(permissions);
-````
+```
 
 ### Register For Push Notifications (iOS Only)
 
@@ -484,10 +484,10 @@ We exposed the registerForPushNotifications API of OneSignal (currently supporte
 *Call when you want to prompt the user to accept push notifications. Only call once and only if you passed @YES to `kOSSettingsKeyAutoPrompt` on init.
 
 
-````javascript
+```javascript
 // Calling registerForPushNotifications
 OneSignal.registerForPushNotifications();
-````
+```
 
 The following example is from our own App and needs to be customized in order to work.
 
@@ -551,7 +551,7 @@ dependencies {
 ```gradle
 :app:dexRelease
 Unknown source file : UNEXPECTED TOP-LEVEL EXCEPTION:
-Unknown source file : com.android.dex.DexException: Multiple dex files define Landroid/support/v7/appcompat/R$anim;````
+Unknown source file : com.android.dex.DexException: Multiple dex files define Landroid/support/v7/appcompat/R$anim;
 ```
 
 Solution: Upgrade your gradle to properly handle the dex tasks:
