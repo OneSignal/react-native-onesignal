@@ -4,8 +4,6 @@
 #import "RCTBridgeModule.h"
 #endif
 
-#import "OneSignal.h"
-
 @interface RCTOneSignal : NSObject <RCTBridgeModule>
 
 - (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId;
