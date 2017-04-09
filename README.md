@@ -594,7 +594,7 @@ compile(project(':react-native-maps')){
 ### Manually updating iOS OneSignalNativeSDK
 When you install `react-native-onesignal` it will automaticly include a specific version of the OneSignal iOS native SDK that is known to work with it. Only follow the instructions below if there is a native OneSignal SDK fix you need that isn't included already in the latest `react-native-onesignal` update.
 
-1. Download the [latest OneSiganl iOS native](https://github.com/OneSignal/OneSignal-iOS-SDK/releases) release.
+1. Download the [latest OneSignal iOS native](https://github.com/OneSignal/OneSignal-iOS-SDK/releases) release.
 2. In XCode, delete `OneSignalNativeSDK` under `Libraries/RCTOneSignal.xcodeproj`
 3. Press "Move to trash"
 4. Create a new `OneSignalNativeSDK` folder under `node_modules/react-native-onesignal/ios/`.
