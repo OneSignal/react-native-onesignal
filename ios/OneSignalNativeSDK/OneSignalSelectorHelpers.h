@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  *
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,15 @@
  * THE SOFTWARE.
  */
 
-@interface OneSignalHTTPClient : NSObject
+#ifndef OneSignalSelectorHelpers_h
+#define OneSignalSelectorHelpers_h
 
-@property (readonly, nonatomic) NSURL *baseURL;
+// Functions to help sizzle methods.
 
-- (NSMutableURLRequest*) requestWithMethod:(NSString*)method
-                                      path:(NSString*)path;
-@end
+BOOL checkIfInstanceOverridesSelector(Class instance, SEL selector);
+Class getClassWithProtocolInHierarchy(Class searchClass, Protocol* protocolToFind);
+NSArray* ClassGetSubclasses(Class parentClass);
+void injectToProperClass(SEL newSel, SEL makeLikeSel, NSArray* delegateSubclasses, Class myClass, Class delegateClass);
+BOOL injectSelector(Class newClass, SEL newSel, Class addToClass, SEL makeLikeSel);
+
+#endif /* OneSignalSelectorHelpers_h */

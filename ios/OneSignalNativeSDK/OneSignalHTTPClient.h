@@ -25,7 +25,10 @@
  * THE SOFTWARE.
  */
 
-#ifdef __OBJC__
-    #import <Foundation/Foundation.h>
-    #import <UIKit/UIKit.h>
-#endif
+@interface OneSignalHTTPClient : NSObject
+
+@property (readonly, nonatomic) NSURL *baseURL;
+
+- (NSMutableURLRequest*) requestWithMethod:(NSString*)method
+                                      path:(NSString*)path;
+@end

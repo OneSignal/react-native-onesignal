@@ -25,15 +25,15 @@
  * THE SOFTWARE.
  */
 
-#import <UIKit/UIKit.h>
+#ifndef UNUserNotificationCenter_OneSignal_h
+#define UNUserNotificationCenter_OneSignal_h
 
-@interface OneSignalWebView : UIViewController <UIWebViewDelegate>
+#import "OneSignal.h"
 
-@property(nonatomic, copy)NSURL *url;
-@property(nonatomic)UIWebView *webView;
-@property(nonatomic)UIActivityIndicatorView *uiBusy;
-
--(void)dismiss:(id)sender;
--(void)showInApp;
-
+@interface OneSignalUNUserNotificationCenter : NSObject
++ (void)swizzleSelectors;
++ (void)setUseiOS10_2_workaround:(BOOL)enable;
 @end
+
+
+#endif /* UNUserNotificationCenter_OneSignal_h */

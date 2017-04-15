@@ -27,13 +27,46 @@
 
 #import "OneSignalAlertViewDelegate.h"
 #import "OneSignal.h"
+#import "OneSignalHelper.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 @interface OneSignal ()
-+ (void) handleNotificationOpened:(NSDictionary*)messageDict isActive:(BOOL)isActive actionType : (OSNotificationActionType)actionType displayType:(OSNotificationDisplayType)displayType;
++ (void)handleNotificationOpened:(NSDictionary*)messageDict
+                        isActive:(BOOL)isActive
+                      actionType:(OSNotificationActionType)actionType
+                     displayType:(OSNotificationDisplayType)displayType;
 @end
+
+
+@implementation OneSignalAlertView
+
++ (void)showInAppAlert:(NSDictionary*)messageDict {
+    NSDictionary* titleAndBody = [OneSignalHelper getPushTitleBody:messageDict];
+    id oneSignalAlertViewDelegate = [[OneSignalAlertViewDelegate alloc] initWithMessageDict:messageDict];
+    
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:titleAndBody[@"title"]
+                                                        message:titleAndBody[@"body"]
+                                                       delegate:oneSignalAlertViewDelegate
+                                              cancelButtonTitle:@"Close"
+                                              otherButtonTitles:nil, nil];
+    // Add Buttons
+    NSArray *actionButons = [OneSignalHelper getActionButtons:messageDict];
+    if (actionButons) {
+        for(id button in actionButons)
+            [alertView addButtonWithTitle:button[@"n"] ?: button[@"text"]];
+    }
+    
+    [alertView show];
+    
+    // Message received that was displayed (Foreground + InAppAlert is true)
+    // Call Received Block
+    [OneSignalHelper handleNotificationReceived:OSNotificationDisplayTypeInAppAlert];
+}
+
+@end
+
 
 @implementation OneSignalAlertViewDelegate
 
@@ -51,8 +84,6 @@ static NSMutableArray* delegateReference;
     
     [delegateReference addObject:self];
     
-
-    
     return self;
 }
 
@@ -66,8 +97,14 @@ static NSMutableArray* delegateReference;
         
         NSMutableDictionary* userInfo = [mMessageDict mutableCopy];
 
-        if (mMessageDict[@"os_data"])
-            userInfo[@"actionSelected"] = mMessageDict[@"os_data"][@"buttons"][@"o"][buttonIndex - 1][@"i"];
+        if (mMessageDict[@"os_data"]) {
+            if ([mMessageDict[@"os_data"][@"buttons"] isKindOfClass:[NSDictionary class]])
+                userInfo[@"actionSelected"] = mMessageDict[@"os_data"][@"buttons"][@"o"][buttonIndex - 1][@"i"];
+            else
+                userInfo[@"actionSelected"] = mMessageDict[@"os_data"][@"buttons"][buttonIndex - 1][@"i"];
+        }
+        else if (mMessageDict[@"buttons"])
+             userInfo[@"actionSelected"] = mMessageDict[@"buttons"][buttonIndex - 1][@"i"];
         else {
             NSMutableDictionary* customDict = [userInfo[@"custom"] mutableCopy];
             NSMutableDictionary* additionalData = [[NSMutableDictionary alloc] initWithDictionary:customDict[@"a"]];

@@ -25,15 +25,14 @@
  * THE SOFTWARE.
  */
 
-#ifndef UNUserNotificationCenter_OneSignal_h
-#define UNUserNotificationCenter_OneSignal_h
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-#import "OneSignal.h"
 
-#if XC8_AVAILABLE
-@interface swizzleUNUserNotif : NSObject
+@interface OneSignalAlertView : NSObject
++ (void)showInAppAlert:(NSDictionary*)messageDict;
 @end
-#endif
 
-
-#endif /* UNUserNotificationCenter_OneSignal_h */
+@interface OneSignalAlertViewDelegate : NSObject <UIAlertViewDelegate>
+- (id)initWithMessageDict:(NSDictionary*)messageDict;
+@end

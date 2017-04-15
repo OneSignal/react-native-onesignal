@@ -25,15 +25,12 @@
  * THE SOFTWARE.
  */
 
-#import <UIKit/UIKit.h>
+#ifndef UIApplicationDelegate_OneSignal_h
+#define UIApplicationDelegate_OneSignal_h
+@interface OneSignalAppDelegate : NSObject
 
-@interface OneSignalWebView : UIViewController <UIWebViewDelegate>
-
-@property(nonatomic, copy)NSURL *url;
-@property(nonatomic)UIWebView *webView;
-@property(nonatomic)UIActivityIndicatorView *uiBusy;
-
--(void)dismiss:(id)sender;
--(void)showInApp;
++ (void)sizzlePreiOS10MethodsPhase1;
++ (void)sizzlePreiOS10MethodsPhase2;
 
 @end
+#endif /* UIApplicationDelegate_OneSignal_h */

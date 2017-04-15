@@ -47,7 +47,7 @@
 + (void)handleNotificationAction:(OSNotificationActionType)actionType actionID:(NSString*)actionID displayType:(OSNotificationDisplayType)displayType;
 
 // - iOS 10
-+ (BOOL)isiOS10Plus;
++ (BOOL)isIOSVersionGreaterOrEqual:(float)version;
 #if XC8_AVAILABLE
 + (void)registerAsUNNotificationCenterDelegate;
 + (void)clearCachedMedia;
@@ -56,7 +56,7 @@
 #endif
 
 // - Notifications
-+ (BOOL)isCapableOfGettingNotificationTypes;
++ (BOOL)canGetNotificationTypes;
 + (UILocalNotification*)prepareUILocalNotification:(NSDictionary*)data :(NSDictionary*)userInfo;
 + (BOOL)verifyURL:(NSString *)urlString;
 + (BOOL)isRemoteSilentNotification:(NSDictionary*)msg;
@@ -69,11 +69,15 @@
 
 // Threading
 + (void) runOnMainThread:(void(^)())block;
++ (void) dispatch_async_on_main_queue:(void(^)())block;
++ (void)performSelector:(SEL)aSelector onMainThreadOnObject:(id)targetObj withObject:(id)anArgument afterDelay:(NSTimeInterval)delay;
 
 // Other
 + (BOOL) isValidEmail:(NSString*)email;
 + (NSString*)hashUsingSha1:(NSString*)string;
 + (NSString*)hashUsingMD5:(NSString*)string;
++ (void)addAttachments:(NSDictionary*)attachments toNotificationContent:(id)content;
++ (void)addActionButtons:(NSArray*)buttonsPayloadList toNotificationContent:(id)content;
 
 #pragma clang diagnostic pop
 @end

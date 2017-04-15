@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  *
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,14 @@
  * THE SOFTWARE.
  */
 
-#ifndef OneSignalSelectorHelpers_h
-#define OneSignalSelectorHelpers_h
+#ifndef OneSignalNotificationSettingsIOS8_h
+#define OneSignalNotificationSettingsIOS8_h
 
-BOOL checkIfInstanceOverridesSelector(Class instance, SEL selector);
-Class getClassWithProtocolInHierarchy(Class searchClass, Protocol* protocolToFind);
-NSArray* ClassGetSubclasses(Class parentClass);
-void injectToProperClass(SEL newSel, SEL makeLikeSel, NSArray* delegateSubclasses, Class myClass, Class delegateClass);
-BOOL injectSelector(Class newClass, SEL newSel, Class addToClass, SEL makeLikeSel);
+#import "OneSignalNotificationSettings.h"
 
-#endif /* OneSignalSelectorHelpers_h */
+// Used for iOS 9 & 8
+@interface OneSignalNotificationSettingsIOS8 : NSObject <OneSignalNotificationSettings>
+
+@end
+
+#endif /* OneSignalNotificationSettingsIOS8_h */
