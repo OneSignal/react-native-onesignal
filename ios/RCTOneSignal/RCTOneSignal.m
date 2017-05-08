@@ -10,12 +10,6 @@
 #import "RCTUtils.h"
 #endif
 
-#if __has_include(<OneSignal/OneSignal.h>)
-#import <OneSignal/OneSignal.h>
-#else
-#import "OneSignal.h"
-#endif
-
 #import "RCTOneSignal.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
@@ -60,7 +54,7 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 }
 
 - (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId settings:(NSDictionary*)settings {
-    
+    [OneSignal addSubscriptionObserver:self];
     [OneSignal setValue:@"react" forKey:@"mSDKType"];
     [OneSignal initWithLaunchOptions:launchOptions
                                appId:appId
@@ -78,9 +72,16 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     return self;
 }
 
-// This isn't required, the iOS native SDK already hooks into this event.
-+ (void)didReceiveRemoteNotification:(NSDictionary *)dictionary {
-    // Keeping empty method around so developers do not get compile errors when updating versions.
+- (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges*)stateChanges {
+    
+    // Example of detecting subscribing to OneSignal
+    if (!stateChanges.from.subscribed && stateChanges.to.subscribed) {
+        NSLog(@"Subscribed for OneSignal push notifications!");
+    }
+    
+    // prints out all properties
+    NSLog(@"SubscriptionStateChanges:\n%@", stateChanges);
+    [self.bridge.eventDispatcher sendAppEventWithName:@"idsAvailable" body:stateChanges];
 }
 
 - (void)handleRemoteNotificationReceived:(NSString *)notification {
