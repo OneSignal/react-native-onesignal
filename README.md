@@ -488,7 +488,7 @@ OneSignal.requestPermissions(permissions);
 
 We exposed the registerForPushNotifications API of OneSignal (currently supported only on iOS).
 
-*Call when you want to prompt the user to accept push notifications. Only call once and only if you passed @YES to `kOSSettingsKeyAutoPrompt` on init.
+*Call when you want to prompt the user to accept push notifications. Only call once and only if you passed @NO to `kOSSettingsKeyAutoPrompt` on init.
 
 
 ```javascript
