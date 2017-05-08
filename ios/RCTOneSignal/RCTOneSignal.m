@@ -80,8 +80,8 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     }
     
     // prints out all properties
-    NSLog(@"SubscriptionStateChanges:\n%@", stateChanges);
-    [self.bridge.eventDispatcher sendAppEventWithName:@"idsAvailable" body:stateChanges];
+    NSLog(@"SubscriptionStateChanges:\n%@", stateChanges.to);
+    [self.bridge.eventDispatcher sendAppEventWithName:@"idsAvailable" body:stateChanges.to];
 }
 
 - (void)handleRemoteNotificationReceived:(NSString *)notification {
