@@ -40,4 +40,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:+'
     compile 'com.google.android.gms:play-services-analytics:+'
     compile 'com.google.android.gms:play-services-location:+'
+    testCompile 'junit:junit:4.12'
 }
