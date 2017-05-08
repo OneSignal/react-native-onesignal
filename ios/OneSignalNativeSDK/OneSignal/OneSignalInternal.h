@@ -25,14 +25,39 @@
  * THE SOFTWARE.
  */
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+
+// Internal selectors to the OneSignal SDK to be shared by other Classes.
+
+#ifndef OneSignalInternal_h
+#define OneSignalInternal_h
+
+#import "OneSignal.h"
+#import "OSObservable.h"
+#import "OneSignalNotificationSettings.h"
+
+#import "OSPermission.h"
+#import "OSSubscription.h"
 
 
-@interface OneSignalAlertView : NSObject
-+ (void)showInAppAlert:(NSDictionary*)messageDict;
+// Permission + Subscription - Redefine OSPermissionSubscriptionState
+@interface OSPermissionSubscriptionState ()
+
+@property (readwrite) OSPermissionState* permissionStatus;
+@property (readwrite) OSSubscriptionState* subscriptionStatus;
+
 @end
 
-@interface OneSignalAlertViewDelegate : NSObject <UIAlertViewDelegate>
-- (id)initWithMessageDict:(NSDictionary*)messageDict;
+
+@interface OneSignal (OneSignalInternal)
++ (void)updateNotificationTypes:(int)notificationTypes;
++ (BOOL)registerForAPNsToken;
++ (void)setWaitingForApnsResponse:(BOOL)value;
+
+@property (class) NSObject<OneSignalNotificationSettings>* osNotificationSettings;
+
+@property (class) OSPermissionState* currentPermissionState;
+
 @end
+
+
+#endif /* OneSignalInternal_h */

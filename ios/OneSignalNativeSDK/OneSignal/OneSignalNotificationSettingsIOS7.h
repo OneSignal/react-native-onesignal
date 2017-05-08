@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  *
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,13 @@
  * THE SOFTWARE.
  */
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#ifndef OneSignalNotificationSettingsIOS7_h
+#define OneSignalNotificationSettingsIOS7_h
 
+#import "OneSignalNotificationSettings.h"
 
-@interface OneSignalAlertView : NSObject
-+ (void)showInAppAlert:(NSDictionary*)messageDict;
+@interface OneSignalNotificationSettingsIOS7 : NSObject <OneSignalNotificationSettings>
+
 @end
 
-@interface OneSignalAlertViewDelegate : NSObject <UIAlertViewDelegate>
-- (id)initWithMessageDict:(NSDictionary*)messageDict;
-@end
+#endif /* OneSignalNotificationSettingsIOS7_h */

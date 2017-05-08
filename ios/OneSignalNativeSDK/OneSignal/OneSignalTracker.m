@@ -35,18 +35,28 @@
 @interface OneSignal ()
 
 + (void)registerUser;
-+ (void) sendNotificationTypesUpdate;
-+ (BOOL) clearBadgeCount:(BOOL)fromNotifOpened;
++ (BOOL)sendNotificationTypesUpdate;
++ (BOOL)clearBadgeCount:(BOOL)fromNotifOpened;
 + (NSString*)mUserId;
 
 @end
 
 @implementation OneSignalTracker
 
-NSNumber* unSentActiveTime;
-UIBackgroundTaskIdentifier focusBackgroundTask;
-NSTimeInterval lastOpenedTime;
-BOOL lastOnFocusWasToBackground = YES;
+static NSNumber* unSentActiveTime;
+static UIBackgroundTaskIdentifier focusBackgroundTask;
+static NSTimeInterval lastOpenedTime;
+static BOOL lastOnFocusWasToBackground = YES;
+
+
++ (void)resetLocals {
+    unSentActiveTime = nil;
+    focusBackgroundTask = 0;
+    lastOpenedTime = 0;
+    lastOnFocusWasToBackground = YES;
+}
+
+
 
 + (void) beginBackgroundFocusTask {
     focusBackgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -61,8 +71,8 @@ BOOL lastOnFocusWasToBackground = YES;
 
 + (void)onFocus:(BOOL)toBackground {
     
-    //Prevent the onFocus to be called twice when app being terminated
-    // (Both WillResignActive and willTerminate
+    // Prevent the onFocus to be called twice when app being terminated
+    //    - Both WillResignActive and willTerminate
     if (lastOnFocusWasToBackground == toBackground)
         return;
     lastOnFocusWasToBackground = toBackground;
@@ -73,13 +83,7 @@ BOOL lastOnFocusWasToBackground = YES;
     NSTimeInterval timeToPingWith = 0.0;
     
     
-    if (!toBackground) {
-        lastOpenedTime = now;
-        [OneSignal sendNotificationTypesUpdate];
-        wasBadgeSet = [OneSignal clearBadgeCount:false];
-    }
-    else {
-
+    if (toBackground) {
         [[NSUserDefaults standardUserDefaults] setDouble:now forKey:@"GT_LAST_CLOSED_TIME"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
@@ -96,7 +100,15 @@ BOOL lastOnFocusWasToBackground = YES;
         }
         
         timeToPingWith = totalTimeActive;
+    }
+    else {
+        lastOpenedTime = now;
+        BOOL firedUpdate = [OneSignal sendNotificationTypesUpdate];
         
+        // on_session tracking when resumming app.
+        if (!firedUpdate && [OneSignal mUserId])
+            [OneSignal registerUser];
+        wasBadgeSet = [OneSignal clearBadgeCount:false];
     }
     
     if (![OneSignal mUserId])

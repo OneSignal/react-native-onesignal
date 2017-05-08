@@ -25,7 +25,15 @@
  * THE SOFTWARE.
  */
 
-#ifdef __OBJC__
-    #import <Foundation/Foundation.h>
-    #import <UIKit/UIKit.h>
-#endif
+#import <UIKit/UIKit.h>
+
+@interface OneSignalWebView : UIViewController <UIWebViewDelegate>
+
+@property(nonatomic, copy)NSURL *url;
+@property(nonatomic)UIWebView *webView;
+@property(nonatomic)UIActivityIndicatorView *uiBusy;
+
+-(void)dismiss:(id)sender;
+-(void)showInApp;
+
+@end

@@ -30,10 +30,10 @@
 
 #import "OneSignal.h"
 
-#if XC8_AVAILABLE
-@interface swizzleUNUserNotif : NSObject
+@interface OneSignalUNUserNotificationCenter : NSObject
++ (void)swizzleSelectors;
++ (void)setUseiOS10_2_workaround:(BOOL)enable;
 @end
-#endif
 
 
 #endif /* UNUserNotificationCenter_OneSignal_h */

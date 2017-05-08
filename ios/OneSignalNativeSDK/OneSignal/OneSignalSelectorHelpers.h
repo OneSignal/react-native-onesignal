@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  *
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,8 @@
 
 #ifndef OneSignalSelectorHelpers_h
 #define OneSignalSelectorHelpers_h
+
+// Functions to help sizzle methods.
 
 BOOL checkIfInstanceOverridesSelector(Class instance, SEL selector);
 Class getClassWithProtocolInHierarchy(Class searchClass, Protocol* protocolToFind);

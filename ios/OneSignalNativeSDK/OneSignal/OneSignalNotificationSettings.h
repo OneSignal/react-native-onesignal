@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  *
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,26 @@
  * THE SOFTWARE.
  */
 
+#ifndef OneSignalNotificationSettings_h
+#define OneSignalNotificationSettings_h
+
+#import "OneSignal.h"
+
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 
+@protocol OneSignalNotificationSettings <NSObject>
 
-@interface OneSignalAlertView : NSObject
-+ (void)showInAppAlert:(NSDictionary*)messageDict;
+- (int) getNotificationTypes;
+- (OSPermissionState*)getNotificationPermissionState;
+- (void)getNotificationPermissionState:(void (^)(OSPermissionState *subcscriptionState))completionHandler;
+- (void)promptForNotifications:(void(^)(BOOL accepted))completionHandler;
+
+// Only used for iOS 8 & 9
+- (void)onNotificationPromptResponse:(int)notificationTypes;
+
+// Only used for iOS 7
+- (void)onAPNsResponse:(BOOL)success;
+
 @end
 
-@interface OneSignalAlertViewDelegate : NSObject <UIAlertViewDelegate>
-- (id)initWithMessageDict:(NSDictionary*)messageDict;
-@end
+#endif /* OneSignaNotificationSettings_h */

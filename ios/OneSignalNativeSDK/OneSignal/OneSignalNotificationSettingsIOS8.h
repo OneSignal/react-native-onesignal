@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  *
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,14 @@
  * THE SOFTWARE.
  */
 
-@interface OneSignalWebView : UIViewController <UIWebViewDelegate>
+#ifndef OneSignalNotificationSettingsIOS8_h
+#define OneSignalNotificationSettingsIOS8_h
 
-@property(nonatomic, copy)NSURL *url;
-@property(nonatomic)UIWebView *webView;
-@property(nonatomic)UIActivityIndicatorView *uiBusy;
+#import "OneSignalNotificationSettings.h"
 
--(void)dismiss:(id)sender;
--(void)showInApp;
+// Used for iOS 9 & 8
+@interface OneSignalNotificationSettingsIOS8 : NSObject <OneSignalNotificationSettings>
 
 @end
+
+#endif /* OneSignalNotificationSettingsIOS8_h */

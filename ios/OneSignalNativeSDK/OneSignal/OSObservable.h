@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  *
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,19 @@
  * THE SOFTWARE.
  */
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#ifndef OSObservable_h
+#define OSObservable_h
 
 
-@interface OneSignalAlertView : NSObject
-+ (void)showInAppAlert:(NSDictionary*)messageDict;
+@protocol OSObserver
+- (void)onChanged:(id)state;
 @end
 
-@interface OneSignalAlertViewDelegate : NSObject <UIAlertViewDelegate>
-- (id)initWithMessageDict:(NSDictionary*)messageDict;
+@interface OSObservable<__covariant ObserverType, __covariant ObjectType> : NSObject
+- (instancetype)initWithChangeSelector:(SEL)selector;
+- (void)addObserver:(ObserverType)observer;
+- (void)removeObserver:(ObserverType)observer;
+- (BOOL)notifyChange:(ObjectType)state;
 @end
+
+#endif /* OSObservable_h */

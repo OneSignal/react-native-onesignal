@@ -28,5 +28,9 @@
 #ifndef UIApplicationDelegate_OneSignal_h
 #define UIApplicationDelegate_OneSignal_h
 @interface OneSignalAppDelegate : NSObject
+
++ (void)sizzlePreiOS10MethodsPhase1;
++ (void)sizzlePreiOS10MethodsPhase2;
+
 @end
 #endif /* UIApplicationDelegate_OneSignal_h */
