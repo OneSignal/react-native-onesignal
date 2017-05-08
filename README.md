@@ -185,6 +185,13 @@ android {
                                                                appId:@"YOUR_ONESIGNAL_APP_ID"];
         ```
 
+        ```objc
+  	    // For requiring push notification permissions manually.
+        self.oneSignal = [[RCTOneSignal alloc] initWithLaunchOptions:launchOptions
+                                                               appId:@"YOUR_ONESIGNAL_APP_ID"
+                                 settings:@{kOSSettingsKeyAutoPrompt: @false}];
+        ```
+
     * After `application ` insert the code for the notification event:
 
         ```objc
@@ -206,7 +213,7 @@ import OneSignal from 'react-native-onesignal'; // Import package from node modu
 ...
 
 export default class App extends Component {
-    
+
     componentWillMount() {
         OneSignal.addEventListener('received', this.onReceived);
         OneSignal.addEventListener('opened', this.onOpened);
