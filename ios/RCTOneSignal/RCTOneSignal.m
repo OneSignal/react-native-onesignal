@@ -81,7 +81,7 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     
     // prints out all properties
     NSLog(@"SubscriptionStateChanges:\n%@", stateChanges.to);
-    [self.bridge.eventDispatcher sendAppEventWithName:@"idsAvailable" body:stateChanges.to];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"OneSignal-idsAvailable" body:stateChanges.to];
 }
 
 - (void)handleRemoteNotificationReceived:(NSString *)notification {
@@ -94,7 +94,7 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 
     
     
-    [curRCTBridge.eventDispatcher sendAppEventWithName:@"remoteNotificationReceived" body:json];
+    [curRCTBridge.eventDispatcher sendAppEventWithName:@"OneSignal-remoteNotificationReceived" body:json];
 }
 
 - (void)handleRemoteNotificationOpened:(NSString *)result {
@@ -105,11 +105,11 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
                                                          options:NSJSONReadingMutableContainers
                                                            error:&jsonError];
     
-    [curRCTBridge.eventDispatcher sendAppEventWithName:@"remoteNotificationOpened" body:json];
+    [curRCTBridge.eventDispatcher sendAppEventWithName:@"OneSignal-remoteNotificationOpened" body:json];
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification {
-    [self.bridge.eventDispatcher sendAppEventWithName:@"remoteNotificationsRegistered" body:notification.userInfo];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"OneSignal-remoteNotificationsRegistered" body:notification.userInfo];
 }
 
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
@@ -184,7 +184,7 @@ RCT_EXPORT_METHOD(configure) {
           @"userId" : userId ?: [NSNull null]
         };
 
-        [self.bridge.eventDispatcher sendAppEventWithName:@"idsAvailable" body:params];
+        [self.bridge.eventDispatcher sendAppEventWithName:@"OneSignal-idsAvailable" body:params];
     }];
 }
 

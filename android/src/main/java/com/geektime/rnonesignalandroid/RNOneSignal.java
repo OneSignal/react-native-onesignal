@@ -101,7 +101,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
                 params.putString("userId", userId);
                 params.putString("pushToken", registrationId);
 
-                sendEvent("idsAvailable", params);
+                sendEvent("OneSignal-idsAvailable", params);
             }
         });
     }
@@ -199,7 +199,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     private void notifyNotificationReceived(Bundle bundle) {
         try {
             JSONObject jsonObject = new JSONObject(bundle.getString("notification"));
-            sendEvent("remoteNotificationReceived", RNUtils.jsonToWritableMap(jsonObject));
+            sendEvent("OneSignal-remoteNotificationReceived", RNUtils.jsonToWritableMap(jsonObject));
         } catch(Throwable t) {
             t.printStackTrace();
         }
@@ -208,7 +208,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     private void notifyNotificationOpened(Bundle bundle) {
         try {
             JSONObject jsonObject = new JSONObject(bundle.getString("result"));
-            sendEvent("remoteNotificationOpened",  RNUtils.jsonToWritableMap(jsonObject));
+            sendEvent("OneSignal-remoteNotificationOpened",  RNUtils.jsonToWritableMap(jsonObject));
         } catch(Throwable t) {
             t.printStackTrace();
         }
