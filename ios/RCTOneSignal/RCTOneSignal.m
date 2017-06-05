@@ -218,9 +218,17 @@ RCT_EXPORT_METHOD(promptLocation) {
 }
 
 RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSString*)player_id other_parameters:(NSDictionary *)other_parameters) {
+    NSDictionary * additionalData = @{@"p2p_notification": data};
+
+    NSMutableDictionary * extendedData = [additionalData mutableCopy];
+    BOOL isHidden = [[other_parameters objectForKey:@"hidden"] boolValue];
+    if (isHidden) {
+        [extendedData setObject:[NSNumber numberWithBool:YES] forKey:@"hidden"];
+    }
+
     NSDictionary *notification = @{
         @"contents" : contents,
-        @"data" : @{@"p2p_notification": data},
+        @"data" : extendedData,
         @"include_player_ids": @[player_id]
     };
     NSMutableDictionary * extendedNotification = [notification mutableCopy];

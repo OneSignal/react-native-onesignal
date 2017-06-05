@@ -32,6 +32,7 @@ import org.json.JSONException;
 public class RNOneSignal extends ReactContextBaseJavaModule implements LifecycleEventListener {
     public static final String NOTIFICATION_OPENED_INTENT_FILTER = "GTNotificationOpened";
     public static final String NOTIFICATION_RECEIVED_INTENT_FILTER = "GTNotificationReceived";
+    public static final String HIDDEN_MESSAGE_KEY = "hidden";
 
     private ReactContext mReactContext;
     private boolean oneSignalInitDone;
@@ -149,15 +150,19 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
-    public void postNotification(String contents, String data, String player_id, String otherParameters) {
+    public void postNotification(String contents, String data, String playerId, String otherParameters) {
         try {
-            JSONObject postNotification = new JSONObject("{'contents': " + contents + ", 'data': {'p2p_notification': " + data +"}, 'include_player_ids': ['" + player_id + "']}");
+            JSONObject postNotification = new JSONObject("{'contents': " + contents + ", 'data': {'p2p_notification': " + data +"}, 'include_player_ids': ['" + playerId + "']}");
             if (otherParameters != null && !otherParameters.trim().isEmpty()) {
                 JSONObject parametersJson = new JSONObject(otherParameters.trim());
                 Iterator<String> keys = parametersJson.keys();
                 while (keys.hasNext()) {
                     String key = keys.next();
                     postNotification.put(key, parametersJson.get(key));
+                }
+
+                if (parametersJson.has(HIDDEN_MESSAGE_KEY) && parametersJson.getBoolean(HIDDEN_MESSAGE_KEY)) {
+                    postNotification.getJSONObject("data").put(HIDDEN_MESSAGE_KEY, true);
                 }
             }
 
