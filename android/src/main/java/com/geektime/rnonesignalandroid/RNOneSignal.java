@@ -152,7 +152,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     @ReactMethod
     public void postNotification(String contents, String data, String playerId, String otherParameters) {
         try {
-            JSONObject postNotification = new JSONObject("{'contents': " + contents + ", 'data': {'p2p_notification': " + data +"}, 'include_player_ids': ['" + playerId + "']}");
+            JSONObject postNotification = new JSONObject("{'contents': " + contents + ", 'data': {'p2p_notification': " + data + "}, 'include_player_ids': ['" + playerId + "']}");
             if (otherParameters != null && !otherParameters.trim().isEmpty()) {
                 JSONObject parametersJson = new JSONObject(otherParameters.trim());
                 Iterator<String> keys = parametersJson.keys();
@@ -166,7 +166,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
                 }
             }
 
-            OneSignal.postNotification(postNotification,
+            OneSignal.postNotification(
+                postNotification,
                 new OneSignal.PostNotificationResponseHandler() {
                     @Override
                     public void onSuccess(JSONObject response) {
@@ -177,7 +178,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
                     public void onFailure(JSONObject response) {
                         Log.e("OneSignal", "postNotification Failure: " + response.toString());
                     }
-                });
+                }
+            );
         } catch (JSONException e) {
             e.printStackTrace();
         }

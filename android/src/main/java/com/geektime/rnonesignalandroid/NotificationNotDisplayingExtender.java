@@ -12,8 +12,8 @@ import org.json.JSONObject;
  * Created by Andrey Beletsky on 6/5/17.
  */
 public class NotificationNotDisplayingExtender extends NotificationExtenderService {
-	@Override
-	protected boolean onNotificationProcessing(OSNotificationReceivedResult receivedResult) {
+    @Override
+    protected boolean onNotificationProcessing(OSNotificationReceivedResult receivedResult) {
         JSONObject additionalData = receivedResult.payload.additionalData;
         boolean hidden = false;
         try {
@@ -26,5 +26,5 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
 
         // Return true to stop the notification from displaying.
         return hidden;
-	}
+    }
 }
