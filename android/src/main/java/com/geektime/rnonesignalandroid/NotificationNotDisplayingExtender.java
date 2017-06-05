@@ -25,6 +25,6 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
         }
 
         // Return true to stop the notification from displaying.
-		return hidden;
+        return hidden;
 	}
 }
