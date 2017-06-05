@@ -217,12 +217,16 @@ RCT_EXPORT_METHOD(promptLocation) {
     [OneSignal promptLocation];
 }
 
-RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSString*)player_id) {
-    [OneSignal postNotification:@{
-                                  @"contents" : contents,
-                                  @"data" : @{@"p2p_notification": data},
-                                  @"include_player_ids": @[player_id]
-                                  }];
+RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSString*)player_id other_parameters:(NSDictionary *)other_parameters) {
+    NSDictionary *notification = @{
+        @"contents" : contents,
+        @"data" : @{@"p2p_notification": data},
+        @"include_player_ids": @[player_id]
+    };
+    NSMutableDictionary * extendedNotification = [notification mutableCopy];
+    [extendedNotification addEntriesFromDictionary: other_parameters];
+
+    [OneSignal postNotification:extendedNotification];
 }
 
 RCT_EXPORT_METHOD(syncHashedEmail:(NSString*)email) {
