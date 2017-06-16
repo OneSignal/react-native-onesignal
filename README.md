@@ -192,15 +192,6 @@ android {
                                  settings:@{kOSSettingsKeyAutoPrompt: @false}];
         ```
 
-    * After `application ` insert the code for the notification event:
-
-        ```objc
-        // Required for the notification event.
-        - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification {
-            [RCTOneSignal didReceiveRemoteNotification:notification];
-        }
-        ```
-
  * You're All Set!
 
 
