@@ -813,9 +813,10 @@ static OneSignal* singleInstance = nil;
     NSMutableArray *unAttachments = [NSMutableArray new];
     
     for(id key in attachments) {
-        NSString* URI = [attachments valueForKey:key];
+        NSString* URI = [OneSignalHelper trimURLSpacing:[attachments valueForKey:key]];
+        
         NSURL* nsURL = [NSURL URLWithString:URI];
-
+        
         // Remote media attachment */
         if (nsURL && [self isWWWScheme:nsURL]) {
             // Synchroneously download file and chache it
@@ -1076,6 +1077,13 @@ static OneSignal* singleInstance = nil;
     for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
         [output appendFormat:@"%02x", digest[i]];
     return output;
+}
+
++ (NSString*)trimURLSpacing:(NSString*)url {
+    if (!url)
+        return url;
+    
+    return [url stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 }
 
 #pragma clang diagnostic pop

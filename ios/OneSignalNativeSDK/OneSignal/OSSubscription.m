@@ -140,6 +140,13 @@
     return [NSString stringWithFormat:format, self.userId, self.pushToken, self.userSubscriptionSetting, self.subscribed];
 }
 
+- (NSDictionary*)toDictionary {
+    return @{@"userId": _userId ?: [NSNull null],
+             @"pushToken": _pushToken ?: [NSNull null],
+             @"userSubscriptionSetting": @(_userSubscriptionSetting),
+             @"subscribed": @(self.subscribed)};
+}
+
 @end
 
 
@@ -168,4 +175,10 @@
     static NSString* format = @"<OSSubscriptionStateChanges:\nfrom: %@,\nto:   %@\n>";
     return [NSString stringWithFormat:format, _from, _to];
 }
+
+- (NSDictionary*)toDictionary {
+    return @{@"from": [_from toDictionary],
+             @"to": [_to toDictionary]};
+}
+
 @end

@@ -49,7 +49,7 @@
     UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:titleAndBody[@"title"]
                                                         message:titleAndBody[@"body"]
                                                        delegate:oneSignalAlertViewDelegate
-                                              cancelButtonTitle:@"Close"
+                                              cancelButtonTitle:NSLocalizedString(@"Close", nil)
                                               otherButtonTitles:nil, nil];
     // Add Buttons
     NSArray *actionButons = [OneSignalHelper getActionButtons:messageDict];

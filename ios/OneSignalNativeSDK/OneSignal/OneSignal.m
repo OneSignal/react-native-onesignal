@@ -101,6 +101,14 @@ NSString* const kOSSettingsKeyInOmitNoAppIdLogging = @"kOSSettingsKeyInOmitNoApp
 
 
 @implementation OSPermissionSubscriptionState
+- (NSString*)description {
+    static NSString* format = @"<OSPermissionSubscriptionState:\npermissionStatus: %@,\nsubscriptionStatus: %@\n>";
+    return [NSString stringWithFormat:format, _permissionStatus, _subscriptionStatus];
+}
+- (NSDictionary*)toDictionary {
+    return @{@"permissionStatus": [_permissionStatus toDictionary],
+             @"subscriptionStatus": [_subscriptionStatus toDictionary]};
+}
 @end
 
 @interface OSPendingCallbacks : NSObject
@@ -113,11 +121,13 @@ NSString* const kOSSettingsKeyInOmitNoAppIdLogging = @"kOSSettingsKeyInOmitNoApp
 
 @implementation OneSignal
 
-NSString* const ONESIGNAL_VERSION = @"020502";
+NSString* const ONESIGNAL_VERSION = @"020504";
 static NSString* mSDKType = @"native";
 static BOOL coldStartFromTapOnNotification = NO;
 
 static NSMutableArray* pendingSendTagCallbacks;
+static OSResultSuccessBlock pendingGetTagsSuccessBlock;
+static OSFailureBlock pendingGetTagsFailureBlock;
 
 // Has attempted to register for push notifications with Apple since app was installed.
 static BOOL registeredWithApple = NO;
@@ -480,7 +490,7 @@ void onesignal_Log(ONE_S_LOG_LEVEL logLevel, NSString* message) {
             UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:levelString
                                                                 message:message
                                                                delegate:nil
-                                                      cancelButtonTitle:@"Close"
+                                                      cancelButtonTitle:NSLocalizedString(@"Close", nil)
                                                       otherButtonTitles:nil, nil];
             [alertView show];
         }];
@@ -628,7 +638,7 @@ void onesignal_Log(ONE_S_LOG_LEVEL logLevel, NSString* message) {
     // Can't send tags yet as their isn't a player_id.
     //   tagsToSend will be sent with the POST create player call later in this case.
     if (self.currentSubscriptionState.userId)
-        [self performSelector:@selector(sendTagsToServer) withObject:nil afterDelay:5];
+       [OneSignalHelper performSelector:@selector(sendTagsToServer) onMainThreadOnObject:self withObject:nil afterDelay:5];
 }
 
 // Called only with a delay to batch network calls.
@@ -682,15 +692,18 @@ void onesignal_Log(ONE_S_LOG_LEVEL logLevel, NSString* message) {
 }
 
 + (void)getTags:(OSResultSuccessBlock)successBlock onFailure:(OSFailureBlock)failureBlock {
-    if (!self.currentSubscriptionState.userId)
+    if (!self.currentSubscriptionState.userId) {
+        pendingGetTagsSuccessBlock = successBlock;
+        pendingGetTagsFailureBlock = failureBlock;
         return;
+    }
     
     NSMutableURLRequest* request;
-    request = [self.httpClient requestWithMethod:@"GET" path:[NSString stringWithFormat:@"players/%@", self.currentSubscriptionState.userId]];
+    NSString* path = [NSString stringWithFormat:@"players/%@?app_id=%@", self.currentSubscriptionState.userId, self.app_id];
+    request = [self.httpClient requestWithMethod:@"GET" path:path];
     
     [OneSignalHelper enqueueRequest:request onSuccess:^(NSDictionary* results) {
-        if ([results objectForKey:@"tags"] != nil)
-            successBlock([results objectForKey:@"tags"]);
+        successBlock([results objectForKey:@"tags"]);
     } onFailure:failureBlock];
 }
 
@@ -729,7 +742,7 @@ void onesignal_Log(ONE_S_LOG_LEVEL logLevel, NSString* message) {
     
     for(NSString* key in keys) {
         if (tagsToSend && tagsToSend[key]) {
-            if (![tagsToSend[key] isEqualToString:@""])
+            if (![tagsToSend[key] isEqual:@""])
                 [tagsToSend removeObjectForKey:key];
         }
         else
@@ -1094,6 +1107,13 @@ static dispatch_queue_t serialQueue;
             [self fireIdsAvailableCallback];
             
             [self sendNotificationTypesUpdate];
+            
+            if (pendingGetTagsSuccessBlock) {
+                [OneSignal getTags:pendingGetTagsSuccessBlock onFailure:pendingGetTagsFailureBlock];
+                pendingGetTagsSuccessBlock = nil;
+                pendingGetTagsFailureBlock = nil;
+            }
+            
         }
     } onFailure:^(NSError* error) {
         waitingForOneSReg = false;
@@ -1275,9 +1295,10 @@ static NSString *_lastnonActiveMessageId;
 }
 
 + (void)launchWebURL:(NSString*)openUrl {
-
-    if (openUrl && [OneSignalHelper verifyURL:openUrl]) {
-        NSURL *url = [NSURL URLWithString:openUrl];
+    NSString* toOpenUrl = [OneSignalHelper trimURLSpacing:openUrl];
+    
+    if (toOpenUrl && [OneSignalHelper verifyURL:toOpenUrl]) {
+        NSURL *url = [NSURL URLWithString:toOpenUrl];
         // Give the app resume animation time to finish when tapping on a notification from the notification center.
         // Isn't a requirement but improves visual flow.
         [OneSignalHelper performSelector:@selector(displayWebView:) withObject:url afterDelay:0.5];
