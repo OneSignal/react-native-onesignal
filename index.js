@@ -92,6 +92,18 @@ export default class OneSignal {
             console.log("This function is not supported on Android");
         }
     }
+    
+    static promptForPushNotificationsWithUserResponse(callback: Function) {
+        if (Platform.OS === 'ios') {
+            invariant(
+                typeof callback === 'function',
+                'Must provide a valid callback'
+            );
+            RNOneSignal.promptForPushNotificationsWithUserResponse(callback);
+        } else {
+            console.log("This function is not supported on Android");
+        }
+    }
 
     static requestPermissions(permissions) {
         var requestedPermissions = {};
