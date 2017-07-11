@@ -175,7 +175,7 @@ RCT_EXPORT_METHOD(registerForPushNotifications) {
 RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
     [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
         NSLog(@"Prompt For Push Notifications Success");
-        callback(@[accepted]);
+        callback(@[@(accepted)]);
     }];
 }
 
