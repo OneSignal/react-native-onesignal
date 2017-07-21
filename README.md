@@ -28,6 +28,7 @@ React Native Push Notifications support with OneSignal integration.
 		- [Enable Sound](#enable-sound)
 		- [Set In App Focus Behavior](#set-in-app-focus-behavior)
 		- [Change User Subscription Status](#change-user-subscription-status)
+		- [Check Push Notification and User Subscription Status](#check-push-notification-and-user-subscription-status)
 		- [Post Notification (Peer-to-Peer Notifications)](#post-notification-peer-to-peer-notifications)
 		- [Prompt Location](#prompt-location)
 		- [Clear Notifications (Android Only)](#clear-notifications-android-only)
@@ -387,6 +388,20 @@ We exposed the setSubscription API of OneSignal (both Android & iOS).
 ```javascript
 // Setting setSubscription
 OneSignal.setSubscription(true);
+```
+
+
+### Check Push Notification and User Subscription Status
+
+We exposed the getPermissionSubscriptionState API of OneSignal (both Android & iOS).
+
+*Allows you to check whether notifications are enabled for the app, whether user is subscribed to notifications through OneSignal, and what the user's in-app subscription preference is. It also provides access to pushToken and userId*
+
+```javascript
+// Check push notification and OneSignal subscription statuses
+OneSignal.getPermissionSubscriptionState((status) => {
+    console.log(status);
+});
 ```
 
 ### Post Notification (Peer-to-Peer Notifications)

@@ -20,6 +20,9 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.onesignal.OSPermissionState;
+import com.onesignal.OSPermissionSubscriptionState;
+import com.onesignal.OSSubscriptionState;
 import com.onesignal.OneSignal;
 
 import org.json.JSONObject;
@@ -107,6 +110,36 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
                 sendEvent("OneSignal-idsAvailable", params);
             }
         });
+    }
+
+    @ReactMethod
+    public void getPermissionSubscriptionState(final Callback callback) {
+        OSPermissionSubscriptionState state = OneSignal.getPermissionSubscriptionState();
+        OSPermissionState permissionState = state.getPermissionStatus();
+        OSSubscriptionState subscriptionState = state.getSubscriptionStatus();
+
+        // Notifications enabled for app? (Android Settings)
+        boolean notificationsEnabled = permissionState.getEnabled();
+
+        // User subscribed to OneSignal? (automatically toggles with notificationsEnabled)
+        boolean subscriptionEnabled = subscriptionState.getSubscribed();
+
+        // User's original subscription preference (regardless of notificationsEnabled)
+        boolean userSubscriptionEnabled = subscriptionState.getUserSubscriptionSetting();
+
+        try {
+            JSONObject result = new JSONObject("{" +
+                "'notificationsEnabled': " + String.valueOf(notificationsEnabled) + "," +
+                "'subscriptionEnabled': " + String.valueOf(subscriptionEnabled) + "," +
+                "'userSubscriptionEnabled': " + String.valueOf(userSubscriptionEnabled) + "," +
+                "'pushToken': " + subscriptionState.getPushToken() + "," +
+                "'userId': " + subscriptionState.getUserId() +
+            "}");
+
+            callback.invoke(RNUtils.jsonToWritableMap(result));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @ReactMethod
