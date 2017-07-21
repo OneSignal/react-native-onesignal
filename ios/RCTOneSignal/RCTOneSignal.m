@@ -172,7 +172,7 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
 {
     if (RCTRunningInAppExtension()) {
         callback(@[@{
-			@"hasPrompted": @NO,
+            @"hasPrompted": @NO,
             @"notificationsEnabled": @NO,
             @"subscriptionEnabled": @NO,
             @"userSubscriptionEnabled": @NO,
@@ -186,19 +186,19 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
     OSSubscriptionState *subscriptionState = state.subscriptionStatus;
     
     // Received push notification prompt? (iOS only property)
-	BOOL hasPrompted = permissionState.hasPrompted == 1;
-	
-	// Notifications enabled for app? (iOS Settings)
-	BOOL notificationsEnabled = permissionState.status == 2;
-	
-	// User subscribed to OneSignal? (automatically toggles with notificationsEnabled)
-	BOOL subscriptionEnabled = subscriptionState.subscribed == 1;
-	
-	// User's original subscription preference (regardless of notificationsEnabled)
-	BOOL userSubscriptionEnabled = subscriptionState.userSubscriptionSetting == 1;
-    
+    BOOL hasPrompted = permissionState.hasPrompted == 1;
+
+    // Notifications enabled for app? (iOS Settings)
+    BOOL notificationsEnabled = permissionState.status == 2;
+
+    // User subscribed to OneSignal? (automatically toggles with notificationsEnabled)
+    BOOL subscriptionEnabled = subscriptionState.subscribed == 1;
+
+    // User's original subscription preference (regardless of notificationsEnabled)
+    BOOL userSubscriptionEnabled = subscriptionState.userSubscriptionSetting == 1;
+
     callback(@[@{
-		@"hasPrompted": @(hasPrompted),
+        @"hasPrompted": @(hasPrompted),
         @"notificationsEnabled": @(notificationsEnabled),
         @"subscriptionEnabled": @(subscriptionEnabled),
         @"userSubscriptionEnabled": @(userSubscriptionEnabled),
