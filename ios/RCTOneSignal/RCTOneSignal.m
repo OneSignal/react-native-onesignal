@@ -202,8 +202,8 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
         @"notificationsEnabled": @(notificationsEnabled),
         @"subscriptionEnabled": @(subscriptionEnabled),
         @"userSubscriptionEnabled": @(userSubscriptionEnabled),
-        @"pushToken": subscriptionState.pushToken,
-        @"userId": subscriptionState.userId,
+        @"pushToken": subscriptionState.pushToken != NULL ? subscriptionState.pushToken : [NSNull null],
+        @"userId": subscriptionState.userId != NULL ? subscriptionState.userId : [NSNull null],
     }]);
 }
 
