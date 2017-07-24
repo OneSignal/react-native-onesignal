@@ -143,6 +143,14 @@ export default class OneSignal {
         }
     }
 
+    static getPermissionSubscriptionState(callback: Function) {
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+        RNOneSignal.getPermissionSubscriptionState(callback);
+    }
+
     static sendTag(key, value) {
         RNOneSignal.sendTag(key, value);
     }
