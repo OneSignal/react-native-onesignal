@@ -172,6 +172,13 @@ RCT_EXPORT_METHOD(registerForPushNotifications) {
     [OneSignal registerForPushNotifications];
 }
 
+RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
+    [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
+        NSLog(@"Prompt For Push Notifications Success");
+        callback(@[@(accepted)]);
+    }];
+}
+
 RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
     [OneSignal sendTag:key value:value];
 }
