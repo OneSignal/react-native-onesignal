@@ -78,6 +78,7 @@
 + (NSString*)hashUsingMD5:(NSString*)string;
 + (void)addAttachments:(NSDictionary*)attachments toNotificationContent:(id)content;
 + (void)addActionButtons:(NSArray*)buttonsPayloadList toNotificationContent:(id)content;
++ (NSString*)trimURLSpacing:(NSString*)url;
 
 #pragma clang diagnostic pop
 @end

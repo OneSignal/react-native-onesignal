@@ -183,6 +183,7 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 
 @property (readonly, nonatomic) BOOL hasPrompted;
 @property (readonly, nonatomic) OSNotificationPermission status;
+- (NSDictionary*)toDictionary;
 
 @end
 
@@ -190,6 +191,7 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 
 @property (readonly) OSPermissionState* to;
 @property (readonly) OSPermissionState* from;
+- (NSDictionary*)toDictionary;
 
 @end
 
@@ -205,6 +207,7 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 @property (readonly, nonatomic) BOOL userSubscriptionSetting; // returns setSubscription state.
 @property (readonly, nonatomic) NSString* userId;    // AKA OneSignal PlayerId
 @property (readonly, nonatomic) NSString* pushToken; // AKA Apple Device Token
+- (NSDictionary*)toDictionary;
 
 @end
 
@@ -212,8 +215,8 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 
 @property (readonly) OSSubscriptionState* to;
 @property (readonly) OSSubscriptionState* from;
-@property (readonly) BOOL becameSubscribed;
-@property (readonly) BOOL becameUnsubscribed;
+
+- (NSDictionary*)toDictionary;
 
 @end
 
@@ -228,6 +231,7 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 
 @property (readonly) OSPermissionState* permissionStatus;
 @property (readonly) OSSubscriptionState* subscriptionStatus;
+- (NSDictionary*)toDictionary;
 
 @end
 

@@ -61,6 +61,14 @@ static bool hasDelayed = false;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
 
+
+NSObject *_mutexObjectForLastLocation;
++(NSObject*)mutexObjectForLastLocation {
+    if (!_mutexObjectForLastLocation)
+        _mutexObjectForLastLocation = [NSObject alloc];
+    return _mutexObjectForLastLocation;
+}
+
 static OneSignalLocation* singleInstance = nil;
 +(OneSignalLocation*) sharedInstance {
     @synchronized( singleInstance ) {
@@ -76,7 +84,9 @@ static OneSignalLocation* singleInstance = nil;
     return lastLocation;
 }
 + (void)clearLastLocation {
-    lastLocation = nil;
+    @synchronized(OneSignalLocation.mutexObjectForLastLocation) {
+       lastLocation = nil;
+    }
 }
 
 + (void) getLocation:(bool)prompt {
@@ -212,7 +222,9 @@ static OneSignalLocation* singleInstance = nil;
     currentLocation->horizontalAccuracy = [[location valueForKey:@"horizontalAccuracy"] doubleValue];
     currentLocation->cords = cords;
     
-    lastLocation = currentLocation;
+    @synchronized(OneSignalLocation.mutexObjectForLastLocation) {
+        lastLocation = currentLocation;
+    }
     
     if(!sendLocationTimer)
         [OneSignalLocation resetSendTimer];
@@ -227,11 +239,12 @@ static OneSignalLocation* singleInstance = nil;
     sendLocationTimer = [NSTimer scheduledTimerWithTimeInterval:requiredWaitTime target:self selector:@selector(sendLocation) userInfo:nil repeats:NO];
 }
 
-+ (void) sendLocation {
++ (void)sendLocation {
+    @synchronized(OneSignalLocation.mutexObjectForLastLocation) {
     if (!lastLocation || ![OneSignal mUserId]) return;
     
     //Fired from timer and not initial location fetched
-    if(initialLocationSent)
+    if (initialLocationSent)
         [OneSignalLocation resetSendTimer];
     
     initialLocationSent = YES;
@@ -256,6 +269,7 @@ static OneSignalLocation* singleInstance = nil;
     [OneSignalHelper enqueueRequest:request
                           onSuccess:nil
                           onFailure:nil];
+    }
 }
 
 

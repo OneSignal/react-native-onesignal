@@ -149,6 +149,11 @@
     return [NSString stringWithFormat:format, self.hasPrompted, self.statusAsString];
 }
 
+- (NSDictionary*)toDictionary {
+    return @{@"hasPrompted": @(self.hasPrompted),
+             @"status": @(self.status)};
+}
+
 @end
 
 
@@ -177,4 +182,9 @@
     static NSString* format = @"<OSSubscriptionStateChanges:\nfrom: %@,\nto:   %@\n>";
     return [NSString stringWithFormat:format, _from, _to];
 }
+
+- (NSDictionary*)toDictionary {
+    return @{@"from": [_from toDictionary], @"to": [_to toDictionary]};
+}
+
 @end
