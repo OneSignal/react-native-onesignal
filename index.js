@@ -17,12 +17,12 @@ function handleConnectionStateChange(isConnected) {
     if (!isConnected) return;
 
     OneSignal.configure();
-    NetInfo.isConnected.removeEventListener('change', handleConnectionStateChange);
+    NetInfo.isConnected.removeEventListener('connectionChange', handleConnectionStateChange);
 }
 
 NetInfo.isConnected.fetch().then(isConnected => {
     if (isConnected) return OneSignal.configure();
-    NetInfo.isConnected.addEventListener('change', handleConnectionStateChange);
+    NetInfo.isConnected.addEventListener('connectionChange', handleConnectionStateChange);
 }).catch((...args) => console.warn("Error: ", args));
 
 
@@ -92,7 +92,7 @@ export default class OneSignal {
             console.log("This function is not supported on Android");
         }
     }
-    
+
     static promptForPushNotificationsWithUserResponse(callback: Function) {
         if (Platform.OS === 'ios') {
             invariant(
