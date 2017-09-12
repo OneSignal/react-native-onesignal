@@ -207,10 +207,10 @@ import OneSignal from 'react-native-onesignal'; // Import package from node modu
 export default class App extends Component {
 
     componentWillMount() {
-        OneSignal.addEventListener('received', this.onReceived);
-        OneSignal.addEventListener('opened', this.onOpened);
-        OneSignal.addEventListener('registered', this.onRegistered);
-        OneSignal.addEventListener('ids', this.onIds);
+        OneSignal.addEventListener('received', this.onReceived.bind(this));
+        OneSignal.addEventListener('opened', this.onOpened.bind(this));
+        OneSignal.addEventListener('registered', this.onRegistered.bind(this));
+        OneSignal.addEventListener('ids', this.onIds.bind(this));
     }
 
     componentWillUnmount() {
