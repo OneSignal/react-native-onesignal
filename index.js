@@ -92,7 +92,7 @@ export default class OneSignal {
             console.log("This function is not supported on Android");
         }
     }
-    
+
     static promptForPushNotificationsWithUserResponse(callback: Function) {
         if (Platform.OS === 'ios') {
             invariant(
