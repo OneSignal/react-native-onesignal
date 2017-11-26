@@ -604,6 +604,10 @@ compile(project(':react-native-maps')){
   compile 'com.google.android.gms:play-services-maps:+'
 ```
 
+### Issue 5 - Make `react-native-onesignal` work with ExpoKit after ejecting from Expo/CRNA
+
+If you have detached from Expo or CRNA, you might need to change the versions of Google Play Services that this library is using to make it work nicely with ExpoKit (as of SDK23). See [this issue](https://github.com/geektimecoil/react-native-onesignal/issues/301#issuecomment-327346705).
+
 ### Manually updating iOS OneSignalNativeSDK
 When you install `react-native-onesignal` it will automaticly include a specific version of the OneSignal iOS native SDK that is known to work with it. Only follow the instructions below if there is a native OneSignal SDK fix you need that isn't included already in the latest `react-native-onesignal` update.
 
