@@ -193,6 +193,71 @@ android {
                                  settings:@{kOSSettingsKeyAutoPrompt: @false}];
         ```
 
+### Add Notification Service Extension
+ * In Xcode, select `File` > `New` > `Target`
+ * Select `Notification Service Extension` and press `Next`
+ 
+ ![image](https://files.readme.io/74a6d44-Xcode_create_notification_service_extension_1.png)
+
+ * Enter the product name as `OneSignalNotificationServiceExtension` and press `Finish`
+
+ ![image](https://files.readme.io/1abfb4e-Xcode_create_notification_service_extension_2.png)
+
+ * Press `Cancel` on the Activate Scheme prompt
+
+ ![image](https://files.readme.io/5c47cf5-Xcode_create_notification_service_extension_3.png)
+
+_By cancelling, you are telling Xcode to continue debugging your application, instead of debugging just the extension. If you activate by accident, you can always switch back to debug your app in Xcode by selecting your application's target (next to the Play button)_
+
+ * Open `NotificationServiceExtension.m` or `NotificationService.swift` and replace the whole file contents with the code below:
+
+ ```objc
+#import <OneSignal/OneSignal.h>
+
+#import "NotificationService.h"
+
+@interface NotificationService ()
+
+@property (nonatomic, strong) void (^contentHandler)(UNNotificationContent *contentToDeliver);
+@property (nonatomic, strong) UNNotificationRequest *receivedRequest;
+@property (nonatomic, strong) UNMutableNotificationContent *bestAttemptContent;
+
+@end
+
+@implementation NotificationService
+
+- (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
+    self.receivedRequest = request;
+    self.contentHandler = contentHandler;
+    self.bestAttemptContent = [request.content mutableCopy];
+    
+    [OneSignal didReceiveNotificationExtensionRequest:self.receivedRequest withMutableNotificationContent:self.bestAttemptContent];
+    
+    // DEBUGGING: Uncomment the 2 lines below and comment out the one above to ensure this extension is excuting
+    //            Note, this extension only runs when mutable-content is set
+    //            Setting an attachment or action buttons automatically adds this
+    // NSLog(@"Running NotificationServiceExtension");
+    // self.bestAttemptContent.body = [@"[Modified] " stringByAppendingString:self.bestAttemptContent.body];
+    
+    self.contentHandler(self.bestAttemptContent);
+}
+
+- (void)serviceExtensionTimeWillExpire {
+    // Called just before the extension will be terminated by the system.
+    // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
+    
+    [OneSignal serviceExtensionTimeWillExpireRequest:self.receivedRequest withMutableNotificationContent:self.bestAttemptContent];
+    
+    self.contentHandler(self.bestAttemptContent);
+}
+
+@end
+ ```
+ _Ignore any build errors at this point, the next step will import OneSignal which will resolve any errors._
+
+### Import OneSignal Into Your OneSignalNotificationServiceExtension Target
+ * In your project's settings, select the OneSignalNotificationServiceExtension target 
+ * In `General` settings under `Linked Frameworks and Libraries`, click `+` and add the `libRCTOneSignal.a` framework
  * You're All Set!
 
 
