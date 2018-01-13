@@ -18,6 +18,7 @@ React Native Push Notifications support with OneSignal integration.
 		- [Adding the Code](#adding-the-code)
 	- [iOS Installation](#ios-installation)
 		- [Adding the Code](#adding-the-code)
+        - [Add Notification Service Extension](#add-notification-service-extension)
 	- [Usage](#usage)
 	- [API](#api)
 		- [Handling Notifications](#handling-notifications)
