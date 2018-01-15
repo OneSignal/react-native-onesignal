@@ -197,16 +197,16 @@ android {
 ### Add Notification Service Extension
  * In Xcode, select `File` > `New` > `Target`
  * Select `Notification Service Extension` and press `Next`
- 
- ![image](https://files.readme.io/74a6d44-Xcode_create_notification_service_extension_1.png)
+
+ ![image](https://raw.githubusercontent.com/nightsd01/react-native-onesignal/master/images/74a6d44-Xcode_create_notification_service_extension_1.png)
 
  * Enter the product name as `OneSignalNotificationServiceExtension` and press `Finish`
 
- ![image](https://files.readme.io/1abfb4e-Xcode_create_notification_service_extension_2.png)
+ ![image](https://raw.githubusercontent.com/nightsd01/react-native-onesignal/master/images/1abfb4e-Xcode_create_notification_service_extension_2.png)
 
  * Press `Cancel` on the Activate Scheme prompt
 
- ![image](https://files.readme.io/5c47cf5-Xcode_create_notification_service_extension_3.png)
+ ![image](https://raw.githubusercontent.com/nightsd01/react-native-onesignal/master/images/5c47cf5-Xcode_create_notification_service_extension_3.png)
 
 _By cancelling, you are telling Xcode to continue debugging your application, instead of debugging just the extension. If you activate by accident, you can always switch back to debug your app in Xcode by selecting your application's target (next to the Play button)_
 
