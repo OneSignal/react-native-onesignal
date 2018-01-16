@@ -4,14 +4,44 @@
 import { NativeModules, NativeAppEventEmitter, NetInfo, Platform } from 'react-native';
 import invariant from 'invariant';
 
+var _eventBroadcastNames = [
+    'OneSignal-remoteNotificationReceived',
+    'OneSignal-remoteNotificationOpened',
+    'OneSignal-remoteNotificationsRegistered',
+    'OneSignal-idsAvailable'
+];
+
+var _eventNames = [ "received", "opened", "registered", "ids" ];
+
+var _notificationHandler = new Map();
+var _notificationCache = new Map();
+var _listeners = [];
+
+for(var i = 0; i < _eventBroadcastNames.length; i++) {
+    var eventBroadcastName = _eventBroadcastNames[i];
+    var eventName = _eventNames[i];
+
+    _listeners[eventName] = handleEventBroadcast(eventName, eventBroadcastName)
+}
+
 var RNOneSignal = NativeModules.OneSignal;
 
-var DEVICE_NOTIF_RECEIVED_EVENT = 'OneSignal-remoteNotificationReceived';
-var DEVICE_NOTIF_OPENED_EVENT = 'OneSignal-remoteNotificationOpened';
-var DEVICE_NOTIF_REG_EVENT = 'OneSignal-remoteNotificationsRegistered';
-var DEVICE_IDS_AVAILABLE = 'OneSignal-idsAvailable';
+function handleEventBroadcast(type, broadcast) {
+    return NativeAppEventEmitter.addListener(
+        broadcast, (notification) => { 
 
-const _notifHandlers = new Map();
+            // Check if we have added listener for this type yet
+            // Cache the result first if we have not.
+            var handler = _notificationHandler.get(type);
+
+            if (handler) {
+                handler(notification);
+            } else {
+                _notificationCache.set(type, notification);
+            }
+        }
+    );
+}
 
 function handleConnectionStateChange(isConnected) {
     if (!isConnected) return;
@@ -37,39 +67,14 @@ export default class OneSignal {
             'OneSignal only supports `received`, `opened`, `registered`, and `ids` events'
         );
 
-        var listener;
+        _notificationHandler.set(type, handler);
 
-        if (type === 'received') {
-            listener = NativeAppEventEmitter.addListener(
-                DEVICE_NOTIF_RECEIVED_EVENT,
-                (notification) => {
-                    handler(notification);
-                }
-            );
-        } else if (type === 'opened') {
-            listener = NativeAppEventEmitter.addListener(
-                DEVICE_NOTIF_OPENED_EVENT,
-                (result) => {
-                    handler(result);
-                }
-            );
-        } else if (type === 'registered') {
-            listener = NativeAppEventEmitter.addListener(
-                DEVICE_NOTIF_REG_EVENT,
-                (notifData) => {
-                    handler(notifData);
-                }
-            );
-        } else if (type === 'ids') {
-            listener = NativeAppEventEmitter.addListener(
-                DEVICE_IDS_AVAILABLE,
-                (ids) => {
-                    handler(ids);
-                }
-            );
+        // Check if there is a cache for this type of event
+        var cache = _notificationCache.get(type);
+        if (cache) {
+            handler(cache);
+            _notificationCache.delete(type);
         }
-        _notifHandlers.set(type, listener);
-
     }
 
     static removeEventListener(type: any, handler: Function) {
@@ -77,12 +82,14 @@ export default class OneSignal {
             type === 'received' || type === 'opened' || type === 'registered' || type === 'ids',
             'OneSignal only supports `received`, `opened`, `registered`, and `ids` events'
         );
-        var listener = _notifHandlers.get(type);
-        if (!listener) {
-            return;
+
+        _notificationHandler.delete(type);
+    }
+
+    static clearListeners() {
+        for(var i = 0; i < _eventNames.length; i++) {
+            _listeners[_eventNames].remove();
         }
-        listener.remove();
-        _notifHandlers.delete(type);
     }
 
     static registerForPushNotifications() {
