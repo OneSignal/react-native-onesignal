@@ -270,12 +270,6 @@ _By cancelling, you are telling Xcode to continue debugging your application, in
  ```
  _Ignore any build errors at this point, the next step will import OneSignal which will resolve any errors._
 
-### Import OneSignal Into Your OneSignalNotificationServiceExtension Target
- * In your project's settings, select the OneSignalNotificationServiceExtension target 
- * In `General` settings under `Linked Frameworks and Libraries`, click `+` and add the `libRCTOneSignal.a` framework
- * You're All Set!
-
-
 ## Usage
 
 In your `index.android.js` or `index.ios.js`:
