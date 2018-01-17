@@ -210,10 +210,24 @@ android {
 
 _By cancelling, you are telling Xcode to continue debugging your application, instead of debugging just the extension. If you activate by accident, you can always switch back to debug your app in Xcode by selecting your application's target (next to the Play button)_
 
+ * Go to your Project Settings and select the `OneSignalNotificationServiceExtension` target.
+ * Go to `Build Settings` and search for `Header Search Paths`
+ * Add `$(SRCROOT)/../node_modules/react-native-onesignal/ios` and set it as `recursive`
+
+ ![image](https://raw.githubusercontent.com/nightsd01/react-native-onesignal/master/images/build-settings-search-paths.png)
+
+ * With the `OneSignalNotificationServiceExtension` target still selected, select the `Build Phases` tab in Project Settings
+ * In `Link Binary with Libraries`, add the following frameworks:
+    - `UIKit.framework`
+    - `SystemConfiguration.framework`
+    - `libRCTOneSignal.a`
+
+ ![image](https://raw.githubusercontent.com/nightsd01/react-native-onesignal/master/images/linked-libraries.png)
+
  * Open `NotificationServiceExtension.m` or `NotificationService.swift` and replace the whole file contents with the code below:
 
  ```objc
-#import <OneSignal/OneSignal.h>
+#import <RCTOneSignalExtensionService.h>
 
 #import "NotificationService.h"
 
@@ -232,7 +246,7 @@ _By cancelling, you are telling Xcode to continue debugging your application, in
     self.contentHandler = contentHandler;
     self.bestAttemptContent = [request.content mutableCopy];
     
-    [OneSignal didReceiveNotificationExtensionRequest:self.receivedRequest withMutableNotificationContent:self.bestAttemptContent];
+    [RCTOneSignalExtensionService didReceiveNotificationRequest:self.receivedRequest withContent:self.bestAttemptContent];
     
     // DEBUGGING: Uncomment the 2 lines below and comment out the one above to ensure this extension is excuting
     //            Note, this extension only runs when mutable-content is set
@@ -247,7 +261,7 @@ _By cancelling, you are telling Xcode to continue debugging your application, in
     // Called just before the extension will be terminated by the system.
     // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
     
-    [OneSignal serviceExtensionTimeWillExpireRequest:self.receivedRequest withMutableNotificationContent:self.bestAttemptContent];
+    [RCTOneSignalExtensionService serviceExtensionTimeWillExpireRequest:self.receivedRequest withMutableNotificationContent:self.bestAttemptContent];
     
     self.contentHandler(self.bestAttemptContent);
 }
