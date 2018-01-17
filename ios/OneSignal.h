@@ -341,8 +341,6 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 + (void)deleteTags:(NSArray*)keys onSuccess:(OSResultSuccessBlock)successBlock onFailure:(OSFailureBlock)failureBlock;
 + (void)deleteTags:(NSArray*)keys;
 + (void)deleteTagsWithJsonString:(NSString*)jsonString;
-+ (BOOL)shouldDelaySubscriptionSettingsUpdate;
-
 // Optional method that sends us the user's email as an anonymized hash so that we can better target and personalize notifications sent to that user across their devices.
 // Sends as MD5 and SHA1 of the provided email
 + (void)syncHashedEmail:(NSString*)email;

@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CA2C538620098C7800A96E5B /* libOneSignal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA2C538520098C7800A96E5B /* libOneSignal.a */; };
+		CA1CC868200FE3C3005B66AA /* RCTOneSignalExtensionService.m in Sources */ = {isa = PBXBuildFile; fileRef = CA1CC867200FE3C3005B66AA /* RCTOneSignalExtensionService.m */; };
+		CA1CC87C200FFC23005B66AA /* libOneSignal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA1CC87B200FFC23005B66AA /* libOneSignal.a */; };
 		FD2CCC851C772B4200B2B24E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD2CCC841C772B4200B2B24E /* SystemConfiguration.framework */; };
 		FDB40CC41C5E4E5500CBF09B /* RCTOneSignal.m in Sources */ = {isa = PBXBuildFile; fileRef = FDB40CC31C5E4E5500CBF09B /* RCTOneSignal.m */; };
 /* End PBXBuildFile section */
@@ -26,8 +27,10 @@
 
 /* Begin PBXFileReference section */
 		3245CDED1BFEE35C00EABF68 /* libRCTOneSignal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTOneSignal.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		CA2C538520098C7800A96E5B /* libOneSignal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOneSignal.a; sourceTree = "<group>"; };
-		CA2C538720098C8500A96E5B /* OneSignal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OneSignal.h; sourceTree = "<group>"; };
+		CA1CC866200FE3C3005B66AA /* RCTOneSignalExtensionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTOneSignalExtensionService.h; sourceTree = "<group>"; };
+		CA1CC867200FE3C3005B66AA /* RCTOneSignalExtensionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTOneSignalExtensionService.m; sourceTree = "<group>"; };
+		CA1CC87B200FFC23005B66AA /* libOneSignal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOneSignal.a; sourceTree = "<group>"; };
+		CA1CC87D200FFC2F005B66AA /* OneSignal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OneSignal.h; sourceTree = "<group>"; };
 		FD2CCC841C772B4200B2B24E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		FDB40CC21C5E4E5500CBF09B /* RCTOneSignal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTOneSignal.h; sourceTree = "<group>"; };
 		FDB40CC31C5E4E5500CBF09B /* RCTOneSignal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTOneSignal.m; sourceTree = "<group>"; };
@@ -38,7 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CA2C538620098C7800A96E5B /* libOneSignal.a in Frameworks */,
+				CA1CC87C200FFC23005B66AA /* libOneSignal.a in Frameworks */,
 				FD2CCC851C772B4200B2B24E /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -49,10 +52,10 @@
 		3245CDE41BFEE35C00EABF68 = {
 			isa = PBXGroup;
 			children = (
-				CA2C538420098C6C00A96E5B /* OneSignalSDK */,
 				FD2CCC841C772B4200B2B24E /* SystemConfiguration.framework */,
 				3245CDEF1BFEE35C00EABF68 /* RCTOneSignal */,
 				3245CDEE1BFEE35C00EABF68 /* Products */,
+				CA1CC858200FDEFC005B66AA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -69,17 +72,19 @@
 			children = (
 				FDB40CC21C5E4E5500CBF09B /* RCTOneSignal.h */,
 				FDB40CC31C5E4E5500CBF09B /* RCTOneSignal.m */,
+				CA1CC866200FE3C3005B66AA /* RCTOneSignalExtensionService.h */,
+				CA1CC867200FE3C3005B66AA /* RCTOneSignalExtensionService.m */,
 			);
 			path = RCTOneSignal;
 			sourceTree = "<group>";
 		};
-		CA2C538420098C6C00A96E5B /* OneSignalSDK */ = {
+		CA1CC858200FDEFC005B66AA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				CA2C538520098C7800A96E5B /* libOneSignal.a */,
-				CA2C538720098C8500A96E5B /* OneSignal.h */,
+				CA1CC87D200FFC2F005B66AA /* OneSignal.h */,
+				CA1CC87B200FFC23005B66AA /* libOneSignal.a */,
 			);
-			name = OneSignalSDK;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,6 +143,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA1CC868200FE3C3005B66AA /* RCTOneSignalExtensionService.m in Sources */,
 				FDB40CC41C5E4E5500CBF09B /* RCTOneSignal.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -232,6 +238,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
+					"$(PROJECT_DIR)/**",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -240,6 +247,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(PROJECT_DIR)/**",
+					"$(PROJECT_DIR)/RCTOneSignal",
 					"$(PROJECT_DIR)",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -254,6 +263,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
+					"$(PROJECT_DIR)/**",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -262,6 +272,8 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(PROJECT_DIR)/**",
+					"$(PROJECT_DIR)/RCTOneSignal",
 					"$(PROJECT_DIR)",
 				);
 				OTHER_LDFLAGS = "-ObjC";
