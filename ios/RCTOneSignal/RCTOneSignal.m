@@ -207,6 +207,10 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
     }]);
 }
 
+RCT_EXPORT_METHOD(setInFocusDisplayType:(int)displayType) {
+    [OneSignal setInFocusDisplayType:displayType];
+}
+
 RCT_EXPORT_METHOD(registerForPushNotifications) {
     [OneSignal registerForPushNotifications];
 }

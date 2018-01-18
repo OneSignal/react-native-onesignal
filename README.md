@@ -432,7 +432,7 @@ OneSignal.enableSound(true);
 
 We exposed the inFocusDisplaying API of OneSignal.
 
-#### Android:
+#### Both iOS and Android
 
  - `0` = `None`         - Will not display a notification, instead only `onNotificationReceived` will fire where you can display your own in app messages.
  - `1` = `InAppAlert`   - *(Default)* Will display an Android AlertDialog with the message contains.
@@ -441,20 +441,6 @@ We exposed the inFocusDisplaying API of OneSignal.
 ```javascript
 // Example, always display notification in shade.
 OneSignal.inFocusDisplaying(2);
-```
-
-#### iOS:
-
-On the init function in `AppDelegate.m`, add the settings parameter to specify custom settings. In this case, it would be the `kOSSettingsKeyInFocusDisplayOption` which can be set to 3 options:
-
-1. `OSNotificationDisplayTypeNotification` - Display the native notification display.
-2. `OSNotificationDisplayTypeInAppAlert` - Display an alert with the notification. Default value.
-3. `OSNotificationDisplayTypeNone` - Silent. Do not display any notification when the app is in focus.
-
-```objc
-self.oneSignal = [[RCTOneSignal alloc] initWithLaunchOptions:launchOptions
-                     appId:@"YOUR APP ID"
-                     settings:@{kOSSettingsKeyInFocusDisplayOption : @(OSNotificationDisplayTypeNone), kOSSettingsKeyAutoPrompt : @YES}];
 ```
 
 ### Change User Subscription Status
@@ -493,11 +479,13 @@ The [OneSignal documentation](https://documentation.onesignal.com/docs/android-n
 
 ```javascript
 // Calling postNotification
+
+let otherParameters = {"ios_attachments" : {"image1" : "{image_url}"}};
 let data = arr // some array as payload
 let contents = {
 	'en': 'You got notification from user'
 }
-OneSignal.postNotification(contents, data, playerId);
+OneSignal.postNotification(contents, data, playerId, otherParameters);
 
 // Listening to postNotification using OneSignal.Configure:
 onNotificationOpened: function(message, data, isActive) {
