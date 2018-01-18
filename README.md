@@ -194,8 +194,8 @@ android {
                                  settings:@{kOSSettingsKeyAutoPrompt: @false}];
         ```
 
-### Add Notification Service Extension (Optional but Recommended)
-The `OneSignalNotificationServiceExtension` allows your application (in iOS) to receive rich notifications with images and/or buttons. If you do not follow this step, your application will not be able to show images in push notifications, and won't be able to add action buttons to notifications either.
+### Add Notification Service Extension
+This step is optional but highly recommended. The `OneSignalNotificationServiceExtension` allows your application (in iOS) to receive rich notifications with images and/or buttons. If you do not follow this step, your application will not be able to show images in push notifications, and won't be able to add action buttons to notifications either.
 
 Even if you do not have immediate plans to send push notifications containing images/action buttons, it is still recommended to follow these steps in case you ever decide to change your mind in the future. 
 
