@@ -16,11 +16,11 @@
 @implementation RCTOneSignalExtensionService
 
 //forwards OneSignal notification extension requests
-+(void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContent:(UNMutableNotificationContent *)content {
++(void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContent:(UNMutableNotificationContent * _Nullable)content {
     [OneSignal didReceiveNotificationExtensionRequest:request withMutableNotificationContent:content];
 }
 
-+(void)serviceExtensionTimeWillExpireRequest:(UNNotificationRequest *)request withMutableNotificationContent:(UNMutableNotificationContent *)content {
++(void)serviceExtensionTimeWillExpireRequest:(UNNotificationRequest *)request withMutableNotificationContent:(UNMutableNotificationContent * _Nullable)content {
     [OneSignal serviceExtensionTimeWillExpireRequest:request withMutableNotificationContent:content];
 }
 @end

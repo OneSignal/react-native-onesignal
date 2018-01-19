@@ -230,7 +230,9 @@ _By cancelling, you are telling Xcode to continue debugging your application, in
 
  * Open `NotificationServiceExtension.m` or `NotificationService.swift` and replace the whole file contents with the code below:
 
- ```objc
+<details><summary>Objective-C</summary><p>
+
+```objc
 #import <RCTOneSignalExtensionService.h>
 
 #import "NotificationService.h"
@@ -271,7 +273,53 @@ _By cancelling, you are telling Xcode to continue debugging your application, in
 }
 
 @end
- ```
+```
+</p></details>
+
+<details><summary>Swift</summary><p>
+
+* Make sure to create a separate Objective-C Bridging Header for your `OneSignalNotificationExtensionService` and add the following import:
+
+```objc
+#import "RCTOneSignalExtensionService.h"
+```
+
+ * Then, replace the entire contents of `NotificationService.swift` with the following code:
+
+```swift
+import UserNotifications
+
+class NotificationService: UNNotificationServiceExtension {
+
+    var contentHandler: ((UNNotificationContent) -> Void)?
+    var bestAttemptContent: UNMutableNotificationContent?
+    var receivedRequest : UNNotificationRequest!;
+
+    override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+        self.contentHandler = contentHandler
+        bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+        self.receivedRequest = request;
+        
+        RCTOneSignalExtensionService.didReceive(self.receivedRequest, with: self.bestAttemptContent);
+        
+        if let bestAttemptContent = bestAttemptContent {
+            contentHandler(bestAttemptContent)
+        }
+    }
+    
+    override func serviceExtensionTimeWillExpire() {
+        // Called just before the extension will be terminated by the system.
+        // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
+        RCTOneSignalExtensionService.serviceExtensionTimeWillExpireRequest(self.receivedRequest, with: self.bestAttemptContent);
+        
+        if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
+            contentHandler(bestAttemptContent)
+        }
+    }
+}
+```
+</p></details>
+
  _Ignore any build errors at this point, the next step will import OneSignal which will resolve any errors._
 
 ## Usage
