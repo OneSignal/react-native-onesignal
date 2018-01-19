@@ -200,11 +200,14 @@ export default class OneSignal {
         RNOneSignal.promptLocation();
     }
 
-    //Android only: Set Display option of the notifications. displayOption is of type OSInFocusDisplayOption
-    // 0 -> None, 1 -> InAppAlert, 2 -> Notification
     static inFocusDisplaying(displayOption) {
         if (Platform.OS === 'android') {
+            //Android: Set Display option of the notifications. displayOption is of type OSInFocusDisplayOption
+            // 0 -> None, 1 -> InAppAlert, 2 -> Notification
             RNOneSignal.inFocusDisplaying(displayOption);
+        } else {
+            //iOS: displayOption is a number, 0 -> None, 1 -> InAppAlert, 2 -> Notification
+            RNOneSignal.setInFocusDisplayType(displayOption);
         }
     }
 

@@ -207,6 +207,10 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
     }]);
 }
 
+RCT_EXPORT_METHOD(setInFocusDisplayType:(int)displayType) {
+    [OneSignal setInFocusDisplayType:displayType];
+}
+
 RCT_EXPORT_METHOD(registerForPushNotifications) {
     [OneSignal registerForPushNotifications];
 }
@@ -287,7 +291,7 @@ RCT_EXPORT_METHOD(syncHashedEmail:(NSString*)email) {
     [OneSignal syncHashedEmail:email];
 }
 
-RCT_EXPORT_METHOD(setLogLevel:(ONE_S_LOG_LEVEL)logLevel visualLogLevel:(ONE_S_LOG_LEVEL)visualLogLevel) {
+RCT_EXPORT_METHOD(setLogLevel:(int)logLevel visualLogLevel:(int)visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel:visualLogLevel];
 }
 

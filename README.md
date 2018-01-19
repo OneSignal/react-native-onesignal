@@ -18,6 +18,7 @@ React Native Push Notifications support with OneSignal integration.
 		- [Adding the Code](#adding-the-code)
 	- [iOS Installation](#ios-installation)
 		- [Adding the Code](#adding-the-code)
+        - [Add Notification Service Extension](#add-notification-service-extension)
 	- [Usage](#usage)
 	- [API](#api)
 		- [Handling Notifications](#handling-notifications)
@@ -193,8 +194,133 @@ android {
                                  settings:@{kOSSettingsKeyAutoPrompt: @false}];
         ```
 
- * You're All Set!
+### Add Notification Service Extension
+This step is optional but highly recommended. The `OneSignalNotificationServiceExtension` allows your application (in iOS) to receive rich notifications with images and/or buttons. If you do not follow this step, your application will not be able to show images in push notifications, and won't be able to add action buttons to notifications either.
 
+Even if you do not have immediate plans to send push notifications containing images/action buttons, it is still recommended to follow these steps in case you ever decide to change your mind in the future. 
+
+ * In Xcode, select `File` > `New` > `Target`
+ * Select `Notification Service Extension` and press `Next`
+
+ ![image](https://raw.githubusercontent.com/nightsd01/react-native-onesignal/master/images/74a6d44-Xcode_create_notification_service_extension_1.png)
+
+ * Enter the product name as `OneSignalNotificationServiceExtension` and press `Finish`
+
+ ![image](https://raw.githubusercontent.com/nightsd01/react-native-onesignal/master/images/1abfb4e-Xcode_create_notification_service_extension_2.png)
+
+ * Press `Cancel` on the Activate Scheme prompt
+
+ ![image](https://raw.githubusercontent.com/nightsd01/react-native-onesignal/master/images/5c47cf5-Xcode_create_notification_service_extension_3.png)
+
+_By cancelling, you are telling Xcode to continue debugging your application, instead of debugging just the extension. If you activate by accident, you can always switch back to debug your app in Xcode by selecting your application's target (next to the Play button)_
+
+ * Go to your Project Settings and select the `OneSignalNotificationServiceExtension` target.
+ * Go to `Build Settings` and search for `Header Search Paths`
+ * Add `$(SRCROOT)/../node_modules/react-native-onesignal/ios` and set it as `recursive`
+
+ ![image](https://raw.githubusercontent.com/nightsd01/react-native-onesignal/master/images/build-settings-search-paths.png)
+
+ * With the `OneSignalNotificationServiceExtension` target still selected, select the `Build Phases` tab in Project Settings
+ * In `Link Binary with Libraries`, add the following frameworks:
+    - `UIKit.framework`
+    - `SystemConfiguration.framework`
+    - `libRCTOneSignal.a`
+
+ ![image](https://raw.githubusercontent.com/nightsd01/react-native-onesignal/master/images/linked-libraries.png)
+
+ * Open `NotificationServiceExtension.m` or `NotificationService.swift` and replace the whole file contents with the code below:
+
+<details><summary>Objective-C</summary><p>
+
+```objc
+#import <RCTOneSignalExtensionService.h>
+
+#import "NotificationService.h"
+
+@interface NotificationService ()
+
+@property (nonatomic, strong) void (^contentHandler)(UNNotificationContent *contentToDeliver);
+@property (nonatomic, strong) UNNotificationRequest *receivedRequest;
+@property (nonatomic, strong) UNMutableNotificationContent *bestAttemptContent;
+
+@end
+
+@implementation NotificationService
+
+- (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
+    self.receivedRequest = request;
+    self.contentHandler = contentHandler;
+    self.bestAttemptContent = [request.content mutableCopy];
+    
+    [RCTOneSignalExtensionService didReceiveNotificationRequest:self.receivedRequest withContent:self.bestAttemptContent];
+    
+    // DEBUGGING: Uncomment the 2 lines below and comment out the one above to ensure this extension is excuting
+    //            Note, this extension only runs when mutable-content is set
+    //            Setting an attachment or action buttons automatically adds this
+    // NSLog(@"Running NotificationServiceExtension");
+    // self.bestAttemptContent.body = [@"[Modified] " stringByAppendingString:self.bestAttemptContent.body];
+    
+    self.contentHandler(self.bestAttemptContent);
+}
+
+- (void)serviceExtensionTimeWillExpire {
+    // Called just before the extension will be terminated by the system.
+    // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
+    
+    [RCTOneSignalExtensionService serviceExtensionTimeWillExpireRequest:self.receivedRequest withMutableNotificationContent:self.bestAttemptContent];
+    
+    self.contentHandler(self.bestAttemptContent);
+}
+
+@end
+```
+</p></details>
+
+<details><summary>Swift</summary><p>
+
+* Make sure to create a separate Objective-C Bridging Header for your `OneSignalNotificationExtensionService` and add the following import:
+
+```objc
+#import "RCTOneSignalExtensionService.h"
+```
+
+ * Then, replace the entire contents of `NotificationService.swift` with the following code:
+
+```swift
+import UserNotifications
+
+class NotificationService: UNNotificationServiceExtension {
+
+    var contentHandler: ((UNNotificationContent) -> Void)?
+    var bestAttemptContent: UNMutableNotificationContent?
+    var receivedRequest : UNNotificationRequest!;
+
+    override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+        self.contentHandler = contentHandler
+        bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+        self.receivedRequest = request;
+        
+        RCTOneSignalExtensionService.didReceive(self.receivedRequest, with: self.bestAttemptContent);
+        
+        if let bestAttemptContent = bestAttemptContent {
+            contentHandler(bestAttemptContent)
+        }
+    }
+    
+    override func serviceExtensionTimeWillExpire() {
+        // Called just before the extension will be terminated by the system.
+        // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
+        RCTOneSignalExtensionService.serviceExtensionTimeWillExpireRequest(self.receivedRequest, with: self.bestAttemptContent);
+        
+        if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
+            contentHandler(bestAttemptContent)
+        }
+    }
+}
+```
+</p></details>
+
+ _Ignore any build errors at this point, the next step will import OneSignal which will resolve any errors._
 
 ## Usage
 
@@ -354,7 +480,7 @@ OneSignal.enableSound(true);
 
 We exposed the inFocusDisplaying API of OneSignal.
 
-#### Android:
+#### Both iOS and Android
 
  - `0` = `None`         - Will not display a notification, instead only `onNotificationReceived` will fire where you can display your own in app messages.
  - `1` = `InAppAlert`   - *(Default)* Will display an Android AlertDialog with the message contains.
@@ -363,20 +489,6 @@ We exposed the inFocusDisplaying API of OneSignal.
 ```javascript
 // Example, always display notification in shade.
 OneSignal.inFocusDisplaying(2);
-```
-
-#### iOS:
-
-On the init function in `AppDelegate.m`, add the settings parameter to specify custom settings. In this case, it would be the `kOSSettingsKeyInFocusDisplayOption` which can be set to 3 options:
-
-1. `OSNotificationDisplayTypeNotification` - Display the native notification display.
-2. `OSNotificationDisplayTypeInAppAlert` - Display an alert with the notification. Default value.
-3. `OSNotificationDisplayTypeNone` - Silent. Do not display any notification when the app is in focus.
-
-```objc
-self.oneSignal = [[RCTOneSignal alloc] initWithLaunchOptions:launchOptions
-                     appId:@"YOUR APP ID"
-                     settings:@{kOSSettingsKeyInFocusDisplayOption : @(OSNotificationDisplayTypeNone), kOSSettingsKeyAutoPrompt : @YES}];
 ```
 
 ### Change User Subscription Status
@@ -415,11 +527,13 @@ The [OneSignal documentation](https://documentation.onesignal.com/docs/android-n
 
 ```javascript
 // Calling postNotification
+
+let otherParameters = {"ios_attachments" : {"image1" : "{image_url}"}};
 let data = arr // some array as payload
 let contents = {
 	'en': 'You got notification from user'
 }
-OneSignal.postNotification(contents, data, playerId);
+OneSignal.postNotification(contents, data, playerId, otherParameters);
 
 // Listening to postNotification using OneSignal.Configure:
 onNotificationOpened: function(message, data, isActive) {
