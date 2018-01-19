@@ -26,10 +26,15 @@ for(var i = 0; i < _eventBroadcastNames.length; i++) {
 
 var RNOneSignal = NativeModules.OneSignal;
 
+
+var DEVICE_NOTIF_RECEIVED_EVENT = 'OneSignal-remoteNotificationReceived';
+var DEVICE_NOTIF_OPENED_EVENT = 'OneSignal-remoteNotificationOpened';
+var DEVICE_NOTIF_REG_EVENT = 'OneSignal-remoteNotificationsRegistered';
+var DEVICE_IDS_AVAILABLE = 'OneSignal-idsAvailable';
+
 function handleEventBroadcast(type, broadcast) {
     return NativeAppEventEmitter.addListener(
         broadcast, (notification) => { 
-
             // Check if we have added listener for this type yet
             // Cache the result first if we have not.
             var handler = _notificationHandler.get(type);
