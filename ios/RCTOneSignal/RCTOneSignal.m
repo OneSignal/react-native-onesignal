@@ -172,8 +172,58 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     }
 }
 
+RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callback)
+{
+    if (RCTRunningInAppExtension()) {
+        callback(@[@{
+            @"hasPrompted": @NO,
+            @"notificationsEnabled": @NO,
+            @"subscriptionEnabled": @NO,
+            @"userSubscriptionEnabled": @NO,
+            @"pushToken": [NSNull null],
+            @"userId": [NSNull null],
+        }]);
+    }
+    
+    OSPermissionSubscriptionState *state = [OneSignal getPermissionSubscriptionState];
+    OSPermissionState *permissionState = state.permissionStatus;
+    OSSubscriptionState *subscriptionState = state.subscriptionStatus;
+    
+    // Received push notification prompt? (iOS only property)
+    BOOL hasPrompted = permissionState.hasPrompted == 1;
+
+    // Notifications enabled for app? (iOS Settings)
+    BOOL notificationsEnabled = permissionState.status == 2;
+
+    // User subscribed to OneSignal? (automatically toggles with notificationsEnabled)
+    BOOL subscriptionEnabled = subscriptionState.subscribed == 1;
+
+    // User's original subscription preference (regardless of notificationsEnabled)
+    BOOL userSubscriptionEnabled = subscriptionState.userSubscriptionSetting == 1;
+
+    callback(@[@{
+        @"hasPrompted": @(hasPrompted),
+        @"notificationsEnabled": @(notificationsEnabled),
+        @"subscriptionEnabled": @(subscriptionEnabled),
+        @"userSubscriptionEnabled": @(userSubscriptionEnabled),
+        @"pushToken": subscriptionState.pushToken != NULL ? subscriptionState.pushToken : [NSNull null],
+        @"userId": subscriptionState.userId != NULL ? subscriptionState.userId : [NSNull null],
+    }]);
+}
+
+RCT_EXPORT_METHOD(setInFocusDisplayType:(int)displayType) {
+    [OneSignal setInFocusDisplayType:displayType];
+}
+
 RCT_EXPORT_METHOD(registerForPushNotifications) {
     [OneSignal registerForPushNotifications];
+}
+
+RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
+    [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
+        NSLog(@"Prompt For Push Notifications Success");
+        callback(@[@(accepted)]);
+    }];
 }
 
 RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
@@ -221,19 +271,31 @@ RCT_EXPORT_METHOD(promptLocation) {
     [OneSignal promptLocation];
 }
 
-RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSString*)player_id) {
-    [OneSignal postNotification:@{
-                                  @"contents" : contents,
-                                  @"data" : @{@"p2p_notification": data},
-                                  @"include_player_ids": @[player_id]
-                                  }];
+RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSString*)player_id other_parameters:(NSDictionary *)other_parameters) {
+    NSDictionary * additionalData = @{@"p2p_notification": data};
+
+    NSMutableDictionary * extendedData = [additionalData mutableCopy];
+    BOOL isHidden = [[other_parameters objectForKey:@"hidden"] boolValue];
+    if (isHidden) {
+        [extendedData setObject:[NSNumber numberWithBool:YES] forKey:@"hidden"];
+    }
+
+    NSDictionary *notification = @{
+        @"contents" : contents,
+        @"data" : extendedData,
+        @"include_player_ids": @[player_id]
+    };
+    NSMutableDictionary * extendedNotification = [notification mutableCopy];
+    [extendedNotification addEntriesFromDictionary: other_parameters];
+
+    [OneSignal postNotification:extendedNotification];
 }
 
 RCT_EXPORT_METHOD(syncHashedEmail:(NSString*)email) {
     [OneSignal syncHashedEmail:email];
 }
 
-RCT_EXPORT_METHOD(setLogLevel:(ONE_S_LOG_LEVEL)logLevel visualLogLevel:(ONE_S_LOG_LEVEL)visualLogLevel) {
+RCT_EXPORT_METHOD(setLogLevel:(int)logLevel visualLogLevel:(int)visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel:visualLogLevel];
 }
 
