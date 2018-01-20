@@ -183,6 +183,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
+    public void setLocationShared(Boolean shared) {
+        OneSignal.setLocationShared(shared);
+    }
+
+    @ReactMethod
     public void postNotification(String contents, String data, String playerId, String otherParameters) {
         try {
             JSONObject postNotification = new JSONObject("{'contents': " + contents + ", 'data': {'p2p_notification': " + data + "}, 'include_player_ids': ['" + playerId + "']}");
