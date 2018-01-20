@@ -76,7 +76,7 @@ export default class OneSignal {
 
         // Check if there is a cache for this type of event
         var cache = _notificationCache.get(type);
-        if (cache) {
+        if (handler && cache) {
             handler(cache);
             _notificationCache.delete(type);
         }
