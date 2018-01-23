@@ -259,6 +259,10 @@ RCT_EXPORT_METHOD(getTags:(RCTResponseSenderBlock)callback) {
     }];
 }
 
+RCT_EXPORT_METHOD(setLocationShared:(BOOL)shared) {
+    [OneSignal setLocationShared:shared];
+}
+
 RCT_EXPORT_METHOD(deleteTag:(NSString *)key) {
     [OneSignal deleteTag:key];
 }

@@ -194,7 +194,10 @@ export default class OneSignal {
             console.log("This function is not supported on iOS");
         }
     }
-
+    
+    static setLocationShared(shared) {
+        RNOneSignal.setLocationShared(shared);
+    }
 
     static setSubscription(enable) {
         RNOneSignal.setSubscription(enable);
