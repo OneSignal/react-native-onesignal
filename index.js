@@ -194,6 +194,39 @@ export default class OneSignal {
             console.log("This function is not supported on iOS");
         }
     }
+
+    static setEmail(email, emailAuthCode, callback) {
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        if (Platform.OS == "ios") {
+            RNOneSignal.setEmail(email, emailAuthCode, callback);
+        }
+    }
+
+    static setUnauthenticatedEmail(email, callback) {
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        if (Platform.OS == "ios") {
+            RNOneSignal.setUnauthenticatedEmail(email, callback);
+        }
+    }
+
+    static logoutEmail(callback) {
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        if (Platform.OS == "ios") {
+            RNOneSignal.logoutEmail(callback);
+        }
+    }
     
     static setLocationShared(shared) {
         RNOneSignal.setLocationShared(shared);

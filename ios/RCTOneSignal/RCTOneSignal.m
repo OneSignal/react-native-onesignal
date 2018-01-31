@@ -172,6 +172,34 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     }
 }
 
+RCT_EXPORT_METHOD(setEmail:(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
+    // Auth hash token created on server and sent to client.
+    
+    [OneSignal setEmail:email withEmailAuthHashToken:authHash withSuccess:^{
+        callback(@[]);
+    } withFailure:^(NSError *error) {
+        callback(@[error]);
+    }];
+}
+
+RCT_EXPORT_METHOD(setUnauthenticatedEmail:(NSString *)email withResponse:(RCTResponseSenderBlock)callback) {
+    // Does not use an email auth has token, uses unauthenticated state
+    
+    [OneSignal setUnauthenticatedEmail:email withSuccess:^{
+        callback(@[]);
+    } withFailure:^(NSError *error) {
+        callback(@[error]);
+    }];
+}
+
+RCT_EXPORT_METHOD(logoutEmail:(RCTResponseSenderBlock)callback) {
+    [OneSignal logoutEmailWithSuccess:^{
+        callback(@[]);
+    } withFailure:^(NSError *error) {
+        callback(@[error]);
+    }];
+}
+
 RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callback)
 {
     if (RCTRunningInAppExtension()) {

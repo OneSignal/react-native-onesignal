@@ -230,6 +230,7 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 
 @property (readonly, nonatomic) BOOL subscribed; // (yes only if userId, pushToken, and setSubscription exists / are true)
 @property (readonly, nonatomic) BOOL userSubscriptionSetting; // returns setSubscription state.
+@property (readonly, nonatomic) NSString* emailUserId; // The new Email user ID
 @property (readonly, nonatomic) NSString* userId;    // AKA OneSignal PlayerId
 @property (readonly, nonatomic) NSString* pushToken; // AKA Apple Device Token
 - (NSDictionary*)toDictionary;
@@ -378,5 +379,16 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 // Used for iOS Media Attachemtns and Action Buttons.
 + (UNMutableNotificationContent*)didReceiveNotificationExtensionRequest:(UNNotificationRequest*)request withMutableNotificationContent:(UNMutableNotificationContent*)replacementContent;
 + (UNMutableNotificationContent*)serviceExtensionTimeWillExpireRequest:(UNNotificationRequest*)request withMutableNotificationContent:(UNMutableNotificationContent*)replacementContent;
+
+// New Email methods
+
+typedef void (^OSEmailFailureBlock)(NSError* error);
+typedef void (^OSEmailSuccessBlock)();
+typedef void (^OSMultipleFailureBlock)(NSDictionary<NSString *, NSError *> *errors);
+typedef void (^OSMultipleSuccessBlock)(NSDictionary<NSString *, NSDictionary *> *results);
+
++ (void)setEmail:(NSString * _Nonnull)email withEmailAuthHashToken:(NSString * _Nullable)hashToken withSuccess:(OSEmailSuccessBlock _Nullable)successBlock withFailure:(OSEmailFailureBlock _Nullable)failureBlock;
++ (void)setUnauthenticatedEmail:(NSString * _Nonnull)email withSuccess:(OSEmailSuccessBlock _Nullable)successBlock withFailure:(OSEmailFailureBlock _Nullable)failureBlock;
++ (void)logoutEmailWithSuccess:(OSEmailSuccessBlock _Nullable)successBlock withFailure:(OSEmailFailureBlock _Nullable)failureBlock;
 
 @end
