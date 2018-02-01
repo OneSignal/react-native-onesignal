@@ -735,7 +735,7 @@ When you install `react-native-onesignal` it will automaticly include a specific
 
 ### Issue 6 - Make `react-native-onesignal` work with Redux
 
-Please see the `redux-index.js` file for example code and comments. Note that it will not compile, but instead serves as a template for how to handle Redux integration in general, and specifically including the edge case for intercepting the `onOpened` event when a User taps a push notification and prompts the app to open from a previously unopened state.
+Please see the `examples/RNOneSignal/redux-index.js` file for example code and comments. Note that it will not compile, but instead serves as a template for how to handle Redux integration in general, and specifically including the edge case for intercepting the `onOpened` event when a User taps a push notification and prompts the app to open from a previously unopened state.
 
 ## CREDITS
 Thanks for all the awesome fellows that contributed to this repository!
