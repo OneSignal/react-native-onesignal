@@ -178,7 +178,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     }
 
     @ReactMethod
-    public void setlogLevel(int logLevel, int visualLogLevel) {
+    public void setLogLevel(int logLevel, int visualLogLevel) {
         OneSignal.setLogLevel(logLevel, visualLogLevel);
     }
 

@@ -391,4 +391,9 @@ typedef void (^OSMultipleSuccessBlock)(NSDictionary<NSString *, NSDictionary *> 
 + (void)setUnauthenticatedEmail:(NSString * _Nonnull)email withSuccess:(OSEmailSuccessBlock _Nullable)successBlock withFailure:(OSEmailFailureBlock _Nullable)failureBlock;
 + (void)logoutEmailWithSuccess:(OSEmailSuccessBlock _Nullable)successBlock withFailure:(OSEmailFailureBlock _Nullable)failureBlock;
 
+//convenience - no completion blocks
++ (void)logoutEmail;
++ (void)setUnauthenticatedEmail:(NSString * _Nonnull)email;
++ (void)setEmail:(NSString * _Nonnull)email withEmailAuthHashToken:(NSString * _Nullable)hashToken;
+
 @end
