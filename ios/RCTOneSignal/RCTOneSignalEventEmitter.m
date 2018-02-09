@@ -19,6 +19,9 @@ typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
 #define OSEventString(enum) [@[@"OneSignal-remoteNotificationReceived",@"OneSignal-remoteNotificationOpened",@"OneSignal-remoteNotificationsRegistered",@"OneSignal-idsAvailable",@"OneSignal-emailSubscription"] objectAtIndex:enum]
 
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 
 @implementation RCTOneSignalEventEmitter {
     BOOL hasListeners;
@@ -44,7 +47,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 -(instancetype)init {
     if (self = [super init]) {
-        NSLog(@"Initialized RCTOneSignalEventEmitter");
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Initialized RCTOneSignalEventEmitter"];
         
         for (NSString *eventName in [self supportedEvents])
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(emitEvent:) name:eventName object:nil];
@@ -55,12 +58,12 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 -(void)startObserving {
     hasListeners = true;
-    NSLog(@"RCTOneSignalEventEmitter did start observing");
+    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"RCTOneSignalEventEmitter did start observing"];
 }
 
 -(void)stopObserving {
     hasListeners = false;
-    NSLog(@"RCTOneSignalEventEmitter did stop observing");
+    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"RCTOneSignalEventEmitter did stop observing"];
 }
 
 -(NSArray<NSString *> *)supportedEvents {
@@ -83,8 +86,10 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 #pragma mark Send Event Methods
 
 - (void)emitEvent:(NSNotification *)notification {
-    if (!hasListeners)
+    if (!hasListeners) {
+        [OneSignal onesignal_Log:ONE_S_LL_WARN message:[NSString stringWithFormat:@"Attempted to send an event (%@) when no listeners were set.", notification.name]];
         return;
+    }
     
     [self sendEventWithName:notification.name body:notification.userInfo];
 }
@@ -229,7 +234,7 @@ RCT_EXPORT_METHOD(registerForPushNotifications) {
 
 RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
     [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
-        NSLog(@"Prompt For Push Notifications Success");
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Prompt For Push Notifications Success"];
         callback(@[@(accepted)]);
     }];
 }
@@ -252,17 +257,17 @@ RCT_EXPORT_METHOD(configure) {
 
 RCT_EXPORT_METHOD(sendTags:(NSDictionary *)properties) {
     [OneSignal sendTags:properties onSuccess:^(NSDictionary *sucess) {
-        NSLog(@"Send Tags Success");
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Send Tags Success"];
     } onFailure:^(NSError *error) {
-        NSLog(@"Send Tags Failure");
+        [OneSignal onesignal_Log:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"Send Tags Failure With Error: %@", error]];
     }];}
 
 RCT_EXPORT_METHOD(getTags:(RCTResponseSenderBlock)callback) {
     [OneSignal getTags:^(NSDictionary *tags) {
-        NSLog(@"Get Tags Success");
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Get Tags Success"];
         callback(@[tags]);
     } onFailure:^(NSError *error) {
-        NSLog(@"Get Tags Failure");
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"Get Tags Failure with error: %@", error]];
         callback(@[error]);
     }];
 }

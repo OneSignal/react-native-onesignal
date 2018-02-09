@@ -49,7 +49,8 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 }
 
 - (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId settings:(NSDictionary*)settings {
-    NSLog(@"INITIALIZING RCTOneSignal");
+    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Initialized OneSignal iOS SDK"];
+    
     didSetBridge = false;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSetBridge) name:@"didSetBridge" object:nil];
     [OneSignal addSubscriptionObserver:self];
