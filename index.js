@@ -1,39 +1,36 @@
 
 'use strict';
 
-import { NativeModules, NativeAppEventEmitter, NetInfo, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, NetInfo, Platform } from 'react-native';
 import invariant from 'invariant';
 
-var _eventBroadcastNames = [
+const RNOneSignal = NativeModules.OneSignal;
+
+var oneSignalEventEmitter = new NativeEventEmitter(RNOneSignal);
+
+const eventBroadcastNames = [
     'OneSignal-remoteNotificationReceived',
     'OneSignal-remoteNotificationOpened',
     'OneSignal-remoteNotificationsRegistered',
-    'OneSignal-idsAvailable'
+    'OneSignal-idsAvailable',
+    'OneSignal-emailSubscription'
 ];
 
-var _eventNames = [ "received", "opened", "registered", "ids" ];
+var _eventNames = [ "received", "opened", "registered", "ids", "emailSubscription"];
 
 var _notificationHandler = new Map();
 var _notificationCache = new Map();
 var _listeners = [];
 
-for(var i = 0; i < _eventBroadcastNames.length; i++) {
-    var eventBroadcastName = _eventBroadcastNames[i];
+for(var i = 0; i < eventBroadcastNames.length; i++) {
+    var eventBroadcastName = eventBroadcastNames[i];
     var eventName = _eventNames[i];
 
     _listeners[eventName] = handleEventBroadcast(eventName, eventBroadcastName)
 }
 
-var RNOneSignal = NativeModules.OneSignal;
-
-
-var DEVICE_NOTIF_RECEIVED_EVENT = 'OneSignal-remoteNotificationReceived';
-var DEVICE_NOTIF_OPENED_EVENT = 'OneSignal-remoteNotificationOpened';
-var DEVICE_NOTIF_REG_EVENT = 'OneSignal-remoteNotificationsRegistered';
-var DEVICE_IDS_AVAILABLE = 'OneSignal-idsAvailable';
-
 function handleEventBroadcast(type, broadcast) {
-    return NativeAppEventEmitter.addListener(
+    return oneSignalEventEmitter.addListener(
         broadcast, (notification) => { 
             // Check if we have added listener for this type yet
             // Cache the result first if we have not.
@@ -46,6 +43,8 @@ function handleEventBroadcast(type, broadcast) {
             }
         }
     );
+
+    console.log("NATIVE MODULES: ", NativeModules);
 }
 
 function handleConnectionStateChange(isConnected) {
@@ -68,7 +67,7 @@ export default class OneSignal {
         // Listen to events of notification received, opened, device registered and IDSAvailable.
 
         invariant(
-            type === 'received' || type === 'opened' || type === 'registered' || type === 'ids',
+            type === 'received' || type === 'opened' || type === 'registered' || type === 'ids' || type == 'emailSubscription',
             'OneSignal only supports `received`, `opened`, `registered`, and `ids` events'
         );
 
@@ -84,7 +83,7 @@ export default class OneSignal {
 
     static removeEventListener(type: any, handler: Function) {
         invariant(
-            type === 'received' || type === 'opened' || type === 'registered' || type === 'ids',
+            type === 'received' || type === 'opened' || type === 'registered' || type === 'ids' || type == 'emailSubscription',
             'OneSignal only supports `received`, `opened`, `registered`, and `ids` events'
         );
 

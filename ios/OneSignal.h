@@ -230,24 +230,37 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 
 @property (readonly, nonatomic) BOOL subscribed; // (yes only if userId, pushToken, and setSubscription exists / are true)
 @property (readonly, nonatomic) BOOL userSubscriptionSetting; // returns setSubscription state.
-@property (readonly, nonatomic) NSString* emailUserId; // The new Email user ID
 @property (readonly, nonatomic) NSString* userId;    // AKA OneSignal PlayerId
 @property (readonly, nonatomic) NSString* pushToken; // AKA Apple Device Token
 - (NSDictionary*)toDictionary;
 
 @end
 
-@interface OSSubscriptionStateChanges : NSObject
 
+@interface OSEmailSubscriptionState : NSObject
+@property (readonly, nonatomic) NSString* emailUserId; // The new Email user ID
+@property (readonly, nonatomic) NSString *emailAddress;
+- (NSDictionary*)toDictionary;
+@end
+
+@interface OSSubscriptionStateChanges : NSObject
 @property (readonly) OSSubscriptionState* to;
 @property (readonly) OSSubscriptionState* from;
-
 - (NSDictionary*)toDictionary;
+@end
 
+@interface OSEmailSubscriptionStateChanges : NSObject
+@property (readonly) OSEmailSubscriptionState* to;
+@property (readonly) OSEmailSubscriptionState* from;
+- (NSDictionary*)toDictionary;
 @end
 
 @protocol OSSubscriptionObserver <NSObject>
 - (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges*)stateChanges;
+@end
+
+@protocol OSEmailSubscriptionObserver <NSObject>
+- (void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges*)stateChanges;
 @end
 
 
@@ -356,6 +369,9 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 
 + (void)addSubscriptionObserver:(NSObject<OSSubscriptionObserver>*)observer;
 + (void)removeSubscriptionObserver:(NSObject<OSSubscriptionObserver>*)observer;
+
++ (void)addEmailSubscriptionObserver:(NSObject<OSEmailSubscriptionObserver>*)observer;
++ (void)removeEmailSubscriptionObserver:(NSObject<OSEmailSubscriptionObserver>*)observer;
 
 + (void)setSubscription:(BOOL)enable;
 
