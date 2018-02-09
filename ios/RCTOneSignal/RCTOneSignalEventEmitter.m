@@ -16,7 +16,8 @@ typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
     EmailSubscriptionChanged
 };
 
-#define OSEventString(enum) [@[@"OneSignal-remoteNotificationReceived",@"OneSignal-remoteNotificationOpened",@"OneSignal-remoteNotificationsRegistered",@"OneSignal-idsAvailable",@"OneSignal-emailSubscription"] objectAtIndex:enum]
+#define OSNotificationEventTypesArray @[@"OneSignal-remoteNotificationReceived",@"OneSignal-remoteNotificationOpened",@"OneSignal-remoteNotificationsRegistered",@"OneSignal-idsAvailable",@"OneSignal-emailSubscription"]
+#define OSEventString(enum) [OSNotificationEventTypesArray objectAtIndex:enum]
 
 
 #pragma GCC diagnostic push
@@ -69,7 +70,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 -(NSArray<NSString *> *)supportedEvents {
     NSMutableArray *events = [NSMutableArray new];
     
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < OSNotificationEventTypesArray.count; i++)
         [events addObject:OSEventString(i)];
     
     return events;
@@ -201,6 +202,7 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
     OSPermissionSubscriptionState *state = [OneSignal getPermissionSubscriptionState];
     OSPermissionState *permissionState = state.permissionStatus;
     OSSubscriptionState *subscriptionState = state.subscriptionStatus;
+    OSEmailSubscriptionState *emailState = state.emailSubscriptionStatus;
     
     // Received push notification prompt? (iOS only property)
     BOOL hasPrompted = permissionState.hasPrompted == 1;
@@ -215,13 +217,15 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
     BOOL userSubscriptionEnabled = subscriptionState.userSubscriptionSetting == 1;
     
     callback(@[@{
-                   @"hasPrompted": @(hasPrompted),
-                   @"notificationsEnabled": @(notificationsEnabled),
-                   @"subscriptionEnabled": @(subscriptionEnabled),
-                   @"userSubscriptionEnabled": @(userSubscriptionEnabled),
-                   @"pushToken": subscriptionState.pushToken != NULL ? subscriptionState.pushToken : [NSNull null],
-                   @"userId": subscriptionState.userId != NULL ? subscriptionState.userId : [NSNull null],
-                   }]);
+       @"hasPrompted": @(hasPrompted),
+       @"notificationsEnabled": @(notificationsEnabled),
+       @"subscriptionEnabled": @(subscriptionEnabled),
+       @"userSubscriptionEnabled": @(userSubscriptionEnabled),
+       @"pushToken": subscriptionState.pushToken ?: [NSNull null],
+       @"userId": subscriptionState.userId ?: [NSNull null],
+       @"emailSubscribed" : @(emailState.subscribed),
+       @"emailAddress" : emailState.emailAddress ?: [NSNull null]
+    }]);
 }
 
 RCT_EXPORT_METHOD(setInFocusDisplayType:(int)displayType) {
@@ -247,9 +251,9 @@ RCT_EXPORT_METHOD(configure) {
     [OneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
         
         NSDictionary *params = @{
-                                 @"pushToken": pushToken ?: [NSNull null],
-                                 @"userId" : userId ?: [NSNull null]
-                                 };
+         @"pushToken": pushToken ?: [NSNull null],
+         @"userId" : userId ?: [NSNull null]
+        };
         
         [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-idsAvailable" withBody:params];
     }];
