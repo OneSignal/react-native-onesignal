@@ -8,17 +8,6 @@
 #import "RCTOneSignalEventEmitter.h"
 #import "OneSignal.h"
 
-typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
-    NotificationReceived,
-    NotificationOpened,
-    NotificationRegistered,
-    IdsAvailable,
-    EmailSubscriptionChanged
-};
-
-#define OSNotificationEventTypesArray @[@"OneSignal-remoteNotificationReceived",@"OneSignal-remoteNotificationOpened",@"OneSignal-remoteNotificationsRegistered",@"OneSignal-idsAvailable",@"OneSignal-emailSubscription"]
-#define OSEventString(enum) [OSNotificationEventTypesArray objectAtIndex:enum]
-
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -28,10 +17,10 @@ typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
     BOOL hasListeners;
 }
 
-static BOOL _didSetBridge = false;
+static BOOL _didStartObserving = false;
 
 + (BOOL)hasSetBridge {
-    return _didSetBridge;
+    return _didStartObserving;
 }
 
 /*
@@ -39,8 +28,6 @@ static BOOL _didSetBridge = false;
      It is initialized automatically by React-Native
      This subclass handles communication between the SDK and JavaScript
 */
-
-
 
 RCT_EXPORT_MODULE(RCTOneSignal)
 
@@ -60,6 +47,10 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 -(void)startObserving {
     hasListeners = true;
     [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"RCTOneSignalEventEmitter did start observing"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"didSetBridge" object:nil];
+    
+    _didStartObserving = true;
 }
 
 -(void)stopObserving {
@@ -76,13 +67,6 @@ RCT_EXPORT_MODULE(RCTOneSignal)
     return events;
 }
 
--(void)setBridge:(RCTBridge *)bridge {
-    [super setBridge:bridge];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"didSetBridge" object:nil];
-    
-    _didSetBridge = true;
-}
 
 #pragma mark Send Event Methods
 
@@ -121,10 +105,10 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
     }
     
     callback(@[@{
-                   @"alert": @((types & UIUserNotificationTypeAlert) > 0),
-                   @"badge": @((types & UIUserNotificationTypeBadge) > 0),
-                   @"sound": @((types & UIUserNotificationTypeSound) > 0),
-                   }]);
+       @"alert": @((types & UIUserNotificationTypeAlert) > 0),
+       @"badge": @((types & UIUserNotificationTypeBadge) > 0),
+       @"sound": @((types & UIUserNotificationTypeSound) > 0),
+    }]);
 }
 
 RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
@@ -158,7 +142,7 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     }
 }
 
-RCT_EXPORT_METHOD(setEmail:(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(setEmail :(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
     // Auth hash token created on server and sent to client.
     
     [OneSignal setEmail:email withEmailAuthHashToken:authHash withSuccess:^{
@@ -170,8 +154,7 @@ RCT_EXPORT_METHOD(setEmail:(NSString *)email withAuthHash:(NSString *)authHash w
 
 RCT_EXPORT_METHOD(setUnauthenticatedEmail:(NSString *)email withResponse:(RCTResponseSenderBlock)callback) {
     // Does not use an email auth has token, uses unauthenticated state
-    
-    [OneSignal setUnauthenticatedEmail:email withSuccess:^{
+    [OneSignal setEmail:email withSuccess:^{
         callback(@[]);
     } withFailure:^(NSError *error) {
         callback(@[error]);
@@ -319,5 +302,6 @@ RCT_EXPORT_METHOD(syncHashedEmail:(NSString*)email) {
 RCT_EXPORT_METHOD(setLogLevel:(int)logLevel visualLogLevel:(int)visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel:visualLogLevel];
 }
+
 
 @end

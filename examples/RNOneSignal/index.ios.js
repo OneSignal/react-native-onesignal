@@ -16,7 +16,9 @@ import {
     Dimensions,
     KeyboardAvoidingView,
     ActivityIndicator,
-    Platform
+    Platform,
+    ScrollView, 
+    Linking
 } from 'react-native';
 
 import OneSignal from 'react-native-onesignal';
@@ -40,12 +42,12 @@ export default class RNOneSignal extends Component {
             animatingEmailButton : false, 
             initialOpenFromPush : "Did NOT open from push",
             activityWidth : 0,
+            width: 0,
             activityMargin: 0,
             buttonColor : Platform.OS == "ios" ? "#ffffff" : "#d45653",
             jsonDebugText : ""
         });
         OneSignal.setLocationShared(true);
-        this.setState({width: 0});
 
        
         OneSignal.inFocusDisplaying(2)
@@ -86,8 +88,6 @@ export default class RNOneSignal extends Component {
     }
 
     onOpened(openResult) {
-        this.setState({initialOpenFromPush : "DID open from push"});
-
       console.log('Message: ', openResult.notification.payload.body);
       console.log('Data: ', openResult.notification.payload.additionalData);
       console.log('isActive: ', openResult.notification.isAppInFocus);
@@ -104,124 +104,126 @@ export default class RNOneSignal extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                <View>
-                    <Image style={styles.imageStyle} source={{uri: imageUri}} />
-                </View>
-                <Text style={styles.welcome}>
-                    Welcome to React Native!
-                </Text>
-                <Text style={styles.instructions}>
-                    {this.state.initialOpenFromPush}
-                </Text>
-                <Text style={styles.instructions}>
-                    To get started, edit index.ios.js
-                </Text>
-                <Text style={styles.instructions}>
-                    Double tap R on your keyboard to reload,{'\n'}
-                    Shake or press menu button for dev menu
-                </Text>
-                <View style={{flexDirection: 'row', overflow: 'hidden'}}>
+            <ScrollView style={styles.scrollView}>
+                <View style={styles.container}>
+                    <View>
+                        <Image style={styles.imageStyle} source={{uri: imageUri}} />
+                    </View>
+                    <Text style={styles.welcome}>
+                        Welcome to React Native!
+                    </Text>
+                    <Text style={styles.instructions}>
+                        To get started, edit index.ios.js
+                    </Text>
+                    <Text style={styles.instructions}>
+                        Double tap R on your keyboard to reload,{'\n'}
+                        Shake or press menu button for dev menu
+                    </Text>
+                    <View style={{flexDirection: 'row', overflow: 'hidden'}}>
+                        <View style={styles.buttonContainer}>
+                            <Button style={styles.button}
+                                onPress={() => {
+                                    OneSignal.getTags((tags) => {
+                                        console.log("Did get tags: ", tags);
+
+                                        this.setState({jsonDebugText : JSON.stringify(tags, null, 2)});
+                                    });
+                                }}
+                                title="Get Tags"
+                                color={this.state.buttonColor}
+                            />
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <Button style={styles.button}
+                                onPress={() => {
+                                    console.log("Sending tags");
+
+                                    OneSignal.sendTags({"test_property_1" : "test_value_1", "test_property_2" : "test_value_2"});
+                                }}
+                                title="Send Tags"
+                                color={this.state.buttonColor}
+                            />
+                        </View>
+                    </View>
+                    <View style={{flexDirection: 'row', overflow: 'hidden'}}>
+                        <View style={styles.buttonContainer}>
+                            <Button style={styles.button}
+                                disabled={!this.state.emailEnabled}
+                                onPress={() => {
+                                    this.setState({animatingEmailButton : true, activityWidth : 20, activityMargin: 10})
+
+                                    OneSignal.setEmail(this.state.email, (error) => {
+                                        console.log("Sent email with error: ", error);
+
+                                        this.setState({animatingEmailButton : false, activityWidth : 0, activityMargin: 0})
+                                    });
+                                }}
+                                title="Set Test Email"
+                                color={this.state.buttonColor}
+                            />
+                        </View>
+                        <ActivityIndicator style={{width: this.state.activityWidth, marginLeft : this.state.activityMargin}}
+                            animating={this.state.animatingEmailButton}
+                        />
+                        <View style={styles.buttonContainer}>
+                            <Button style={styles.button}
+                                onPress={() => {
+                                    OneSignal.logoutEmail((error) => {
+                                        if (error) {
+                                            console.log("Encountered error while attempting to log out: ", error);
+                                        } else {
+                                            console.log("Logged out successfully");
+                                        }
+                                    });
+                                }}
+                                title="Logout Email"
+                                color={this.state.buttonColor}
+                            />
+                        </View>
+                    </View>
+                    <KeyboardAvoidingView style={{width: 300, height: 40, borderColor: '#d45653', borderWidth: 2, borderRadius: 5, marginTop: 8}}>
+                        <TextInput style={styles.textInput}
+                                underlineColorAndroid='rgba(0, 0, 0, 0)'
+                                placeholderText='testing'
+                                placeholder='test@email.com'
+                                multiline={false}
+                                keyboardType='email-address'
+                                returnKeyType='done'
+                                textAlign='center'
+                                placeholderTextColor='#d1dde3'
+                                editable={true}
+                                autoCapitalize='none'
+                                keyboardAppearance='dark'
+                                onChangeText={(newText) => {
+                                    console.log("New text: ", newText, ", is valid email? ", this.validateEmail(newText));
+                                    this.setState({emailEnabled : this.validateEmail(newText), email : newText});
+                                }}
+                            />
+                    </KeyboardAvoidingView>
                     <View style={styles.buttonContainer}>
                         <Button style={styles.button}
                             onPress={() => {
-                                OneSignal.getTags((tags) => {
-                                    console.log("Did get tags: ", tags);
-
-                                    this.setState({jsonDebugText : JSON.stringify(tags, null, 2)});
+                                OneSignal.getPermissionSubscriptionState((subscriptionState) => {
+                                    this.setState({jsonDebugText : JSON.stringify(subscriptionState, null, 2)});
                                 });
                             }}
-                            title="Get Tags"
+                            title="Print Subscription State"
                             color={this.state.buttonColor}
                         />
                     </View>
-                    <View style={styles.buttonContainer}>
-                        <Button style={styles.button}
-                            onPress={() => {
-                                console.log("Sending tags");
-
-                                OneSignal.sendTags({"test_property_1" : "test_value_1", "test_property_2" : "test_value_2"});
-                            }}
-                            title="Send Tags"
-                            color={this.state.buttonColor}
-                        />
-                    </View>
+                    <Text style={styles.jsonDebugLabelText}>
+                        {this.state.jsonDebugText}
+                    </Text>
                 </View>
-                <View style={{flexDirection: 'row', overflow: 'hidden'}}>
-                    <View style={styles.buttonContainer}>
-                        <Button style={styles.button}
-                            disabled={!this.state.emailEnabled}
-                            onPress={() => {
-                                this.setState({animatingEmailButton : true, activityWidth : 20, activityMargin: 10})
-
-                                OneSignal.setUnauthenticatedEmail(this.state.email, (error) => {
-                                    console.log("Sent email with error: ", error);
-
-                                    this.setState({animatingEmailButton : false, activityWidth : 0, activityMargin: 0})
-                                });
-                            }}
-                            title="Set Test Email"
-                            color={this.state.buttonColor}
-                        />
-                    </View>
-                    <ActivityIndicator style={{width: this.state.activityWidth, marginLeft : this.state.activityMargin}}
-                        animating={this.state.animatingEmailButton}
-                    />
-                    <View style={styles.buttonContainer}>
-                        <Button style={styles.button}
-                            onPress={() => {
-                                OneSignal.logoutEmail((error) => {
-                                    if (error) {
-                                        console.log("Encountered error while attempting to log out: ", error);
-                                    } else {
-                                        console.log("Logged out successfully");
-                                    }
-                                });
-                            }}
-                            title="Logout Email"
-                            color={this.state.buttonColor}
-                        />
-                    </View>
-                </View>
-                <KeyboardAvoidingView style={{width: 300, height: 40, borderColor: '#d45653', borderWidth: 2, borderRadius: 5, marginTop: 8}}>
-                    <TextInput style={styles.textInput}
-                            underlineColorAndroid='rgba(0, 0, 0, 0)'
-                            placeholderText='testing'
-                            placeholder='test@email.com'
-                            multiline={false}
-                            keyboardType='email-address'
-                            returnKeyType='done'
-                            textAlign='center'
-                            placeholderTextColor='#d1dde3'
-                            editable={true}
-                            autoCapitalize='none'
-                            keyboardAppearance='dark'
-                            onChangeText={(newText) => {
-                                console.log("New text: ", newText, ", is valid email? ", this.validateEmail(newText));
-                                this.setState({emailEnabled : this.validateEmail(newText), email : newText});
-                            }}
-                        />
-                </KeyboardAvoidingView>
-                <View style={styles.buttonContainer}>
-                    <Button style={styles.button}
-                        onPress={() => {
-                            OneSignal.getPermissionSubscriptionState((subscriptionState) => {
-                                this.setState({jsonDebugText : JSON.stringify(subscriptionState, null, 2)});
-                            });
-                        }}
-                        title="Print Subscription State"
-                        color={this.state.buttonColor}
-                    />
-                </View>
-                <Text style={styles.jsonDebugLabelText}>
-                    {this.state.jsonDebugText}
-                </Text>
-            </View>
+            </ScrollView>
         );
     }
 }
 
 const styles = StyleSheet.create({
+    scrollView: {
+        backgroundColor: '#F5FCFF'
+    },
     container: {
         flex: 1,
         flexDirection: 'column',

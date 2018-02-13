@@ -195,24 +195,31 @@ export default class OneSignal {
     }
 
     static setEmail(email, emailAuthCode, callback) {
-        invariant(
-            typeof callback === 'function',
-            'Must provide a valid callback'
-        );
 
-        if (Platform.OS == "ios") {
-            RNOneSignal.setEmail(email, emailAuthCode, callback);
-        }
-    }
+        if (callback == undefined) {
+            //emailAuthCode is an optional parameter
+            //since JS does not support function overloading,
+            //unauthenticated setEmail calls will have emailAuthCode as the callback
 
-    static setUnauthenticatedEmail(email, callback) {
-        invariant(
-            typeof callback === 'function',
-            'Must provide a valid callback'
-        );
+            var callback = emailAuthCode;
 
-        if (Platform.OS == "ios") {
-            RNOneSignal.setUnauthenticatedEmail(email, callback);
+            invariant(
+                typeof callback === 'function',
+                'Must provide a valid callback'
+            );
+
+            if (Platform.OS == "ios") {
+                RNOneSignal.setUnauthenticatedEmail(email, callback);
+            }
+        } else {
+            invariant(
+                typeof callback === 'function',
+                'Must provide a valid callback'
+            );
+
+            if (Platform.OS == "ios") {
+                RNOneSignal.setEmail(email, emailAuthCode, callback);
+            }
         }
     }
 

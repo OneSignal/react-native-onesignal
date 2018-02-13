@@ -12,6 +12,17 @@
 #import "RCTUtils.h"
 #endif
 
+typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
+    NotificationReceived,
+    NotificationOpened,
+    NotificationRegistered,
+    IdsAvailable,
+    EmailSubscriptionChanged
+};
+
+#define OSNotificationEventTypesArray @[@"OneSignal-remoteNotificationReceived",@"OneSignal-remoteNotificationOpened",@"OneSignal-remoteNotificationsRegistered",@"OneSignal-idsAvailable",@"OneSignal-emailSubscription"]
+#define OSEventString(enum) [OSNotificationEventTypesArray objectAtIndex:enum]
+
 
 @interface RCTOneSignalEventEmitter : RCTEventEmitter <RCTBridgeModule>
 

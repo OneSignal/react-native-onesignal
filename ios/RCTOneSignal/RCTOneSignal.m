@@ -27,17 +27,20 @@
 @end
 
 @implementation RCTOneSignal {
-    BOOL didSetBridge;
+    BOOL didStartObserving;
 }
 
 OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 
-- (void)didSetBridge {
-    didSetBridge = true;
-    if (coldStartOSNotificationOpenedResult) {
-        [self handleRemoteNotificationOpened:[coldStartOSNotificationOpenedResult stringify]];
-        coldStartOSNotificationOpenedResult = nil;
-    }
+- (void)didStartObserving {
+    didStartObserving = true;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (coldStartOSNotificationOpenedResult) {
+            [self handleRemoteNotificationOpened:[coldStartOSNotificationOpenedResult stringify]];
+            coldStartOSNotificationOpenedResult = nil;
+        }
+    });
 }
 
 - (void)dealloc {
@@ -49,23 +52,22 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 }
 
 - (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId settings:(NSDictionary*)settings {
-    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Initialized OneSignal iOS SDK"];
-    
-    didSetBridge = false;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSetBridge) name:@"didSetBridge" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartObserving) name:@"didSetBridge" object:nil];
     [OneSignal addSubscriptionObserver:self];
     [OneSignal addEmailSubscriptionObserver:self];
     [OneSignal setValue:@"react" forKey:@"mSDKType"];
+    [OneSignal setLogLevel:ONE_S_LL_VERBOSE visualLevel:ONE_S_LL_NONE];
     [OneSignal initWithLaunchOptions:launchOptions
                                appId:appId
           handleNotificationReceived:^(OSNotification* notification) {
               [self handleRemoteNotificationReceived:[notification stringify]];
           }
           handleNotificationAction:^(OSNotificationOpenedResult *result) {
-              if (!didSetBridge)
+              if (!didStartObserving)
                   coldStartOSNotificationOpenedResult = result;
               else
                   [self handleRemoteNotificationOpened:[result stringify]];
+              
           }
           settings:settings];
 
@@ -73,7 +75,7 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 }
 
 -(void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges *)stateChanges {
-    [self sendEvent:@"OneSignal-emailSubscription" withBody:stateChanges.to.toDictionary];
+    [self sendEvent:OSEventString(EmailSubscriptionChanged) withBody:stateChanges.to.toDictionary];
 }
 
 - (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges*)stateChanges {
@@ -83,21 +85,21 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
         //Subscribed for OneSignal push notifications!
     }
     
-    [self sendEvent:@"OneSignal-idsAvailable" withBody:stateChanges.to.toDictionary];
+    [self sendEvent:OSEventString(IdsAvailable) withBody:stateChanges.to.toDictionary];
 }
 
 - (void)handleRemoteNotificationReceived:(NSString *)notification {
     NSDictionary *json = [self jsonObjectWithString:notification];
     
     if (json)
-        [self sendEvent:@"OneSignal-remoteNotificationReceived" withBody:json];
+        [self sendEvent:OSEventString(NotificationReceived) withBody:json];
 }
 
 - (void)handleRemoteNotificationOpened:(NSString *)result {
     NSDictionary *json = [self jsonObjectWithString:result];
     
     if (json)
-        [self sendEvent:@"OneSignal-remoteNotificationOpened" withBody:json];
+        [self sendEvent:OSEventString(NotificationOpened) withBody:json];
 }
 
 - (NSDictionary *)jsonObjectWithString:(NSString *)jsonString {
@@ -114,7 +116,7 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification {
-    [self sendEvent:@"OneSignal-remoteNotificationsRegistered" withBody:notification.userInfo];
+    [self sendEvent:OSEventString(NotificationReceived) withBody:notification.userInfo];
 }
 
 - (void)sendEvent:(NSString *)eventName withBody:(NSDictionary *)body {
