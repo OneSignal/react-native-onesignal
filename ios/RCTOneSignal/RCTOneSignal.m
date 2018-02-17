@@ -56,7 +56,6 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     [OneSignal addSubscriptionObserver:self];
     [OneSignal addEmailSubscriptionObserver:self];
     [OneSignal setValue:@"react" forKey:@"mSDKType"];
-    [OneSignal setLogLevel:ONE_S_LL_VERBOSE visualLevel:ONE_S_LL_NONE];
     [OneSignal initWithLaunchOptions:launchOptions
                                appId:appId
           handleNotificationReceived:^(OSNotification* notification) {

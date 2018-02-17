@@ -196,30 +196,17 @@ export default class OneSignal {
 
     static setEmail(email, emailAuthCode, callback) {
 
-        if (callback == undefined) {
+        if (callback == undefined && typeof emailAuthCode == 'function') {
             //emailAuthCode is an optional parameter
             //since JS does not support function overloading,
             //unauthenticated setEmail calls will have emailAuthCode as the callback
 
             var callback = emailAuthCode;
 
-            invariant(
-                typeof callback === 'function',
-                'Must provide a valid callback'
-            );
-
-            if (Platform.OS == "ios") {
-                RNOneSignal.setUnauthenticatedEmail(email, callback);
-            }
+            RNOneSignal.setUnauthenticatedEmail(email, callback);
         } else {
-            invariant(
-                typeof callback === 'function',
-                'Must provide a valid callback'
-            );
 
-            if (Platform.OS == "ios") {
-                RNOneSignal.setEmail(email, emailAuthCode, callback);
-            }
+            RNOneSignal.setEmail(email, emailAuthCode, callback);
         }
     }
 
@@ -228,10 +215,8 @@ export default class OneSignal {
             typeof callback === 'function',
             'Must provide a valid callback'
         );
-
-        if (Platform.OS == "ios") {
-            RNOneSignal.logoutEmail(callback);
-        }
+        
+        RNOneSignal.logoutEmail(callback);
     }
     
     static setLocationShared(shared) {

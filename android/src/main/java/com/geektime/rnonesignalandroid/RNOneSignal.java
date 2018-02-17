@@ -24,6 +24,8 @@ import com.onesignal.OSPermissionState;
 import com.onesignal.OSPermissionSubscriptionState;
 import com.onesignal.OSSubscriptionState;
 import com.onesignal.OneSignal;
+import com.onesignal.OneSignal.EmailUpdateHandler;
+import com.onesignal.OneSignal.EmailUpdateError;
 
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -53,6 +55,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     // However it seems it is also to soon to call getCurrentActivity() from the reactContext as well.
     // This will normally succeed when onHostResume fires instead.
     private void initOneSignal() {
+
         Activity activity = getCurrentActivity();
         if (activity == null || oneSignalInitDone)
             return;
@@ -94,6 +97,66 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
             @Override
             public void tagsAvailable(JSONObject tags) {
                 callback.invoke(RNUtils.jsonToWritableMap(tags));
+            }
+        });
+    }
+
+    @ReactMethod 
+    public void setUnauthenticatedEmail(String email, final Callback callback) {
+        OneSignal.setEmail(email, null, new OneSignal.EmailUpdateHandler() {
+            @Override
+            public void onSuccess() {
+                callback.invoke();
+            }
+
+            @Override
+            public void onFailure(EmailUpdateError error) {
+                try {
+                    JSONObject errorObject = new JSONObject("{'error' : '" + error.getMessage() + "'}");
+                    callback.invoke(RNUtils.jsonToWritableMap(errorObject));
+                } catch (JSONException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @ReactMethod 
+    public void setEmail(String email, String emailAuthToken, final Callback callback) {
+        OneSignal.setEmail(email, emailAuthToken, new EmailUpdateHandler() {
+            @Override
+            public void onSuccess() {
+                callback.invoke();
+            }
+
+            @Override
+            public void onFailure(EmailUpdateError error) {
+                try {
+                    JSONObject errorObject = new JSONObject("{'error' : '" + error.getMessage() + "'}");
+                    callback.invoke(RNUtils.jsonToWritableMap(errorObject));
+                } catch (JSONException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @ReactMethod
+    public void logoutEmail(final Callback callback) {
+        OneSignal.logoutEmail(new EmailUpdateHandler() {
+            @Override
+            public void onSuccess() {
+                callback.invoke();
+            }
+
+            @Override
+            public void onFailure(EmailUpdateError error) {
+                try {
+                    JSONObject errorObject = new JSONObject("{'error' : '" + error.getMessage() + "'}");
+                    callback.invoke(RNUtils.jsonToWritableMap(errorObject));
+                } catch (JSONException exception) {
+                    exception.printStackTrace();
+                }
             }
         });
     }
