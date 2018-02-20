@@ -50,6 +50,11 @@
 #import <UserNotifications/UserNotifications.h>
 #endif
 
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wstrict-prototypes"
+#pragma clang diagnostic ignored "-Wnullability-completeness"
+
 /* The action type associated to an OSNotificationAction object */
 typedef NS_ENUM(NSUInteger, OSNotificationActionType)  {
     OSNotificationActionTypeOpened,
@@ -422,3 +427,5 @@ typedef void (^OSEmailSuccessBlock)();
 + (void)setEmail:(NSString * _Nonnull)email withEmailAuthHashToken:(NSString * _Nullable)hashToken;
 
 @end
+
+#pragma clang diagnostic pop
