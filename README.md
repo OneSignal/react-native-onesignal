@@ -452,7 +452,7 @@ OneSignal.setEmail("test@test.com", emailAuthCode, {(error) => {
 If you don't want to implement email auth hashing on your backend (which is heavily recommended), you can still use the OneSignal email feature in an unauthenticated state like this:
 
 ```javascript
-OneSignal.setUnauthenticatedEmail("test@test.com", {(error) => {
+OneSignal.setEmail("test@test.com", {(error) => {
     //handle error if it occurred
 }});
 ```
