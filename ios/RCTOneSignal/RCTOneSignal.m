@@ -114,10 +114,6 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     return json;
 }
 
-- (void)handleRemoteNotificationsRegistered:(NSNotification *)notification {
-    [self sendEvent:OSEventString(NotificationReceived) withBody:notification.userInfo];
-}
-
 - (void)sendEvent:(NSString *)eventName withBody:(NSDictionary *)body {
     [RCTOneSignalEventEmitter sendEventWithName:eventName withBody:body];
 }

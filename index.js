@@ -11,12 +11,11 @@ var oneSignalEventEmitter = new NativeEventEmitter(RNOneSignal);
 const eventBroadcastNames = [
     'OneSignal-remoteNotificationReceived',
     'OneSignal-remoteNotificationOpened',
-    'OneSignal-remoteNotificationsRegistered',
     'OneSignal-idsAvailable',
     'OneSignal-emailSubscription'
 ];
 
-var _eventNames = [ "received", "opened", "registered", "ids", "emailSubscription"];
+var _eventNames = [ "received", "opened", "ids", "emailSubscription"];
 
 var _notificationHandler = new Map();
 var _notificationCache = new Map();
