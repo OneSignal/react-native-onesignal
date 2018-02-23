@@ -761,6 +761,10 @@ When you install `react-native-onesignal` it will automaticly include a specific
 
 Please see the `examples/RNOneSignal/redux-index.js` file for example code and comments. Note that it will not compile, but instead serves as a template for how to handle Redux integration in general, and specifically including the edge case for intercepting the `onOpened` event when a User taps a push notification and prompts the app to open from a previously unopened state.
 
+### Issue 7 - Phone does not register on Android
+
+Check whether the `<application>` tag in your `AndroidManifest.xml` file contains `tools:node="replace"`. If it does, remove this line, save the manifest file, and re-run the application using `react-native run-android`. 
+
 ## CREDITS
 Thanks for all the awesome fellows that contributed to this repository!
 @danpe, @lunchieapp, @gaykov, @williamrijksen, @adrienbrault, @kennym, @dunghuynh, @holmesal, @joshuapinter, @jkasten2, @JKalash
