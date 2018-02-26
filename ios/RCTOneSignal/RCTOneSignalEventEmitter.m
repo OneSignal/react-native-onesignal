@@ -6,7 +6,11 @@
 //
 
 #import "RCTOneSignalEventEmitter.h"
+#if __has_include(<OneSignal/OneSignal.h>)
+#import <OneSignal/OneSignal.h>
+#else
 #import "OneSignal.h"
+#endif
 
 
 #pragma GCC diagnostic push
