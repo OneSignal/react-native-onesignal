@@ -9,10 +9,12 @@ If your proposed contribution is a small bug fix, please feel free to create you
 
 If your contribution would _break_ or _change_ the functionality of the SDK, please reach out to us on (contact) before you put in a lot of effort into a change we may not be able to use. We try our best to make sure that the SDK remains stable so that developers do not have to continually change their code, however some breaking changes _are_ desirable, so please get in touch to discuss your idea before you put in a lot of effort.
 
-### Reporting Bugs
-• If you have found a bug with the SDK, please feel free to open an Issue. 
-      * If you are pretty certain that the issue is only related to the native iOS SDK, please open the issue in our [native iOS SDK repository](https://github.com/OneSignal/OneSignal-iOS-SDK).
-      * If you are certain the issue is contained to the Android SDK, please open the issue in our [Android SDK repository](https://github.com/OneSignal/OneSignal-Android-SDK)
+#### Reporting Bugs
+If you have found a bug with the SDK, please feel free to open an Issue. 
+
+If you are pretty certain that the issue is only related to the native iOS SDK, please open the issue in our [native iOS SDK repository](https://github.com/OneSignal/OneSignal-iOS-SDK).
+
+If you are certain the issue is contained to the Android SDK, please open the issue in our [Android SDK repository](https://github.com/OneSignal/OneSignal-Android-SDK)
 
 #### Before Submitting A Bug Report
 Before creating bug reports, please check this list of steps to follow.
