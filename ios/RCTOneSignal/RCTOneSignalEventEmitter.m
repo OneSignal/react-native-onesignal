@@ -86,8 +86,13 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 #pragma mark Exported Methods
 
-RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
-{
+RCT_EXPORT_METHOD(promptForPushNotificationPermissions:(RCTResponseSenderBlock)callback) {
+    [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
+        callback(@[@(accepted)]);
+    }];
+}
+
+RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback) {
     if (RCTRunningInAppExtension()) {
         callback(@[@{@"alert": @NO, @"badge": @NO, @"sound": @NO}]);
         return;
@@ -173,13 +178,16 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
 {
     if (RCTRunningInAppExtension()) {
         callback(@[@{
-                       @"hasPrompted": @NO,
-                       @"notificationsEnabled": @NO,
-                       @"subscriptionEnabled": @NO,
-                       @"userSubscriptionEnabled": @NO,
-                       @"pushToken": [NSNull null],
-                       @"userId": [NSNull null],
-                       }]);
+            @"hasPrompted": @NO,
+            @"notificationsEnabled": @NO,
+            @"subscriptionEnabled": @NO,
+            @"userSubscriptionEnabled": @NO,
+            @"pushToken": [NSNull null],
+            @"userId": [NSNull null],
+            @"emailUserId" : [NSNull null],
+            @"emailAddress" : [NSNull null],
+            @"emailSubscribed" : @false
+         }]);
     }
     
     OSPermissionSubscriptionState *state = [OneSignal getPermissionSubscriptionState];
@@ -206,6 +214,7 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
        @"userSubscriptionEnabled": @(userSubscriptionEnabled),
        @"pushToken": subscriptionState.pushToken ?: [NSNull null],
        @"userId": subscriptionState.userId ?: [NSNull null],
+       @"emailUserId" : emailState.emailUserId ?: [NSNull null],
        @"emailSubscribed" : @(emailState.subscribed),
        @"emailAddress" : emailState.emailAddress ?: [NSNull null]
     }]);

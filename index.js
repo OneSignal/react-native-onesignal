@@ -42,8 +42,6 @@ function handleEventBroadcast(type, broadcast) {
             }
         }
     );
-
-    console.log("NATIVE MODULES: ", NativeModules);
 }
 
 function handleConnectionStateChange(isConnected) {
@@ -66,8 +64,8 @@ export default class OneSignal {
         // Listen to events of notification received, opened, device registered and IDSAvailable.
 
         invariant(
-            type === 'received' || type === 'opened' || type === 'registered' || type === 'ids' || type == 'emailSubscription',
-            'OneSignal only supports `received`, `opened`, `registered`, and `ids` events'
+            type === 'received' || type === 'opened' || type === 'ids' || type == 'emailSubscription',
+            'OneSignal only supports `received`, `opened`, and `ids` events'
         );
 
         _notificationHandler.set(type, handler);
@@ -80,10 +78,10 @@ export default class OneSignal {
         }
     }
 
-    static removeEventListener(type: any, handler: Function) {
+    static removeEventListener(type, handler) {
         invariant(
-            type === 'received' || type === 'opened' || type === 'registered' || type === 'ids' || type == 'emailSubscription',
-            'OneSignal only supports `received`, `opened`, `registered`, and `ids` events'
+            type === 'received' || type === 'opened' || type === 'ids' || type == 'emailSubscription',
+            'OneSignal only supports `received`, `opened`, and `ids` events'
         );
 
         _notificationHandler.delete(type);
@@ -151,6 +149,14 @@ export default class OneSignal {
         } else {
             console.log("This function is not supported on Android");
         }
+    }
+
+    static promptForPushNotificationPermissions(callback) {
+       if (Platform.OS === 'ios') {
+         RNOneSignal.promptForPushNotificationPermissions(callback);
+       } else {
+          console.log('This function is not supported on Android');
+       }
     }
 
     static getPermissionSubscriptionState(callback: Function) {
