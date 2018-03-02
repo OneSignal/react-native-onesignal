@@ -200,17 +200,17 @@ export default class OneSignal {
     }
 
     static setEmail(email, emailAuthCode, callback) {
-
-        if (callback == undefined && typeof emailAuthCode == 'function') {
+        if (emailAuthCode == undefined) {
             //emailAuthCode is an optional parameter
             //since JS does not support function overloading,
             //unauthenticated setEmail calls will have emailAuthCode as the callback
 
-            var callback = emailAuthCode;
-
-            RNOneSignal.setUnauthenticatedEmail(email, callback);
+            RNOneSignal.setUnauthenticatedEmail(email, function(){});
+        } else if (callback == undefined && typeof emailAuthCode == 'function') {
+            RNOneSignal.setUnauthenticatedEmail(email, emailAuthCode);
+        } else if (callback == undefined) {
+            RNOneSignal.setEmail(email, emailAuthCode, function(){});
         } else {
-
             RNOneSignal.setEmail(email, emailAuthCode, callback);
         }
     }
