@@ -159,6 +159,8 @@ android {
 
 ### Adding the Code
 
+<details><summary>Objective-C</summary><p>
+
  * in `AppDelegate.h`:
    * Import `RCTOneSignal.h`:
 
@@ -186,13 +188,49 @@ android {
         self.oneSignal = [[RCTOneSignal alloc] initWithLaunchOptions:launchOptions
                                                                appId:@"YOUR_ONESIGNAL_APP_ID"];
         ```
-
+    * You can also pass settings to OneSignal to control various effects, such as whether OneSignal automatically asks for permission to send push notifications shortly after launch or not.
         ```objc
-  	    // For requiring push notification permissions manually.
         self.oneSignal = [[RCTOneSignal alloc] initWithLaunchOptions:launchOptions
                                                                appId:@"YOUR_ONESIGNAL_APP_ID"
                                  settings:@{kOSSettingsKeyAutoPrompt: @false}];
         ```
+</p></details>
+
+<details><summary>Swift</summary><p>
+
+* If you don't already have one, create an Objective-C Bridging header for your project (`YourProjectName-Bridging-Header.h`) and import the React-Native-Onesignal library:
+
+```objc
+#import <RCTOneSignal.h>
+```
+ * In your AppDelegate, add the following property:
+
+ ```swift
+var oneSignal : RCTOneSignal!
+ ```
+
+* On the `application didFinishLaunchingWithOptions` method, insert the following code (replace YOUR_ONESIGNAL_APP_ID with your OneSignal app ID):
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
+    
+    self.oneSignal = RCTOneSignal(launchOptions: launchOptions, appId: "YOUR_ONESIGNAL_APP_ID");
+}
+
+```
+
+* You can also pass settings to OneSignal to control various effects, such as whether OneSignal automatically asks for permission to send push notifications shortly after launch or not.
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
+    
+    self.oneSignal = RCTOneSignal(launchOptions: launchOptions, appId: "YOUR_ONESIGNAL_APP_ID", settings: [kOSSettingsKeyAutoPrompt : false])
+}
+```
+
+</p></details>
+
+
 
 ### Add Notification Service Extension
 This step is optional but highly recommended. The `OneSignalNotificationServiceExtension` allows your application (in iOS) to receive rich notifications with images and/or buttons. If you do not follow this step, your application will not be able to show images in push notifications, and won't be able to add action buttons to notifications either.
