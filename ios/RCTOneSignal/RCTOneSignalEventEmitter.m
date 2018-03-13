@@ -90,8 +90,13 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 #pragma mark Exported Methods
 
-RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
-{
+RCT_EXPORT_METHOD(promptForPushNotificationPermissions:(RCTResponseSenderBlock)callback) {
+    [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
+        callback(@[@(accepted)]);
+    }];
+}
+
+RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback) {
     if (RCTRunningInAppExtension()) {
         callback(@[@{@"alert": @NO, @"badge": @NO, @"sound": @NO}]);
         return;
@@ -148,11 +153,10 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
 
 RCT_EXPORT_METHOD(setEmail :(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
     // Auth hash token created on server and sent to client.
-    
     [OneSignal setEmail:email withEmailAuthHashToken:authHash withSuccess:^{
         callback(@[]);
     } withFailure:^(NSError *error) {
-        callback(@[error]);
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
     }];
 }
 
@@ -161,7 +165,7 @@ RCT_EXPORT_METHOD(setUnauthenticatedEmail:(NSString *)email withResponse:(RCTRes
     [OneSignal setEmail:email withSuccess:^{
         callback(@[]);
     } withFailure:^(NSError *error) {
-        callback(@[error]);
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
     }];
 }
 
@@ -169,7 +173,7 @@ RCT_EXPORT_METHOD(logoutEmail:(RCTResponseSenderBlock)callback) {
     [OneSignal logoutEmailWithSuccess:^{
         callback(@[]);
     } withFailure:^(NSError *error) {
-        callback(@[error]);
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
     }];
 }
 
@@ -177,13 +181,16 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
 {
     if (RCTRunningInAppExtension()) {
         callback(@[@{
-                       @"hasPrompted": @NO,
-                       @"notificationsEnabled": @NO,
-                       @"subscriptionEnabled": @NO,
-                       @"userSubscriptionEnabled": @NO,
-                       @"pushToken": [NSNull null],
-                       @"userId": [NSNull null],
-                       }]);
+            @"hasPrompted": @NO,
+            @"notificationsEnabled": @NO,
+            @"subscriptionEnabled": @NO,
+            @"userSubscriptionEnabled": @NO,
+            @"pushToken": [NSNull null],
+            @"userId": [NSNull null],
+            @"emailUserId" : [NSNull null],
+            @"emailAddress" : [NSNull null],
+            @"emailSubscribed" : @false
+         }]);
     }
     
     OSPermissionSubscriptionState *state = [OneSignal getPermissionSubscriptionState];
@@ -210,6 +217,7 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
        @"userSubscriptionEnabled": @(userSubscriptionEnabled),
        @"pushToken": subscriptionState.pushToken ?: [NSNull null],
        @"userId": subscriptionState.userId ?: [NSNull null],
+       @"emailUserId" : emailState.emailUserId ?: [NSNull null],
        @"emailSubscribed" : @(emailState.subscribed),
        @"emailAddress" : emailState.emailAddress ?: [NSNull null]
     }]);
@@ -279,24 +287,33 @@ RCT_EXPORT_METHOD(promptLocation) {
     [OneSignal promptLocation];
 }
 
-RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSString*)player_id other_parameters:(NSDictionary *)other_parameters) {
-    NSDictionary * additionalData = @{@"p2p_notification": data};
+// The post notification endpoint accepts four parameters.
+RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(id)player_ids other_parameters:(NSDictionary *)other_parameters) {
+    NSDictionary * additionalData = data ? @{@"p2p_notification": data} : @{};
     
     NSMutableDictionary * extendedData = [additionalData mutableCopy];
-    BOOL isHidden = [[other_parameters objectForKey:@"hidden"] boolValue];
+    BOOL isHidden = [[other_parameters ?: @{} objectForKey:@"hidden"] boolValue];
     if (isHidden) {
         [extendedData setObject:[NSNumber numberWithBool:YES] forKey:@"hidden"];
     }
     
-    NSDictionary *notification = @{
-                                   @"contents" : contents,
-                                   @"data" : extendedData,
-                                   @"include_player_ids": @[player_id]
-                                   };
-    NSMutableDictionary * extendedNotification = [notification mutableCopy];
-    [extendedNotification addEntriesFromDictionary: other_parameters];
+    NSMutableDictionary *notification = [NSMutableDictionary new];
+    notification[@"contents"] = contents;
+    notification[@"data"] = extendedData;
     
-    [OneSignal postNotification:extendedNotification];
+    if (player_ids && [player_ids isKindOfClass:[NSArray class]]) {
+        //array of player ids
+        notification[@"include_player_ids"] = (NSArray<NSString *> *)player_ids;
+    } else if (player_ids && [player_ids isKindOfClass:[NSString class]]) {
+        //individual player id
+        notification[@"include_player_ids"] = @[(NSString *)player_ids];
+    }
+    
+    if (other_parameters) {
+        [notification addEntriesFromDictionary:other_parameters];
+    }
+    
+    [OneSignal postNotification:notification];
 }
 
 RCT_EXPORT_METHOD(syncHashedEmail:(NSString*)email) {
