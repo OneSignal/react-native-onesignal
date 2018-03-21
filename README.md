@@ -64,7 +64,7 @@ You can run this project to test configurations, debug, and build upon it.
 
  * `git clone https://github.com/geektimecoil/react-native-onesignal`
  * `cd react-native-onesignal && cd examples && cd RNOneSignal`
- * `yarn && cd ios && pod update && cd ..`
+ * `yarn`
  * Running the iOS example app: `react-native run-ios`
  * Running the Android example app: `react-native run-android`
 
