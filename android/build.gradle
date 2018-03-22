@@ -36,9 +36,9 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.facebook.react:react-native:+'
-    compile 'com.google.android.gms:play-services-gcm:+'
-    compile 'com.google.android.gms:play-services-analytics:+'
-    compile 'com.google.android.gms:play-services-location:+'
+    compile 'com.google.android.gms:play-services-gcm:11.+'
+    compile 'com.google.android.gms:play-services-analytics:11.+'
+    compile 'com.google.android.gms:play-services-location:11.+'
     testCompile 'junit:junit:4.12'
     compile 'com.onesignal:OneSignal:3.+@aar'
 }
