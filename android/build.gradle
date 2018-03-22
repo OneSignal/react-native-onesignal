@@ -1,3 +1,9 @@
+def DEFAULT_COMPILE_SDK_VERSION             = 23
+def DEFAULT_BUILD_TOOLS_VERSION             = "25.0.0"
+def DEFAULT_TARGET_SDK_VERSION              = 22
+def DEFAULT_GOOGLE_PLAY_SERVICES_VERSION    = "+"
+
+
 buildscript {
     repositories {
         jcenter()
@@ -36,9 +42,10 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.facebook.react:react-native:+'
-    compile 'com.google.android.gms:play-services-gcm:+'
-    compile 'com.google.android.gms:play-services-analytics:+'
-    compile 'com.google.android.gms:play-services-location:+'
+    compile "com.google.android.gms:play-services-gcm:$googlePlayServicesVersion"
+    compile "com.google.android.gms:play-services-analytics:$googlePlayServicesVersion"
+    compile "com.google.android.gms:play-services-location:$googlePlayServicesVersion"
+
     testCompile 'junit:junit:4.12'
     compile 'com.onesignal:OneSignal:3.+@aar'
 }
