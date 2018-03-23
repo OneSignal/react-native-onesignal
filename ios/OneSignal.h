@@ -122,6 +122,7 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 
 /* The badge assigned to the application icon */
 @property(readonly)NSUInteger badge;
+@property(readonly)NSInteger badgeIncrement;
 
 /* The sound parameter passed to the notification
  By default set to UILocalNotificationDefaultSoundName */
