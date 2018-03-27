@@ -32,6 +32,9 @@
 
 OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 
++ (void)didReceiveRemoteNotification:(NSDictionary *)dictionary {   
+}
+
 - (void)didStartObserving {
     didStartObserving = true;
     
