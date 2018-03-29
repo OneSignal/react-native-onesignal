@@ -230,7 +230,10 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 </p></details>
 
+### Add App Groups (Optional but Recommended)
+In order for your application to be able to let push notifications increment/decrement the badge count, you need to set up an **App Group** for your application. 
 
+Please follow [this guide](https://documentation.onesignal.com/docs/ios-sdk-app-groups-setup) to set up a OneSignal app group in your app.
 
 ### Add Notification Service Extension
 This step is optional but highly recommended. The `OneSignalNotificationServiceExtension` allows your application (in iOS) to receive rich notifications with images and/or buttons. If you do not follow this step, your application will not be able to show images in push notifications, and won't be able to add action buttons to notifications either.
