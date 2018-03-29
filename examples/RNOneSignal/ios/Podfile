@@ -1,5 +1,0 @@
-project 'RNOneSignal.xcodeproj'
-
-target 'RNOneSignal' do
-    pod 'OneSignal'
-end

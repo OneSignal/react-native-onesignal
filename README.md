@@ -230,7 +230,10 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 </p></details>
 
+### Add App Groups (Optional but Recommended)
+In order for your application to be able to let push notifications increment/decrement the badge count, you need to set up an **App Group** for your application. 
 
+Please follow [this guide](https://documentation.onesignal.com/docs/ios-sdk-app-groups-setup) to set up a OneSignal app group in your app.
 
 ### Add Notification Service Extension
 This step is optional but highly recommended. The `OneSignalNotificationServiceExtension` allows your application (in iOS) to receive rich notifications with images and/or buttons. If you do not follow this step, your application will not be able to show images in push notifications, and won't be able to add action buttons to notifications either.
@@ -784,6 +787,9 @@ compile(project(':react-native-maps')){
 
 If you have detached from Expo or CRNA, you might need to change the versions of Google Play Services that this library is using to make it work nicely with ExpoKit (as of SDK23). See [this issue](https://github.com/geektimecoil/react-native-onesignal/issues/301#issuecomment-327346705).
 
+### Issue 6 - More than One Library with GMS License Package Name
+
+
 ### Manually updating iOS OneSignalNativeSDK
 When you install `react-native-onesignal` it will automaticly include a specific version of the OneSignal iOS native SDK that is known to work with it. Only follow the instructions below if there is a native OneSignal SDK fix you need that isn't included already in the latest `react-native-onesignal` update.
 
@@ -795,9 +801,22 @@ When you install `react-native-onesignal` it will automaticly include a specific
 6. Drop and drag this new `OneSignalNativeSDK` folder under the `RCTOneSignal.xcodeproj` in Xccode.
 7. Select "Create groups" and check RCTOneSignal and press Finish.
 
-### Issue 6 - Make `react-native-onesignal` work with Redux
-
 Please see the `examples/RNOneSignal/redux-index.js` file for example code and comments. Note that it will not compile, but instead serves as a template for how to handle Redux integration in general, and specifically including the edge case for intercepting the `onOpened` event when a User taps a push notification and prompts the app to open from a previously unopened state.
+
+
+### Issue 6 - Make `react-native-onesignal` work with Redux
+If you see this error: 
+
+`Error: more than one library with package name 'com.google.android.gms.license'`
+
+You can resolve it by adding this code to the top of your app's `build.gradle` file:
+
+```
+plugins {
+    id 'com.onesignal.androidsdk.onesignal-gradle-plugin' version '0.8.1'
+}
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+```
 
 ## CREDITS
 Thanks for all the awesome fellows that contributed to this repository!
