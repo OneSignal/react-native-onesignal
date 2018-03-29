@@ -1,3 +1,8 @@
+plugins {
+    id 'com.onesignal.androidsdk.onesignal-gradle-plugin' version '0.8.1'
+}
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+
 apply plugin: "com.android.application"
 
 import com.android.build.OutputFile
@@ -83,19 +88,19 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         applicationId "com.rnonesignal"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
-        manifestPlaceholders = [onesignal_app_id: "73a522ac-dc37-45f1-9d67-2791f3247179",
+        manifestPlaceholders = [onesignal_app_id: "78e8aff3-7ce2-401f-9da0-2d41f287ebaf",
                                 onesignal_google_project_number: "REMOTE"]
     }
     splits {
@@ -130,7 +135,7 @@ android {
 dependencies {
     compile project(':react-native-onesignal')
     compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:23.0.1"
+    compile "com.android.support:appcompat-v7:27.1.0"
     compile "com.facebook.react:react-native:+"  // From node_modules
 }
 
