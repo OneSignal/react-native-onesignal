@@ -42,7 +42,11 @@ React Native Push Notifications support with OneSignal integration.
 		- [Issue 2 - Multiple dex files define (Again):](#issue-2---multiple-dex-files-define-again)
 		- [Issue 3 - symbol(s) not found for architecture x86_64 and/or OneSignal/OneSignal.h file not found](#issue-3---symbols-not-found-for-architecture-x86_64-andor-onesignalonesignalh-file-not-found)
 		- [Issue 4 - Make react-native-onesignal work with react-native-maps](#issue-4---make-react-native-onesignal-work-with-react-native-maps)
-	- [CREDITS](#credits)
+      - [Issue 5 - Make react-native-onesignal work with ExpoKit after ejecting from Expo/CRNA](#issue-5---make-react-native-onesignal-work-with-expokit-after-ejecting-from-expo-crna)
+      - [Issue 6 - Make react-native-onesignal work with Redux](#issue-6---make-react-native-onesignal-work-with-redux)
+      - [Issue 7 - Multiple Libraries Android Errors](#issue-7---multiple-libraries-android-errors)
+	- [Manually Updating the iOS library](Manually-updating-iOS-OneSignalNativeSDK)
+   - [CREDITS](#credits)
 	- [TODO](#todo)
 
 <!-- /TOC -->
@@ -783,31 +787,20 @@ compile(project(':react-native-maps')){
   compile 'com.google.android.gms:play-services-maps:+'
 ```
 
-### Issue 5 - Make `react-native-onesignal` work with ExpoKit after ejecting from Expo/CRNA
+### Issue 5 - Make `react-native-onesignal` work with ExpoKit after ejecting from Expo-CRNA
 
 If you have detached from Expo or CRNA, you might need to change the versions of Google Play Services that this library is using to make it work nicely with ExpoKit (as of SDK23). See [this issue](https://github.com/geektimecoil/react-native-onesignal/issues/301#issuecomment-327346705).
 
-### Issue 6 - More than One Library with GMS License Package Name
-
-
-### Manually updating iOS OneSignalNativeSDK
-When you install `react-native-onesignal` it will automaticly include a specific version of the OneSignal iOS native SDK that is known to work with it. Only follow the instructions below if there is a native OneSignal SDK fix you need that isn't included already in the latest `react-native-onesignal` update.
-
-1. Download the [latest OneSignal iOS native](https://github.com/OneSignal/OneSignal-iOS-SDK/releases) release.
-2. In XCode, delete `OneSignalNativeSDK` under `Libraries/RCTOneSignal.xcodeproj`
-3. Press "Move to trash"
-4. Create a new `OneSignalNativeSDK` folder under `node_modules/react-native-onesignal/ios/`.
-5. From the downloaded iOS native release, copy all .h and .m files from the `iOS_SDK` folder and put them in to `OneSignalNativeSDK`.
-6. Drop and drag this new `OneSignalNativeSDK` folder under the `RCTOneSignal.xcodeproj` in Xccode.
-7. Select "Create groups" and check RCTOneSignal and press Finish.
+### Issue 6 - Make `react-native-onesignal` work with Redux
 
 Please see the `examples/RNOneSignal/redux-index.js` file for example code and comments. Note that it will not compile, but instead serves as a template for how to handle Redux integration in general, and specifically including the edge case for intercepting the `onOpened` event when a User taps a push notification and prompts the app to open from a previously unopened state.
 
+### Issue 7 - Multiple Libraries Android Errors
+If you see this type of error: 
 
-### Issue 6 - Make `react-native-onesignal` work with Redux
-If you see this error: 
-
-`Error: more than one library with package name 'com.google.android.gms.license'`
+```
+Error: more than one library with package name 'com.google.android.gms.license'
+```
 
 You can resolve it by adding this code to the top of your app's `build.gradle` file:
 
@@ -817,6 +810,15 @@ plugins {
 }
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 ```
+
+
+### Manually updating iOS OneSignalNativeSDK
+When you install `react-native-onesignal` it will automaticly include a specific version of the OneSignal iOS native SDK that is known to work with it. Only follow the instructions below if there is a native OneSignal SDK fix you need that isn't included already in the latest `react-native-onesignal` update.
+
+1. Download the [latest OneSignal iOS native](https://github.com/OneSignal/OneSignal-iOS-SDK/releases) release.
+2. Delete `libOneSignal.a` and `OneSignal.h` from `node_modules/react-native-onesignal/ios/`
+3. From `/iOS_SDK/OneSignalSDK/Framework/OneSignal.framework/Versions/A/`, copy `OneSignal` to `/node_modules/react-native-onesignal/ios/` and rename it `libOneSignal.a`
+4. Copy `OneSignal.h` from `/iOS_SDK/OneSignalSDK/Framework/OneSignal.framework/Versions/A/` to `/node_modules/react-native-onesignal/ios/`
 
 ## CREDITS
 Thanks for all the awesome fellows that contributed to this repository!
