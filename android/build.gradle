@@ -1,29 +1,17 @@
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://maven.google.com' }
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-    }
-}
-
 apply plugin: 'com.android.library'
 
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion safeExtGet('compileSdkVersion', 23)
+    buildToolsVersion safeExtGet('buildToolsVersion', '23.0.1')
 
     defaultConfig {
-        minSdkVersion 16
-        versionCode 1
-        versionName '1.0'
-        // Do not set onesignal_app_id here, it will be set in the app project.
-        // Leave onesignal_google_project_number as it is now pulled from the dashboard.
-        manifestPlaceholders = [onesignal_app_id: "",
-                                onesignal_google_project_number: "REMOTE"]
+        // Do NOT change these values here, set them in your android/app/build.gradle instead
+        manifestPlaceholders = [onesignal_app_id: '', onesignal_google_project_number: 'REMOTE']
+        minSdkVersion safeExtGet('minSdkVersion', 16)
     }
     buildTypes {
         release {
@@ -34,19 +22,26 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.facebook.react:react-native:+'
+    compile "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
+
+    compile('com.onesignal:OneSignal:3.8.3') {
+        // Exclude com.android.support(Android Support library) as the version range starts at 26.0.0
+        //    This is due to compileSdkVersion defaulting to 23 which cant' be lower than the support library version
+        //    And the fact that the default root project is missing the Google Maven repo required to pull down 26.0.0+
+        exclude group: 'com.android.support'
+        // Keeping com.google.android.gms(Google Play services library) as this version range starts at 10.2.1
+    }
+
     testCompile 'junit:junit:4.12'
-    compile 'com.onesignal:OneSignal:3.+'
 }
 
 // Add the following to the top (Line 1) of your app/build.gradle if you run into any issues with duplicate classes.
 // Such as the following error
 //   Error: more than one library with package name 'com.google.android.gms.license'
-/*
 
+/*
 plugins {
     id 'com.onesignal.androidsdk.onesignal-gradle-plugin' version '0.8.1'
 }
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
-
 */
