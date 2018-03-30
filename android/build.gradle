@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
 android {
@@ -9,10 +9,9 @@ android {
     buildToolsVersion safeExtGet('buildToolsVersion', '23.0.1')
 
     defaultConfig {
-        versionCode 1
-        versionName '1.0'
         // Do NOT change these values here, set them in your android/app/build.gradle instead
         manifestPlaceholders = [onesignal_app_id: '', onesignal_google_project_number: 'REMOTE']
+        minSdkVersion safeExtGet('minSdkVersion', 16)
     }
     buildTypes {
         release {
