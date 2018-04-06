@@ -14,4 +14,4 @@ There is also an example project located in the *Examples* folder.
 
 ## CREDITS
 Thanks for all the awesome fellows that contributed to this repository!
-@danpe, @lunchieapp, @gaykov, @williamrijksen, @adrienbrault, @kennym, @dunghuynh, @holmesal, @joshuapinter, @jkasten2, @JKalash
+@danpe, @lunchieapp, @gaykov, @williamrijksen, @adrienbrault, @kennym, @dunghuynh, @holmesal, @joshuapinter, @jkasten2, @JKalash, @nightsd01
