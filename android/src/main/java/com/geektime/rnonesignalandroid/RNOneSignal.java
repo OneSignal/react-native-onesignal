@@ -57,29 +57,39 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    // This will normally succeed when onHostResume fires instead.
    private void initOneSignal() {
 
-      Activity activity = getCurrentActivity();
-      if (activity == null || oneSignalInitDone)
-         return;
-
       // Uncomment to debug init issues.
       // OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.ERROR);
-
-      oneSignalInitDone = true;
 
       registerNotificationsOpenedNotification();
       registerNotificationsReceivedNotification();
 
       OneSignal.sdkType = "react";
-      OneSignal.startInit(activity)
-               .setNotificationOpenedHandler(new NotificationOpenedHandler(mReactContext))
-               .setNotificationReceivedHandler(new NotificationReceivedHandler(mReactContext))
-               .init();
    }
 
    private void sendEvent(String eventName, Object params) {
       mReactContext
                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                .emit(eventName, params);
+   }
+
+   @ReactMethod 
+   public void init(String appId) {
+
+      Activity activity = getCurrentActivity();
+      if (activity == null || oneSignalInitDone)
+         return;
+
+      oneSignalInitDone = true;
+      
+
+      OneSignal.sdkType = "react";
+      
+      OneSignal.init(activity,
+         null,
+         appId,
+         new NotificationOpenedHandler(mReactContext),
+         new NotificationReceivedHandler(mReactContext)
+      );
    }
 
    @ReactMethod

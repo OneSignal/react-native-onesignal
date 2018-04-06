@@ -23,7 +23,7 @@ import {
 
 import OneSignal from 'react-native-onesignal';
 
-let imageUri = 'https://media.licdn.com/media/AAEAAQAAAAAAAAyOAAAAJDJhY2JlMmJjLWI1NzctNGNmNC1iMDU1LWE4NjI4Nzc1YTU2Zg.png'
+let imageUri = 'https://cdn-images-1.medium.com/max/300/1*7xHdCFeYfD8zrIivMiQcCQ.png'
 
 export default class RNOneSignal extends Component {
     constructor(properties) {
@@ -38,6 +38,9 @@ export default class RNOneSignal extends Component {
     componentWillMount() {
         console.log("setting log level");
         OneSignal.setLogLevel(7, 0);
+
+        OneSignal.init("78e8aff3-7ce2-401f-9da0-2d41f287ebaf", {"kOSSettingsKeyAutoPrompt" : true});
+        
         this.setState({emailEnabled: false, 
             animatingEmailButton : false, 
             initialOpenFromPush : "Did NOT open from push",
