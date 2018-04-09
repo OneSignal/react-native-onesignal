@@ -28,6 +28,7 @@
 
 @implementation RCTOneSignal {
     BOOL didStartObserving;
+    BOOL didInitialize;
 }
 
 +(void)load {
@@ -44,8 +45,6 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     static id _sharedInstance = nil;
     dispatch_once(&token, ^{
         _sharedInstance = [[RCTOneSignal alloc] init];
-        
-        [_sharedInstance initOneSignal];
     });
     return _sharedInstance;
 }
@@ -53,7 +52,21 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 - (void)initOneSignal {
     [OneSignal setValue:@"react" forKey:@"mSDKType"];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartObserving) name:@"didSetBridge" object:nil];
-    [OneSignal initWithLaunchOptions:nil appId:nil];
+    
+    [OneSignal initWithLaunchOptions:nil appId:nil handleNotificationReceived:nil handleNotificationAction:nil settings:@{@"kOSSettingsKeyInOmitNoAppIdLogging" : @true}];
+    didInitialize = false;
+}
+
+// deprecated init methods
+// provides backwards compatibility
+- (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId {
+    return [self initWithLaunchOptions:launchOptions appId:appId settings:nil];
+}
+
+- (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId settings:(NSDictionary*)settings {
+    [self configureWithAppId:appId settings:settings];
+    
+    return self;
 }
 
 - (void)didStartObserving {
@@ -76,6 +89,11 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 }
 
 - (void)configureWithAppId:(NSString *)appId settings:(NSDictionary*)settings {
+    
+    if (didInitialize)
+        return;
+    
+    didInitialize = true;
     [OneSignal addSubscriptionObserver:self];
     [OneSignal addEmailSubscriptionObserver:self];
     [OneSignal initWithLaunchOptions:nil

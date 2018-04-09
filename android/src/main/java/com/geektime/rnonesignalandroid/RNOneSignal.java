@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -40,14 +43,29 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    public static final String NOTIFICATION_RECEIVED_INTENT_FILTER = "GTNotificationReceived";
    public static final String HIDDEN_MESSAGE_KEY = "hidden";
 
+   private ReactApplicationContext mReactApplicationContext;
    private ReactContext mReactContext;
    private boolean oneSignalInitDone;
 
    public RNOneSignal(ReactApplicationContext reactContext) {
       super(reactContext);
+      mReactApplicationContext = reactContext;
       mReactContext = reactContext;
       mReactContext.addLifecycleEventListener(this);
       initOneSignal();
+   }
+
+   private String appIdFromManifest(ReactApplicationContext context) {
+      try {
+         ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), context.getPackageManager().GET_META_DATA);
+         Bundle bundle = ai.metaData;
+         String appId = bundle.getString("onesignal_app_id");
+         Log.d("onesignal", "app has app id: " + appId);
+         return appId;
+      } catch (Throwable t) {
+         t.printStackTrace();
+         return null;
+      }
    }
 
    // Initialize OneSignal only once when an Activity is available.
@@ -64,6 +82,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       registerNotificationsReceivedNotification();
 
       OneSignal.sdkType = "react";
+
+      String appId = appIdFromManifest(mReactApplicationContext);
+
+      if (appId != null && appId.length() > 0) {
+         init(appId);
+      }
    }
 
    private void sendEvent(String eventName, Object params) {
@@ -74,10 +98,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
    @ReactMethod 
    public void init(String appId) {
-
+      Log.d("onesignal", "init called with app ID: " + appId);
       Activity activity = getCurrentActivity();
-      if (activity == null || oneSignalInitDone)
+      if (activity == null || oneSignalInitDone) {
+         Log.d("onesignal", "return early because activity is null " + (activity == null) + " or oneSignalInitDone" + oneSignalInitDone);
          return;
+      }
 
       oneSignalInitDone = true;
       
