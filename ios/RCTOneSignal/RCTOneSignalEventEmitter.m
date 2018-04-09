@@ -27,6 +27,10 @@ static BOOL _didStartObserving = false;
     return _didStartObserving;
 }
 
++(BOOL)requiresMainQueueSetup {
+    return YES;
+}
+
 /*
      This class acts as the module & event emitter
      It is initialized automatically by React-Native
