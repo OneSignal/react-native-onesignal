@@ -30,7 +30,7 @@ for(var i = 0; i < eventBroadcastNames.length; i++) {
 
 function handleEventBroadcast(type, broadcast) {
     return oneSignalEventEmitter.addListener(
-        broadcast, (notification) => { 
+        broadcast, (notification) => {
             // Check if we have added listener for this type yet
             // Cache the result first if we have not.
             var handler = _notificationHandler.get(type);
@@ -44,16 +44,26 @@ function handleEventBroadcast(type, broadcast) {
     );
 }
 
-function handleConnectionStateChange(isConnected) {
-    if (!isConnected) return;
+function handleConnectionStateChange(state) {
+    if (Platform.OS === 'ios' && (state.type === 'none' || state.type === 'unknown')) {
+        return;
+    }
+    else if (Platform.OS === 'android' && (state.type === 'NONE' || state.type === 'UNKNOWN')) {
+        return;
+    }
 
     OneSignal.configure();
-    NetInfo.isConnected.removeEventListener('connectionChange', handleConnectionStateChange);
+    NetInfo.removeEventListener('connectionChange', handleConnectionStateChange);
 }
 
-NetInfo.isConnected.fetch().then(isConnected => {
-    if (isConnected) return OneSignal.configure();
-    NetInfo.isConnected.addEventListener('connectionChange', handleConnectionStateChange);
+NetInfo.getConnectionInfo().then(info => {
+    if (Platform.OS === 'ios' && info.type !== 'none' && info.type !== 'unknown') {
+        return OneSignal.configure();
+    }
+    else if (Platform.OS === 'android' && info.type !== 'NONE' && info.type !== 'UNKNOWN') {
+        return OneSignal.configure();
+    }
+    NetInfo.addEventListener('connectionChange', handleConnectionStateChange);
 }).catch((...args) => console.warn("Error: ", args));
 
 
@@ -100,7 +110,7 @@ export default class OneSignal {
             console.log("This function is not supported on Android");
         }
     }
-    
+
     static promptForPushNotificationsWithUserResponse(callback: Function) {
         if (Platform.OS === 'ios') {
             invariant(
@@ -220,10 +230,10 @@ export default class OneSignal {
             typeof callback === 'function',
             'Must provide a valid callback'
         );
-        
+
         RNOneSignal.logoutEmail(callback);
     }
-    
+
     static setLocationShared(shared) {
         RNOneSignal.setLocationShared(shared);
     }
