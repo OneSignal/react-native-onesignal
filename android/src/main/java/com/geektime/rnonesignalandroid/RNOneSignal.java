@@ -59,9 +59,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       try {
          ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), context.getPackageManager().GET_META_DATA);
          Bundle bundle = ai.metaData;
-         String appId = bundle.getString("onesignal_app_id");
-         Log.d("onesignal", "app has app id: " + appId);
-         return appId;
+         return bundle.getString("onesignal_app_id");
       } catch (Throwable t) {
          t.printStackTrace();
          return null;
@@ -98,10 +96,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
    @ReactMethod 
    public void init(String appId) {
-      Log.d("onesignal", "init called with app ID: " + appId);
       Activity activity = getCurrentActivity();
       if (activity == null || oneSignalInitDone) {
-         Log.d("onesignal", "return early because activity is null " + (activity == null) + " or oneSignalInitDone" + oneSignalInitDone);
+         Log.e("onesignal", "Unable to initialize the OneSignal SDK because activity is null " + (activity == null) + " or oneSignalInitDone" + oneSignalInitDone);
          return;
       }
 

@@ -53,7 +53,15 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     [OneSignal setValue:@"react" forKey:@"mSDKType"];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartObserving) name:@"didSetBridge" object:nil];
     
-    [OneSignal initWithLaunchOptions:nil appId:nil handleNotificationReceived:nil handleNotificationAction:nil settings:@{@"kOSSettingsKeyInOmitNoAppIdLogging" : @true}];
+    [OneSignal initWithLaunchOptions:nil appId:nil handleNotificationReceived:^(OSNotification* notification) {
+        [self handleRemoteNotificationReceived:[notification stringify]];
+    } handleNotificationAction:^(OSNotificationOpenedResult *result) {
+        if (!didStartObserving)
+            coldStartOSNotificationOpenedResult = result;
+        else
+            [self handleRemoteNotificationOpened:[result stringify]];
+        
+    } settings:@{@"kOSSettingsKeyInOmitNoAppIdLogging" : @true}];
     didInitialize = false;
 }
 
