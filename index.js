@@ -44,29 +44,6 @@ function handleEventBroadcast(type, broadcast) {
     );
 }
 
-function handleConnectionStateChange(state) {
-    if (Platform.OS === 'ios' && (state.type === 'none' || state.type === 'unknown')) {
-        return;
-    }
-    else if (Platform.OS === 'android' && (state.type === 'NONE' || state.type === 'UNKNOWN')) {
-        return;
-    }
-
-    OneSignal.configure();
-    NetInfo.removeEventListener('connectionChange', handleConnectionStateChange);
-}
-
-NetInfo.getConnectionInfo().then(info => {
-    if (Platform.OS === 'ios' && info.type !== 'none' && info.type !== 'unknown') {
-        return OneSignal.configure();
-    }
-    else if (Platform.OS === 'android' && info.type !== 'NONE' && info.type !== 'UNKNOWN') {
-        return OneSignal.configure();
-    }
-    NetInfo.addEventListener('connectionChange', handleConnectionStateChange);
-}).catch((...args) => console.warn("Error: ", args));
-
-
 export default class OneSignal {
 
     static addEventListener(type: any, handler: Function) {
