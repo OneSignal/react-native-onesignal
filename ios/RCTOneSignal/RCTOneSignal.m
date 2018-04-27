@@ -52,7 +52,7 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 }
 
 - (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId settings:(NSDictionary*)settings {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartObserving) name:@"didSetBridge" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartObserving) name:nil object:nil];
     [OneSignal addSubscriptionObserver:self];
     [OneSignal addEmailSubscriptionObserver:self];
     [OneSignal setValue:@"react" forKey:@"mSDKType"];
