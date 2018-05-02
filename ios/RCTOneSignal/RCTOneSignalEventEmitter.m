@@ -94,12 +94,6 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 #pragma mark Exported Methods
 
-RCT_EXPORT_METHOD(initWithAppId:(NSString *)appId settings:(NSDictionary *)settings) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[RCTOneSignal sharedInstance] configureWithAppId:appId settings:settings];
-    });
-}
-
 RCT_EXPORT_METHOD(setRequiresUserPrivacyConsent:(BOOL)required) {
     [OneSignal setRequiresUserPrivacyConsent:required];
 }
@@ -108,6 +102,11 @@ RCT_EXPORT_METHOD(provideUserConsent:(BOOL)granted) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [OneSignal consentGranted:granted];
     });
+}
+
+RCT_REMAP_METHOD(userProvidedPrivacyConsent, resolver: (RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(@(!OneSignal.requiresUserPrivacyConsent));
 }
 
 RCT_EXPORT_METHOD(promptForPushNotificationPermissions:(RCTResponseSenderBlock)callback) {
