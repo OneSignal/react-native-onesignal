@@ -39,7 +39,7 @@ export default class RNOneSignal extends Component {
         console.log("setting log level");
         OneSignal.setLogLevel(7, 0);
 
-        OneSignal.init("78e8aff3-7ce2-401f-9da0-2d41f287ebaf", {"kOSSettingsKeyAutoPrompt" : true});
+        OneSignal.init("78e8aff3-7ce2-401f-9da0-2d41f287ebaf");
         
         this.setState({emailEnabled: false, 
             animatingEmailButton : false, 
