@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -40,14 +43,27 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    public static final String NOTIFICATION_RECEIVED_INTENT_FILTER = "GTNotificationReceived";
    public static final String HIDDEN_MESSAGE_KEY = "hidden";
 
+   private ReactApplicationContext mReactApplicationContext;
    private ReactContext mReactContext;
    private boolean oneSignalInitDone;
 
    public RNOneSignal(ReactApplicationContext reactContext) {
       super(reactContext);
+      mReactApplicationContext = reactContext;
       mReactContext = reactContext;
       mReactContext.addLifecycleEventListener(this);
       initOneSignal();
+   }
+
+   private String appIdFromManifest(ReactApplicationContext context) {
+      try {
+         ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), context.getPackageManager().GET_META_DATA);
+         Bundle bundle = ai.metaData;
+         return bundle.getString("onesignal_app_id");
+      } catch (Throwable t) {
+         t.printStackTrace();
+         return null;
+      }
    }
 
    // Initialize OneSignal only once when an Activity is available.
@@ -57,29 +73,46 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    // This will normally succeed when onHostResume fires instead.
    private void initOneSignal() {
 
-      Activity activity = getCurrentActivity();
-      if (activity == null || oneSignalInitDone)
-         return;
-
       // Uncomment to debug init issues.
       // OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.ERROR);
-
-      oneSignalInitDone = true;
 
       registerNotificationsOpenedNotification();
       registerNotificationsReceivedNotification();
 
       OneSignal.sdkType = "react";
-      OneSignal.startInit(activity)
-               .setNotificationOpenedHandler(new NotificationOpenedHandler(mReactContext))
-               .setNotificationReceivedHandler(new NotificationReceivedHandler(mReactContext))
-               .init();
+
+      String appId = appIdFromManifest(mReactApplicationContext);
+
+      if (appId != null && appId.length() > 0) {
+         init(appId);
+      }
    }
 
    private void sendEvent(String eventName, Object params) {
       mReactContext
                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                .emit(eventName, params);
+   }
+
+   @ReactMethod 
+   public void init(String appId) {
+      Activity activity = getCurrentActivity();
+      if (activity == null || oneSignalInitDone) {
+         Log.e("onesignal", "Unable to initialize the OneSignal SDK because activity is null " + (activity == null) + " or oneSignalInitDone" + oneSignalInitDone);
+         return;
+      }
+
+      oneSignalInitDone = true;
+      
+
+      OneSignal.sdkType = "react";
+      
+      OneSignal.init(activity,
+         null,
+         appId,
+         new NotificationOpenedHandler(mReactContext),
+         new NotificationReceivedHandler(mReactContext)
+      );
    }
 
    @ReactMethod
