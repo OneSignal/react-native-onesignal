@@ -44,6 +44,19 @@ function handleEventBroadcast(type, broadcast) {
     );
 }
 
+function handleConnectionStateChange(isConnected) {
+    if (!isConnected) return;
+
+    OneSignal.configure();
+    NetInfo.isConnected.removeEventListener('connectionChange', handleConnectionStateChange);
+}
+
+NetInfo.isConnected.fetch().then(isConnected => {
+    if (isConnected) return OneSignal.configure();
+    NetInfo.isConnected.addEventListener('connectionChange', handleConnectionStateChange);
+}).catch((...args) => console.warn("Error: ", args));
+
+
 export default class OneSignal {
 
     static addEventListener(type: any, handler: Function) {
@@ -124,14 +137,6 @@ export default class OneSignal {
 
     static configure() {
         RNOneSignal.configure();
-    }
-
-    static init(appId, iOSSettings) {
-       if (Platform.OS == 'ios') {
-         RNOneSignal.initWithAppId(appId, iOSSettings);
-       } else {
-         RNOneSignal.init(appId);
-       }
     }
 
     static checkPermissions(callback: Function) {
@@ -274,19 +279,6 @@ export default class OneSignal {
 
     static setLogLevel(nsLogLevel, visualLogLevel) {
         RNOneSignal.setLogLevel(nsLogLevel, visualLogLevel);
-    }
-    
-    static setRequiresUserPrivacyConsent(required) {
-       RNOneSignal.setRequiresUserPrivacyConsent(required);
-    }
-
-    static provideUserConsent(granted) {
-       RNOneSignal.provideUserConsent(granted);
-    }
-
-    static userProvidedPrivacyConsent() {
-       //returns a promise
-       return RNOneSignal.userProvidedPrivacyConsent();
     }
 
 }
