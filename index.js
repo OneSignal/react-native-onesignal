@@ -275,5 +275,18 @@ export default class OneSignal {
     static setLogLevel(nsLogLevel, visualLogLevel) {
         RNOneSignal.setLogLevel(nsLogLevel, visualLogLevel);
     }
+    
+    static setRequiresUserPrivacyConsent(required) {
+       RNOneSignal.setRequiresUserPrivacyConsent(required);
+    }
+
+    static provideUserConsent(granted) {
+       RNOneSignal.provideUserConsent(granted);
+    }
+
+    static userProvidedPrivacyConsent() {
+       //returns a promise
+       return RNOneSignal.userProvidedPrivacyConsent();
+    }
 
 }

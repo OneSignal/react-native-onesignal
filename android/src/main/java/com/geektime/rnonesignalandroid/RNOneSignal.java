@@ -23,6 +23,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.Promise;
 import com.onesignal.OSPermissionState;
 import com.onesignal.OSPermissionSubscriptionState;
 import com.onesignal.OSSubscriptionState;
@@ -212,6 +213,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    @ReactMethod
    public void getPermissionSubscriptionState(final Callback callback) {
       OSPermissionSubscriptionState state = OneSignal.getPermissionSubscriptionState();
+
+      if (state == null)
+         return;
+
       OSPermissionState permissionState = state.getPermissionStatus();
       OSSubscriptionState subscriptionState = state.getSubscriptionStatus();
       OSEmailSubscriptionState emailSubscriptionState = state.getEmailSubscriptionStatus();
@@ -333,6 +338,21 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    @ReactMethod
    public void cancelNotification(int id) {
       OneSignal.cancelNotification(id);
+   }
+
+   @ReactMethod
+   public void setRequiresUserPrivacyConsent(Boolean required) {
+      OneSignal.setRequiresUserPrivacyConsent(required);
+   }
+
+   @ReactMethod 
+   public void provideUserConsent(Boolean granted) {
+      OneSignal.provideUserConsent(granted);
+   }
+
+   @ReactMethod
+   public void userProvidedPrivacyConsent(Promise promise) {
+      promise.resolve(OneSignal.userProvidedPrivacyConsent());
    }
 
    private void registerNotificationsReceivedNotification() {
