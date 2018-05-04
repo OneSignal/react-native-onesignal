@@ -12,6 +12,7 @@
 #import "OneSignal.h"
 #endif
 
+#import "RCTOneSignal.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -107,6 +108,12 @@ RCT_EXPORT_METHOD(provideUserConsent:(BOOL)granted) {
 RCT_REMAP_METHOD(userProvidedPrivacyConsent, resolver: (RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@(!OneSignal.requiresUserPrivacyConsent));
+}
+
+RCT_EXPORT_METHOD(initWithAppId:(NSString *)appId settings:(NSDictionary *)settings) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[RCTOneSignal sharedInstance] configureWithAppId:appId settings:settings];
+    });
 }
 
 RCT_EXPORT_METHOD(promptForPushNotificationPermissions:(RCTResponseSenderBlock)callback) {

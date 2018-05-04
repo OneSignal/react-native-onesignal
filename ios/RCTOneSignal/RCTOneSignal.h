@@ -7,7 +7,9 @@
 
 @interface RCTOneSignal : NSObject <OSSubscriptionObserver, OSEmailSubscriptionObserver>
 
-- (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId;
-- (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId settings:(NSDictionary*)settings;
++ (RCTOneSignal *) sharedInstance;
+
+- (void)configureWithAppId:(NSString *)appId;
+- (void)configureWithAppId:(NSString *)appId settings:(NSDictionary*)settings;
 
 @end

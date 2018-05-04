@@ -126,6 +126,14 @@ export default class OneSignal {
         RNOneSignal.configure();
     }
 
+    static init(appId, iOSSettings) {
+       if (Platform.OS == 'ios') {
+         RNOneSignal.initWithAppId(appId, iOSSettings);
+       } else {
+         RNOneSignal.init(appId);
+       }
+    }
+
     static checkPermissions(callback: Function) {
         if (Platform.OS === 'ios') {
             invariant(
