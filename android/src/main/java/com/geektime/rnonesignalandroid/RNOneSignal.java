@@ -33,6 +33,7 @@ import com.onesignal.OneSignal.EmailUpdateHandler;
 import com.onesignal.OneSignal.EmailUpdateError;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 import org.json.JSONException;
 
 
@@ -231,15 +232,15 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       boolean userSubscriptionEnabled = subscriptionState.getUserSubscriptionSetting();
 
       try {
-         JSONObject result = new JSONObject("{" +
-               "'notificationsEnabled': " + String.valueOf(notificationsEnabled) + "," +
-               "'subscriptionEnabled': " + String.valueOf(subscriptionEnabled) + "," +
-               "'userSubscriptionEnabled': " + String.valueOf(userSubscriptionEnabled) + "," +
-               "'pushToken': " + subscriptionState.getPushToken() + "," +
-               "'userId': " + subscriptionState.getUserId() + "," +
-               "'emailUserId' : " + emailSubscriptionState.getEmailUserId() + "," +
-               "'emailAddress' : " + emailSubscriptionState.getEmailAddress() +
-         "}");
+         JSONObject result = new JSONObject();
+
+         result.put("notificationsEnabled", String.valueOf(notificationsEnabled))
+                 .put("subscriptionEnabled", String.valueOf(subscriptionEnabled))
+                 .put("userSubscriptionEnabled", String.valueOf(userSubscriptionEnabled))
+                 .put("pushToken", subscriptionState.getPushToken())
+                 .put("userId", subscriptionState.getUserId())
+                 .put("emailUserId", emailSubscriptionState.getEmailUserId())
+                 .put("emailAddress", emailSubscriptionState.getEmailAddress());
 
          Log.d("onesignal", "permission subscription state: " + result.toString());
 
@@ -297,7 +298,21 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    @ReactMethod
    public void postNotification(String contents, String data, String playerId, String otherParameters) {
       try {
-         JSONObject postNotification = new JSONObject("{'contents': " + contents + ", 'data': {'p2p_notification': " + data + "}, 'include_player_ids': ['" + playerId + "']}");
+         JSONObject postNotification = new JSONObject();
+         postNotification.put("contents", contents);
+
+         if (playerId != null) {
+            JSONArray playerIds = new JSONArray();
+            playerIds.put(playerId);
+            postNotification.put("include_player_ids", playerIds);
+         }
+
+         if (data != null) {
+            JSONObject additionalData = new JSONObject();
+            additionalData.put("p2p_notification", data);
+            postNotification.put("data", additionalData);
+         }
+
          if (otherParameters != null && !otherParameters.trim().isEmpty()) {
                JSONObject parametersJson = new JSONObject(otherParameters.trim());
                Iterator<String> keys = parametersJson.keys();
