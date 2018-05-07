@@ -96,6 +96,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
                .emit(eventName, params);
    }
 
+   private JSONObject jsonFromErrorMessageString(String errorMessage) throws JSONException {
+      JSONObject errorObject = new JSONObject();
+      errorObject.put("error", errorMessage);
+      return errorObject;
+   }
+
    @ReactMethod 
    public void init(String appId) {
       Activity activity = getCurrentActivity();
@@ -148,8 +154,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          @Override
          public void onFailure(EmailUpdateError error) {
                try {
-                  JSONObject errorObject = new JSONObject("{'error' : '" + error.getMessage() + "'}");
-                  callback.invoke(RNUtils.jsonToWritableMap(errorObject));
+                  callback.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
                } catch (JSONException exception) {
                   exception.printStackTrace();
                }
@@ -168,8 +173,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          @Override
          public void onFailure(EmailUpdateError error) {
                try {
-                  JSONObject errorObject = new JSONObject("{'error' : '" + error.getMessage() + "'}");
-                  callback.invoke(RNUtils.jsonToWritableMap(errorObject));
+                  callback.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
                } catch (JSONException exception) {
                   exception.printStackTrace();
                }
@@ -188,8 +192,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          @Override
          public void onFailure(EmailUpdateError error) {
                try {
-                  JSONObject errorObject = new JSONObject("{'error' : '" + error.getMessage() + "'}");
-                  callback.invoke(RNUtils.jsonToWritableMap(errorObject));
+                  callback.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
                } catch (JSONException exception) {
                   exception.printStackTrace();
                }
