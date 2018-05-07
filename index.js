@@ -30,22 +30,22 @@ if (RNOneSignal != null) {
 
       _listeners[eventName] = handleEventBroadcast(eventName, eventBroadcastName)
    }
+}
 
-   function handleEventBroadcast(type, broadcast) {
-      return oneSignalEventEmitter.addListener(
-         broadcast, (notification) => {
-               // Check if we have added listener for this type yet
-               // Cache the result first if we have not.
-               var handler = _notificationHandler.get(type);
+function handleEventBroadcast(type, broadcast) {
+   return oneSignalEventEmitter.addListener(
+      broadcast, (notification) => {
+            // Check if we have added listener for this type yet
+            // Cache the result first if we have not.
+            var handler = _notificationHandler.get(type);
 
-               if (handler) {
-                  handler(notification);
-               } else {
-                  _notificationCache.set(type, notification);
-               }
-         }
-      );
-   }
+            if (handler) {
+               handler(notification);
+            } else {
+               _notificationCache.set(type, notification);
+            }
+      }
+   );
 }
 
 function checkIfInitialized() {
