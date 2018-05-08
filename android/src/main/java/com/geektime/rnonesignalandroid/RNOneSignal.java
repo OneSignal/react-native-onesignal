@@ -97,8 +97,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    private JSONObject jsonFromErrorMessageString(String errorMessage) throws JSONException {
-      JSONObject errorObject = new JSONObject();
-      errorObject.put("error", errorMessage);
+      JSONObject errorObject = new JSONObject().put("error", errorMessage);
       return errorObject;
    }
 
