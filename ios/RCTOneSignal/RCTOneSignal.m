@@ -61,7 +61,7 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
         else
             [self handleRemoteNotificationOpened:[result stringify]];
         
-    } settings:@{@"kOSSettingsKeyInOmitNoAppIdLogging" : @true}];
+    } settings:@{@"kOSSettingsKeyInOmitNoAppIdLogging" : @true, kOSSettingsKeyAutoPrompt : @false}]; //default autoPrompt to false since init will be called again
     didInitialize = false;
 }
 
