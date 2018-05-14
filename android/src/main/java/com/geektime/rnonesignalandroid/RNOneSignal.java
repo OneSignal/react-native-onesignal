@@ -48,6 +48,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    private ReactApplicationContext mReactApplicationContext;
    private ReactContext mReactContext;
    private boolean oneSignalInitDone;
+   private static boolean registeredEvents = false;
 
    public RNOneSignal(ReactApplicationContext reactContext) {
       super(reactContext);
@@ -78,8 +79,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       // Uncomment to debug init issues.
       // OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.ERROR);
 
-      registerNotificationsOpenedNotification();
-      registerNotificationsReceivedNotification();
+      if (!registeredEvents) {
+         registeredEvents = true;
+         registerNotificationsOpenedNotification();
+         registerNotificationsReceivedNotification();
+      }
 
       OneSignal.sdkType = "react";
 
