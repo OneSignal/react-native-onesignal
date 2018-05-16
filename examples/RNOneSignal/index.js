@@ -35,12 +35,11 @@ export default class RNOneSignal extends Component {
         return re.test(String(email).toLowerCase());
     }
 
-    componentWillMount() {
-        console.log("setting log level");
+    async componentWillMount() {
         OneSignal.setLogLevel(7, 0);
 
-        OneSignal.init("78e8aff3-7ce2-401f-9da0-2d41f287ebaf", {"kOSSettingsKeyAutoPrompt" : true});
-
+        let requiresConsent = false;
+       
         this.setState({emailEnabled: false, 
             animatingEmailButton : false, 
             initialOpenFromPush : "Did NOT open from push",
@@ -48,16 +47,22 @@ export default class RNOneSignal extends Component {
             width: 0,
             activityMargin: 0,
             buttonColor : Platform.OS == "ios" ? "#ffffff" : "#d45653",
-            jsonDebugText : ""
+            jsonDebugText : "",
+            privacyButtonTitle : "Privacy Consent: Not Granted",
+            requirePrivacyConsent : requiresConsent
         });
-        OneSignal.setLocationShared(true);
 
+        OneSignal.setRequiresUserPrivacyConsent(requiresConsent);
+
+        OneSignal.init("b2f7f966-d8cc-11e4-bed1-df8f05be55ba", {kOSSettingsKeyAutoPrompt : true});
+
+        var providedConsent = await OneSignal.userProvidedPrivacyConsent();
+
+        this.setState({privacyButtonTitle : `Privacy Consent: ${providedConsent ? "Granted" : "Not Granted"}`, privacyGranted : providedConsent});
+
+        OneSignal.setLocationShared(true);
        
         OneSignal.inFocusDisplaying(2)
-        
-        OneSignal.getPermissionSubscriptionState((response) => {
-            console.log("Received permission subscription state: ", response);
-        });
     }
 
     componentDidMount() {
@@ -85,6 +90,8 @@ export default class RNOneSignal extends Component {
 
     onReceived(notification) {
         console.log("Notification received: ", notification);
+
+        this.setState({jsonDebugText : "RECEIVED: \n" + JSON.stringify(notification, null, 2)})
     }
 
     onOpened(openResult) {
@@ -92,6 +99,8 @@ export default class RNOneSignal extends Component {
       console.log('Data: ', openResult.notification.payload.additionalData);
       console.log('isActive: ', openResult.notification.isAppInFocus);
       console.log('openResult: ', openResult);
+
+      this.setState({jsonDebugText : "OPENED: \n" + JSON.stringify(openResult.notification, null, 2)})
     }
 
     onIds(device) {
@@ -109,7 +118,7 @@ export default class RNOneSignal extends Component {
                         Welcome to React Native!
                     </Text>
                     <Text style={styles.instructions}>
-                        To get started, edit index.ios.js
+                        To get started, edit index.js
                     </Text>
                     <Text style={styles.instructions}>
                         Double tap R on your keyboard to reload,{'\n'}
@@ -191,11 +200,19 @@ export default class RNOneSignal extends Component {
                                 autoCapitalize='none'
                                 keyboardAppearance='dark'
                                 onChangeText={(newText) => {
-                                    console.log("New text: ", newText, ", is valid email? ", this.validateEmail(newText));
                                     this.setState({emailEnabled : this.validateEmail(newText), email : newText});
                                 }}
                             />
                     </KeyboardAvoidingView>
+                    <View style={styles.buttonContainer}>
+                        <Button style={styles.button}
+                           onPress={() => {
+                              OneSignal.promptLocation();
+                           }}
+                           title="Prompt Location"
+                           color={this.state.buttonColor}
+                        />
+                    </View>
                     <View style={styles.buttonContainer}>
                         <Button style={styles.button}
                             onPress={() => {
@@ -204,6 +221,17 @@ export default class RNOneSignal extends Component {
                                 });
                             }}
                             title="Print Subscription State"
+                            color={this.state.buttonColor}
+                        />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <Button style={styles.button}
+                            disabled={!this.state.requirePrivacyConsent}
+                            onPress={() => {
+                               this.setState({privacyGranted : !this.state.privacyGranted, privacyButtonTitle : `Privacy State: ${!this.state.privacyGranted ? "Granted" : "Not Granted"}`});
+                               OneSignal.provideUserConsent(!this.state.privacyGranted);
+                            }}
+                            title={this.state.privacyButtonTitle}
                             color={this.state.buttonColor}
                         />
                     </View>

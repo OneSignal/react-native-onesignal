@@ -100,8 +100,6 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
-        manifestPlaceholders = [onesignal_app_id: "78e8aff3-7ce2-401f-9da0-2d41f287ebaf",
-                                onesignal_google_project_number: "REMOTE"]
     }
     splits {
         abi {
