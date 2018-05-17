@@ -1,10 +1,3 @@
-//
-//  RCTOneSignalEventEmitter.m
-//  RCTOneSignal
-//
-//  Created by Brad Hesse on 2/8/18.
-//
-
 #import "RCTOneSignalEventEmitter.h"
 #if __has_include(<OneSignal/OneSignal.h>)
 #import <OneSignal/OneSignal.h>

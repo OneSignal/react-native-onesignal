@@ -31,13 +31,6 @@
     BOOL didInitialize;
 }
 
-+(void)load {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [[RCTOneSignal sharedInstance] initOneSignal];
-    });
-}
-
 OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 
 + (RCTOneSignal *) sharedInstance {
