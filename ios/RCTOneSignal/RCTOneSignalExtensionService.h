@@ -1,10 +1,3 @@
-//
-//  RCTOneSignalExtensionService.h
-//  RCTOneSignal
-//
-//  Created by Brad Hesse on 1/17/18.
-//
-
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 

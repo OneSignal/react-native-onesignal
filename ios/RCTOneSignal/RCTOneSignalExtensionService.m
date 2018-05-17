@@ -1,10 +1,3 @@
-//
-//  RCTOneSignalExtensionService.m
-//  RCTOneSignal
-//
-//  Created by Brad Hesse on 1/17/18.
-//
-
 #if __has_include(<OneSignal/OneSignal.h>)
 #import <OneSignal/OneSignal.h>
 #else
