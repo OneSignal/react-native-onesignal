@@ -11,6 +11,8 @@
 
 + (RCTOneSignal *) sharedInstance;
 
+@property (nonatomic) BOOL didStartObserving;
+
 - (void)configureWithAppId:(NSString *)appId;
 - (void)configureWithAppId:(NSString *)appId settings:(NSDictionary*)settings;
 

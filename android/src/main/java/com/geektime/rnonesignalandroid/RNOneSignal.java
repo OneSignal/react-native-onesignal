@@ -304,7 +304,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    public void postNotification(String contents, String data, String playerId, String otherParameters) {
       try {
          JSONObject postNotification = new JSONObject();
-         postNotification.put("contents", contents);
+         postNotification.put("contents", new JSONObject(contents));
 
          if (playerId != null) {
             JSONArray playerIds = new JSONArray();
@@ -314,7 +314,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
          if (data != null) {
             JSONObject additionalData = new JSONObject();
-            additionalData.put("p2p_notification", data);
+            additionalData.put("p2p_notification", new JSONObject(data));
             postNotification.put("data", additionalData);
          }
 
