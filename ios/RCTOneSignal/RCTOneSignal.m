@@ -27,7 +27,6 @@
 @end
 
 @implementation RCTOneSignal {
-    BOOL didStartObserving;
     BOOL didInitialize;
 }
 
@@ -44,12 +43,12 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 
 - (void)initOneSignal {
     [OneSignal setValue:@"react" forKey:@"mSDKType"];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartObserving) name:@"didSetBridge" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBeginObserving) name:@"didSetBridge" object:nil];
     
     [OneSignal initWithLaunchOptions:nil appId:nil handleNotificationReceived:^(OSNotification* notification) {
         [self handleRemoteNotificationReceived:[notification stringify]];
     } handleNotificationAction:^(OSNotificationOpenedResult *result) {
-        if (!didStartObserving)
+        if (!RCTOneSignal.sharedInstance.didStartObserving)
             coldStartOSNotificationOpenedResult = result;
         else
             [self handleRemoteNotificationOpened:[result stringify]];
@@ -70,8 +69,10 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     return self;
 }
 
-- (void)didStartObserving {
-    didStartObserving = true;
+- (void)didBeginObserving {
+    // To continue supporting deprecated initialization methods (which create a new RCTOneSignal instance),
+    // we will only access the didStartObserving property of the shared instance to avoid issues
+    RCTOneSignal.sharedInstance.didStartObserving = true;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         if (coldStartOSNotificationOpenedResult) {
@@ -103,7 +104,7 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
               [self handleRemoteNotificationReceived:[notification stringify]];
           }
           handleNotificationAction:^(OSNotificationOpenedResult *result) {
-              if (!didStartObserving)
+              if (!RCTOneSignal.sharedInstance.didStartObserving)
                   coldStartOSNotificationOpenedResult = result;
               else
                   [self handleRemoteNotificationOpened:[result stringify]];

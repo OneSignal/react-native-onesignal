@@ -16,6 +16,7 @@
 		CA3D8B5B2076D84E006F3572 /* RCTOneSignalExtensionService.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = CA1CC866200FE3C3005B66AA /* RCTOneSignalExtensionService.h */; };
 		CA63F32E20ACFD60009AE90F /* UIApplication+RCTOnesignal.m in Sources */ = {isa = PBXBuildFile; fileRef = CA63F32C20ACFD60009AE90F /* UIApplication+RCTOnesignal.m */; };
 		CACB39D6202D232A00D86CD1 /* RCTOneSignalEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = CACB39D5202D232A00D86CD1 /* RCTOneSignalEventEmitter.m */; };
+		CACDD98820B3448B002A6C38 /* OneSignal.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = CA362AF6209927E20095B77A /* OneSignal.h */; };
 		FD2CCC851C772B4200B2B24E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD2CCC841C772B4200B2B24E /* SystemConfiguration.framework */; };
 		FDB40CC41C5E4E5500CBF09B /* RCTOneSignal.m in Sources */ = {isa = PBXBuildFile; fileRef = FDB40CC31C5E4E5500CBF09B /* RCTOneSignal.m */; };
 /* End PBXBuildFile section */
@@ -27,6 +28,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				CACDD98820B3448B002A6C38 /* OneSignal.h in Copy Headers */,
 				CA3D8B5A2076D84E006F3572 /* RCTOneSignal.h in Copy Headers */,
 				CA3D8B5B2076D84E006F3572 /* RCTOneSignalExtensionService.h in Copy Headers */,
 			);
