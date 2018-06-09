@@ -50,6 +50,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    private boolean oneSignalInitDone;
    private static boolean registeredEvents = false;
 
+   //ensure only one callback exists at a given time due to react-native restriction
+   private Callback pendingGetTagsCallback;
+
    public RNOneSignal(ReactApplicationContext reactContext) {
       super(reactContext);
       mReactApplicationContext = reactContext;
@@ -137,10 +140,16 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
    @ReactMethod
    public void getTags(final Callback callback) {
+      if (pendingGetTagsCallback == null) 
+         pendingGetTagsCallback = callback;
+      
       OneSignal.getTags(new OneSignal.GetTagsHandler() {
          @Override
          public void tagsAvailable(JSONObject tags) {
-               callback.invoke(RNUtils.jsonToWritableMap(tags));
+               if (pendingGetTagsCallback != null) 
+                  pendingGetTagsCallback.invoke(RNUtils.jsonToWritableMap(tags));
+
+               pendingGetTagsCallback = null;
          }
       });
    }
