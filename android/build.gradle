@@ -5,8 +5,8 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-    compileSdkVersion safeExtGet('compileSdkVersion', 23)
-    buildToolsVersion safeExtGet('buildToolsVersion', '23.0.1')
+    compileSdkVersion safeExtGet('compileSdkVersion', 26)
+    buildToolsVersion safeExtGet('buildToolsVersion', '26.0.2')
 
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 16)

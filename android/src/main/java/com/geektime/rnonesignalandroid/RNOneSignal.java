@@ -75,7 +75,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    // However it seems it is also to soon to call getCurrentActivity() from the reactContext as well.
    // This will normally succeed when onHostResume fires instead.
    private void initOneSignal() {
-
       // Uncomment to debug init issues.
       // OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.ERROR);
 
@@ -107,8 +106,23 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    @ReactMethod 
    public void init(String appId) {
       Activity activity = getCurrentActivity();
-      if (activity == null || oneSignalInitDone) {
-         Log.e("onesignal", "Unable to initialize the OneSignal SDK because activity is null " + (activity == null) + " or oneSignalInitDone" + oneSignalInitDone);
+      
+      if (activity == null) {
+         // in some cases, especially with react-native-navigation, it can take a while for the Activity to be created
+         // if null, we should re-attempt initialization after 50 milliseconds.
+         final String currentAppId = appId;
+         Timer timer = new Timer();
+         timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+               init(currentAppId);
+            }
+         }, 50);
+         return;
+      }
+
+      if (oneSignalInitDone) {
+         Log.w("onesignal", "The OneSignal SDK has already been initialized");
          return;
       }
 
