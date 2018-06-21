@@ -105,7 +105,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
    @ReactMethod 
    public void init(String appId) {
-      Activity activity = getCurrentActivity();
+      Activity activity = mReactApplicationContext.getCurrentActivity();
       
       if (activity == null) {
          // in some cases, especially with react-native-navigation, it can take a while for the Activity to be created
