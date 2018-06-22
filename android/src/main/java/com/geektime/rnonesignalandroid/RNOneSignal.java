@@ -105,10 +105,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
    @ReactMethod 
    public void init(String appId) {
-      Activity activity = mReactApplicationContext.getCurrentActivity();
+      Context context = mReactApplicationContext.getCurrentActivity();
 
       if (oneSignalInitDone) {
-         Log.w("onesignal", "Already initialized the OneSignal React-Native SDK");
+         Log.e("onesignal", "Already initialized the OneSignal React-Native SDK");
          return;
       }
 
@@ -116,23 +116,18 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
       OneSignal.sdkType = "react";
       
-      if (activity == null) {
+      if (context == null) {
          // in some cases, especially when react-native-navigation is installed,
          // the activity can be null, so we can initialize with the context instead
-         OneSignal.init(mReactApplicationContext.getApplicationContext(),
-                 null,
-                 appId,
-                 new NotificationOpenedHandler(mReactContext),
-                 new NotificationReceivedHandler(mReactContext)
-         );
-      } else {
-         OneSignal.init(activity,
-                 null,
-                 appId,
-                 new NotificationOpenedHandler(mReactContext),
-                 new NotificationReceivedHandler(mReactContext)
-         );
+         context = mReactApplicationContext.getApplicationContext();
       }
+
+      OneSignal.init(context,
+              null,
+              appId,
+              new NotificationOpenedHandler(mReactContext),
+              new NotificationReceivedHandler(mReactContext)
+      );
    }
 
    @ReactMethod
