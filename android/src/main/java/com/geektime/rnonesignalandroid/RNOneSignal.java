@@ -106,37 +106,33 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    @ReactMethod 
    public void init(String appId) {
       Activity activity = mReactApplicationContext.getCurrentActivity();
-      
-      if (activity == null) {
-         // in some cases, especially with react-native-navigation, it can take a while for the Activity to be created
-         // if null, we should re-attempt initialization after 50 milliseconds.
-         final String currentAppId = appId;
-         Timer timer = new Timer();
-         timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-               init(currentAppId);
-            }
-         }, 50);
-         return;
-      }
 
       if (oneSignalInitDone) {
-         Log.w("onesignal", "The OneSignal SDK has already been initialized");
+         Log.w("onesignal", "Already initialized the OneSignal React-Native SDK");
          return;
       }
 
       oneSignalInitDone = true;
-      
 
       OneSignal.sdkType = "react";
       
-      OneSignal.init(activity,
-         null,
-         appId,
-         new NotificationOpenedHandler(mReactContext),
-         new NotificationReceivedHandler(mReactContext)
-      );
+      if (activity == null) {
+         // in some cases, especially when react-native-navigation is installed,
+         // the activity can be null, so we can initialize with the context instead
+         OneSignal.init(mReactApplicationContext.getApplicationContext(),
+                 null,
+                 appId,
+                 new NotificationOpenedHandler(mReactContext),
+                 new NotificationReceivedHandler(mReactContext)
+         );
+      } else {
+         OneSignal.init(activity,
+                 null,
+                 appId,
+                 new NotificationOpenedHandler(mReactContext),
+                 new NotificationReceivedHandler(mReactContext)
+         );
+      }
    }
 
    @ReactMethod
