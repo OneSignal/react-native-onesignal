@@ -48,7 +48,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    private ReactApplicationContext mReactApplicationContext;
    private ReactContext mReactContext;
    private boolean oneSignalInitDone;
-   private static boolean registeredEvents = false;
+   private boolean registeredEvents = false;
 
    //ensure only one callback exists at a given time due to react-native restriction
    private Callback pendingGetTagsCallback;
@@ -434,7 +434,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
    @Override
    public void onHostDestroy() {
-
+      OneSignal.removeNotificationOpenedHandler();
+      OneSignal.removeNotificationReceivedHandler();
    }
 
    @Override
