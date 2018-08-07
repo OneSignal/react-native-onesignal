@@ -13,6 +13,6 @@ Pod::Spec.new do |s|
   s.source         = { :git => "#{package_json["repository"]["url"]}.git", :tag => "#{s.version}" }
   s.source_files   = 'ios/RCTOneSignal/*.{h,m}'
   s.dependency 'React'
-  s.dependency 'OneSignal', '2.8.5'
+  s.dependency 'OneSignal', '2.8.6'
 
 end
