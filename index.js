@@ -478,4 +478,15 @@ export default class OneSignal {
         }
     }
 
+    static getInitialNotification() {
+        if (!checkIfInitialized()) return;
+        
+        //returns a promise
+        if (Platform.OS === 'android') {
+            console.log("This function is not supported on Android");
+            return
+        }
+        return RNOneSignal.getInitialNotification();
+    }
+
 }
