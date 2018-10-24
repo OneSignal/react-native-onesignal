@@ -22,39 +22,39 @@ var _notificationCache = new Map();
 var _listeners = [];
 
 if (RNOneSignal != null) {
-   oneSignalEventEmitter = new NativeEventEmitter(RNOneSignal);
+    oneSignalEventEmitter = new NativeEventEmitter(RNOneSignal);
 
-   for(var i = 0; i < eventBroadcastNames.length; i++) {
-      var eventBroadcastName = eventBroadcastNames[i];
-      var eventName = _eventNames[i];
+    for(var i = 0; i < eventBroadcastNames.length; i++) {
+        var eventBroadcastName = eventBroadcastNames[i];
+        var eventName = _eventNames[i];
 
-      _listeners[eventName] = handleEventBroadcast(eventName, eventBroadcastName)
-   }
+        _listeners[eventName] = handleEventBroadcast(eventName, eventBroadcastName)
+    }
 }
 
 function handleEventBroadcast(type, broadcast) {
-   return oneSignalEventEmitter.addListener(
-      broadcast, (notification) => {
+    return oneSignalEventEmitter.addListener(
+        broadcast, (notification) => {
             // Check if we have added listener for this type yet
             // Cache the result first if we have not.
             var handler = _notificationHandler.get(type);
 
             if (handler) {
-               handler(notification);
+                handler(notification);
             } else {
-               _notificationCache.set(type, notification);
+                _notificationCache.set(type, notification);
             }
-      }
-   );
+        }
+    );
 }
 
 function checkIfInitialized() {
-   return RNOneSignal != null;
+    return RNOneSignal != null;
 }
 
 export default class OneSignal {
     static addEventListener(type: any, handler: Function) {
-       if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         // Listen to events of notification received, opened, device registered and IDSAvailable.
 
@@ -74,7 +74,7 @@ export default class OneSignal {
     }
 
     static removeEventListener(type, handler) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         invariant(
             type === 'received' || type === 'opened' || type === 'ids' || type == 'emailSubscription',
@@ -85,7 +85,7 @@ export default class OneSignal {
     }
 
     static clearListeners() {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         for(var i = 0; i < _eventNames.length; i++) {
             _listeners[_eventNames].remove();
@@ -93,7 +93,7 @@ export default class OneSignal {
     }
 
     static registerForPushNotifications() {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'ios') {
             RNOneSignal.registerForPushNotifications();
@@ -103,7 +103,7 @@ export default class OneSignal {
     }
 
     static promptForPushNotificationsWithUserResponse(callback: Function) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'ios') {
             invariant(
@@ -117,7 +117,7 @@ export default class OneSignal {
     }
 
     static requestPermissions(permissions) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         var requestedPermissions = {};
         if (Platform.OS === 'ios') {
@@ -141,23 +141,23 @@ export default class OneSignal {
     }
 
     static configure() {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         RNOneSignal.configure();
     }
 
     static init(appId, iOSSettings) {
-       if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
-       if (Platform.OS == 'ios') {
-         RNOneSignal.initWithAppId(appId, iOSSettings);
-       } else {
-         RNOneSignal.init(appId);
-       }
+        if (Platform.OS == 'ios') {
+            RNOneSignal.initWithAppId(appId, iOSSettings);
+        } else {
+            RNOneSignal.init(appId);
+        }
     }
 
     static checkPermissions(callback: Function) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'ios') {
             invariant(
@@ -171,17 +171,17 @@ export default class OneSignal {
     }
 
     static promptForPushNotificationPermissions(callback) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
-       if (Platform.OS === 'ios') {
-         RNOneSignal.promptForPushNotificationPermissions(callback);
-       } else {
-          console.log('This function is not supported on Android');
-       }
+        if (Platform.OS === 'ios') {
+            RNOneSignal.promptForPushNotificationPermissions(callback);
+        } else {
+            console.log('This function is not supported on Android');
+        }
     }
 
     static getPermissionSubscriptionState(callback: Function) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         invariant(
             typeof callback === 'function',
@@ -191,31 +191,31 @@ export default class OneSignal {
     }
 
     static sendTag(key, value) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         RNOneSignal.sendTag(key, value);
     }
 
     static sendTags(tags) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         RNOneSignal.sendTags(tags || {});
     }
 
     static getTags(next) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         RNOneSignal.getTags(next);
     }
 
     static deleteTag(key) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         RNOneSignal.deleteTag(key);
     }
 
     static enableVibrate(enable) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'android') {
             RNOneSignal.enableVibrate(enable);
@@ -225,7 +225,7 @@ export default class OneSignal {
     }
 
     static enableSound(enable) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'android') {
             RNOneSignal.enableSound(enable);
@@ -235,7 +235,7 @@ export default class OneSignal {
     }
 
     static setEmail(email, emailAuthCode, callback) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         if (emailAuthCode == undefined) {
             //emailAuthCode is an optional parameter
@@ -253,7 +253,7 @@ export default class OneSignal {
     }
 
     static logoutEmail(callback) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         invariant(
             typeof callback === 'function',
@@ -264,26 +264,26 @@ export default class OneSignal {
     }
 
     static setLocationShared(shared) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         RNOneSignal.setLocationShared(shared);
     }
 
     static setSubscription(enable) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         RNOneSignal.setSubscription(enable);
     }
 
     static promptLocation() {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         //Supported in both iOS & Android
         RNOneSignal.promptLocation();
     }
 
     static inFocusDisplaying(displayOption) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'android') {
             //Android: Set Display option of the notifications. displayOption is of type OSInFocusDisplayOption
@@ -296,7 +296,7 @@ export default class OneSignal {
     }
 
     static postNotification(contents, data, player_id, otherParameters) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'android') {
             RNOneSignal.postNotification(JSON.stringify(contents), JSON.stringify(data), player_id, JSON.stringify(otherParameters));
@@ -306,7 +306,7 @@ export default class OneSignal {
     }
 
     static clearOneSignalNotifications() {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'android') {
             RNOneSignal.clearOneSignalNotifications();
@@ -316,7 +316,7 @@ export default class OneSignal {
     }
 
     static cancelNotification(id) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'android') {
             RNOneSignal.cancelNotification(id);
@@ -327,34 +327,34 @@ export default class OneSignal {
 
     //Sends MD5 and SHA1 hashes of the user's email address (https://documentation.onesignal.com/docs/ios-sdk-api#section-synchashedemail)
     static syncHashedEmail(email) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         RNOneSignal.syncHashedEmail(email);
     }
 
     static setLogLevel(nsLogLevel, visualLogLevel) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
         RNOneSignal.setLogLevel(nsLogLevel, visualLogLevel);
     }
-    
-    static setRequiresUserPrivacyConsent(required) {
-      if (!checkIfInitialized()) return;
 
-       RNOneSignal.setRequiresUserPrivacyConsent(required);
+    static setRequiresUserPrivacyConsent(required) {
+        if (!checkIfInitialized()) return;
+
+        RNOneSignal.setRequiresUserPrivacyConsent(required);
     }
 
     static provideUserConsent(granted) {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
-       RNOneSignal.provideUserConsent(granted);
+        RNOneSignal.provideUserConsent(granted);
     }
 
     static userProvidedPrivacyConsent() {
-      if (!checkIfInitialized()) return;
+        if (!checkIfInitialized()) return;
 
-       //returns a promise
-       return RNOneSignal.userProvidedPrivacyConsent();
+        //returns a promise
+        return RNOneSignal.userProvidedPrivacyConsent();
     }
 
 }
