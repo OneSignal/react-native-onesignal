@@ -147,6 +147,8 @@ export default class OneSignal {
     }
 
     static init(appId, iOSSettings) {
+       if (!checkIfInitialized()) return;
+
        if (Platform.OS == 'ios') {
          RNOneSignal.initWithAppId(appId, iOSSettings);
        } else {
