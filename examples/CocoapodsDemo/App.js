@@ -28,19 +28,13 @@ let imageUri = 'https://cdn-images-1.medium.com/max/300/1*7xHdCFeYfD8zrIivMiQcCQ
 export default class RNOneSignal extends Component {
     constructor(properties) {
         super(properties);
-    }
 
-    validateEmail(email) {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
-    }
-
-    async componentWillMount() {
         OneSignal.setLogLevel(7, 0);
 
         let requiresConsent = false;
        
-        this.setState({emailEnabled: false, 
+        this.state = {
+            emailEnabled: false, 
             animatingEmailButton : false, 
             initialOpenFromPush : "Did NOT open from push",
             activityWidth : 0,
@@ -50,12 +44,19 @@ export default class RNOneSignal extends Component {
             jsonDebugText : "",
             privacyButtonTitle : "Privacy Consent: Not Granted",
             requirePrivacyConsent : requiresConsent
-        });
+        };
 
         OneSignal.setRequiresUserPrivacyConsent(requiresConsent);
 
         OneSignal.init("b2f7f966-d8cc-11e4-bed1-df8f05be55ba", {kOSSettingsKeyAutoPrompt : true});
+    }
 
+    validateEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    async componentDidMount() {
         var providedConsent = await OneSignal.userProvidedPrivacyConsent();
 
         this.setState({privacyButtonTitle : `Privacy Consent: ${providedConsent ? "Granted" : "Not Granted"}`, privacyGranted : providedConsent});
@@ -63,9 +64,7 @@ export default class RNOneSignal extends Component {
         OneSignal.setLocationShared(true);
        
         OneSignal.inFocusDisplaying(2)
-    }
 
-    componentDidMount() {
         this.onReceived = this.onReceived.bind(this);
         this.onOpened = this.onOpened.bind(this);
         this.onIds = this.onIds.bind(this);
