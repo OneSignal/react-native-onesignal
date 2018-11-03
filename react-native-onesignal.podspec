@@ -14,6 +14,6 @@ Pod::Spec.new do |s|
   s.source_files   = 'ios/RCTOneSignal/*.{h,m}'
 
   s.dependency 'React'
-  s.dependency 'OneSignal', '2.8.8'
+  s.dependency 'OneSignal', '2.9.3'
 
 end

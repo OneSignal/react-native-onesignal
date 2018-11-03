@@ -149,6 +149,9 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
  Keep the raw value for users that would like to root the push */
 @property(readonly)NSDictionary *rawPayload;
 
+/* iOS 10+ : Groups notifications into threads */
+@property(readonly)NSString *threadId;
+
 @end
 
 // ## OneSignal OSNotification
@@ -204,7 +207,10 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
     OSNotificationPermissionDenied,
     
     // The application is authorized to post user notifications.
-    OSNotificationPermissionAuthorized
+    OSNotificationPermissionAuthorized,
+    
+    // the application is only authorized to post Provisional notifications (direct to history)
+    OSNotificationPermissionProvisional
 };
 
 
@@ -212,7 +218,9 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 // Permission Classes
 @interface OSPermissionState : NSObject
 
+@property (readonly, nonatomic) BOOL reachable;
 @property (readonly, nonatomic) BOOL hasPrompted;
+@property (readonly, nonatomic) BOOL providesAppNotificationSettings;
 @property (readonly, nonatomic) OSNotificationPermission status;
 - (NSDictionary*)toDictionary;
 
@@ -311,11 +319,18 @@ extern NSString * const kOSSettingsKeyInAppLaunchURL;
 /*Prompt user yes/no to open URL's from push notifications*/
 extern NSString * const kOSSSettingsKeyPromptBeforeOpeningPushURL;
 
-/* iOS10 +
+/* iOS 10 +
  Set notification's in-focus display option.
  Value must be an OSNotificationDisplayType enum
 */
 extern NSString * const kOSSettingsKeyInFocusDisplayOption;
+
+
+/* iOS 12 +
+ Used to determine if the app is able to present it's
+ own customized Notification Settings view
+*/
+extern NSString * const kOSSettingsKeyProvidesAppNotificationSettings;
 
 
 
@@ -354,6 +369,12 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 // Only use if you set kOSSettingsKeyAutoPrompt to false
 + (void)registerForPushNotifications __deprecated_msg("Please use promptForPushNotificationsWithUserResponse instead.");
 + (void)promptForPushNotificationsWithUserResponse:(void(^)(BOOL accepted))completionHandler;
++ (void)promptForPushNotificationsWithUserResponse:(void (^)(BOOL accepted))completionHandler fallbackToSettings:(BOOL)fallback;
+
+// This method opens the iOS Settings app and navigates to the Push Notification Settings
+// page for your app specifically
++ (void)presentAppSettings;
++ (void)registerForProvisionalAuthorization:(void(^)(BOOL accepted))completionHandler;
 
 // - Logging
 + (void)setLogLevel:(ONE_S_LOG_LEVEL)logLevel visualLevel:(ONE_S_LOG_LEVEL)visualLogLevel;
