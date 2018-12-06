@@ -343,5 +343,12 @@ RCT_EXPORT_METHOD(setLogLevel:(int)logLevel visualLogLevel:(int)visualLogLevel) 
     [OneSignal setLogLevel:logLevel visualLevel:visualLogLevel];
 }
 
+RCT_EXPORT_METHOD(setExternalUserId:(NSString *)externalId) {
+    [OneSignal setExternalUserId:externalId];
+}
+
+RCT_EXPORT_METHOD(removeExternalUserId) {
+    [OneSignal removeExternalUserId];
+}
 
 @end

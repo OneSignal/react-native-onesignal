@@ -361,4 +361,15 @@ export default class OneSignal {
         return RNOneSignal.userProvidedPrivacyConsent();
     }
 
+    static setExternalUserId(externalId) {
+        if (!checkIfInitialized()) return;
+
+        RNOneSignal.setExternalUserId(externalId);
+    }
+
+    static removeExternalUserId() {
+        if (!checkIfInitialized()) return;
+
+        RNOneSignal.removeExternalUserId();
+    }
 }
