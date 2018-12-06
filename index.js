@@ -53,7 +53,7 @@ function checkIfInitialized() {
 }
 
 export default class OneSignal {
-    static addEventListener(type: any, handler: Function) {
+    static addEventListener(type, handler) {
         if (!checkIfInitialized()) return;
 
         // Listen to events of notification received, opened, device registered and IDSAvailable.
@@ -64,6 +64,10 @@ export default class OneSignal {
         );
 
         _notificationHandler.set(type, handler);
+
+        if (type == 'opened') {
+            RNOneSignal.didSetNotificationOpenedHandler();
+        }
 
         // Check if there is a cache for this type of event
         var cache = _notificationCache.get(type);
@@ -102,7 +106,7 @@ export default class OneSignal {
         }
     }
 
-    static promptForPushNotificationsWithUserResponse(callback: Function) {
+    static promptForPushNotificationsWithUserResponse(callback) {
         if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'ios') {
@@ -156,7 +160,7 @@ export default class OneSignal {
         }
     }
 
-    static checkPermissions(callback: Function) {
+    static checkPermissions(callback) {
         if (!checkIfInitialized()) return;
 
         if (Platform.OS === 'ios') {
@@ -180,7 +184,7 @@ export default class OneSignal {
         }
     }
 
-    static getPermissionSubscriptionState(callback: Function) {
+    static getPermissionSubscriptionState(callback) {
         if (!checkIfInitialized()) return;
 
         invariant(

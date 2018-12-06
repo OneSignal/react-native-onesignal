@@ -5,8 +5,6 @@ import java.util.Iterator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.content.pm.ApplicationInfo;
@@ -32,6 +30,12 @@ import com.onesignal.OneSignal;
 import com.onesignal.OneSignal.EmailUpdateHandler;
 import com.onesignal.OneSignal.EmailUpdateError;
 
+
+import com.onesignal.OneSignal.NotificationOpenedHandler;
+import com.onesignal.OneSignal.NotificationReceivedHandler;
+import com.onesignal.OSNotificationOpenResult;
+import com.onesignal.OSNotification;
+
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,15 +44,18 @@ import org.json.JSONException;
 /**
 * Created by Avishay on 1/31/16.
 */
-public class RNOneSignal extends ReactContextBaseJavaModule implements LifecycleEventListener {
-   public static final String NOTIFICATION_OPENED_INTENT_FILTER = "GTNotificationOpened";
-   public static final String NOTIFICATION_RECEIVED_INTENT_FILTER = "GTNotificationReceived";
+public class RNOneSignal extends ReactContextBaseJavaModule implements LifecycleEventListener, NotificationReceivedHandler, NotificationOpenedHandler {
    public static final String HIDDEN_MESSAGE_KEY = "hidden";
 
    private ReactApplicationContext mReactApplicationContext;
    private ReactContext mReactContext;
    private boolean oneSignalInitDone;
    private boolean registeredEvents = false;
+
+   private OSNotificationOpenResult coldStartNotificationResult;
+   private boolean setNotificationOpenedHandler = false;
+   private boolean didSetRequiresPrivacyConsent = false;
+   private boolean waitingForUserPrivacyConsent = false;
 
    //ensure only one callback exists at a given time due to react-native restriction
    private Callback pendingGetTagsCallback;
@@ -81,19 +88,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       // Uncomment to debug init issues.
       // OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.ERROR);
 
-      if (!registeredEvents) {
-         registeredEvents = true;
-         registerNotificationsOpenedNotification();
-         registerNotificationsReceivedNotification();
-      }
-
       OneSignal.sdkType = "react";
 
       String appId = appIdFromManifest(mReactApplicationContext);
 
-      if (appId != null && appId.length() > 0) {
+      if (appId != null && appId.length() > 0)
          init(appId);
-      }
    }
 
    private void sendEvent(String eventName, Object params) {
@@ -125,12 +125,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          context = mReactApplicationContext.getApplicationContext();
       }
 
-      OneSignal.init(context,
-              null,
-              appId,
-              new NotificationOpenedHandler(mReactContext),
-              new NotificationReceivedHandler(mReactContext)
-      );
+      OneSignal.init(context, null, appId, this, this);
+
+      if (this.didSetRequiresPrivacyConsent)
+         this.waitingForUserPrivacyConsent = true;
    }
 
    @ReactMethod
@@ -389,51 +387,26 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       promise.resolve(OneSignal.userProvidedPrivacyConsent());
    }
 
-   @ReactMethod
-   public void setExternalUserId(String externalId) {
-      OneSignal.setExternalUserId(externalId);
+   @Override
+   public void notificationReceived(OSNotification notification) {
+      this.sendEvent("OneSignal-remoteNotificationReceived", RNUtils.jsonToWritableMap(notification.toJSONObject()));
    }
 
-   @ReactMethod
-   public void removeExternalUserId() {
-      OneSignal.removeExternalUserId();
-   }
-
-   private void registerNotificationsReceivedNotification() {
-      IntentFilter intentFilter = new IntentFilter(NOTIFICATION_RECEIVED_INTENT_FILTER);
-      mReactContext.registerReceiver(new BroadcastReceiver() {
-         @Override
-         public void onReceive(Context context, Intent intent) {
-               notifyNotificationReceived(intent.getExtras());
-         }
-      }, intentFilter);
-   }
-
-   private void registerNotificationsOpenedNotification() {
-      IntentFilter intentFilter = new IntentFilter(NOTIFICATION_OPENED_INTENT_FILTER);
-      mReactContext.registerReceiver(new BroadcastReceiver() {
-         @Override
-         public void onReceive(Context context, Intent intent) {
-               notifyNotificationOpened(intent.getExtras());
-         }
-      }, intentFilter);
-   }
-
-   private void notifyNotificationReceived(Bundle bundle) {
-      try {
-         JSONObject jsonObject = new JSONObject(bundle.getString("notification"));
-         sendEvent("OneSignal-remoteNotificationReceived", RNUtils.jsonToWritableMap(jsonObject));
-      } catch(Throwable t) {
-         t.printStackTrace();
+   @Override
+   public void notificationOpened(OSNotificationOpenResult result) {
+      if (!this.setNotificationOpenedHandler) {
+         this.coldStartNotificationResult = result;
+         return;
       }
+      this.sendEvent("OneSignal-remoteNotificationOpened", RNUtils.jsonToWritableMap(result.toJSONObject()));
    }
 
-   private void notifyNotificationOpened(Bundle bundle) {
-      try {
-         JSONObject jsonObject = new JSONObject(bundle.getString("result"));
-         sendEvent("OneSignal-remoteNotificationOpened",  RNUtils.jsonToWritableMap(jsonObject));
-      } catch(Throwable t) {
-         t.printStackTrace();
+   @ReactMethod
+   public void didSetNotificationOpenedHandler() {
+      this.setNotificationOpenedHandler = true;
+      if (this.coldStartNotificationResult != null) {
+         this.notificationOpened(this.coldStartNotificationResult);
+         this.coldStartNotificationResult = null;
       }
    }
 
@@ -443,10 +416,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @Override
-   public void onHostDestroy() {
-      OneSignal.removeNotificationOpenedHandler();
-      OneSignal.removeNotificationReceivedHandler();
-   }
+   public void onHostDestroy() { }
 
    @Override
    public void onHostPause() {
