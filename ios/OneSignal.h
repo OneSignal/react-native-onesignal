@@ -457,6 +457,9 @@ typedef void (^OSEmailSuccessBlock)();
 + (void)setEmail:(NSString * _Nonnull)email;
 + (void)setEmail:(NSString * _Nonnull)email withEmailAuthHashToken:(NSString * _Nullable)hashToken;
 
++ (void)setExternalUserId:(NSString * _Nonnull)externalId;
++ (void)removeExternalUserId;
+
 @end
 
 #pragma clang diagnostic pop
