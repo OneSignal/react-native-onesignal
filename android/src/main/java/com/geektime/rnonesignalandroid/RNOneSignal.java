@@ -387,6 +387,16 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       promise.resolve(OneSignal.userProvidedPrivacyConsent());
    }
 
+   @ReactMethod
+   public void setExternalUserId(String externalId) {
+      OneSignal.setExternalUserId(externalId);
+   }
+
+   @ReactMethod
+   public void removeExternalUserId() {
+      OneSignal.removeExternalUserId();
+   }
+
    @Override
    public void notificationReceived(OSNotification notification) {
       this.sendEvent("OneSignal-remoteNotificationReceived", RNUtils.jsonToWritableMap(notification.toJSONObject()));
