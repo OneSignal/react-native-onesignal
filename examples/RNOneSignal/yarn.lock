@@ -3687,9 +3687,8 @@ react-devtools-core@3.1.0:
     shell-quote "^1.6.1"
     ws "^2.0.3"
 
-react-native-onesignal@3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-3.2.1.tgz#485b14e538f92e4affcaadcc770bde4f91603fee"
+react-native-onesignal@../../:
+  version "3.2.12"
   dependencies:
     invariant "^2.2.2"
 
