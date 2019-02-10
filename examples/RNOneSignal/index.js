@@ -29,7 +29,7 @@ export default class RNOneSignal extends Component {
     constructor(properties) {
         super(properties);
 
-        OneSignal.setLogLevel(7, 0);
+        OneSignal.setLogLevel(6, 0);
 
         let requiresConsent = false;
        
