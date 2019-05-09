@@ -213,6 +213,14 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
     OSNotificationPermissionProvisional
 };
 
+typedef void (^OSNotificationDisplayTypeResponse)(OSNotificationDisplayType displayType);
+
+// Notification Display Type Delegate
+// Allows apps to customize per-notification display-type
+@protocol OSNotificationDisplayTypeDelegate <NSObject>
+- (void)willPresentInFocusNotificationWithPayload:(OSNotificationPayload *)payload
+                                   withCompletion:(OSNotificationDisplayTypeResponse)completion;
+@end
 
 
 // Permission Classes
@@ -401,6 +409,10 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 + (void)IdsAvailable:(OSIdsAvailableBlock)idsAvailableBlock __deprecated_msg("Please use getPermissionSubscriptionState or addSubscriptionObserver and addPermissionObserver instead.");
 
 + (OSPermissionSubscriptionState*)getPermissionSubscriptionState;
+
+// When the app is in-focus, this allows you to add a delegate that can customize the
+// display type for specific notifications
++ (void)setNotificationDisplayTypeDelegate:(NSObject<OSNotificationDisplayTypeDelegate>*)delegate;
 
 + (void)addPermissionObserver:(NSObject<OSPermissionObserver>*)observer;
 + (void)removePermissionObserver:(NSObject<OSPermissionObserver>*)observer;
