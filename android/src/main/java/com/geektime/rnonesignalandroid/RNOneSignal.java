@@ -251,9 +251,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       try {
          JSONObject result = new JSONObject();
 
-         result.put("notificationsEnabled", String.valueOf(notificationsEnabled))
-                 .put("subscriptionEnabled", String.valueOf(subscriptionEnabled))
-                 .put("userSubscriptionEnabled", String.valueOf(userSubscriptionEnabled))
+         result.put("notificationsEnabled", notificationsEnabled)
+                 .put("subscriptionEnabled", subscriptionEnabled)
+                 .put("userSubscriptionEnabled", userSubscriptionEnabled)
                  .put("pushToken", subscriptionState.getPushToken())
                  .put("userId", subscriptionState.getUserId())
                  .put("emailUserId", emailSubscriptionState.getEmailUserId())
