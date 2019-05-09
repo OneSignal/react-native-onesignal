@@ -1,3 +1,4 @@
+node_modules/
 android/build
 ios/RCTOneSignal.xcodeproj/xcuserdata
 examples/CocoapodsDemo/node_modules
