@@ -61,6 +61,7 @@ export default class App extends Component {
       OneSignal.addEventListener('opened', this.onOpened);
       OneSignal.addEventListener('ids', this.onIds);
       OneSignal.addEventListener('emailSubscription', this.onEmailRegistrationChange);
+      OneSignal.configure();
   }
 
   componentWillUnmount() {
@@ -90,7 +91,7 @@ export default class App extends Component {
   }
 
   onIds(device) {
-  console.log('Device info: ', device);
+    console.log('Device info: ', device);
   }
 
   render() {
