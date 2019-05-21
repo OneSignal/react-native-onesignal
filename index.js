@@ -144,9 +144,18 @@ export default class OneSignal {
         }
     }
 
+    // deprecating configure method in favor of idsAvailable
     static configure() {
+        console.warn("OneSignal: the `configure` method is being deprecated, use `idsAvailable` instead...read more: https://bit.ly/2ErcQm6");
         if (!checkIfInitialized()) return;
 
+        RNOneSignal.configure();
+    }
+
+    // idsAvailable triggers the 'ids' event
+    static idsAvailable() {
+        if (!checkIfInitialized()) return;
+        
         RNOneSignal.configure();
     }
 
