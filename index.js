@@ -69,8 +69,9 @@ export default class OneSignal {
             RNOneSignal.didSetNotificationOpenedHandler();
         }
 
+        // triggers ids event
         if (type == 'ids') {
-            this.idsAvailable();
+            RNOneSignal.configure();
         }
 
         // Check if there is a cache for this type of event
