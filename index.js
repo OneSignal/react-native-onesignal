@@ -17,7 +17,7 @@ var oneSignalEventEmitter;
 
 var _eventNames = [ "received", "opened", "ids", "emailSubscription"];
 
-var _notificationHandler = new Map();
+var _eventTypeHandler = new Map();
 var _notificationCache = new Map();
 var _listeners = [];
 
@@ -37,7 +37,7 @@ function handleEventBroadcast(type, broadcast) {
         broadcast, (notification) => {
             // Check if we have added listener for this type yet
             // Cache the result first if we have not.
-            var handler = _notificationHandler.get(type);
+            var handler = _eventTypeHandler.get(type);
 
             if (handler) {
                 handler(notification);
@@ -63,10 +63,14 @@ export default class OneSignal {
             'OneSignal only supports `received`, `opened`, and `ids` events'
         );
 
-        _notificationHandler.set(type, handler);
+        _eventTypeHandler.set(type, handler);
 
         if (type == 'opened') {
             RNOneSignal.didSetNotificationOpenedHandler();
+        }
+
+        if (type == 'ids') {
+            this.idsAvailable();
         }
 
         // Check if there is a cache for this type of event
@@ -85,7 +89,7 @@ export default class OneSignal {
             'OneSignal only supports `received`, `opened`, and `ids` events'
         );
 
-        _notificationHandler.delete(type);
+        _eventTypeHandler.delete(type);
     }
 
     static clearListeners() {
@@ -144,19 +148,9 @@ export default class OneSignal {
         }
     }
 
-    // deprecating configure method in favor of idsAvailable
+    /* deprecated */
     static configure() {
-        console.warn("OneSignal: the `configure` method is being deprecated, use `idsAvailable` instead...read more: https://bit.ly/2ErcQm6");
-        if (!checkIfInitialized()) return;
-
-        RNOneSignal.configure();
-    }
-
-    // idsAvailable triggers the 'ids' event
-    static idsAvailable() {
-        if (!checkIfInitialized()) return;
-        
-        RNOneSignal.configure();
+        console.warn("OneSignal: the `configure` method has been deprecated. The `ids` event is now triggered automatically.");
     }
 
     static init(appId, iOSSettings) {
