@@ -35,7 +35,7 @@ export default class App extends Component {
 
       OneSignal.setRequiresUserPrivacyConsent(requiresConsent);
 
-      OneSignal.init("b2f7f966-d8cc-11e4-bed1-df8f05be55ba", {kOSSettingsKeyAutoPrompt : true});
+      OneSignal.init("ce8572ae-ff57-4e77-a265-5c91f00ecc4c", {kOSSettingsKeyAutoPrompt : true});
   }
 
   validateEmail(email) {
@@ -90,7 +90,7 @@ export default class App extends Component {
   }
 
   onIds(device) {
-  console.log('Device info: ', device);
+    console.log('Device info: ', device);
   }
 
   render() {
