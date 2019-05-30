@@ -61,7 +61,6 @@ export default class App extends Component {
       OneSignal.addEventListener('opened', this.onOpened);
       OneSignal.addEventListener('ids', this.onIds);
       OneSignal.addEventListener('emailSubscription', this.onEmailRegistrationChange);
-      OneSignal.configure();
   }
 
   componentWillUnmount() {
