@@ -18,7 +18,7 @@ See the [Setup Guide](https://documentation.onesignal.com/v5.0/docs/react-native
 See this repository's [release tags](https://github.com/geektimecoil/react-native-onesignal/releases) for a complete change log of every released version.
 
 #### Support
-Please visit this repository's [Github issue tracker](https://github.com/geektimecoil/react-native-onesignal/issues) for feature requests and bug reports related specificly to the SDK.
+Please visit this repository's [Github issue tracker](https://github.com/geektimecoil/react-native-onesignal/issues) for feature requests and bug reports related specifically to the SDK.
 For account issues and support please contact OneSignal support from the [OneSignal.com](https://onesignal.com) dashboard.
 
 #### Demo Project
