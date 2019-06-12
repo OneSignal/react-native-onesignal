@@ -9,8 +9,6 @@
 
 [OneSignal](https://onesignal.com/) is a free push notification service for mobile apps. This SDK makes it easy to integrate your native React-Native iOS and/or Android apps with OneSignal.
 
-![alt text](https://onesignal.com/images/android_and_ios_notification_image.gif)
-
 #### Installation
 See the [Setup Guide](https://documentation.onesignal.com/v5.0/docs/react-native-sdk-setup) for setup instructions.
 
