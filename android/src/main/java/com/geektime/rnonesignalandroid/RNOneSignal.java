@@ -54,6 +54,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
    private OSNotificationOpenResult coldStartNotificationResult;
    private boolean setNotificationOpenedHandler = false;
+   private boolean setInAppOpenedHandler        = false;
    private boolean didSetRequiresPrivacyConsent = false;
    private boolean waitingForUserPrivacyConsent = false;
 
@@ -418,6 +419,28 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          this.notificationOpened(this.coldStartNotificationResult);
          this.coldStartNotificationResult = null;
       }
+   }
+
+   @ReactMethod
+   public void didSetInAppMessageClickHandler() {
+      this.setInAppOpenedHandler = true;
+      // not sure what else to do here
+   }
+
+   @ReactMethod
+   public void addTriggers(ReadableMap triggers) {
+      // may have to cast triggers to Map
+      OneSignal.addTriggers(triggers.toHashMap());
+   }
+
+   @ReactMethod
+   public void addTrigger(String key, Object object) {
+      OneSignal.addTrigger(key, object);
+   }
+
+   @ReactMethod
+   public void pauseInAppMessage(Boolean pause) {
+      OneSignal.pauseInAppMessage(pause);
    }
 
    @Override
