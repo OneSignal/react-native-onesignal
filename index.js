@@ -10,12 +10,13 @@ const eventBroadcastNames = [
     'OneSignal-remoteNotificationReceived',
     'OneSignal-remoteNotificationOpened',
     'OneSignal-idsAvailable',
-    'OneSignal-emailSubscription'
+    'OneSignal-emailSubscription',
+    'OneSignal-inAppOpened'
 ];
 
 var oneSignalEventEmitter;
 
-var _eventNames = [ "received", "opened", "ids", "emailSubscription"];
+var _eventNames = [ "received", "opened", "ids", "emailSubscription", "inAppOpened"];
 
 var _eventTypeHandler = new Map();
 var _notificationCache = new Map();
@@ -59,7 +60,7 @@ export default class OneSignal {
         // Listen to events of notification received, opened, device registered and IDSAvailable.
 
         invariant(
-            type === 'received' || type === 'opened' || type === 'ids' || type == 'emailSubscription',
+            type === 'received' || type === 'opened' || type === 'ids' || type == 'emailSubscription' || type == 'inAppOpened',
             'OneSignal only supports `received`, `opened`, and `ids` events'
         );
 
@@ -74,6 +75,10 @@ export default class OneSignal {
             RNOneSignal.configure();
         }
 
+        if (type == 'inAppOpened') {
+            RNOneSignal.didSetInAppMessageClickHandler();
+        }
+
         // Check if there is a cache for this type of event
         var cache = _notificationCache.get(type);
         if (handler && cache) {
@@ -86,7 +91,7 @@ export default class OneSignal {
         if (!checkIfInitialized()) return;
 
         invariant(
-            type === 'received' || type === 'opened' || type === 'ids' || type == 'emailSubscription',
+            type === 'received' || type === 'opened' || type === 'ids' || type == 'emailSubscription' || type == 'inAppOpened',
             'OneSignal only supports `received`, `opened`, and `ids` events'
         );
 
@@ -333,6 +338,36 @@ export default class OneSignal {
         }
     }
 
+    static addTriggers(triggers) {
+        if (!checkIfInitialized()) return;
+        RNOneSignal.addTriggers(triggers);
+    }
+
+    static addTrigger(key, object){
+        if (!checkIfInitialized()) return;
+        RNOneSignal.addTrigger(key, object);
+    }
+
+    static removeTriggersForKeys(keys) {
+        if (!checkIfInitialized()) return;
+        RNOneSignal.removeTriggersForKeys(keys);
+    }
+
+    static removeTriggerForKey(key) {
+        if (!checkIfInitialized()) return;
+        RNOneSignal.removeTriggerForKey(key);
+    }
+
+    static getTriggerValueForKey(key) {
+        if (!checkIfInitialized()) return;
+        RNOneSignal.getTriggerValueForKey(key);
+    }
+    
+    static pauseInAppMessages(pause) {
+        if (!checkIfInitialized()) return;
+        RNOneSignal.pauseInAppMessages(pause);
+    }
+
     //Sends MD5 and SHA1 hashes of the user's email address (https://documentation.onesignal.com/docs/ios-sdk-api#section-synchashedemail)
     static syncHashedEmail(email) {
         if (!checkIfInitialized()) return;
@@ -376,4 +411,8 @@ export default class OneSignal {
 
         RNOneSignal.removeExternalUserId();
     }
+
+    /* in-app messaging methods */
+    static 
+
 }
