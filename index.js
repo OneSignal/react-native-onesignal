@@ -411,8 +411,4 @@ export default class OneSignal {
 
         RNOneSignal.removeExternalUserId();
     }
-
-    /* in-app messaging methods */
-    static 
-
 }
