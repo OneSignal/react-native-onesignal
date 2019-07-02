@@ -60,7 +60,7 @@ class DefaultManifestPlaceHolders {
 }
 
 rootProject.childProjects.each { projName, proj ->
-    if (projName != 'app')
+    if (projName != 'app' && projName != 'react-native-onesignal')
         return
 
     if (proj.hasProperty('android')) {
