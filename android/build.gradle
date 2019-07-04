@@ -45,12 +45,13 @@ class DefaultManifestPlaceHolders {
     static void addManifestToAppProject(Project proj) {
         def androidApp = proj.android
         MANIFEST_PLACEHOLDERS_DEFAULTS.each { defKey, defValue ->
-            if (!androidApp.defaultConfig.manifestPlaceholders.containsKey(defKey))
+            if (!androidApp.defaultConfig.manifestPlaceholders.containsKey(defKey)) {
                 androidApp.defaultConfig.manifestPlaceholders[defKey] = defValue
 
-            androidApp.buildTypes.each { buildType ->
-                if (!buildType.manifestPlaceholders.containsKey(defKey))
-                    buildType.manifestPlaceholders[defKey] = defValue
+                androidApp.buildTypes.each { buildType ->
+                    if (!buildType.manifestPlaceholders.containsKey(defKey))
+                        buildType.manifestPlaceholders[defKey] = defValue
+                }
             }
         }
     }
