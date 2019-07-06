@@ -9,11 +9,6 @@
   "dependencies": {
     "invariant": "^2.2.2"
   },
-  "rnpm": {
-     "ios": {
-        "sourceDir": "./ios"
-     }
-  },
   "keywords": [
     "react-component",
     "react-native",
