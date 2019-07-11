@@ -6,17 +6,35 @@ import invariant from 'invariant';
 
 const RNOneSignal = NativeModules.OneSignal;
 
+const OS_REMOTE_NOTIFICATION_RECEIVED = 'OneSignal-remoteNotificationReceived';
+const OS_REMOTE_NOTIFICATION_OPENED = 'OneSignal-remoteNotificationOpened';
+const OS_IDS_AVAILABLE = 'OneSignal-idsAvailable';
+const OS_EMAIL_SUBSCRIPTION = 'OneSignal-emailSubscription';
+const OS_IN_APP_MESSAGE_CLICKED = 'OneSignal-inAppMessageClicked';
+
 const eventBroadcastNames = [
-    'OneSignal-remoteNotificationReceived',
-    'OneSignal-remoteNotificationOpened',
-    'OneSignal-idsAvailable',
-    'OneSignal-emailSubscription',
-    'OneSignal-inAppOpened'
+    OS_REMOTE_NOTIFICATION_RECEIVED,
+    OS_REMOTE_NOTIFICATION_OPENED,
+    OS_IDS_AVAILABLE,
+    OS_EMAIL_SUBSCRIPTION,
+    OS_IN_APP_MESSAGE_CLICKED
+];
+
+const NOTIFICATION_RECEIVED_EVENT = "received";
+const NOTIFICATION_OPENED_EVENT = "opened";
+const IDS_AVAILABLE_EVENT = "ids";
+const EMAIL_SUBSCRIPTION_EVENT = "emailSubscription";
+const IN_APP_MESSAGE_CLICKED_EVENT = "inAppMessageClicked";
+
+const _eventNames = [
+    NOTIFICATION_RECEIVED_EVENT,
+    NOTIFICATION_OPENED_EVENT,
+    IDS_AVAILABLE_EVENT,
+    EMAIL_SUBSCRIPTION_EVENT,
+    IN_APP_MESSAGE_CLICKED_EVENT
 ];
 
 var oneSignalEventEmitter;
-
-var _eventNames = [ "received", "opened", "ids", "emailSubscription", "inAppOpened"];
 
 var _eventTypeHandler = new Map();
 var _notificationCache = new Map();
@@ -60,23 +78,27 @@ export default class OneSignal {
         // Listen to events of notification received, opened, device registered and IDSAvailable.
 
         invariant(
-            type === 'received' || type === 'opened' || type === 'ids' || type == 'emailSubscription' || type == 'inAppOpened',
-            'OneSignal only supports `received`, `opened`, and `ids` events'
+            type === NOTIFICATION_RECEIVED_EVENT ||
+            type === NOTIFICATION_OPENED_EVENT ||
+            type === IDS_AVAILABLE_EVENT ||
+            type === EMAIL_SUBSCRIPTION_EVENT ||
+            type === IN_APP_MESSAGE_CLICKED_EVENT,
+            'OneSignal only supports `received`, `opened`, `ids`, `emailSubscription`, and `inAppMessageClicked` events'
         );
 
         _eventTypeHandler.set(type, handler);
 
-        if (type == 'opened') {
-            RNOneSignal.didSetNotificationOpenedHandler();
+        if (type === NOTIFICATION_OPENED_EVENT) {
+            RNOneSignal.initNotificationOpenedHandlerParams();
         }
 
         // triggers ids event
-        if (type == 'ids') {
+        if (type === IDS_AVAILABLE_EVENT) {
             RNOneSignal.configure();
         }
 
-        if (type == 'inAppOpened') {
-            RNOneSignal.didSetInAppMessageClickHandler();
+        if (type === IN_APP_MESSAGE_CLICKED_EVENT) {
+            RNOneSignal.initInAppMessageClickHandlerParams();
         }
 
         // Check if there is a cache for this type of event
@@ -91,8 +113,12 @@ export default class OneSignal {
         if (!checkIfInitialized()) return;
 
         invariant(
-            type === 'received' || type === 'opened' || type === 'ids' || type == 'emailSubscription' || type == 'inAppOpened',
-            'OneSignal only supports `received`, `opened`, and `ids` events'
+            type === NOTIFICATION_RECEIVED_EVENT ||
+            type === NOTIFICATION_OPENED_EVENT ||
+            type === IDS_AVAILABLE_EVENT ||
+            type === EMAIL_SUBSCRIPTION_EVENT ||
+            type === IN_APP_MESSAGE_CLICKED_EVENT,
+            'OneSignal only supports `received`, `opened`, `ids`, `emailSubscription`, and `inAppMessageClicked` events'
         );
 
         _eventTypeHandler.delete(type);
@@ -338,36 +364,6 @@ export default class OneSignal {
         }
     }
 
-    static addTriggers(triggers) {
-        if (!checkIfInitialized()) return;
-        RNOneSignal.addTriggers(triggers);
-    }
-
-    static addTrigger(key, object){
-        if (!checkIfInitialized()) return;
-        RNOneSignal.addTrigger(key, object);
-    }
-
-    static removeTriggersForKeys(keys) {
-        if (!checkIfInitialized()) return;
-        RNOneSignal.removeTriggersForKeys(keys);
-    }
-
-    static removeTriggerForKey(key) {
-        if (!checkIfInitialized()) return;
-        RNOneSignal.removeTriggerForKey(key);
-    }
-
-    static getTriggerValueForKey(key) {
-        if (!checkIfInitialized()) return;
-        RNOneSignal.getTriggerValueForKey(key);
-    }
-    
-    static pauseInAppMessages(pause) {
-        if (!checkIfInitialized()) return;
-        RNOneSignal.pauseInAppMessages(pause);
-    }
-
     //Sends MD5 and SHA1 hashes of the user's email address (https://documentation.onesignal.com/docs/ios-sdk-api#section-synchashedemail)
     static syncHashedEmail(email) {
         if (!checkIfInitialized()) return;
@@ -411,4 +407,41 @@ export default class OneSignal {
 
         RNOneSignal.removeExternalUserId();
     }
+
+    static addTriggers(triggers) {
+        if (!checkIfInitialized()) return;
+
+        RNOneSignal.addTriggers(triggers);
+    }
+
+    static addTrigger(key, object){
+        if (!checkIfInitialized()) return;
+
+        RNOneSignal.addTrigger(key, object);
+    }
+
+    static removeTriggersForKeys(keys) {
+        if (!checkIfInitialized()) return;
+
+        RNOneSignal.removeTriggersForKeys(keys);
+    }
+
+    static removeTriggerForKey(key) {
+        if (!checkIfInitialized()) return;
+
+        RNOneSignal.removeTriggerForKey(key);
+    }
+
+    static getTriggerValueForKey(key) {
+        if (!checkIfInitialized()) return;
+
+        RNOneSignal.getTriggerValueForKey(key);
+    }
+
+    static pauseInAppMessages(pause) {
+        if (!checkIfInitialized()) return;
+
+        RNOneSignal.pauseInAppMessages(pause);
+    }
+
 }
