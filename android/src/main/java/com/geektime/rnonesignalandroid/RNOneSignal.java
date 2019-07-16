@@ -451,8 +451,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public Object getTriggerValueForKey(String key) {
-      return OneSignal.getTriggerValueForKey(key);
+   public Object getTriggerValueForKey(String key, Promise promise) {
+      promise.resolve(OneSignal.getTriggerValueForKey(key));
    }
 
    @ReactMethod
