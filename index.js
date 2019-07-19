@@ -75,7 +75,7 @@ export default class OneSignal {
     static addEventListener(type, handler) {
         if (!checkIfInitialized()) return;
 
-        // Listen to events of notification received, opened, device registered and IDSAvailable.
+        // Listen to events of notification received, opened, device registered, IDSAvailable, and IAMClicked.
 
         invariant(
             type === NOTIFICATION_RECEIVED_EVENT ||
@@ -408,16 +408,24 @@ export default class OneSignal {
         RNOneSignal.removeExternalUserId();
     }
 
+    /**
+     * Pass a String key and any value and creates a trigger map to pass to addTriggers()
+     */
+    static addTrigger(key, value) {
+        if (!checkIfInitialized()) return;
+
+        var trigger = {};
+        trigger[key] = value;
+        RNOneSignal.addTriggers(trigger);
+    }
+
+    /**
+     * Expected format is Map<String, Object>, make sure all values are Objects and keys are Strings
+     */
     static addTriggers(triggers) {
         if (!checkIfInitialized()) return;
 
         RNOneSignal.addTriggers(triggers);
-    }
-
-    static addTrigger(key, object){
-        if (!checkIfInitialized()) return;
-
-        RNOneSignal.addTrigger(key, object);
     }
 
     static removeTriggersForKeys(keys) {
