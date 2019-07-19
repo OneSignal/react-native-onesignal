@@ -426,7 +426,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          this.inAppMessageActionResult = result;
          return;
       }
-      this.sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
+//      this.sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
    }
 
    @ReactMethod
@@ -436,7 +436,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
    @ReactMethod
    public void addTriggers(ReadableMap triggers) {
-      // may have to cast triggers to Map
       OneSignal.addTriggers(triggers.toHashMap());
    }
 
