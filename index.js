@@ -443,7 +443,8 @@ export default class OneSignal {
     static getTriggerValueForKey(key) {
         if (!checkIfInitialized()) return;
 
-        RNOneSignal.getTriggerValueForKey(key);
+        // returns promise
+        return RNOneSignal.getTriggerValueForKey(key);
     }
 
     static pauseInAppMessages(pause) {
