@@ -19,10 +19,10 @@ export default class App extends Component {
       OneSignal.setLogLevel(6, 0);
 
       let requiresConsent = false;
-     
+
       this.state = {
-          emailEnabled: false, 
-          animatingEmailButton : false, 
+          emailEnabled: false,
+          animatingEmailButton : false,
           initialOpenFromPush : "Did NOT open from push",
           activityWidth : 0,
           width: 0,
@@ -36,6 +36,33 @@ export default class App extends Component {
       OneSignal.setRequiresUserPrivacyConsent(requiresConsent);
 
       OneSignal.init("ce8572ae-ff57-4e77-a265-5c91f00ecc4c", {kOSSettingsKeyAutoPrompt : true});
+
+      this.oneSignalInAppMessagingExamples();
+  }
+
+  oneSignalInAppMessagingExamples() {
+      // Add a single trigger with a value associated with it
+      OneSignal.addTrigger("trigger_1", "one");
+      OneSignal.getTriggerValueForKey("trigger_1").then((response) => {
+          console.log("trigger_1 value: " + response);
+      }).catch((e) => {
+          console.error(e);
+      });
+      OneSignal.removeTriggerForKey("trigger_1");
+
+      // Create a set of triggers in a map and add them all at once
+      var triggers = {
+          "trigger_2": "two",
+          "trigger_3": "three"
+      };
+      OneSignal.addTriggers(triggers);
+
+      // Create an array of keys to remove triggers for
+      var removeTriggers = ["trigger_2", "trigger_3"];
+      OneSignal.removeTriggersForKeys(removeTriggers);
+
+      // Toggle the showing of IAMs
+      OneSignal.pauseInAppMessages(false);
   }
 
   validateEmail(email) {
@@ -50,17 +77,19 @@ export default class App extends Component {
 
       OneSignal.setLocationShared(true);
      
-      OneSignal.inFocusDisplaying(2)
+      OneSignal.inFocusDisplaying(2);
 
       this.onReceived = this.onReceived.bind(this);
       this.onOpened = this.onOpened.bind(this);
       this.onIds = this.onIds.bind(this);
       this.onEmailRegistrationChange = this.onEmailRegistrationChange.bind(this);
+      this.onInAppMessageClicked = this.onInAppMessageClicked.bind(this);
 
       OneSignal.addEventListener('received', this.onReceived);
       OneSignal.addEventListener('opened', this.onOpened);
       OneSignal.addEventListener('ids', this.onIds);
       OneSignal.addEventListener('emailSubscription', this.onEmailRegistrationChange);
+      OneSignal.addEventListener('inAppMessageClicked', this.onInAppMessageClicked);
   }
 
   componentWillUnmount() {
@@ -68,6 +97,7 @@ export default class App extends Component {
       OneSignal.removeEventListener('opened', this.onOpened);
       OneSignal.removeEventListener('ids', this.onIds);
       OneSignal.removeEventListener('emailSubscription', this.onEmailRegistrationChange);
+      OneSignal.removeEventListener('inAppMessageClicked', this.onInAppMessageClicked);
   }
 
   onEmailRegistrationChange(registration) {
@@ -91,6 +121,11 @@ export default class App extends Component {
 
   onIds(device) {
     console.log('Device info: ', device);
+  }
+
+  onInAppMessageClicked(actionResult) {
+    console.log('actionResult: ', actionResult);
+    this.setState({jsonDebugText : "CLICKED: \n" + JSON.stringify(actionResult, null, 2)})
   }
 
   render() {

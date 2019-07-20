@@ -1,9 +1,13 @@
 package com.geektime.rnonesignalandroid;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -155,5 +159,14 @@ public class RNUtils {
         }
 
         return writableArray;
+    }
+
+    public static Collection<String> convertReableArrayIntoStringCollection(ReadableArray readableArray) {
+        ArrayList<String> strings = new ArrayList<>();
+        for (Object object : readableArray.toArrayList()) {
+            if (object instanceof String)
+                strings.add((String) object);
+        }
+        return strings;
     }
 }
