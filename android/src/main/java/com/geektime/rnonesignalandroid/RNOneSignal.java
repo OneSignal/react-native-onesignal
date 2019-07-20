@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -125,6 +126,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          context = mReactApplicationContext.getApplicationContext();
       }
 
+      OneSignal.getCurrentOrNewInitBuilder().setInAppMessageClickHandler(this);
       OneSignal.init(context, null, appId, this, this);
 
       if (this.hasSetRequiresPrivacyConsent)
@@ -397,6 +399,15 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       OneSignal.removeExternalUserId();
    }
 
+   @ReactMethod
+   public void initNotificationOpenedHandlerParams() {
+      this.hasSetNotificationOpenedHandler = true;
+      if (this.coldStartNotificationResult != null) {
+         this.notificationOpened(this.coldStartNotificationResult);
+         this.coldStartNotificationResult = null;
+      }
+   }
+
    @Override
    public void notificationReceived(OSNotification notification) {
       this.sendEvent("OneSignal-remoteNotificationReceived", RNUtils.jsonToWritableMap(notification.toJSONObject()));
@@ -409,24 +420,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          return;
       }
       this.sendEvent("OneSignal-remoteNotificationOpened", RNUtils.jsonToWritableMap(result.toJSONObject()));
-   }
-
-   @ReactMethod
-   public void initNotificationOpenedHandlerParams() {
-      this.hasSetNotificationOpenedHandler = true;
-      if (this.coldStartNotificationResult != null) {
-         this.notificationOpened(this.coldStartNotificationResult);
-         this.coldStartNotificationResult = null;
-      }
-   }
-
-   @Override
-   public void inAppMessageClicked(OSInAppMessageAction result) {
-      if (!this.hasSetInAppClickedHandler) {
-         this.inAppMessageActionResult = result;
-         return;
-      }
-//      this.sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
    }
 
    @ReactMethod
@@ -445,12 +438,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public void removeTriggerForKeys(Collection<String> keys) {
-      OneSignal.removeTriggersForKeys(keys);
+   public void removeTriggersForKeys(ReadableArray keys) {
+      OneSignal.removeTriggersForKeys(RNUtils.convertReableArrayIntoStringCollection(keys));
    }
 
    @ReactMethod
-   public Object getTriggerValueForKey(String key, Promise promise) {
+   public void getTriggerValueForKey(String key, Promise promise) {
       promise.resolve(OneSignal.getTriggerValueForKey(key));
    }
 
@@ -466,6 +459,15 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          this.inAppMessageClicked(this.inAppMessageActionResult);
          this.inAppMessageActionResult = null;
       }
+   }
+
+   @Override
+   public void inAppMessageClicked(OSInAppMessageAction result) {
+      if (!this.hasSetInAppClickedHandler) {
+         this.inAppMessageActionResult = result;
+         return;
+      }
+      this.sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
    }
 
    @Override

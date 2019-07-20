@@ -351,7 +351,7 @@ RCT_EXPORT_METHOD(removeExternalUserId) {
     [OneSignal removeExternalUserId];
 }
 
-RCT_EXPORT_METHOD(didSetNotificationOpenedHandler) {
+RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
     //unimplemented in iOS
 }
 
