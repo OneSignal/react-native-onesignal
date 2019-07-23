@@ -30,7 +30,7 @@ dependencies {
         // Keeping com.google.android.gms(Google Play services library) as this version range starts at 10.2.1
     }
 
-    implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation 'androidx.cardview:cardview:1.0.0'
 
     testImplementation 'junit:junit:4.12'
 }
