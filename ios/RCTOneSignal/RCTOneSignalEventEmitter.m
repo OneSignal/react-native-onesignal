@@ -38,20 +38,20 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 -(instancetype)init {
     if (self = [super init]) {
         [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Initialized RCTOneSignalEventEmitter"];
-        
+
         for (NSString *eventName in [self supportedEvents])
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(emitEvent:) name:eventName object:nil];
     }
-    
+
     return self;
 }
 
 -(void)startObserving {
     hasListeners = true;
     [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"RCTOneSignalEventEmitter did start observing"];
-    
+
     [[NSNotificationCenter defaultCenter] postNotificationName:@"didSetBridge" object:nil];
-    
+
     _didStartObserving = true;
 }
 
@@ -62,10 +62,10 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 -(NSArray<NSString *> *)supportedEvents {
     NSMutableArray *events = [NSMutableArray new];
-    
+
     for (int i = 0; i < OSNotificationEventTypesArray.count; i++)
         [events addObject:OSEventString(i)];
-    
+
     return events;
 }
 
@@ -77,7 +77,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
         [OneSignal onesignal_Log:ONE_S_LL_WARN message:[NSString stringWithFormat:@"Attempted to send an event (%@) when no listeners were set.", notification.name]];
         return;
     }
-    
+
     [self sendEventWithName:notification.name body:notification.userInfo];
 }
 
@@ -120,18 +120,18 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback) {
         callback(@[@{@"alert": @NO, @"badge": @NO, @"sound": @NO}]);
         return;
     }
-    
+
     NSUInteger types = 0;
     if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
         types = [RCTSharedApplication() currentUserNotificationSettings].types;
     } else {
-        
+
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
         types = [RCTSharedApplication() enabledRemoteNotificationTypes];
 #endif
-        
+
     }
-    
+
     callback(@[@{
        @"alert": @((types & UIUserNotificationTypeAlert) > 0),
        @"badge": @((types & UIUserNotificationTypeBadge) > 0),
@@ -143,7 +143,7 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     if (RCTRunningInAppExtension()) {
         return;
     }
-    
+
     UIUserNotificationType types = UIUserNotificationTypeNone;
     if (permissions) {
         if ([RCTConvert BOOL:permissions[@"alert"]]) {
@@ -158,7 +158,7 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     } else {
         types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
     }
-    
+
     UIApplication *app = RCTSharedApplication();
     if ([app respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         UIUserNotificationSettings *notificationSettings =
@@ -211,24 +211,24 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
             @"emailSubscribed" : @false
          }]);
     }
-    
+
     OSPermissionSubscriptionState *state = [OneSignal getPermissionSubscriptionState];
     OSPermissionState *permissionState = state.permissionStatus;
     OSSubscriptionState *subscriptionState = state.subscriptionStatus;
     OSEmailSubscriptionState *emailState = state.emailSubscriptionStatus;
-    
+
     // Received push notification prompt? (iOS only property)
     BOOL hasPrompted = permissionState.hasPrompted == 1;
-    
+
     // Notifications enabled for app? (iOS Settings)
     BOOL notificationsEnabled = permissionState.status == 2;
-    
+
     // User subscribed to OneSignal? (automatically toggles with notificationsEnabled)
     BOOL subscriptionEnabled = subscriptionState.subscribed == 1;
-    
+
     // User's original subscription preference (regardless of notificationsEnabled)
     BOOL userSubscriptionEnabled = subscriptionState.userSubscriptionSetting == 1;
-    
+
     callback(@[@{
        @"hasPrompted": @(hasPrompted),
        @"notificationsEnabled": @(notificationsEnabled),
@@ -263,12 +263,12 @@ RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
 
 RCT_EXPORT_METHOD(configure) {
     [OneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
-        
+
         NSDictionary *params = @{
          @"pushToken": pushToken ?: [NSNull null],
          @"userId" : userId ?: [NSNull null]
         };
-        
+
         [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-idsAvailable" withBody:params];
     }];
 }
@@ -309,17 +309,17 @@ RCT_EXPORT_METHOD(promptLocation) {
 // The post notification endpoint accepts four parameters.
 RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(id)player_ids other_parameters:(NSDictionary *)other_parameters) {
     NSDictionary * additionalData = data ? @{@"p2p_notification": data} : @{};
-    
+
     NSMutableDictionary * extendedData = [additionalData mutableCopy];
     BOOL isHidden = [[other_parameters ?: @{} objectForKey:@"hidden"] boolValue];
     if (isHidden) {
         [extendedData setObject:[NSNumber numberWithBool:YES] forKey:@"hidden"];
     }
-    
+
     NSMutableDictionary *notification = [NSMutableDictionary new];
     notification[@"contents"] = contents;
     notification[@"data"] = extendedData;
-    
+
     if (player_ids && [player_ids isKindOfClass:[NSArray class]]) {
         //array of player ids
         notification[@"include_player_ids"] = (NSArray<NSString *> *)player_ids;
@@ -327,11 +327,11 @@ RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *
         //individual player id
         notification[@"include_player_ids"] = @[(NSString *)player_ids];
     }
-    
+
     if (other_parameters) {
         [notification addEntriesFromDictionary:other_parameters];
     }
-    
+
     [OneSignal postNotification:notification];
 }
 
@@ -351,7 +351,7 @@ RCT_EXPORT_METHOD(removeExternalUserId) {
     [OneSignal removeExternalUserId];
 }
 
-RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
+RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
     //unimplemented in iOS
 }
 
