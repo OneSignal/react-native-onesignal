@@ -3664,10 +3664,10 @@ react-native-maps@0.21.0:
     babel-plugin-module-resolver "^2.3.0"
     babel-preset-react-native "1.9.0"
 
-react-native-onesignal@3.2.13:
-  version "3.2.13"
-  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-3.2.13.tgz#02f10dbd9cfacd3dc2c8254200f824bf4ff92093"
-  integrity sha512-Vq8Bdav8Luwal8XtB2xulO82+pw/Xzfr4RnwFhJ+MJy+3fqsuUU+zkyokEEFz3mAWO34t4YqIUyfQ8Q+XaQDBg==
+react-native-onesignal@3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-3.3.0.tgz#e7bd9a6b8313fabeaa8010c151e48af37bf32dd7"
+  integrity sha512-+9wQpMco+at7wE5e9u26xtuUUyI5VNho2BI5QTStZ2XIbme8jZ4WvaJgwd4uzMNke/+ACYYVkDB4ONhcoPHreA==
   dependencies:
     invariant "^2.2.2"
 
