@@ -16,10 +16,11 @@ typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
     NotificationReceived,
     NotificationOpened,
     IdsAvailable,
-    EmailSubscriptionChanged
+    EmailSubscriptionChanged,
+    InAppMessageClicked
 };
 
-#define OSNotificationEventTypesArray @[@"OneSignal-remoteNotificationReceived",@"OneSignal-remoteNotificationOpened",@"OneSignal-idsAvailable",@"OneSignal-emailSubscription"]
+#define OSNotificationEventTypesArray @[@"OneSignal-remoteNotificationReceived",@"OneSignal-remoteNotificationOpened",@"OneSignal-idsAvailable",@"OneSignal-emailSubscription",@"OneSignal-inAppMessageClicked"]
 #define OSEventString(enum) [OSNotificationEventTypesArray objectAtIndex:enum]
 
 
