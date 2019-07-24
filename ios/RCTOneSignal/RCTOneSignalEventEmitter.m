@@ -355,4 +355,7 @@ RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
     //unimplemented in iOS
 }
 
+RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
+    //unimplemented in iOS
+}
 @end

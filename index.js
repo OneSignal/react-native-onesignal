@@ -465,6 +465,7 @@ export default class OneSignal {
         } else {
             console.log("This function is not yet implemented on iOS");
         }
+        return Promise.resolve(null);
     }
 
     static pauseInAppMessages(pause) {
