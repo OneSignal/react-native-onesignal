@@ -217,20 +217,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public void configure() {
-      OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
-         public void idsAvailable(String userId, String registrationId) {
-            final WritableMap params = Arguments.createMap();
-
-            params.putString("userId", userId);
-            params.putString("pushToken", registrationId);
-
-            sendEvent("OneSignal-idsAvailable", params);
-         }
-      });
-   }
-
-   @ReactMethod
    public void getPermissionSubscriptionState(final Callback callback) {
       OSPermissionSubscriptionState state = OneSignal.getPermissionSubscriptionState();
 
