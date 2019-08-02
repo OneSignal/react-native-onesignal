@@ -261,7 +261,7 @@ RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
     [OneSignal sendTag:key value:value];
 }
 
-RCT_EXPORT_METHOD(configure) {
+RCT_EXPORT_METHOD(idsAvailable) {
     [OneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
 
         NSDictionary *params = @{
