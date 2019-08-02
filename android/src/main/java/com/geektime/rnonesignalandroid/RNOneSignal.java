@@ -217,7 +217,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public void configure() {
+   public void idsAvailable() {
       OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
          public void idsAvailable(String userId, String registrationId) {
             final WritableMap params = Arguments.createMap();

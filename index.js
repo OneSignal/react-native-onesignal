@@ -94,7 +94,7 @@ export default class OneSignal {
 
         // triggers ids event
         if (type === IDS_AVAILABLE_EVENT) {
-            RNOneSignal.configure();
+            RNOneSignal.idsAvailable();
         }
 
         if (type === IN_APP_MESSAGE_CLICKED_EVENT) {
