@@ -152,6 +152,11 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 /* iOS 10+ : Groups notifications into threads */
 @property(readonly)NSString *threadId;
 
+/* Parses an APS push payload into a OSNotificationPayload object.
+   Useful to call from your NotificationServiceExtension when the
+      didReceiveNotificationRequest:withContentHandler: method fires. */
++(instancetype)parseWithApns:(nonnull NSDictionary*)message;
+
 @end
 
 // ## OneSignal OSNotification
