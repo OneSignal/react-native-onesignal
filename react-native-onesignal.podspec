@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.platform       = :ios, "7.0"
   s.source         = { :git => "#{package_json["repository"]["url"]}.git", :tag => "#{s.version}" }
   s.source_files   = 'ios/RCTOneSignal/*.{h,m}'
-  
+  s.static_framework = true  
   # The "React" pod is required due to the use of RCTBridgeModule, RCTEventEmitter, etc
   # Ensuring we have version 0.13.0 or greater to avoid a cocoapods issue noted in React Native's release notes
   #   https://github.com/facebook/react-native/releases/tag/v0.13.0
