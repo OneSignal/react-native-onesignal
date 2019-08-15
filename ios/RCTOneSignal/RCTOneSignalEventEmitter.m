@@ -121,16 +121,19 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback) {
         return;
     }
 
-    NSUInteger types = 0;
-    if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
-        types = [RCTSharedApplication() currentUserNotificationSettings].types;
-    } else {
+    __block NSUInteger types = 0;
+
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
+            types = [RCTSharedApplication() currentUserNotificationSettings].types;
+        } else {
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-        types = [RCTSharedApplication() enabledRemoteNotificationTypes];
+            types = [RCTSharedApplication() enabledRemoteNotificationTypes];
 #endif
 
-    }
+        }
+    });
 
     callback(@[@{
        @"alert": @((types & UIUserNotificationTypeAlert) > 0),
