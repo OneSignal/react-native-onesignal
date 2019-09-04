@@ -409,73 +409,49 @@ export default class OneSignal {
     }
 
     /**
-     * Pass a String key and any value and creates a trigger map to pass to addTriggers()
+     * In-App Messaging
      */
+
+    // Pass a String key and any value and creates a trigger map to pass to addTriggers()
     static addTrigger(key, value) {
         if (!checkIfInitialized()) return;
 
         var trigger = {};
         trigger[key] = value;
-        if (Platform.OS === 'android') {
-            RNOneSignal.addTriggers(trigger);
-        } else {
-            console.log("This function is not yet implemented on iOS");
-        }
+        RNOneSignal.addTriggers(trigger);
     }
 
-    /**
-     * Expected format is Map<String, Object>, make sure all values are Objects and keys are Strings
-     */
+    
+    // Expected format is Map<String, Object>, make sure all values are Objects and keys are Strings
     static addTriggers(triggers) {
         if (!checkIfInitialized()) return;
 
-        if (Platform.OS === 'android') {
-            RNOneSignal.addTriggers(triggers);
-        } else {
-            console.log("This function is not yet implemented on iOS");
-        }
+        RNOneSignal.addTriggers(triggers);
     }
 
     static removeTriggersForKeys(keys) {
         if (!checkIfInitialized()) return;
 
-        if (Platform.OS === 'android') {
-            RNOneSignal.removeTriggersForKeys(keys);
-        } else {
-            console.log("This function is not yet implemented on iOS");
-        }
+        RNOneSignal.removeTriggersForKeys(keys);
     }
 
     static removeTriggerForKey(key) {
         if (!checkIfInitialized()) return;
 
-        if (Platform.OS === 'android') {
-            RNOneSignal.removeTriggerForKey(key);
-        } else {
-            console.log("This function is not yet implemented on iOS");
-        }
+        RNOneSignal.removeTriggerForKey(key);
     }
 
     static getTriggerValueForKey(key) {
-        if (!checkIfInitialized()) return;
+        // must return a promise
+        if (!checkIfInitialized()) return Promise.resolve();
 
-        // returns promise
-        if (Platform.OS === 'android') {
-            return RNOneSignal.getTriggerValueForKey(key);
-        } else {
-            console.log("This function is not yet implemented on iOS");
-        }
-        return Promise.resolve(null);
+        return RNOneSignal.getTriggerValueForKey(key);
     }
 
     static pauseInAppMessages(pause) {
         if (!checkIfInitialized()) return;
 
-        if (Platform.OS === 'android') {
-            RNOneSignal.pauseInAppMessages(pause);
-        } else {
-            console.log("This function is not yet implemented on iOS");
-        }
+        RNOneSignal.pauseInAppMessages(pause);
     }
 
 }

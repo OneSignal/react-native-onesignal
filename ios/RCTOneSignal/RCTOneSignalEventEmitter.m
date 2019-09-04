@@ -361,4 +361,42 @@ RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
 RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
     //unimplemented in iOS
 }
+
+RCT_EXPORT_METHOD(addTrigger: (NSString *)trigger) {
+    [OneSignal addTriggers:trigger];
+}
+
+RCT_EXPORT_METHOD(addTriggers: (NSDictionary *)triggers) {
+    [OneSignal addTriggers:triggers];
+}
+
+RCT_EXPORT_METHOD(removeTriggersForKeys: (NSDictionary *)keys) {
+    [OneSignal removeTriggersForKeys:keys];
+}
+
+RCT_EXPORT_METHOD(removeTriggerForKey: (NSString *)key) {
+    [OneSignal removeTriggerForKey:key];
+}
+
+RCT_REMAP_METHOD(getTriggerValueForKey: (NSString *)key, 
+                getTriggerValueForKeyResolver:(RCTPromiseResolveBlock)resolve
+                rejecter:(RCTPromiseRejectBlock)reject) {
+
+    // NSString *val = [OneSignal getTriggerValueForKey:key];
+    NSString *val = @"NSStringro";
+    NSLog(@"inGetTriggerValueFOrKey");
+    
+    if (val) {
+        resolve(val);
+    } else {
+        NSError * error = nil;
+        reject(@"getTriggerValueForKey_error", @"Could not find value for key", error);
+    }
+
+}
+
+RCT_EXPORT_METHOD(pauseInAppMessages:(BOOL)pause) {
+    [OneSignal pauseInAppMessages:pause];
+}
+
 @end
