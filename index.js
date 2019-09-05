@@ -442,9 +442,11 @@ export default class OneSignal {
     }
 
     static getTriggerValueForKey(key) {
+        console.log('getting trig val for key');
         // must return a promise
         if (!checkIfInitialized()) return Promise.resolve();
 
+        console.log('didnt resolve');
         return RNOneSignal.getTriggerValueForKey(key);
     }
 

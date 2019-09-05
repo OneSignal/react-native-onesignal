@@ -347,11 +347,11 @@ RCT_EXPORT_METHOD(setLogLevel:(int)logLevel visualLogLevel:(int)visualLogLevel) 
 }
 
 RCT_EXPORT_METHOD(setExternalUserId:(NSString *)externalId) {
-    [OneSignal setExternalUserId:externalId];
+    //[OneSignal setExternalUserId:externalId];
 }
 
 RCT_EXPORT_METHOD(removeExternalUserId) {
-    [OneSignal removeExternalUserId];
+    //[OneSignal removeExternalUserId];
 }
 
 RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
@@ -370,7 +370,7 @@ RCT_EXPORT_METHOD(addTriggers: (NSDictionary *)triggers) {
     [OneSignal addTriggers:triggers];
 }
 
-RCT_EXPORT_METHOD(removeTriggersForKeys: (NSDictionary *)keys) {
+RCT_EXPORT_METHOD(removeTriggersForKeys: (NSArray *)keys) {
     [OneSignal removeTriggersForKeys:keys];
 }
 
@@ -378,25 +378,20 @@ RCT_EXPORT_METHOD(removeTriggerForKey: (NSString *)key) {
     [OneSignal removeTriggerForKey:key];
 }
 
-RCT_REMAP_METHOD(getTriggerValueForKey: (NSString *)key, 
+RCT_REMAP_METHOD(getTriggerValueForKey, 
+                key:(NSString *)key 
                 getTriggerValueForKeyResolver:(RCTPromiseResolveBlock)resolve
                 rejecter:(RCTPromiseRejectBlock)reject) {
 
-    // NSString *val = [OneSignal getTriggerValueForKey:key];
-    NSString *val = @"NSStringro";
-    NSLog(@"inGetTriggerValueFOrKey");
+    NSString *val = [OneSignal getTriggerValueForKey:key];
     
     if (val) {
         resolve(val);
-    } else {
-        NSError * error = nil;
-        reject(@"getTriggerValueForKey_error", @"Could not find value for key", error);
     }
-
 }
 
 RCT_EXPORT_METHOD(pauseInAppMessages:(BOOL)pause) {
-    [OneSignal pauseInAppMessages:pause];
+    [OneSignal pauseInAppMessaging:pause];
 }
 
 @end
