@@ -362,10 +362,6 @@ RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
     //unimplemented in iOS
 }
 
-RCT_EXPORT_METHOD(addTrigger: (NSString *)trigger) {
-    [OneSignal addTriggers:trigger];
-}
-
 RCT_EXPORT_METHOD(addTriggers: (NSDictionary *)triggers) {
     [OneSignal addTriggers:triggers];
 }
@@ -387,11 +383,27 @@ RCT_REMAP_METHOD(getTriggerValueForKey,
     
     if (val) {
         resolve(val);
+    } else {
+        NSError * error = nil;
+        NSString * message = [NSString stringWithFormat:@"There was no value for the key: %@", key];
+        reject(@"no_value", message, error);
     }
 }
 
 RCT_EXPORT_METHOD(pauseInAppMessages:(BOOL)pause) {
     [OneSignal pauseInAppMessaging:pause];
+}
+
+RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
+    [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction *action) {
+        NSDictionary *result = @{
+         @"clickName": action.clickName ?: [NSNull null],
+         @"clickUrl" : action.clickUrl.absoluteString ?: [NSNull null],
+         @"firstClick" : @(action.firstClick),
+         @"closesMessage" : @(action.closesMessage)
+        }; 
+        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:result];
+    }];
 }
 
 @end

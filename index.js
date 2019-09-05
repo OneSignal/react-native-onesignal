@@ -98,7 +98,11 @@ export default class OneSignal {
         }
 
         if (type === IN_APP_MESSAGE_CLICKED_EVENT) {
-            RNOneSignal.initInAppMessageClickHandlerParams();
+            if (Platform.OS === 'android') {
+                RNOneSignal.initInAppMessageClickHandlerParams();
+            } else if (Platform.OS === 'ios') {
+                RNOneSignal.setInAppMessageClickHandler();
+            }
         }
 
         // Check if there is a cache for this type of event
@@ -109,7 +113,7 @@ export default class OneSignal {
         }
     }
 
-    static removeEventListener(type, handler) {
+    static removeEventListener(type) {
         if (!checkIfInitialized()) return;
 
         invariant(
@@ -442,11 +446,9 @@ export default class OneSignal {
     }
 
     static getTriggerValueForKey(key) {
-        console.log('getting trig val for key');
         // must return a promise
         if (!checkIfInitialized()) return Promise.resolve();
 
-        console.log('didnt resolve');
         return RNOneSignal.getTriggerValueForKey(key);
     }
 
