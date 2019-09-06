@@ -1,7 +1,7 @@
 {
   "name": "react-native-onesignal",
-  "version": "3.3.2",
-  "description": "React Native OneSignal Component",
+  "version": "3.3.3",
+  "description": "React Native OneSignal SDK",
   "main": "index",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -27,6 +27,6 @@
     "type": "git",
     "url": "https://github.com/geektimecoil/react-native-onesignal"
   },
-  "author": "Geektime <http://www.geektime.co.il>",
+  "author": "OneSignal, Geektime <http://www.geektime.co.il>",
   "license": "MIT"
 }
