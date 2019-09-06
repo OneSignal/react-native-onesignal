@@ -391,7 +391,7 @@ RCT_REMAP_METHOD(getTriggerValueForKey,
 }
 
 RCT_EXPORT_METHOD(pauseInAppMessages:(BOOL)pause) {
-    [OneSignal pauseInAppMessaging:pause];
+    [OneSignal pauseInAppMessages:pause];
 }
 
 RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
