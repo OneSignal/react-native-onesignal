@@ -362,15 +362,15 @@ RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
     //unimplemented in iOS
 }
 
-RCT_EXPORT_METHOD(addTriggers: (NSDictionary *)triggers) {
+RCT_EXPORT_METHOD(addTriggers:(NSDictionary *)triggers) {
     [OneSignal addTriggers:triggers];
 }
 
-RCT_EXPORT_METHOD(removeTriggersForKeys: (NSArray *)keys) {
+RCT_EXPORT_METHOD(removeTriggersForKeys:(NSArray *)keys) {
     [OneSignal removeTriggersForKeys:keys];
 }
 
-RCT_EXPORT_METHOD(removeTriggerForKey: (NSString *)key) {
+RCT_EXPORT_METHOD(removeTriggerForKey:(NSString *)key) {
     [OneSignal removeTriggerForKey:key];
 }
 
