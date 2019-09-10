@@ -361,4 +361,49 @@ RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
 RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
     //unimplemented in iOS
 }
+
+RCT_EXPORT_METHOD(addTriggers:(NSDictionary *)triggers) {
+    [OneSignal addTriggers:triggers];
+}
+
+RCT_EXPORT_METHOD(removeTriggersForKeys:(NSArray *)keys) {
+    [OneSignal removeTriggersForKeys:keys];
+}
+
+RCT_EXPORT_METHOD(removeTriggerForKey:(NSString *)key) {
+    [OneSignal removeTriggerForKey:key];
+}
+
+RCT_REMAP_METHOD(getTriggerValueForKey, 
+                key:(NSString *)key 
+                getTriggerValueForKeyResolver:(RCTPromiseResolveBlock)resolve
+                rejecter:(RCTPromiseRejectBlock)reject) {
+
+    NSString *val = [OneSignal getTriggerValueForKey:key];
+    
+    if (val) {
+        resolve(val);
+    } else {
+        NSError * error = nil;
+        NSString * message = [NSString stringWithFormat:@"There was no value for the key: %@", key];
+        reject(@"no_value", message, error);
+    }
+}
+
+RCT_EXPORT_METHOD(pauseInAppMessages:(BOOL)pause) {
+    [OneSignal pauseInAppMessages:pause];
+}
+
+RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
+    [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction *action) {
+        NSDictionary *result = @{
+         @"clickName": action.clickName ?: [NSNull null],
+         @"clickUrl" : action.clickUrl.absoluteString ?: [NSNull null],
+         @"firstClick" : @(action.firstClick),
+         @"closesMessage" : @(action.closesMessage)
+        }; 
+        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:result];
+    }];
+}
+
 @end

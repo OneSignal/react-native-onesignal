@@ -16,7 +16,6 @@ export default class App extends Component {
   constructor(properties) {
       super(properties);
 
-      OneSignal.setLogLevel(6, 0);
 
       let requiresConsent = false;
 
@@ -30,44 +29,14 @@ export default class App extends Component {
           buttonColor : Platform.OS == "ios" ? "#ffffff" : "#d45653",
           jsonDebugText : "",
           privacyButtonTitle : "Privacy Consent: Not Granted",
+          inAppIsPaused:true,
           requirePrivacyConsent : requiresConsent
       };
 
-      OneSignal.setRequiresUserPrivacyConsent(requiresConsent);
-
+      //OneSignal.setRequiresUserPrivacyConsent(requiresConsent);
       OneSignal.init("ce8572ae-ff57-4e77-a265-5c91f00ecc4c", {kOSSettingsKeyAutoPrompt : true});
-
       this.oneSignalInAppMessagingExamples();
-  }
-
-  oneSignalInAppMessagingExamples() {
-      // Add a single trigger with a value associated with it
-      OneSignal.addTrigger("trigger_1", "one");
-      OneSignal.getTriggerValueForKey("trigger_1").then((response) => {
-          console.log("trigger_1 value: " + response);
-      }).catch((e) => {
-          console.error(e);
-      });
-      OneSignal.removeTriggerForKey("trigger_1");
-
-      // Create a set of triggers in a map and add them all at once
-      var triggers = {
-          "trigger_2": "two",
-          "trigger_3": "three"
-      };
-      OneSignal.addTriggers(triggers);
-
-      // Create an array of keys to remove triggers for
-      var removeTriggers = ["trigger_2", "trigger_3"];
-      OneSignal.removeTriggersForKeys(removeTriggers);
-
-      // Toggle the showing of IAMs
-      OneSignal.pauseInAppMessages(false);
-  }
-
-  validateEmail(email) {
-      var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(String(email).toLowerCase());
+      OneSignal.setLogLevel(6, 0);
   }
 
   async componentDidMount() {
@@ -98,6 +67,33 @@ export default class App extends Component {
       OneSignal.removeEventListener('ids', this.onIds);
       OneSignal.removeEventListener('emailSubscription', this.onEmailRegistrationChange);
       OneSignal.removeEventListener('inAppMessageClicked', this.onInAppMessageClicked);
+  }
+
+  validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+  
+  oneSignalInAppMessagingExamples() {
+    OneSignal.addTrigger("trigger1", "1");
+
+    // Add a single trigger with a value associated with it
+      OneSignal.getTriggerValueForKey("trigger1").then((response) => {
+          console.log("trigger1 value: " + response);
+      }).catch((e) => {
+          console.error(e);
+      });
+
+      // Create a set of triggers in a map and add them all at once
+      var triggers = {
+          "trigger2": "2",
+          "trigger3": "3"
+      };
+      OneSignal.addTriggers(triggers);
+
+      // Create an array of keys to remove triggers for
+      var removeTriggers = ["trigger2", "trigger3"];
+      OneSignal.removeTriggersForKeys(removeTriggers);
   }
 
   onEmailRegistrationChange(registration) {
@@ -145,6 +141,9 @@ export default class App extends Component {
                       Double tap R on your keyboard to reload,{'\n'}
                       Shake or press menu button for dev menu
                   </Text>
+                  <Text style={styles.jsonDebugLabelText}>
+                      {this.state.jsonDebugText}
+                  </Text>
                   <View style={{flexDirection: 'row', overflow: 'hidden'}}>
                       <View style={styles.buttonContainer}>
                           <Button style={styles.button}
@@ -162,8 +161,6 @@ export default class App extends Component {
                       <View style={styles.buttonContainer}>
                           <Button style={styles.button}
                               onPress={() => {
-                                  console.log("Sending tags");
-
                                   OneSignal.sendTags({"test_property_1" : "test_value_1", "test_property_2" : "test_value_2"});
                               }}
                               title="Send Tags"
@@ -256,9 +253,15 @@ export default class App extends Component {
                           color={this.state.buttonColor}
                       />
                   </View>
-                  <Text style={styles.jsonDebugLabelText}>
-                      {this.state.jsonDebugText}
-                  </Text>
+                  <View style={styles.buttonContainer}>
+                      <Button style={styles.button}
+                          onPress={() => {
+                             OneSignal.addTrigger("trigger1", "1");
+                          }}
+                          title="Add Trigger"
+                          color={this.state.buttonColor}
+                      />
+                  </View>
               </View>
           </ScrollView>
       );

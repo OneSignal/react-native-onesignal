@@ -44,12 +44,7 @@
 ***/
 
 #import <Foundation/Foundation.h>
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
-#define XC8_AVAILABLE 1
 #import <UserNotifications/UserNotifications.h>
-#endif
-
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wstrict-prototypes"
@@ -73,6 +68,26 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
     OSNotificationDisplayTypeNotification
 };
 
+@interface OSInAppMessageAction : NSObject
+
+// The action name attached to the IAM action
+@property (strong, nonatomic, nullable) NSString *clickName;
+
+// The URL (if any) that should be opened when the action occurs
+@property (strong, nonatomic, nullable) NSURL *clickUrl;
+
+// Whether or not the click action is first click on the IAM
+@property (nonatomic) BOOL firstClick;
+
+// Whether or not the click action dismisses the message
+@property (nonatomic) BOOL closesMessage;
+
+@end
+
+@protocol OSInAppMessageDelegate <NSObject>
+@optional
+- (void)handleMessageAction:(OSInAppMessageAction * _Nonnull)action NS_SWIFT_NAME(handleMessageAction(action:));
+@end
 
 @interface OSNotificationAction : NSObject
 
@@ -181,11 +196,8 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 @property(readonly, getter=isSilentNotification)BOOL silentNotification;
 
 /* iOS 10+: Indicates whether or not the received notification has mutableContent : 1 assigned to its payload
- Used for UNNotificationServiceExtension to launch extension.
-*/
-#if XC8_AVAILABLE
+ Used for UNNotificationServiceExtension to launch extension. */
 @property(readonly, getter=hasMutableContent)BOOL mutableContent;
-#endif
 
 /* Convert object into an NSString that can be convertible into a custom Dictionary / JSON Object */
 - (NSString*)stringify;
@@ -219,13 +231,6 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 };
 
 typedef void (^OSNotificationDisplayTypeResponse)(OSNotificationDisplayType displayType);
-
-// Notification Display Type Delegate
-// Allows apps to customize per-notification display-type
-@protocol OSNotificationDisplayTypeDelegate <NSObject>
-- (void)willPresentInFocusNotificationWithPayload:(OSNotificationPayload *)payload
-                                   withCompletion:(OSNotificationDisplayTypeResponse)completion;
-@end
 
 
 // Permission Classes
@@ -317,6 +322,9 @@ typedef void (^OSHandleNotificationReceivedBlock)(OSNotification* notification);
 
 /*Block for handling a user reaction to a notification*/
 typedef void (^OSHandleNotificationActionBlock)(OSNotificationOpenedResult * result);
+
+/*Block for hanlding user click on an in app message*/
+typedef void (^OSHandleInAppMessageActionClickBlock)(OSInAppMessageAction* action);
 
 /*Dictionary of keys to pass alongside the init settings*/
     
@@ -415,10 +423,6 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 
 + (OSPermissionSubscriptionState*)getPermissionSubscriptionState;
 
-// When the app is in-focus, this allows you to add a delegate that can customize the
-// display type for specific notifications
-+ (void)setNotificationDisplayTypeDelegate:(NSObject<OSNotificationDisplayTypeDelegate>*)delegate;
-
 + (void)addPermissionObserver:(NSObject<OSPermissionObserver>*)observer;
 + (void)removePermissionObserver:(NSObject<OSPermissionObserver>*)observer;
 
@@ -429,6 +433,8 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 + (void)removeEmailSubscriptionObserver:(NSObject<OSEmailSubscriptionObserver>*)observer;
 
 + (void)setSubscription:(BOOL)enable;
++ (BOOL)isInAppMessagingPaused;
++ (void)pauseInAppMessages:(BOOL)pause;
 
 // - Posting Notification
 + (void)postNotification:(NSDictionary*)jsonData;
@@ -444,6 +450,7 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 // Only used for wrapping SDKs, such as Unity, Cordova, Xamarin, etc.
 + (void)setMSDKType:(NSString*)type;
 
++ (void)setInAppMessageClickHandler:(OSHandleInAppMessageActionClickBlock)delegate;
 
 // iOS 10 only
 // Process from Notification Service Extension.
@@ -474,6 +481,13 @@ typedef void (^OSEmailSuccessBlock)();
 + (void)setEmail:(NSString * _Nonnull)email;
 + (void)setEmail:(NSString * _Nonnull)email withEmailAuthHashToken:(NSString * _Nullable)hashToken;
 
+// In App Messaging Trigger methods
++ (void)addTrigger:(NSString * _Nonnull)key withValue:(id _Nonnull)value;
++ (void)addTriggers:(NSDictionary<NSString *, id> * _Nonnull)triggers;
++ (void)removeTriggerForKey:(NSString * _Nonnull)key;
++ (void)removeTriggersForKeys:(NSArray<NSString *> * _Nonnull)keys;
++ (NSDictionary<NSString *, id> * _Nonnull)getTriggers;
++ (id _Nullable)getTriggerValueForKey:(NSString * _Nonnull)key;
 + (void)setExternalUserId:(NSString * _Nonnull)externalId;
 + (void)removeExternalUserId;
 
