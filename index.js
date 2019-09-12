@@ -236,11 +236,21 @@ export default class OneSignal {
     static sendTag(key, value) {
         if (!checkIfInitialized()) return;
 
+        if (typeof value !== "string") {
+            value = JSON.stringify(value);
+        }
+
         RNOneSignal.sendTag(key, value);
     }
 
     static sendTags(tags) {
         if (!checkIfInitialized()) return;
+
+        Object.keys(tags).forEach((key)=>{
+            if (typeof tags[key] !== "string"){
+                tags[key] = JSON.stringify(tags[key]);
+            }
+        })
 
         RNOneSignal.sendTags(tags || {});
     }
