@@ -132,7 +132,7 @@ export default class OneSignal {
         if (!checkIfInitialized()) return;
 
         for(var i = 0; i < _eventNames.length; i++) {
-            _listeners[_eventNames].remove();
+            _listeners[_eventNames[i]].remove();
         }
     }
 
