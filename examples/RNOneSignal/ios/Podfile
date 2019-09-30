@@ -28,8 +28,13 @@ target 'RNOneSignal' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
   use_native_modules!
+  # Contains OneSignal wrapper SDK code + Native OneSignal-iOS-SDK
+  pod 'react-native-onesignal', :path => '../node_modules/react-native-onesignal'
+
 end
 
 target 'OneSignalNotificationServiceExtension' do
+  # OneSignal-iOS-SDK for media, badge inc, other rich notification features
+  # No react native code / javascript in this iOS target
   pod 'OneSignal', '>= 2.9.3', '< 3.0'
 end
