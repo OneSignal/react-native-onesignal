@@ -148,7 +148,7 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 @property(readonly)NSString* subtitle;
 @property(readonly)NSString* body;
 
-/* Web address to launch within the app via a UIWebView */
+/* Web address to launch within the app via a WKWebView */
 @property(readonly)NSString* launchURL;
 
 /* Additional key value properties set within the payload */
@@ -170,7 +170,7 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 /* Parses an APS push payload into a OSNotificationPayload object.
    Useful to call from your NotificationServiceExtension when the
       didReceiveNotificationRequest:withContentHandler: method fires. */
-+(instancetype)parseWithApns:(nonnull NSDictionary*)message;
++ (instancetype)parseWithApns:(nonnull NSDictionary*)message;
 
 @end
 
@@ -229,9 +229,6 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
     // the application is only authorized to post Provisional notifications (direct to history)
     OSNotificationPermissionProvisional
 };
-
-typedef void (^OSNotificationDisplayTypeResponse)(OSNotificationDisplayType displayType);
-
 
 // Permission Classes
 @interface OSPermissionState : NSObject
@@ -323,7 +320,7 @@ typedef void (^OSHandleNotificationReceivedBlock)(OSNotification* notification);
 /*Block for handling a user reaction to a notification*/
 typedef void (^OSHandleNotificationActionBlock)(OSNotificationOpenedResult * result);
 
-/*Block for hanlding user click on an in app message*/
+/*Block for handling user click on an in app message*/
 typedef void (^OSHandleInAppMessageActionClickBlock)(OSInAppMessageAction* action);
 
 /*Dictionary of keys to pass alongside the init settings*/
@@ -445,6 +442,7 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 // - Request and track user's location
 + (void)promptLocation;
 + (void)setLocationShared:(BOOL)enable;
++ (BOOL)isLocationShared;
 
 
 // Only used for wrapping SDKs, such as Unity, Cordova, Xamarin, etc.
@@ -488,6 +486,7 @@ typedef void (^OSEmailSuccessBlock)();
 + (void)removeTriggersForKeys:(NSArray<NSString *> * _Nonnull)keys;
 + (NSDictionary<NSString *, id> * _Nonnull)getTriggers;
 + (id _Nullable)getTriggerValueForKey:(NSString * _Nonnull)key;
+
 + (void)setExternalUserId:(NSString * _Nonnull)externalId;
 + (void)removeExternalUserId;
 
