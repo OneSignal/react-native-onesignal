@@ -236,7 +236,7 @@ export default class OneSignal {
     static sendTag(key, value) {
         if (!checkIfInitialized()) return;
 
-        if (typeof value !== "string") {
+        if (typeof value === "boolean") {
             value = JSON.stringify(value);
         }
 
@@ -247,7 +247,7 @@ export default class OneSignal {
         if (!checkIfInitialized()) return;
 
         Object.keys(tags).forEach((key)=>{
-            if (typeof tags[key] !== "string"){
+            if (typeof tags[key] === "boolean"){
                 tags[key] = JSON.stringify(tags[key]);
             }
         })
