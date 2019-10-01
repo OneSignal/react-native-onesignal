@@ -237,7 +237,7 @@ export default class OneSignal {
         if (!checkIfInitialized()) return;
 
         if (typeof value === "boolean") {
-            value = JSON.stringify(value);
+            value = value.toString();
         }
 
         RNOneSignal.sendTag(key, value);
@@ -248,7 +248,7 @@ export default class OneSignal {
 
         Object.keys(tags).forEach((key)=>{
             if (typeof tags[key] === "boolean"){
-                tags[key] = JSON.stringify(tags[key]);
+                tags[key] = tags[key].toString();
             }
         })
 
