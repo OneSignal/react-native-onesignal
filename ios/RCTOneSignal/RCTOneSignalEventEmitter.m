@@ -358,6 +358,9 @@ RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
     //unimplemented in iOS
 }
 
+/*
+ * In-App Messaging
+ */
 RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
     //unimplemented in iOS
 }
@@ -404,6 +407,37 @@ RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
         }; 
         [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:result];
     }];
+}
+
+/*
+ * Outcomes
+ */
+
+RCT_EXPORT_METHOD(sendUniqueOutcome:(NSString)name, callback(RCTResponseSenderBlock)callback) {
+    [OneSignal sendUniqueOutcome:name onSuccess:^(NSDictionary *result){
+        callback(@[result]);
+    } onFailure:^(NSError *error){
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    }]
+}
+
+RCT_EXPORT_METHOD(sendOutcome:(NSString)name, callback(RCTResponseSenderBlock)callback) {
+    [OneSignal sendOutcome:name onSuccess:^(NSDictionary *result){
+        callback(@[result]);
+    } onFailure:^(NSError *error){
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    }]
+}
+
+RCT_EXPORT_METHOD(sendOutcomeWithValue:(NSString)name, 
+                value:(NSNumber)outcomeValue 
+                callback(RCTResponseSenderBlock)callback) {
+                    
+    [OneSignal sendOutcomeWithValue:name value:outcomeValue onSuccess:^(NSDictionary *result){
+        callback(@[result]);
+    } onFailure:^(NSError *error){
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    }]
 }
 
 @end

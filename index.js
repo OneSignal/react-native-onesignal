@@ -472,7 +472,7 @@ export default class OneSignal {
      * Outcomes
      */
 
-    static sendUniqueOutcome (name, callback=()=>{}) {
+    static sendUniqueOutcome(name, callback=()=>{}) {
         if (!checkIfInitialized()) return;
 
         invariant(
@@ -483,7 +483,7 @@ export default class OneSignal {
         RNOneSignal.sendUniqueOutcome(name, callback);
     }
 
-    static sendOutcome (name, callback=()=>{}) {
+    static sendOutcome(name, callback=()=>{}) {
         if (!checkIfInitialized()) return;
 
         invariant(
@@ -494,7 +494,7 @@ export default class OneSignal {
         RNOneSignal.sendOutcome(name, callback);
     }
 
-    static sendOutcomeWithValue (name, value, callback=()=>{}) {
+    static sendOutcomeWithValue(name, value, callback=()=>{}) {
         if (!checkIfInitialized()) return;
 
         invariant(
