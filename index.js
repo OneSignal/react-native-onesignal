@@ -468,4 +468,41 @@ export default class OneSignal {
         RNOneSignal.pauseInAppMessages(pause);
     }
 
+    /**
+     * Outcomes
+     */
+
+    static sendUniqueOutcome (name, callback=()=>{}) {
+        if (!checkIfInitialized()) return;
+
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        RNOneSignal.sendUniqueOutcome(name, callback);
+    }
+
+    static sendOutcome (name, callback=()=>{}) {
+        if (!checkIfInitialized()) return;
+
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        RNOneSignal.sendOutcome(name, callback);
+    }
+
+    static sendOutcomeWithValue (name, value, callback=()=>{}) {
+        if (!checkIfInitialized()) return;
+
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        RNOneSignal.sendOutcomeWithValue(name, Number(value), callback);
+    }
+
 }

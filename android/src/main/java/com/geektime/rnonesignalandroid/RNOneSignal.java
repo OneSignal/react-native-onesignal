@@ -422,6 +422,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       this.sendEvent("OneSignal-remoteNotificationOpened", RNUtils.jsonToWritableMap(result.toJSONObject()));
    }
 
+   /**
+    * In-App Messaging
+    */
+
    @ReactMethod
    public void addTrigger(String key, Object object) {
       OneSignal.addTrigger(key, object);
@@ -469,6 +473,59 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       }
       this.sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
    }
+
+   /**
+    * Outcomes
+    */
+
+    @ReactMethod
+    public void sendUniqueOutcome(String name, final Callback callback) {
+      OneSignal.sendUniqueOutcome(name, new OutcomeCallback(){
+         @Override
+         public void onOutcomeSuccess(String name) {
+            callback.invoke(name);
+         }
+
+         @Override
+         public void onOutcomeFail(int statusCode, String response) {
+            callback.invoke(statusCode, response);
+         }
+      });
+    }
+
+    @ReactMethod
+    public void sendOutcome(String name, final Callback callback) {
+      OneSignal.sendOutcome(name, new OutcomeCallback(){
+         @Override
+         public void onOutcomeSuccess(String name) {
+            callback.invoke(name);
+         }
+
+         @Override
+         public void onOutcomeFail(int statusCode, String response) {
+            callback.invoke(statusCode, response);
+         }
+      });
+    }
+
+    @ReactMethod
+    public void sendOutcomeWithValue(String name, float value, final Callback callback) {
+      OneSignal.sendOutcomeWithValue(name, value, new OutcomeCallback(){
+         @Override
+         public void onOutcomeSuccess(String name) {
+            callback.invoke(name);
+         }
+
+         @Override
+         public void onOutcomeFail(int statusCode, String response) {
+            callback.invoke(statusCode, response);
+         }
+      });
+    }
+
+   /**
+    * Overrides
+    */
 
    @Override
    public String getName() {
