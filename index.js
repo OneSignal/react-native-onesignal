@@ -504,5 +504,4 @@ export default class OneSignal {
 
         RNOneSignal.sendOutcomeWithValue(name, Number(value), callback);
     }
-
 }

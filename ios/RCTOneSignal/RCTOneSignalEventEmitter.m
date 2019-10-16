@@ -414,30 +414,30 @@ RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
  */
 
 RCT_EXPORT_METHOD(sendUniqueOutcome:(NSString)name, callback(RCTResponseSenderBlock)callback) {
-    [OneSignal sendUniqueOutcome:name onSuccess:^(NSDictionary *result){
-        callback(@[result]);
-    } onFailure:^(NSError *error){
-        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    }]
+    // [OneSignal sendUniqueOutcome:name onSuccess:^(NSDictionary *result){
+    //     callback(@[result]);
+    // } onFailure:^(NSError *error){
+    //     callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    // }]
 }
 
 RCT_EXPORT_METHOD(sendOutcome:(NSString)name, callback(RCTResponseSenderBlock)callback) {
-    [OneSignal sendOutcome:name onSuccess:^(NSDictionary *result){
-        callback(@[result]);
-    } onFailure:^(NSError *error){
-        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    }]
+    // [OneSignal sendOutcome:name onSuccess:^(NSDictionary *result){
+    //     callback(@[result]);
+    // } onFailure:^(NSError *error){
+    //     callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    // }]
 }
 
 RCT_EXPORT_METHOD(sendOutcomeWithValue:(NSString)name, 
                 value:(NSNumber)outcomeValue 
                 callback(RCTResponseSenderBlock)callback) {
                     
-    [OneSignal sendOutcomeWithValue:name value:outcomeValue onSuccess:^(NSDictionary *result){
-        callback(@[result]);
-    } onFailure:^(NSError *error){
-        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    }]
+    // [OneSignal sendOutcomeWithValue:name value:outcomeValue onSuccess:^(NSDictionary *result){
+    //     callback(@[result]);
+    // } onFailure:^(NSError *error){
+    //     callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    // }]
 }
 
 @end
