@@ -475,6 +475,11 @@ export default class OneSignal {
     static sendUniqueOutcome(name, callback=()=>{}) {
         if (!checkIfInitialized()) return;
 
+        if (Platform.OS === "ios") {
+            console.warn("OneSignal.sendUniqueOutcome is not yet supported on iOS");
+            return;
+        }
+
         invariant(
             typeof callback === 'function',
             'Must provide a valid callback'
@@ -486,6 +491,11 @@ export default class OneSignal {
     static sendOutcome(name, callback=()=>{}) {
         if (!checkIfInitialized()) return;
 
+        if (Platform.OS === "ios") {
+            console.warn("OneSignal.sendOutcome is not yet supported on iOS");
+            return;
+        }
+
         invariant(
             typeof callback === 'function',
             'Must provide a valid callback'
@@ -496,6 +506,11 @@ export default class OneSignal {
 
     static sendOutcomeWithValue(name, value, callback=()=>{}) {
         if (!checkIfInitialized()) return;
+
+        if (Platform.OS === "ios") {
+            console.warn("OneSignal.sendOutcomeWithValue is not yet supported on iOS");
+            return;
+        }
 
         invariant(
             typeof callback === 'function',
