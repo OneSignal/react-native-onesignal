@@ -17,16 +17,17 @@
     "notifications",
     "push",
     "apns",
+    "fcm",
     "gcm",
     "onesignal"
   ],
   "bugs": {
-    "url": "https://github.com/geektimecoil/react-native-onesignal/issues"
+    "url": "https://github.com/OneSignal/react-native-onesignal/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/geektimecoil/react-native-onesignal"
+    "url": "https://github.com/OneSignal/react-native-onesignal"
   },
-  "author": "OneSignal, Geektime <http://www.geektime.co.il>",
+  "author": "OneSignal <https://www.onesignal.com>, Geektime <http://www.geektime.co.il>",
   "license": "MIT"
 }
