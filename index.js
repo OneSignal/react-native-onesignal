@@ -435,7 +435,7 @@ export default class OneSignal {
         RNOneSignal.addTriggers(trigger);
     }
 
-    
+
     // Expected format is Map<String, Object>, make sure all values are Objects and keys are Strings
     static addTriggers(triggers) {
         if (!checkIfInitialized()) return;
@@ -472,22 +472,6 @@ export default class OneSignal {
      * Outcomes
      */
 
-    static sendUniqueOutcome(name, callback=()=>{}) {
-        if (!checkIfInitialized()) return;
-
-        if (Platform.OS === "ios") {
-            console.warn("OneSignal.sendUniqueOutcome is not yet supported on iOS");
-            return;
-        }
-
-        invariant(
-            typeof callback === 'function',
-            'Must provide a valid callback'
-        );
-
-        RNOneSignal.sendUniqueOutcome(name, callback);
-    }
-
     static sendOutcome(name, callback=()=>{}) {
         if (!checkIfInitialized()) return;
 
@@ -501,7 +485,23 @@ export default class OneSignal {
             'Must provide a valid callback'
         );
 
-        RNOneSignal.sendOutcome(name, callback);
+        return RNOneSignal.sendOutcome(name, callback);
+    }
+
+    static sendUniqueOutcome(name, callback=()=>{}) {
+        if (!checkIfInitialized()) return;
+
+        if (Platform.OS === "ios") {
+            console.warn("OneSignal.sendUniqueOutcome is not yet supported on iOS");
+            return;
+        }
+
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        return RNOneSignal.sendUniqueOutcome(name, callback);
     }
 
     static sendOutcomeWithValue(name, value, callback=()=>{}) {
@@ -517,6 +517,6 @@ export default class OneSignal {
             'Must provide a valid callback'
         );
 
-        RNOneSignal.sendOutcomeWithValue(name, Number(value), callback);
+        return RNOneSignal.sendOutcomeWithValue(name, Number(value), callback);
     }
 }

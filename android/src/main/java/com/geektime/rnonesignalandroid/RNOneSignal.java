@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.telecom.Call;
 import android.util.Log;
 import android.content.pm.ApplicationInfo;
 
@@ -18,6 +19,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.Promise;
 import com.onesignal.OSInAppMessageAction;
@@ -35,6 +37,7 @@ import com.onesignal.OneSignal.NotificationOpenedHandler;
 import com.onesignal.OneSignal.NotificationReceivedHandler;
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OSNotification;
+import com.onesignal.OutcomeEvent;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -479,50 +482,35 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     * Outcomes
     */
 
-    @ReactMethod
-    public void sendUniqueOutcome(String name, final Callback callback) {
-      OneSignal.sendUniqueOutcome(name, new OutcomeCallback(){
+   @ReactMethod
+   public void sendOutcome(String name, final Callback callback) {
+      OneSignal.sendOutcome(name, new OutcomeCallback() {
          @Override
-         public void onOutcomeSuccess(String name) {
-            callback.invoke(name);
-         }
-
-         @Override
-         public void onOutcomeFail(int statusCode, String response) {
-            callback.invoke(statusCode, response);
+         public void onSuccess(OutcomeEvent outcomeEvent) {
+            callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
          }
       });
-    }
+   }
 
-    @ReactMethod
-    public void sendOutcome(String name, final Callback callback) {
-      OneSignal.sendOutcome(name, new OutcomeCallback(){
+   @ReactMethod
+   public void sendUniqueOutcome(String name, final Callback callback) {
+      OneSignal.sendUniqueOutcome(name, new OutcomeCallback() {
          @Override
-         public void onOutcomeSuccess(String name) {
-            callback.invoke(name);
-         }
-
-         @Override
-         public void onOutcomeFail(int statusCode, String response) {
-            callback.invoke(statusCode, response);
+         public void onSuccess(OutcomeEvent outcomeEvent) {
+            callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
          }
       });
-    }
+   }
 
-    @ReactMethod
-    public void sendOutcomeWithValue(String name, float value, final Callback callback) {
-      OneSignal.sendOutcomeWithValue(name, value, new OutcomeCallback(){
+   @ReactMethod
+   public void sendOutcomeWithValue(String name, float value, final Callback callback) {
+      OneSignal.sendOutcomeWithValue(name, value, new OutcomeCallback() {
          @Override
-         public void onOutcomeSuccess(String name) {
-            callback.invoke(name);
-         }
-
-         @Override
-         public void onOutcomeFail(int statusCode, String response) {
-            callback.invoke(statusCode, response);
+         public void onSuccess(OutcomeEvent outcomeEvent) {
+            callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
          }
       });
-    }
+   }
 
    /**
     * Overrides
