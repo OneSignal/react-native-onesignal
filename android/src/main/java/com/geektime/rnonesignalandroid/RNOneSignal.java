@@ -1,11 +1,9 @@
 package com.geektime.rnonesignalandroid;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.telecom.Call;
 import android.util.Log;
 import android.content.pm.ApplicationInfo;
 

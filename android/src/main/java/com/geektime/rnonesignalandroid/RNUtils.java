@@ -109,7 +109,7 @@ public class RNUtils {
                 } else if (value instanceof Double || value instanceof Long || value instanceof Float) {
                     String str = String.valueOf(value);
                     writableMap.putDouble(key, Double.parseDouble(str));
-                } else if (value instanceof String || value.getClass().isEnum()) {
+                } else if (value instanceof String) {
                     writableMap.putString(key, value.toString());
                 } else if (value instanceof JSONObject) {
                     writableMap.putMap(key, jsonToWritableMap((JSONObject) value));
@@ -151,12 +151,14 @@ public class RNUtils {
                 } else if (value instanceof Double || value instanceof Long || value instanceof Float) {
                     String str = String.valueOf(value);
                     writableArray.pushDouble(Double.parseDouble(str));
-                } else if (value instanceof String || value.getClass().isEnum()) {
+                } else if (value instanceof String) {
                     writableArray.pushString(value.toString());
                 } else if (value instanceof JSONObject) {
                     writableArray.pushMap(jsonToWritableMap((JSONObject) value));
                 } else if (value instanceof JSONArray) {
                     writableArray.pushArray(jsonArrayToWritableArray((JSONArray) value));
+                } else if (value.getClass().isEnum()) {
+                    writableArray.pushString(value.toString());
                 }
             } catch (JSONException e) {
                 // Do nothing and fail silently
