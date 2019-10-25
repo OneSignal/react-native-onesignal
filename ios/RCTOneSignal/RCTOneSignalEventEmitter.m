@@ -173,7 +173,7 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     }
 }
 
-RCT_EXPORT_METHOD(setEmail :(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(setEmail:(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
     // Auth hash token created on server and sent to client.
     [OneSignal setEmail:email withEmailAuthHashToken:authHash withSuccess:^{
         callback(@[]);
@@ -358,6 +358,9 @@ RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
     //unimplemented in iOS
 }
 
+/*
+ * In-App Messaging
+ */
 RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
     //unimplemented in iOS
 }
@@ -404,6 +407,39 @@ RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
         }; 
         [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:result];
     }];
+}
+
+/*
+ * Outcomes
+ */
+RCT_EXPORT_METHOD(sendOutcome:(NSString *)name withCallback:(RCTResponseSenderBlock)callback) {
+    [OneSignal onesignal_Log:ONE_S_LL_ERROR message:@"Not implemented for iOS"];
+
+    //  [OneSignal sendUniqueOutcome:name onSuccess:^(NSDictionary *result) {
+    //      callback(@[result]);
+    //  } onFailure:^(NSError *error){
+    //      callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    //  }];
+}
+
+RCT_EXPORT_METHOD(sendUniqueOutcome:(NSString *)name withCallback:(RCTResponseSenderBlock)callback) {
+    [OneSignal onesignal_Log:ONE_S_LL_ERROR message:@"Not implemented for iOS"];
+
+    //  [OneSignal sendUniqueOutcome:name onSuccess:^(NSDictionary *result) {
+    //      callback(@[result]);
+    //  } onFailure:^(NSError *error){
+    //      callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    //  }];
+}
+
+RCT_EXPORT_METHOD(sendOutcomeWithValue:(NSString *)name withValue:(float)value withCallback:(RCTResponseSenderBlock)callback) {
+    [OneSignal onesignal_Log:ONE_S_LL_ERROR message:@"Not implemented for iOS"];
+
+    //  [OneSignal sendOutcomeWithValue:name  onSuccess:^(NSDictionary *result) {
+    //      callback(@[result]);
+    //  } onFailure:^(NSError *error){
+    //      callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    //  }];
 }
 
 @end

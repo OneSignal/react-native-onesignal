@@ -435,7 +435,7 @@ export default class OneSignal {
         RNOneSignal.addTriggers(trigger);
     }
 
-    
+
     // Expected format is Map<String, Object>, make sure all values are Objects and keys are Strings
     static addTriggers(triggers) {
         if (!checkIfInitialized()) return;
@@ -468,4 +468,55 @@ export default class OneSignal {
         RNOneSignal.pauseInAppMessages(pause);
     }
 
+    /**
+     * Outcomes
+     */
+
+    static sendOutcome(name, callback=()=>{}) {
+        if (!checkIfInitialized()) return;
+
+        if (Platform.OS === "ios") {
+            console.warn("OneSignal.sendOutcome is not yet supported on iOS");
+            return;
+        }
+
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        RNOneSignal.sendOutcome(name, callback);
+    }
+
+    static sendUniqueOutcome(name, callback=()=>{}) {
+        if (!checkIfInitialized()) return;
+
+        if (Platform.OS === "ios") {
+            console.warn("OneSignal.sendUniqueOutcome is not yet supported on iOS");
+            return;
+        }
+
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        RNOneSignal.sendUniqueOutcome(name, callback);
+    }
+
+    static sendOutcomeWithValue(name, value, callback=()=>{}) {
+        if (!checkIfInitialized()) return;
+
+        if (Platform.OS === "ios") {
+            console.warn("OneSignal.sendOutcomeWithValue is not yet supported on iOS");
+            return;
+        }
+
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        RNOneSignal.sendOutcomeWithValue(name, Number(value), callback);
+    }
 }
