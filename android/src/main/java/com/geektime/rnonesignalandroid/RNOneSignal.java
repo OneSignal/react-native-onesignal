@@ -487,7 +487,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       OneSignal.sendOutcome(name, new OutcomeCallback() {
          @Override
          public void onSuccess(OutcomeEvent outcomeEvent) {
-            callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+            if (outcomeEvent == null)
+               callback.invoke(new WritableNativeMap());
+            else
+               callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
          }
       });
    }
@@ -497,7 +500,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       OneSignal.sendUniqueOutcome(name, new OutcomeCallback() {
          @Override
          public void onSuccess(OutcomeEvent outcomeEvent) {
-            callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+            if (outcomeEvent == null)
+               callback.invoke(new WritableNativeMap());
+            else
+               callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
          }
       });
    }
@@ -507,7 +513,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       OneSignal.sendOutcomeWithValue(name, value, new OutcomeCallback() {
          @Override
          public void onSuccess(OutcomeEvent outcomeEvent) {
-            callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+            if (outcomeEvent == null)
+               callback.invoke(new WritableNativeMap());
+            else
+               callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
          }
       });
    }

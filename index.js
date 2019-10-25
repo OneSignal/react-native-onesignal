@@ -485,7 +485,7 @@ export default class OneSignal {
             'Must provide a valid callback'
         );
 
-        return RNOneSignal.sendOutcome(name, callback);
+        RNOneSignal.sendOutcome(name, callback);
     }
 
     static sendUniqueOutcome(name, callback=()=>{}) {
@@ -501,7 +501,7 @@ export default class OneSignal {
             'Must provide a valid callback'
         );
 
-        return RNOneSignal.sendUniqueOutcome(name, callback);
+        RNOneSignal.sendUniqueOutcome(name, callback);
     }
 
     static sendOutcomeWithValue(name, value, callback=()=>{}) {
@@ -517,6 +517,6 @@ export default class OneSignal {
             'Must provide a valid callback'
         );
 
-        return RNOneSignal.sendOutcomeWithValue(name, Number(value), callback);
+        RNOneSignal.sendOutcomeWithValue(name, Number(value), callback);
     }
 }
