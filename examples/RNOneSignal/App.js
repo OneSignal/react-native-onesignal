@@ -45,7 +45,7 @@ export default class App extends Component {
     };
 
     //OneSignal.setRequiresUserPrivacyConsent(requiresConsent);
-    OneSignal.init('77e32082-ea27-42e3-a898-c72e141824ef', {
+    OneSignal.init('ce8572ae-ff57-4e77-a265-5c91f00ecc4c', {
       kOSSettingsKeyAutoPrompt: true,
     });
 
