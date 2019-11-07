@@ -250,14 +250,18 @@ RCT_EXPORT_METHOD(setInFocusDisplayType:(int)displayType) {
 }
 
 RCT_EXPORT_METHOD(registerForPushNotifications) {
-    [OneSignal registerForPushNotifications];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [OneSignal registerForPushNotifications];
+    });
 }
 
 RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
-    [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
-        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Prompt For Push Notifications Success"];
-        callback(@[@(accepted)]);
-    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
+            [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Prompt For Push Notifications Success"];
+            callback(@[@(accepted)]);
+        }];
+    });
 }
 
 RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
