@@ -10,8 +10,6 @@ import android.util.Log;
 import com.onesignal.NotificationExtenderService;
 import com.onesignal.OSNotificationReceivedResult;
 import com.onesignal.OneSignal;
-import com.onesignal.OneSignalDbHelper;
-import com.onesignal.OneSignalNotificationManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +28,8 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
 
     @Override
     protected boolean onNotificationProcessing(OSNotificationReceivedResult receivedResult) {
+        if (receivedResult.isAppInFocus
+        NotificationService.getInstance(getApplicationContext()).updateForPayload(receivedResult);
         cleanNotificationIfNeeded(receivedResult);
         return shouldHideNotification(receivedResult);
     }
@@ -54,7 +54,8 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
     private void cleanNotificationIfNeeded(OSNotificationReceivedResult receivedResult) {
         List<String> messageIds = new ArrayList<>();
         try {
-            if (!receivedResult.payload.additionalData.has(CANCELS_NOTIFICATION) || !receivedResult.payload.additionalData.getBoolean(CANCELS_NOTIFICATION)) {
+            if (!receivedResult.payload.additionalData.has(CANCELS_NOTIFICATION)
+                    || !receivedResult.payload.additionalData.getBoolean(CANCELS_NOTIFICATION)) {
                 // No need to do anything if this event does not cancel the notification.
                 return;
             }
