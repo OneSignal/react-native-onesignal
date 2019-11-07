@@ -28,8 +28,13 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
 
     @Override
     protected boolean onNotificationProcessing(OSNotificationReceivedResult receivedResult) {
-        if (receivedResult.isAppInFocus
-        NotificationService.getInstance(getApplicationContext()).updateForPayload(receivedResult);
+        try {
+            if (!receivedResult.isAppInFocus && !receivedResult.payload.additionalData.getBoolean("isSilent")) {
+                NotificationService.getInstance(getApplicationContext()).updateForPayload(receivedResult);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         cleanNotificationIfNeeded(receivedResult);
         return shouldHideNotification(receivedResult);
     }
@@ -102,4 +107,9 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
         }
     }
 
+    @Override
+    public void onDestroy() {
+        NotificationService.getInstance(getApplicationContext()).onDestroy();
+        super.onDestroy();
+    }
 }

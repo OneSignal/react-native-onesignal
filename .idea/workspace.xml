@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7a6cc36e-3f61-4589-b778-195bb4dafaa3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/android/src/main/java/com/geektime/rnonesignalandroid/NotificationManager.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/java/com/geektime/rnonesignalandroid/NotificationNotDisplayingExtender.java" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/java/com/geektime/rnonesignalandroid/NotificationNotDisplayingExtender.java" afterDir="false" />
-    </list>
+    <list default="true" id="7a6cc36e-3f61-4589-b778-195bb4dafaa3" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,6 +116,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Problems" />
