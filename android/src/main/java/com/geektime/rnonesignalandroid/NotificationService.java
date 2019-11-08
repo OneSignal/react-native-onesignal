@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.onesignal.OSNotificationReceivedResult;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +21,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 class NotificationService {
     private static final String TAG = NotificationService.class.getSimpleName();
@@ -43,7 +46,7 @@ class NotificationService {
     }
 
     public interface CompletionHandler {
-        void onCompleted(String data);
+        void onCompleted(Object data);
     }
 
     void updateForPayload(OSNotificationReceivedResult receivedResult) {
@@ -105,7 +108,7 @@ class NotificationService {
 
         String gqlQuery =
                 "{" +
-                        "   backgroundFetch(threadId: " + threadId + " email: " + recipient + ") { " +
+                        "   backgroundFetch(threadId: \"" + threadId + "\" email: \"" + recipient + "\") { " +
                         "       self {  " +
                         "          mailboxes {  " +
                         "              inboxMemberships { id historyId }\n " +
@@ -119,9 +122,9 @@ class NotificationService {
 
         JSONObject requestBody = new JSONObject();
         try {
-            requestBody.put("operationName", "null");
+            requestBody.put("operationName", null);
             requestBody.put("query", gqlQuery);
-            requestBody.put("variables", new String[]{});
+            requestBody.put("variables", null);
         } catch (JSONException e) {
             Log.e(TAG, "Failed to put json data in requestBody: ", e);
             completionHandler.onCompleted(null);
@@ -141,27 +144,88 @@ class NotificationService {
             completionHandler.onCompleted(null);
             return;
         }
-
+        HttpURLConnection connection = null;
         try {
             URL url = new URL(httpBackendURL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("authtoken", authToken);
             connection.setRequestProperty("content-type", "application/json");
             connection.setRequestProperty("Accept", "application/json");
-            DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-            outputStream.writeBytes(requestBody.toString());
-            outputStream.flush();
-            outputStream.close();
-            Log.i("STATUS", String.valueOf(connection.getResponseCode()));
-            Log.i("MSG", connection.getResponseMessage());
-            InputStream inputStream = connection.getInputStream();
-            String responseString = getInputData(inputStream);
-            connection.disconnect();
-            completionHandler.onCompleted(responseString);
+            connection.getRequestMethod();
+
+            try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
+                outputStream.writeBytes(requestBody.toString());
+                outputStream.flush();
+            }
+
+            int code = connection.getResponseCode();
+            String mess = connection.getResponseMessage();
+            if (code != 200) {
+                Log.e(TAG, "Response is not a success: " + code + ", message: " + mess);
+                completionHandler.onCompleted(null);
+                return;
+            }
+            String responseString = null;
+            try (InputStream inputStream = connection.getInputStream()) {
+                responseString = getInputData(inputStream);
+            }
+
+            if (responseString == null || responseString.length() == 0) {
+                Log.e(TAG, "responseString is missing: " + responseString);
+                completionHandler.onCompleted(null);
+                return;
+            }
+            JSONObject responseJson = null;
+            try {
+                responseJson = new JSONObject(responseString);
+                JSONObject dataJson = responseJson.getJSONObject("data");
+                JSONObject backgroundFetchJson = dataJson.getJSONObject("backgroundFetch");
+                JSONObject threadContentsJson = backgroundFetchJson.getJSONObject("threadContents");
+                JSONObject selfJson = backgroundFetchJson.getJSONObject("self");
+                JSONArray mailboxesJson = selfJson.getJSONArray("mailboxes");
+                if (mailboxesJson == null || mailboxesJson.length() == 0) {
+                    Log.e(TAG, "mailboxesJson is missing: " + mailboxesJson);
+                    completionHandler.onCompleted(null);
+                    return;
+                }
+                JSONObject metadataByAddressJson = new JSONObject();
+                for (int i = 0; i < mailboxesJson.length(); i++) {
+                    JSONObject mailbox = mailboxesJson.getJSONObject(i);
+                    String email = mailbox.getString("email");
+                    if (email == null || email.length() == 0) {
+                        Log.e(TAG, "email is missing: " + email);
+                        completionHandler.onCompleted(null);
+                        return;
+                    }
+                    JSONObject access = mailbox.getJSONObject("access");
+                    if (access == null || access.length() == 0) {
+                        Log.e(TAG, "access is missing: " + access);
+                        completionHandler.onCompleted(null);
+                        return;
+                    }
+                    JSONArray inboxMemberships = mailbox.getJSONArray("inboxMemberships");
+                    JSONObject metaValue = new JSONObject();
+                    metaValue.put("access", access);
+                    metaValue.put("memberships", inboxMemberships);
+                    metadataByAddressJson.put(email, metaValue);
+
+                }
+                List<JSONObject> result = new ArrayList<>();
+                result.add(threadContentsJson);
+                result.add(metadataByAddressJson);
+                completionHandler.onCompleted(result);
+            } catch (JSONException e) {
+                Log.e(TAG, "json error: ", e);
+                completionHandler.onCompleted(null);
+            }
         } catch (IOException e) {
             Log.e(TAG, "Failed to create url: ", e);
             completionHandler.onCompleted(null);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
 
     }
