@@ -22,6 +22,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 class NotificationService {
@@ -46,20 +48,129 @@ class NotificationService {
     }
 
     public interface CompletionHandler {
-        void onCompleted(Object data);
+        void onCompleted(Object... data);
     }
 
     void updateForPayload(OSNotificationReceivedResult receivedResult) {
         queryMailState((state) -> {
-            if (state != null) {
-                queryServerWithState(receivedResult, state, (data) -> {
-                    Log.e(TAG, "GOT DATA: " + data);
+            if (state != null && state[0] != null) {
+                queryServerWithState(receivedResult, (String) state[0], (data) -> {
+                    if (data.length != 2) {
+                        // We sent 2 arguments here.
+                        Log.e(TAG, "data does not have 2 children: " + data.length);
+                        return;
+
+                    }
+                    JSONObject threadContentsJson = (JSONObject) data[0];
+                    JSONObject metadataByAddressJson = (JSONObject) data[1];
+                    if (isAnyNullOrEmpty(threadContentsJson, metadataByAddressJson)) {
+                        Log.e(TAG, "invalid parameters: " + threadContentsJson + " | " + metadataByAddressJson);
+                        return;
+                    }
+                    String threadId;
+                    try {
+                        JSONObject jsonAdditionalData = receivedResult.payload.additionalData;
+                        threadId = jsonAdditionalData.getString("threadId");
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Failed to get threadId data: ", e);
+                        return;
+                    }
+                    JSONObject updatedStateJson = updateStateAndJSONify((String) state[0], metadataByAddressJson);
+                    if (isAnyNullOrEmpty(updatedStateJson)) {
+                        Log.e(TAG, "Failed to update state in JSON");
+                        return;
+                    }
+
+                    db.beginTransaction();
+                    try {
+                        persistThreadWithId(threadId, threadContentsJson.toString());
+                        assert updatedStateJson != null;
+                        persistStateJSON(updatedStateJson.toString());
+                        db.setTransactionSuccessful();
+                    } catch (Exception e) {
+                        //Error in between database transaction
+                    } finally {
+                        db.endTransaction();
+                    }
+
                 });
             } else {
                 Log.e(TAG, "MailState query failed. Aborting.");
             }
 
         });
+    }
+
+    private void persistStateJSON(String updatedStateJSON) {
+        try (Cursor ignored = db.rawQuery("INSERT OR REPLACE INTO mailstate (fmt, value) VALUES (?, ?)", new String[]{MAIL_STATE_FORMAT, updatedStateJSON})) {
+            Log.d(TAG, "Thread persisted.");
+        } catch (Exception ex) {
+            Log.e(TAG, "Failed to persist thread", ex);
+        }
+    }
+
+    private void persistThreadWithId(String threadId, String threadJson) {
+        try (Cursor ignored = db.rawQuery("INSERT OR REPLACE INTO thread (threadId, value) VALUES (?, ?)", new String[]{threadId, threadJson})) {
+            Log.d(TAG, "Thread persisted.");
+        } catch (Exception ex) {
+            Log.e(TAG, "Failed to persist thread", ex);
+        }
+    }
+
+
+    private JSONObject updateStateAndJSONify(String existingState, JSONObject metadataByAddress) {
+        Iterator<String> keys = metadataByAddress.keys();
+        try {
+
+            JSONObject stateJson = new JSONObject(existingState);
+            JSONObject boxes = stateJson.getJSONObject("boxes");
+            if (isAnyNullOrEmpty(boxes)) {
+                Log.e(TAG, "boxes is missing");
+                return null;
+            }
+            while (keys.hasNext()) {
+                String email = keys.next();
+                if (isAnyNullOrEmpty(email)) {
+                    Log.e(TAG, "email key is empty?? can't happen.");
+                    return null;
+                }
+                JSONObject metaData = metadataByAddress.getJSONObject(email);
+                JSONObject access = metaData.getJSONObject("access");
+                if (isAnyNullOrEmpty(access)) {
+                    Log.e(TAG, "Updating state: No access for email: " + email);
+                    return null;
+                }
+                JSONObject box = boxes.getJSONObject(email);
+                if (isAnyNullOrEmpty(box)) {
+                    Log.e(TAG, "Updating state: No box for email: " + email);
+                    return null;
+                }
+                JSONObject newAccess = new JSONObject();
+                newAccess.put("token", access.getString("token"));
+                newAccess.put("expiration", access.getString("expiration"));
+                box.put("access", newAccess);
+                box.put("status", "live");
+                boxes.put(email, box);
+
+                if (metaData.has("memberships")) {
+                    JSONArray inboxMemberships = metaData.getJSONArray("memberships");
+                    JSONObject memberships = stateJson.getJSONObject("memberships");
+                    String recipientInboxKey = email + "/INBOX";
+                    JSONObject membership = memberships.getJSONObject(recipientInboxKey);
+                    if (isAnyNullOrEmpty(membership)) {
+                        Log.e(TAG, "Updating state: No membership found for key: " + recipientInboxKey);
+                        return null;
+                    }
+                    membership.put("forward", inboxMemberships);
+                    stateJson.put("memberships", membership);
+                }
+            }
+            stateJson.put("boxes", boxes);
+            return stateJson;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void queryMailState(@NonNull CompletionHandler completionHandler) {
@@ -209,12 +320,8 @@ class NotificationService {
                     metaValue.put("access", access);
                     metaValue.put("memberships", inboxMemberships);
                     metadataByAddressJson.put(email, metaValue);
-
                 }
-                List<JSONObject> result = new ArrayList<>();
-                result.add(threadContentsJson);
-                result.add(metadataByAddressJson);
-                completionHandler.onCompleted(result);
+                completionHandler.onCompleted(threadContentsJson, metadataByAddressJson);
             } catch (JSONException e) {
                 Log.e(TAG, "json error: ", e);
                 completionHandler.onCompleted(null);
@@ -228,6 +335,19 @@ class NotificationService {
             }
         }
 
+    }
+
+    private boolean isAnyNullOrEmpty(Object... objects) {
+        for (Object obj : objects) {
+            if (obj == null) return true;
+            if (obj instanceof String) {
+                if (((String) obj).length() == 0) return true;
+            } else if (obj instanceof Collection) {
+                if (((Collection) obj).size() == 0) return true;
+            }
+        }
+
+        return false;
     }
 
     private String getInputData(InputStream inputStream) {
