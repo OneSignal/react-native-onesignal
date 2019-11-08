@@ -35,12 +35,20 @@ public class NotificationService {
     }
 
     public interface CompletionHandler {
-        void onCompleted(boolean success, Object data);
+        void onCompleted(String data);
     }
 
     void updateForPayload(OSNotificationReceivedResult receivedResult) {
+        queryMailState((state) -> {
+            if (state != null) {
+                queryServerWithState(receivedResult, state, (data) -> {
 
-        queryMailState((success, data) -> Log.e(TAG, "got state: " + data));
+                });
+            } else {
+                Log.e(TAG, "MailState query failed. Aborting.");
+            }
+
+        });
     }
 
     private void queryMailState(@NonNull CompletionHandler completionHandler) {
@@ -63,19 +71,55 @@ public class NotificationService {
             cursor.moveToNext();
             columnData = cursor.getString(cursor.getColumnIndexOrThrow(MAIL_STATE_VALUE));
         } finally {
-            completionHandler.onCompleted(true, columnData);
+            completionHandler.onCompleted(columnData);
         }
-
     }
 
     public void queryServerWithState(OSNotificationReceivedResult receivedResult, String state, @NonNull CompletionHandler completionHandler) {
+        JSONObject user = null;
         String recipient = null;
+        String authToken = null;
+        String threadId = null;
+
         try {
             JSONObject jsonPayload = new JSONObject(receivedResult.payload.rawPayload);
+            JSONObject jsonState = new JSONObject(state);
+            JSONObject jsonAdditionalData = receivedResult.payload.additionalData;
             recipient = jsonPayload.getString("recipient");
+            threadId = jsonAdditionalData.getString("threadId");
+            user = jsonState.getJSONObject("user");
+            authToken = user.getString("authToken");
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Failed to get json data: ", e);
+            completionHandler.onCompleted(null);
+            return;
         }
+
+        String gqlQuery =
+                "{" +
+                        "   backgroundFetch(threadId: " + threadId + " email: " + recipient + ") { " +
+                        "       self {  " +
+                        "          mailboxes {  " +
+                        "              inboxMemberships { id historyId }\n " +
+                        "              email\n " +
+                        "             access { token expiration needsRefresh }" +
+                        "          }" +
+                        "       } " +
+                        "       threadContents " +
+                        "   }" +
+                        "}";
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("operationName", "null");
+            requestBody.put("query", "gqlQuery");
+            requestBody.put("variables", new String[]{});
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to put json data in requestBody: ", e);
+            completionHandler.onCompleted(null);
+            return;
+        }
+
+
         //        String schema = "type Query{hello: String}";
 //
 //        SchemaParser schemaParser = new SchemaParser();
@@ -94,7 +138,7 @@ public class NotificationService {
 //        System.out.println(executionResult.getData().toString());
     }
 
-    public void onDestroy(){
+    public void onDestroy() {
         db.close();
         instance = null;
     }
