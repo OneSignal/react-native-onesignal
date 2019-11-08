@@ -13,13 +13,15 @@ import com.onesignal.OSNotificationReceivedResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-public class NotificationService {
+class NotificationService {
     private static final String TAG = NotificationService.class.getSimpleName();
     private static SQLiteDatabase db;
     private static final String MAIL_STATE_FORMAT = "May-22-2019";
@@ -48,7 +50,7 @@ public class NotificationService {
         queryMailState((state) -> {
             if (state != null) {
                 queryServerWithState(receivedResult, state, (data) -> {
-
+                    Log.e(TAG, "GOT DATA: " + data);
                 });
             } else {
                 Log.e(TAG, "MailState query failed. Aborting.");
@@ -81,18 +83,17 @@ public class NotificationService {
         }
     }
 
-    public void queryServerWithState(OSNotificationReceivedResult receivedResult, String state, @NonNull CompletionHandler completionHandler) {
-        JSONObject user = null;
-        String recipient = null;
-        String authToken = null;
-        String threadId = null;
-        JSONObject jsonState = null;
+    private void queryServerWithState(OSNotificationReceivedResult receivedResult, String state, @NonNull CompletionHandler completionHandler) {
+        JSONObject user;
+        String recipient;
+        String authToken;
+        String threadId;
+        JSONObject jsonState;
 
         try {
-            JSONObject jsonPayload = new JSONObject(receivedResult.payload.rawPayload);
             jsonState = new JSONObject(state);
             JSONObject jsonAdditionalData = receivedResult.payload.additionalData;
-            recipient = jsonPayload.getString("recipient");
+            recipient = jsonAdditionalData.getString("recipient");
             threadId = jsonAdditionalData.getString("threadId");
             user = jsonState.getJSONObject("user");
             authToken = user.getString("authToken");
@@ -115,6 +116,7 @@ public class NotificationService {
                         "       threadContents " +
                         "   }" +
                         "}";
+
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("operationName", "null");
@@ -126,8 +128,8 @@ public class NotificationService {
             return;
         }
 
-        String wsBackendUrl = null;
-        String httpBackendURL = null;
+        String wsBackendUrl;
+        String httpBackendURL;
 
         try {
             wsBackendUrl = jsonState.getString("backendUrl");
@@ -146,21 +148,37 @@ public class NotificationService {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("authtoken", authToken);
             connection.setRequestProperty("content-type", "application/json");
-            connection.setRequestProperty("Accept","application/json");
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
+            connection.setRequestProperty("Accept", "application/json");
             DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
             outputStream.writeBytes(requestBody.toString());
             outputStream.flush();
             outputStream.close();
             Log.i("STATUS", String.valueOf(connection.getResponseCode()));
-            Log.i("MSG" , connection.getResponseMessage());
+            Log.i("MSG", connection.getResponseMessage());
+            InputStream inputStream = connection.getInputStream();
+            String responseString = getInputData(inputStream);
             connection.disconnect();
+            completionHandler.onCompleted(responseString);
         } catch (IOException e) {
             Log.e(TAG, "Failed to create url: ", e);
             completionHandler.onCompleted(null);
         }
 
+    }
+
+    private String getInputData(InputStream inputStream) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder buffer = new StringBuilder();
+        try {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to read line: ", e);
+            return null;
+        }
+        return buffer.toString();
     }
 
     void onDestroy() {
