@@ -13,6 +13,12 @@ import com.onesignal.OSNotificationReceivedResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class NotificationService {
     private static final String TAG = NotificationService.class.getSimpleName();
     private static SQLiteDatabase db;
@@ -80,10 +86,11 @@ public class NotificationService {
         String recipient = null;
         String authToken = null;
         String threadId = null;
+        JSONObject jsonState = null;
 
         try {
             JSONObject jsonPayload = new JSONObject(receivedResult.payload.rawPayload);
-            JSONObject jsonState = new JSONObject(state);
+            jsonState = new JSONObject(state);
             JSONObject jsonAdditionalData = receivedResult.payload.additionalData;
             recipient = jsonPayload.getString("recipient");
             threadId = jsonAdditionalData.getString("threadId");
@@ -111,7 +118,7 @@ public class NotificationService {
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("operationName", "null");
-            requestBody.put("query", "gqlQuery");
+            requestBody.put("query", gqlQuery);
             requestBody.put("variables", new String[]{});
         } catch (JSONException e) {
             Log.e(TAG, "Failed to put json data in requestBody: ", e);
@@ -119,26 +126,44 @@ public class NotificationService {
             return;
         }
 
+        String wsBackendUrl = null;
+        String httpBackendURL = null;
 
-        //        String schema = "type Query{hello: String}";
-//
-//        SchemaParser schemaParser = new SchemaParser();
-//        TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
-//
-//        RuntimeWiring runtimeWiring = RuntimeWiring.newRuntimeWiring()
-//                .type("Query", builder -> builder.dataFetcher("hello", new StaticDataFetcher("world")))
-//                .build();
-//
-//        SchemaGenerator schemaGenerator = new SchemaGenerator();
-//        GraphQLSchema graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
-//
-//        GraphQL build = GraphQL.newGraphQL(graphQLSchema).build();
-//        ExecutionResult executionResult = build.execute("{hello}");
-//
-//        System.out.println(executionResult.getData().toString());
+        try {
+            wsBackendUrl = jsonState.getString("backendUrl");
+            httpBackendURL = wsBackendUrl.startsWith("ws://")
+                    ? wsBackendUrl.replace("ws://", "http://")
+                    : wsBackendUrl.replace("wss://", "https://");
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to get backend json data: ", e);
+            completionHandler.onCompleted(null);
+            return;
+        }
+
+        try {
+            URL url = new URL(httpBackendURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("authtoken", authToken);
+            connection.setRequestProperty("content-type", "application/json");
+            connection.setRequestProperty("Accept","application/json");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+            outputStream.writeBytes(requestBody.toString());
+            outputStream.flush();
+            outputStream.close();
+            Log.i("STATUS", String.valueOf(connection.getResponseCode()));
+            Log.i("MSG" , connection.getResponseMessage());
+            connection.disconnect();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to create url: ", e);
+            completionHandler.onCompleted(null);
+        }
+
     }
 
-    public void onDestroy() {
+    void onDestroy() {
         db.close();
         instance = null;
     }

@@ -10,7 +10,20 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="988e9038414b314348" />
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/android/src/main/java/com/geektime/rnonesignalandroid/NotificationNotDisplayingExtender.java">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/android/src/main/java/com/geektime/rnonesignalandroid/NotificationService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1074" />
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -217,7 +230,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.18682022" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.18682022" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Image Layers" order="3" />
       <window_info id="Designer" order="4" />
@@ -228,7 +241,7 @@
       <window_info anchor="bottom" id="Version Control" order="0" weight="0.3292683" />
       <window_info anchor="bottom" id="TODO" order="1" weight="0.3292683" />
       <window_info anchor="bottom" id="Find" order="2" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="3" visible="true" weight="0.3292683" />
+      <window_info anchor="bottom" id="Terminal" order="3" visible="true" weight="0.3292683" />
       <window_info anchor="bottom" id="Event Log" order="4" side_tool="true" />
       <window_info anchor="bottom" id="Messages" order="5" weight="0.3292683" />
       <window_info anchor="bottom" id="Logcat" order="6" />
@@ -245,6 +258,14 @@
         <state relative-caret-position="1396">
           <caret line="120" lean-forward="true" selection-start-line="120" selection-end-line="120" />
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/android/src/main/java/com/geektime/rnonesignalandroid/NotificationNotDisplayingExtender.java">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/android/src/main/java/com/geektime/rnonesignalandroid/NotificationService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1074" />
       </provider>
     </entry>
   </component>
