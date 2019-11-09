@@ -95,6 +95,7 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
                     }
 
                     for (String messageId : messageIds) {
+                        // TODO fix this, find any match to cancel the right notification
                         if (not.getKey().equalsIgnoreCase(messageId)) {
                             Log.d(getClass().getSimpleName(), "Canceling notification: " + not.getId());
                             OneSignal.cancelNotification(not.getId());

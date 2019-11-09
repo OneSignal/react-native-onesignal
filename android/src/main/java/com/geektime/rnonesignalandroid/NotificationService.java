@@ -21,10 +21,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 class NotificationService {
     private static final String TAG = NotificationService.class.getSimpleName();
@@ -33,6 +31,8 @@ class NotificationService {
     private static final String MAIL_STATE_TABLE_NAME = "mailstate";
     private static final String MAIL_STATE_VALUE = "value";
 
+
+    // TODO fix this, clean all code and test it.
     private NotificationService() {
     }
 
