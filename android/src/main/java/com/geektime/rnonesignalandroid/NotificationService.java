@@ -131,6 +131,10 @@ class NotificationService {
                 Log.e(TAG, "boxes is missing");
                 return null;
             }
+
+            // State memberships.
+            JSONObject memberships = stateJson.has("memberships") ? stateJson.getJSONObject("memberships") : null;
+
             while (keys.hasNext()) {
                 String email = keys.next();
                 if (isAnyNullOrEmpty(email)) {
@@ -155,21 +159,42 @@ class NotificationService {
                 box.put("status", "live");
                 boxes.put(email, box);
 
+                /*
+                State example:
+                {
+                    "memberships" : {
+                        ...,
+                        "some.name@gmail.com/INBOX" : {
+                            "forward" : {
+                                "id": "16e6289bcd4a4245",
+                                "snippet" : "Coupon blah blah",
+                                "historyId" : 5157242
+                            },
+                            ...
+                        }
+                    }
+                }
+                */
+
                 if (metaData.has("memberships")) {
+                    // Server data memberships.
                     JSONArray inboxMemberships = metaData.has("memberships") ? metaData.getJSONArray("memberships") : null;
-                    JSONObject memberships = stateJson.has("memberships") ? stateJson.getJSONObject("memberships") : null;
+
+                    // E.g. some.name@gmail.com/INBOX.
                     String recipientInboxKey = email + "/INBOX";
+                    // Get individual email membership object.
                     JSONObject membership = memberships.has(recipientInboxKey) ? memberships.getJSONObject(recipientInboxKey) : null;
                     if (isAnyNullOrEmpty(membership)) {
                         Log.e(TAG, "Updating state: No membership found for key: " + recipientInboxKey);
                         return null;
                     }
+                    // Put server data memberships into
                     membership.put("forward", inboxMemberships);
                     memberships.put(recipientInboxKey, membership);
-                    stateJson.put("memberships", memberships);
                 }
             }
             stateJson.put("boxes", boxes);
+            stateJson.put("memberships", memberships);
             return stateJson;
         } catch (JSONException e) {
             e.printStackTrace();
