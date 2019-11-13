@@ -19,7 +19,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/android/src/main/java/com/geektime/rnonesignalandroid/NotificationService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-103" />
+            <state relative-caret-position="-13" />
           </provider>
         </entry>
       </file>
@@ -227,7 +227,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1605" height="1345" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
       <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.18682022" />
@@ -265,7 +264,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/geektime/rnonesignalandroid/NotificationService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-103" />
+        <state relative-caret-position="-13" />
       </provider>
     </entry>
   </component>

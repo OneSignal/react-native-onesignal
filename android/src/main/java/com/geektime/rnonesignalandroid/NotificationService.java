@@ -54,6 +54,7 @@ class NotificationService {
     void updateForPayload(OSNotificationReceivedResult receivedResult) {
         queryMailState((state) -> {
             if (state != null && state[0] != null) {
+                Log.e(TAG, "old state: " + state[0]);
                 queryServerWithState(receivedResult, (String) state[0], (data) -> {
                     if (data.length != 2) {
                         // We sent 2 arguments here.
@@ -85,8 +86,10 @@ class NotificationService {
                     try {
                         persistThreadWithId(threadId, threadContentsJson.toString());
                         assert updatedStateJson != null;
+                        Log.e(TAG, "updatedStateJson: " + updatedStateJson);
                         persistStateJSON(updatedStateJson.toString());
                         db.setTransactionSuccessful();
+                        queryMailState((newState) -> Log.e(TAG, "newState: " + updatedStateJson));
                     } catch (Exception e) {
                         //Error in between database transaction
                     } finally {
@@ -123,7 +126,7 @@ class NotificationService {
         try {
 
             JSONObject stateJson = new JSONObject(existingState);
-            JSONObject boxes = stateJson.getJSONObject("boxes");
+            JSONObject boxes = stateJson.has("boxes") ? stateJson.getJSONObject("boxes") : null;
             if (isAnyNullOrEmpty(boxes)) {
                 Log.e(TAG, "boxes is missing");
                 return null;
@@ -134,13 +137,13 @@ class NotificationService {
                     Log.e(TAG, "email key is empty?? can't happen.");
                     return null;
                 }
-                JSONObject metaData = metadataByAddress.getJSONObject(email);
-                JSONObject access = metaData.getJSONObject("access");
+                JSONObject metaData = metadataByAddress.has(email) ? metadataByAddress.getJSONObject(email) : null;
+                JSONObject access = metaData.has("access") ? metaData.getJSONObject("access") : null;
                 if (isAnyNullOrEmpty(access)) {
                     Log.e(TAG, "Updating state: No access for email: " + email);
                     return null;
                 }
-                JSONObject box = boxes.getJSONObject(email);
+                JSONObject box = boxes.has(email) ? boxes.getJSONObject(email) : null;
                 if (isAnyNullOrEmpty(box)) {
                     Log.e(TAG, "Updating state: No box for email: " + email);
                     return null;
@@ -153,10 +156,10 @@ class NotificationService {
                 boxes.put(email, box);
 
                 if (metaData.has("memberships")) {
-                    JSONArray inboxMemberships = metaData.getJSONArray("memberships");
-                    JSONObject memberships = stateJson.getJSONObject("memberships");
+                    JSONArray inboxMemberships = metaData.has("memberships") ? metaData.getJSONArray("memberships") : null;
+                    JSONObject memberships = stateJson.has("memberships") ? stateJson.getJSONObject("memberships") : null;
                     String recipientInboxKey = email + "/INBOX";
-                    JSONObject membership = memberships.getJSONObject(recipientInboxKey);
+                    JSONObject membership = memberships.has(recipientInboxKey) ? memberships.getJSONObject(recipientInboxKey) : null;
                     if (isAnyNullOrEmpty(membership)) {
                         Log.e(TAG, "Updating state: No membership found for key: " + recipientInboxKey);
                         return null;
