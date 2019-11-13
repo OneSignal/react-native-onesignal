@@ -165,7 +165,8 @@ class NotificationService {
                         return null;
                     }
                     membership.put("forward", inboxMemberships);
-                    stateJson.put("memberships", membership);
+                    memberships.put(recipientInboxKey, membership);
+                    stateJson.put("memberships", memberships);
                 }
             }
             stateJson.put("boxes", boxes);
