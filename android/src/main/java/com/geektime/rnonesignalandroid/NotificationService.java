@@ -42,6 +42,10 @@ class NotificationService {
         if (instance == null) {
             instance = new NotificationService();
             TwobirdDbHelper twobirdDbHelper = new TwobirdDbHelper(context);
+            if (db != null && !db.isOpen()) {
+                db.close();
+                db = null;
+            }
             db = twobirdDbHelper.getReadableDatabase();
         }
         return instance;
@@ -52,13 +56,22 @@ class NotificationService {
     }
 
     void updateForPayload(OSNotificationReceivedResult receivedResult) {
+        Log.e(this.getClass().getSimpleName(), "updateForPayload: waiting for debugger.");
+        android.os.Debug.waitForDebugger();
+        Log.e(this.getClass().getSimpleName(), "updateForPayload: debugger ready, moving on.");
+
         queryMailState((state) -> {
             if (state != null && state[0] != null) {
                 Log.e(TAG, "old state: " + state[0]);
+                String oldState = (String) state[0];
+                if (isAnyNullOrEmpty(oldState)) {
+                    Log.e(TAG, "oldState is not available: " + oldState);
+                    return;
+                }
                 queryServerWithState(receivedResult, (String) state[0], (data) -> {
-                    if (data.length != 2) {
+                    if (data == null || data.length != 2) {
                         // We sent 2 arguments here.
-                        Log.e(TAG, "data does not have 2 children: " + data.length);
+                        Log.e(TAG, "data does not have 2 children: " + (data == null ? "null " : data.length));
                         return;
 
                     }
@@ -71,12 +84,20 @@ class NotificationService {
                     String threadId;
                     try {
                         JSONObject jsonAdditionalData = receivedResult.payload.additionalData;
-                        threadId = jsonAdditionalData.getString("threadId");
+                        if (jsonAdditionalData == null) {
+                            Log.e(TAG, "Failed jsonAdditionalData is null");
+                            return;
+                        }
+                        threadId = jsonAdditionalData.has("threadId") ? jsonAdditionalData.getString("threadId") : null;
+                        if (threadId == null) {
+                            Log.e(TAG, "Failed threadId is null");
+                            return;
+                        }
                     } catch (JSONException e) {
                         Log.e(TAG, "Failed to get threadId data: ", e);
                         return;
                     }
-                    JSONObject updatedStateJson = updateStateAndJSONify((String) state[0], metadataByAddressJson);
+                    JSONObject updatedStateJson = updateStateAndJSONify(oldState, metadataByAddressJson);
                     if (isAnyNullOrEmpty(updatedStateJson)) {
                         Log.e(TAG, "Failed to update state in JSON");
                         return;
@@ -119,7 +140,6 @@ class NotificationService {
             Log.e(TAG, "Failed to persist thread", ex);
         }
     }
-
 
     private JSONObject updateStateAndJSONify(String existingState, JSONObject metadataByAddress) {
         Iterator<String> keys = metadataByAddress.keys();
