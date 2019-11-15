@@ -28,6 +28,7 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
 
     @Override
     protected boolean onNotificationProcessing(OSNotificationReceivedResult receivedResult) {
+        Log.e(this.getClass().getSimpleName(), "onNotificationProcessing: ");
         try {
             if (!receivedResult.isAppInFocus && !receivedResult.payload.additionalData.getBoolean("isSilent")) {
                 NotificationService.getInstance(getApplicationContext()).updateForPayload(receivedResult);

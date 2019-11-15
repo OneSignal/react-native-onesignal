@@ -57,7 +57,7 @@ class NotificationService {
 
     void updateForPayload(OSNotificationReceivedResult receivedResult) {
         Log.e(this.getClass().getSimpleName(), "updateForPayload: waiting for debugger.");
-        android.os.Debug.waitForDebugger();
+//        android.os.Debug.waitForDebugger();
         Log.e(this.getClass().getSimpleName(), "updateForPayload: debugger ready, moving on.");
 
         queryMailState((state) -> {
@@ -107,7 +107,6 @@ class NotificationService {
                     try {
                         persistThreadWithId(threadId, threadContentsJson.toString());
                         assert updatedStateJson != null;
-                        Log.e(TAG, "updatedStateJson: " + updatedStateJson);
                         persistStateJSON(updatedStateJson.toString());
                         db.setTransactionSuccessful();
                         queryMailState((newState) -> Log.e(TAG, "newState: " + updatedStateJson));
@@ -134,6 +133,7 @@ class NotificationService {
     }
 
     private void persistThreadWithId(String threadId, String threadJson) {
+        Log.e(this.getClass().getSimpleName(), "persistThreadWithId: " + threadId);
         try (Cursor ignored = db.rawQuery("INSERT OR REPLACE INTO thread (threadId, value) VALUES (?, ?)", new String[]{threadId, threadJson})) {
             Log.d(TAG, "Thread persisted.");
         } catch (Exception ex) {
