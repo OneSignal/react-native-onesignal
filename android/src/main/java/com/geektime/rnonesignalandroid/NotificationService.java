@@ -55,10 +55,15 @@ class NotificationService {
         void onCompleted(Object... data);
     }
 
-    void updateForPayload(OSNotificationReceivedResult receivedResult) {
+    private void waitForDebugger() {
         Log.e(this.getClass().getSimpleName(), "updateForPayload: waiting for debugger.");
 //        android.os.Debug.waitForDebugger();
         Log.e(this.getClass().getSimpleName(), "updateForPayload: debugger ready, moving on.");
+    }
+
+    void updateForPayload(OSNotificationReceivedResult receivedResult) {
+
+        waitForDebugger();
 
         queryMailState((state) -> {
             if (state != null && state[0] != null) {
