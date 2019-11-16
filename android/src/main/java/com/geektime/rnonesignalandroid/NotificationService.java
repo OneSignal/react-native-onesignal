@@ -57,7 +57,7 @@ class NotificationService {
 
     private void waitForDebugger() {
         Log.e(this.getClass().getSimpleName(), "updateForPayload: waiting for debugger.");
-//        android.os.Debug.waitForDebugger();
+        android.os.Debug.waitForDebugger();
         Log.e(this.getClass().getSimpleName(), "updateForPayload: debugger ready, moving on.");
     }
 
