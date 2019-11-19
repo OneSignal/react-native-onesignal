@@ -413,33 +413,21 @@ RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
  * Outcomes
  */
 RCT_EXPORT_METHOD(sendOutcome:(NSString *)name withCallback:(RCTResponseSenderBlock)callback) {
-    [OneSignal onesignal_Log:ONE_S_LL_ERROR message:@"Not implemented for iOS"];
-
-    //  [OneSignal sendUniqueOutcome:name onSuccess:^(NSDictionary *result) {
-    //      callback(@[result]);
-    //  } onFailure:^(NSError *error){
-    //      callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    //  }];
+    [OneSignal sendOutcome:name onSuccess:^(OSOutcomeEvent *outcome){
+        callback(@[[outcome jsonRepresentation]]);
+    }];
 }
 
 RCT_EXPORT_METHOD(sendUniqueOutcome:(NSString *)name withCallback:(RCTResponseSenderBlock)callback) {
-    [OneSignal onesignal_Log:ONE_S_LL_ERROR message:@"Not implemented for iOS"];
-
-    //  [OneSignal sendUniqueOutcome:name onSuccess:^(NSDictionary *result) {
-    //      callback(@[result]);
-    //  } onFailure:^(NSError *error){
-    //      callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    //  }];
+    [OneSignal sendUniqueOutcome:name onSuccess:^(OSOutcomeEvent *outcome){
+        callback(@[[outcome jsonRepresentation]]);
+    }];
 }
 
 RCT_EXPORT_METHOD(sendOutcomeWithValue:(NSString *)name withValue:(float)value withCallback:(RCTResponseSenderBlock)callback) {
-    [OneSignal onesignal_Log:ONE_S_LL_ERROR message:@"Not implemented for iOS"];
-
-    //  [OneSignal sendOutcomeWithValue:name  onSuccess:^(NSDictionary *result) {
-    //      callback(@[result]);
-    //  } onFailure:^(NSError *error){
-    //      callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    //  }];
+    [OneSignal sendOutcomeWithValue:name value:value onSuccess:^(OSOutcomeEvent *outcome){
+        callback(@[[outcome jsonRepresentation]]);
+    }];
 }
 
 @end
