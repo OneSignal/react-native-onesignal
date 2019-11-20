@@ -2,6 +2,9 @@ package com.geektime.rnonesignalandroid;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
@@ -23,6 +26,8 @@ import java.util.List;
  * Created by Andrey Beletsky on 6/5/17.
  */
 public class NotificationNotDisplayingExtender extends NotificationExtenderService {
+
+    private static final String TAG = NotificationNotDisplayingExtender.class.getSimpleName();
 
     public static final String CANCELS_NOTIFICATION = "cancelsNotification";
 
@@ -80,6 +85,8 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
             e.printStackTrace();
         }
 
+        printSqliteTable();
+
         if (messageIds.size() > 0) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -108,6 +115,57 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
             }
         }
     }
+
+    private void printSqliteTable() {
+
+        class TestDbHelper extends SQLiteOpenHelper {
+            private final String TAG = NotificationService.TwobirdDbHelper.class.getSimpleName();
+            // If you change the database schema, you must increment the database version.
+            static final int DATABASE_VERSION = 1;
+            static final String DATABASE_NAME = "OneSignal.db";
+
+            TestDbHelper(Context context) {
+                super(context, DATABASE_NAME, null, DATABASE_VERSION);
+            }
+
+            public void onCreate(SQLiteDatabase db) {
+//            db.execSQL(SQL_CREATE_ENTRIES);
+                Log.d(TAG, "onCreate");
+            }
+
+            public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+                // This database is only a cache for online data, so its upgrade policy is
+                // to simply to discard the data and start over
+                // Don't need this for now.
+                throw new RuntimeException("Not implemented");
+            }
+
+            public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+                onUpgrade(db, oldVersion, newVersion);
+            }
+
+        }
+        TestDbHelper testDbHelper = new TestDbHelper(getApplicationContext());
+        SQLiteDatabase db = testDbHelper.getReadableDatabase();
+
+        Log.d(TAG, "getTableAsString called");
+        Cursor allRows = db.rawQuery("SELECT * FROM " + "notification", null);
+        if (allRows.moveToFirst()) {
+            String[] columnNames = allRows.getColumnNames();
+            do {
+                String line = "";
+                for (String name : columnNames) {
+                    line += String.format("%s: %s\n", name,
+                            allRows.getString(allRows.getColumnIndex(name)));
+                }
+                Log.e(TAG, "Table notification: " + line);
+
+            } while (allRows.moveToNext());
+        }
+
+
+    }
+
 
     @Override
     public void onDestroy() {

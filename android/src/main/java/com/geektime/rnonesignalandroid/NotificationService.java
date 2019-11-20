@@ -1,5 +1,6 @@
 package com.geektime.rnonesignalandroid;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -130,19 +131,30 @@ class NotificationService {
     }
 
     private void persistStateJSON(String updatedStateJSON) {
-        try (Cursor ignored = db.rawQuery("INSERT OR REPLACE INTO mailstate (fmt, value) VALUES (?, ?)", new String[]{MAIL_STATE_FORMAT, updatedStateJSON})) {
-            Log.d(TAG, "Thread persisted.");
-        } catch (Exception ex) {
-            Log.e(TAG, "Failed to persist thread", ex);
+        ContentValues initialValues = new ContentValues();
+        initialValues.put("fmt", MAIL_STATE_FORMAT); // the execution is different if _id is 2
+        initialValues.put("value", updatedStateJSON);
+
+        int id = (int) db.insertWithOnConflict("mailstate", null, initialValues, SQLiteDatabase.CONFLICT_REPLACE);
+
+        if (id == -1) {
+            Log.e(TAG, "Failed to persist state");
+        } else {
+            Log.d(TAG, "State persisted.");
         }
     }
 
     private void persistThreadWithId(String threadId, String threadJson) {
-        Log.e(this.getClass().getSimpleName(), "persistThreadWithId: " + threadId);
-        try (Cursor ignored = db.rawQuery("INSERT OR REPLACE INTO thread (threadId, value) VALUES (?, ?)", new String[]{threadId, threadJson})) {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put("threadId", threadId); // the execution is different if _id is 2
+        initialValues.put("value", threadJson);
+
+        int id = (int) db.insertWithOnConflict("thread", null, initialValues, SQLiteDatabase.CONFLICT_REPLACE);
+
+        if (id == -1) {
+            Log.e(TAG, "Failed to persist thread");
+        } else {
             Log.d(TAG, "Thread persisted.");
-        } catch (Exception ex) {
-            Log.e(TAG, "Failed to persist thread", ex);
         }
     }
 
