@@ -76,13 +76,27 @@ class NotificationCleaner {
                     continue;
                 }
                 String collapseId = recipient + "-" + messageId;
-                cancelNotificationByOneSignalId(collapseId);
+                cancelNotificationByOneCollapseId(collapseId);
             }
         } else {
             Log.e(TAG, "cleanNotificationIfNeeded: messageIds.size = 0");
         }
     }
 
+    private void cancelNotificationByOneCollapseId(String collapseId) {
+        try (Cursor cursor = db.query("notification", new String[]{"android_notification_id"}, "collapse_id=?",
+                new String[]{collapseId}, null, null, null)) {
+            if (cursor.moveToNext()) {
+                int androidNotId = cursor.getInt(cursor.getColumnIndex("android_notification_id"));
+                OneSignal.cancelNotification(androidNotId);
+                Log.d(TAG, "Canceling notification with id: " + androidNotId);
+            } else {
+                Log.e(TAG, "Failed to cancelNotificationByOneSignalId,cursor has 0 items.");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to cancelNotificationByOneSignalId", e);
+        }
+    }
 
     static class OneSignalDbHelper extends SQLiteOpenHelper {
         private final String TAG = BackgroundNotificationService.TwobirdDbHelper.class.getSimpleName();
@@ -105,21 +119,6 @@ class NotificationCleaner {
             Log.d(TAG, "onDowngrade");
         }
 
-    }
-
-    private void cancelNotificationByOneSignalId(String collapseId) {
-        try (Cursor cursor = db.query("notification", new String[]{"android_notification_id"}, "collapse_id=?", new String[]{collapseId}, null, null, null)) {
-            Log.e(TAG, "cursor: " + cursor.toString());
-            if (cursor.moveToNext()) {
-                int androidNotId = cursor.getInt(cursor.getColumnIndex("android_notification_id"));
-                OneSignal.cancelNotification(androidNotId);
-                Log.d(TAG, "Canceling notification with id: " + androidNotId);
-            } else {
-                Log.e(TAG, "Failed to cancelNotificationByOneSignalId,cursor has 0 items.");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to cancelNotificationByOneSignalId", e);
-        }
     }
 
     void onDestroy() {

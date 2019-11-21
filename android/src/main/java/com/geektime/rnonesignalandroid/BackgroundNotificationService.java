@@ -9,6 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.common.util.Strings;
 import com.onesignal.OSNotificationReceivedResult;
 
 import org.json.JSONArray;
@@ -52,12 +53,9 @@ class BackgroundNotificationService {
         void onCompleted(Object... data);
     }
 
-
     void updateForPayload(OSNotificationReceivedResult receivedResult) {
-
         queryMailState((state) -> {
             if (state != null && state[0] != null) {
-                Log.e(TAG, "old state: " + state[0]);
                 String oldState = (String) state[0];
                 if (isAnyNullOrEmpty(oldState)) {
                     Log.e(TAG, "oldState is not available: " + oldState);
@@ -77,19 +75,14 @@ class BackgroundNotificationService {
                         return;
                     }
                     String threadId;
-                    try {
-                        JSONObject jsonAdditionalData = receivedResult.payload.additionalData;
-                        if (jsonAdditionalData == null) {
-                            Log.e(TAG, "Failed jsonAdditionalData is null");
-                            return;
-                        }
-                        threadId = jsonAdditionalData.has("threadId") ? jsonAdditionalData.getString("threadId") : null;
-                        if (threadId == null) {
-                            Log.e(TAG, "Failed threadId is null");
-                            return;
-                        }
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Failed to get threadId data: ", e);
+                    JSONObject jsonAdditionalData = receivedResult.payload.additionalData;
+                    if (jsonAdditionalData == null) {
+                        Log.e(TAG, "Failed jsonAdditionalData is null");
+                        return;
+                    }
+                    threadId = jsonAdditionalData.optString("threadId");
+                    if (Strings.isEmptyOrWhitespace(threadId)) {
+                        Log.e(TAG, "Failed threadId is null");
                         return;
                     }
                     JSONObject updatedStateJson = updateStateAndJSONify(oldState, metadataByAddressJson);
@@ -104,13 +97,12 @@ class BackgroundNotificationService {
                         assert updatedStateJson != null;
                         persistStateJSON(updatedStateJson.toString());
                         db.setTransactionSuccessful();
-                        queryMailState((newState) -> Log.e(TAG, "newState: " + updatedStateJson));
+                        Log.d(TAG, "updateForPayload: success.");
                     } catch (Exception e) {
-                        //Error in between database transaction
+                        Log.e(TAG, "updateForPayload: Error in between database transaction", e);
                     } finally {
                         db.endTransaction();
                     }
-
                 });
             } else {
                 Log.e(TAG, "MailState query failed. Aborting.");
@@ -121,7 +113,7 @@ class BackgroundNotificationService {
 
     private void persistStateJSON(String updatedStateJSON) {
         ContentValues initialValues = new ContentValues();
-        initialValues.put("fmt", MAIL_STATE_FORMAT); // the execution is different if _id is 2
+        initialValues.put("fmt", MAIL_STATE_FORMAT);
         initialValues.put("value", updatedStateJSON);
 
         int id = (int) db.insertWithOnConflict("mailstate", null, initialValues, SQLiteDatabase.CONFLICT_REPLACE);
@@ -135,7 +127,7 @@ class BackgroundNotificationService {
 
     private void persistThreadWithId(String threadId, String threadJson) {
         ContentValues initialValues = new ContentValues();
-        initialValues.put("threadId", threadId); // the execution is different if _id is 2
+        initialValues.put("threadId", threadId);
         initialValues.put("value", threadJson);
 
         int id = (int) db.insertWithOnConflict("thread", null, initialValues, SQLiteDatabase.CONFLICT_REPLACE);
@@ -152,14 +144,19 @@ class BackgroundNotificationService {
         try {
 
             JSONObject stateJson = new JSONObject(existingState);
-            JSONObject boxes = stateJson.has("boxes") ? stateJson.getJSONObject("boxes") : null;
+            JSONObject boxes = stateJson.optJSONObject("boxes");
             if (isAnyNullOrEmpty(boxes)) {
                 Log.e(TAG, "boxes is missing");
                 return null;
             }
 
             // State memberships.
-            JSONObject memberships = stateJson.has("memberships") ? stateJson.getJSONObject("memberships") : null;
+            JSONObject memberships = stateJson.optJSONObject("memberships");
+
+            if (memberships == null) {
+                Log.e(TAG, "updateStateAndJSONify: memberships is null");
+                return null;
+            }
 
             while (keys.hasNext()) {
                 String email = keys.next();
@@ -167,13 +164,17 @@ class BackgroundNotificationService {
                     Log.e(TAG, "email key is empty?? can't happen.");
                     return null;
                 }
-                JSONObject metaData = metadataByAddress.has(email) ? metadataByAddress.getJSONObject(email) : null;
-                JSONObject access = metaData.has("access") ? metaData.getJSONObject("access") : null;
+                JSONObject metaData = metadataByAddress.optJSONObject(email);
+                if (metaData == null) {
+                    Log.e(TAG, "updateStateAndJSONify: metaData is null");
+                    return null;
+                }
+                JSONObject access = metaData.optJSONObject("access");
                 if (isAnyNullOrEmpty(access)) {
                     Log.e(TAG, "Updating state: No access for email: " + email);
                     return null;
                 }
-                JSONObject box = boxes.has(email) ? boxes.getJSONObject(email) : null;
+                JSONObject box = boxes.optJSONObject(email);
                 if (isAnyNullOrEmpty(box)) {
                     Log.e(TAG, "Updating state: No box for email: " + email);
                     return null;
@@ -185,45 +186,32 @@ class BackgroundNotificationService {
                 box.put("status", "live");
                 boxes.put(email, box);
 
-                /*
-                State example:
-                {
-                    "memberships" : {
-                        ...,
-                        "some.name@gmail.com/INBOX" : {
-                            "forward" : {
-                                "id": "16e6289bcd4a4245",
-                                "snippet" : "Coupon blah blah",
-                                "historyId" : 5157242
-                            },
-                            ...
-                        }
-                    }
-                }
-                */
-
                 if (metaData.has("memberships")) {
                     // Server data memberships.
-                    JSONArray inboxMemberships = metaData.has("memberships") ? metaData.getJSONArray("memberships") : null;
+                    JSONArray inboxMemberships = metaData.getJSONArray("memberships");
 
-                    // E.g. some.name@gmail.com/INBOX.
-                    String recipientInboxKey = email + "/INBOX";
-                    // Get individual email membership object.
-                    JSONObject membership = memberships.has(recipientInboxKey) ? memberships.getJSONObject(recipientInboxKey) : null;
-                    if (isAnyNullOrEmpty(membership)) {
-                        Log.e(TAG, "Updating state: No membership found for key: " + recipientInboxKey);
-                        return null;
+                    if (inboxMemberships != null && inboxMemberships.length() > 0) {
+                        // E.g. some.name@gmail.com/INBOX.
+                        String recipientInboxKey = email + "/INBOX";
+                        // Get individual email membership object.
+                        JSONObject membership = memberships.has(recipientInboxKey) ? memberships.getJSONObject(recipientInboxKey) : null;
+                        if (isAnyNullOrEmpty(membership)) {
+                            Log.e(TAG, "Updating state: No membership found for key: " + recipientInboxKey);
+                            return null;
+                        }
+                        // Put server data memberships into
+                        membership.put("forward", inboxMemberships);
+                        memberships.put(recipientInboxKey, membership);
+                    } else {
+                        Log.e(TAG, "updateStateAndJSONify: inboxMemberships is nullPty" + inboxMemberships);
                     }
-                    // Put server data memberships into
-                    membership.put("forward", inboxMemberships);
-                    memberships.put(recipientInboxKey, membership);
                 }
             }
             stateJson.put("boxes", boxes);
             stateJson.put("memberships", memberships);
             return stateJson;
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "updateStateAndJSONify: ", e);
         }
         return null;
     }
@@ -318,7 +306,6 @@ class BackgroundNotificationService {
             connection.setRequestProperty("authtoken", authToken);
             connection.setRequestProperty("content-type", "application/json");
             connection.setRequestProperty("Accept", "application/json");
-            connection.getRequestMethod();
 
             try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
                 outputStream.writeBytes(requestBody.toString());
@@ -332,17 +319,17 @@ class BackgroundNotificationService {
                 completionHandler.onCompleted(null);
                 return;
             }
-            String responseString = null;
+            String responseString;
             try (InputStream inputStream = connection.getInputStream()) {
                 responseString = getInputData(inputStream);
             }
 
-            if (responseString == null || responseString.length() == 0) {
+            if (Strings.isEmptyOrWhitespace(responseString)) {
                 Log.e(TAG, "responseString is missing: " + responseString);
                 completionHandler.onCompleted(null);
                 return;
             }
-            JSONObject responseJson = null;
+            JSONObject responseJson;
             try {
                 responseJson = new JSONObject(responseString);
                 JSONObject dataJson = responseJson.getJSONObject("data");
@@ -389,7 +376,6 @@ class BackgroundNotificationService {
                 connection.disconnect();
             }
         }
-
     }
 
     private boolean isAnyNullOrEmpty(Object... objects) {
@@ -430,7 +416,7 @@ class BackgroundNotificationService {
 
 
     /**
-     This is Twobird local database.
+     * This is Twobird local database.
      */
     public static class TwobirdDbHelper extends SQLiteOpenHelper {
         private static final String TAG = TwobirdDbHelper.class.getSimpleName();
@@ -443,14 +429,10 @@ class BackgroundNotificationService {
         }
 
         public void onCreate(SQLiteDatabase db) {
-//            db.execSQL(SQL_CREATE_ENTRIES);
             Log.d(TAG, "onCreate");
         }
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            // This database is only a cache for online data, so its upgrade policy is
-            // to simply to discard the data and start over
-            // Don't need this for now.
             throw new RuntimeException("Not implemented");
         }
 
