@@ -43,11 +43,9 @@ class NotificationService {
         if (instance == null) {
             instance = new NotificationService();
             TwobirdDbHelper twobirdDbHelper = new TwobirdDbHelper(context);
-            if (db != null && !db.isOpen()) {
-                db.close();
-                db = null;
+            if (db == null || !db.isOpen()) {
+                db = twobirdDbHelper.getReadableDatabase();
             }
-            db = twobirdDbHelper.getReadableDatabase();
         }
         return instance;
     }
@@ -432,10 +430,17 @@ class NotificationService {
     }
 
     void onDestroy() {
-        db.close();
+        if (db != null) {
+            db.close();
+            db = null;
+        }
         instance = null;
     }
 
+
+    /**
+     This is Twobird local database.
+     */
     public static class TwobirdDbHelper extends SQLiteOpenHelper {
         private static final String TAG = TwobirdDbHelper.class.getSimpleName();
         // If you change the database schema, you must increment the database version.

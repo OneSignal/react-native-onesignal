@@ -1,13 +1,10 @@
 package com.geektime.rnonesignalandroid;
 
-import android.app.NotificationManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
-import android.os.Bundle;
-import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 import com.onesignal.NotificationExtenderService;
@@ -19,7 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,8 +24,20 @@ import java.util.List;
 public class NotificationNotDisplayingExtender extends NotificationExtenderService {
 
     private static final String TAG = NotificationNotDisplayingExtender.class.getSimpleName();
-
+    private static SQLiteDatabase _db;
     public static final String CANCELS_NOTIFICATION = "cancelsNotification";
+
+    private SQLiteDatabase getDataBase() {
+        if (_db == null) {
+            OneSignalDbHelper oneSignalDbHelper = new OneSignalDbHelper(getApplicationContext());
+            if (_db != null && !_db.isOpen()) {
+                _db.close();
+                _db = null;
+            }
+            _db = oneSignalDbHelper.getReadableDatabase();
+        }
+        return _db;
+    }
 
     @Override
     protected boolean onNotificationProcessing(OSNotificationReceivedResult receivedResult) {
@@ -84,92 +92,89 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        android.os.Debug.waitForDebugger();
 
-        printSqliteTable();
 
         if (messageIds.size() > 0) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-
-                StatusBarNotification[] activeNotifications = notificationManager.getActiveNotifications();
-                for (StatusBarNotification not : activeNotifications) {
-                    Bundle bundle = not.getNotification().extras;
-                    HashMap<String, Object> map = new HashMap<>();
-                    if (bundle != null) {
-                        for (String key : bundle.keySet()) {
-                            map.put(key, bundle.get(key));
-                            Log.e(getClass().getSimpleName(), "notExtra1: " + key + " : " + (bundle.get(key) != null ? bundle.get(key) : "NULL"));
-                        }
-                    }
-
-                    for (String messageId : messageIds) {
-                        // TODO fix this, find any match to cancel the right notification
-                        if (not.getKey().equalsIgnoreCase(messageId)) {
-                            Log.d(getClass().getSimpleName(), "Canceling notification: " + not.getId());
-                            OneSignal.cancelNotification(not.getId());
-                        }
+                for (String messageId : messageIds) {
+                    try {
+                        String recipient = receivedResult.payload.additionalData.getString("recipient");
+                        String collapseId = recipient + "-" + messageId;
+                        cancelNotificationByOneSignalId(collapseId);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Failed to cancel notification, no recipient in additionalData paylaod.");
+                        return;
                     }
                 }
+//                StatusBarNotification[] activeNotifications = notificationManager.getActiveNotifications();
+
+
+//                for (StatusBarNotification not : activeNotifications) {
+//                    Bundle bundle = not.getNotification().extras;
+//                    HashMap<String, Object> map = new HashMap<>();
+//                    if (bundle != null) {
+//                        for (String key : bundle.keySet()) {
+//                            map.put(key, bundle.get(key));
+//                            Log.e(getClass().getSimpleName(), "notExtra1: " + key + " : " + (bundle.get(key) != null ? bundle.get(key) : "NULL"));
+//                        }
+//                    }
+//
+//                }
             } else {
                 Log.e(getClass().getSimpleName(), "Cannot cancel notifications on api < 23");
             }
         }
     }
 
-    private void printSqliteTable() {
+    class OneSignalDbHelper extends SQLiteOpenHelper {
+        private final String TAG = NotificationService.TwobirdDbHelper.class.getSimpleName();
+        // If you change the database schema, you must increment the database version.
+        static final int DATABASE_VERSION = 1;
+        static final String DATABASE_NAME = "OneSignal.db";
 
-        class TestDbHelper extends SQLiteOpenHelper {
-            private final String TAG = NotificationService.TwobirdDbHelper.class.getSimpleName();
-            // If you change the database schema, you must increment the database version.
-            static final int DATABASE_VERSION = 1;
-            static final String DATABASE_NAME = "OneSignal.db";
-
-            TestDbHelper(Context context) {
-                super(context, DATABASE_NAME, null, DATABASE_VERSION);
-            }
-
-            public void onCreate(SQLiteDatabase db) {
-//            db.execSQL(SQL_CREATE_ENTRIES);
-                Log.d(TAG, "onCreate");
-            }
-
-            public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-                // This database is only a cache for online data, so its upgrade policy is
-                // to simply to discard the data and start over
-                // Don't need this for now.
-                throw new RuntimeException("Not implemented");
-            }
-
-            public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-                onUpgrade(db, oldVersion, newVersion);
-            }
-
-        }
-        TestDbHelper testDbHelper = new TestDbHelper(getApplicationContext());
-        SQLiteDatabase db = testDbHelper.getReadableDatabase();
-
-        Log.d(TAG, "getTableAsString called");
-        Cursor allRows = db.rawQuery("SELECT * FROM " + "notification", null);
-        if (allRows.moveToFirst()) {
-            String[] columnNames = allRows.getColumnNames();
-            do {
-                String line = "";
-                for (String name : columnNames) {
-                    line += String.format("%s: %s\n", name,
-                            allRows.getString(allRows.getColumnIndex(name)));
-                }
-                Log.e(TAG, "Table notification: " + line);
-
-            } while (allRows.moveToNext());
+        OneSignalDbHelper(Context context) {
+            super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
 
+        public void onCreate(SQLiteDatabase db) {
+            Log.d(TAG, "onCreate");
+        }
 
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            // This database is only a cache for online data, so its upgrade policy is
+            // to simply to discard the data and start over
+            // Don't need this for now.
+        }
+
+        public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+        }
     }
 
+    private void cancelNotificationByOneSignalId(String collapseId) {
+        try (Cursor cursor = getDataBase().query("notification", new String[]{"android_notification_id"}, "collapse_id=?", new String[]{collapseId}, null, null, null)) {
+            Log.e(TAG, "cursor: " + cursor.toString());
+            if (cursor.moveToNext()) {
+                int androidNotId = cursor.getInt(cursor.getColumnIndex("android_notification_id"));
+                OneSignal.cancelNotification(androidNotId);
+                Log.d(TAG, "Canceling notification with id: " + androidNotId);
+            } else {
+                Log.e(TAG, "Failed to cancelNotificationByOneSignalId,cursor has 0 items.");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to cancelNotificationByOneSignalId", e);
+        }
+
+    }
 
     @Override
     public void onDestroy() {
         NotificationService.getInstance(getApplicationContext()).onDestroy();
+        if (_db != null) {
+            _db.close();
+            _db = null;
+        }
         super.onDestroy();
     }
 }
