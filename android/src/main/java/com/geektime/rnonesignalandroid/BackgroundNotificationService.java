@@ -25,23 +25,21 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 
-class NotificationService {
-    private static final String TAG = NotificationService.class.getSimpleName();
+class BackgroundNotificationService {
+    private static final String TAG = BackgroundNotificationService.class.getSimpleName();
     private static SQLiteDatabase db;
     private static final String MAIL_STATE_FORMAT = "May-22-2019";
     private static final String MAIL_STATE_TABLE_NAME = "mailstate";
     private static final String MAIL_STATE_VALUE = "value";
 
-
-    // TODO fix this, clean all code and test it.
-    private NotificationService() {
+    private BackgroundNotificationService() {
     }
 
-    private static NotificationService instance;
+    private static BackgroundNotificationService instance;
 
-    static NotificationService getInstance(Context context) {
+    static BackgroundNotificationService getInstance(Context context) {
         if (instance == null) {
-            instance = new NotificationService();
+            instance = new BackgroundNotificationService();
             TwobirdDbHelper twobirdDbHelper = new TwobirdDbHelper(context);
             if (db == null || !db.isOpen()) {
                 db = twobirdDbHelper.getReadableDatabase();
@@ -54,15 +52,8 @@ class NotificationService {
         void onCompleted(Object... data);
     }
 
-    private void waitForDebugger() {
-        Log.e(this.getClass().getSimpleName(), "updateForPayload: waiting for debugger.");
-//        android.os.Debug.waitForDebugger();
-        Log.e(this.getClass().getSimpleName(), "updateForPayload: debugger ready, moving on.");
-    }
 
     void updateForPayload(OSNotificationReceivedResult receivedResult) {
-
-        waitForDebugger();
 
         queryMailState((state) -> {
             if (state != null && state[0] != null) {
