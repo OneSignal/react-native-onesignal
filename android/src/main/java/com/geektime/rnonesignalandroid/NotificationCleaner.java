@@ -1,5 +1,6 @@
 package com.geektime.rnonesignalandroid;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -20,8 +21,9 @@ class NotificationCleaner {
 
     private static final String TAG = NotificationCleaner.class.getSimpleName();
 
-    private static SQLiteDatabase db;
+    private static SQLiteDatabase database;
     private static NotificationCleaner instance;
+    private static OneSignalDbHelper oneSignalDbHelper;
 
     private NotificationCleaner() {
     }
@@ -29,15 +31,20 @@ class NotificationCleaner {
     static NotificationCleaner getInstance(Context context) {
         if (instance == null) {
             instance = new NotificationCleaner();
-            OneSignalDbHelper oneSignalDbHelper = new OneSignalDbHelper(context);
-            if (db == null || !db.isOpen()) {
-                db = oneSignalDbHelper.getReadableDatabase();
-            }
         }
+
+        if (oneSignalDbHelper == null) oneSignalDbHelper = new OneSignalDbHelper(context);
         return instance;
     }
 
-    void cleanNotificationIfNeeded(OSNotificationReceivedResult receivedResult) {
+    private SQLiteDatabase getDb() {
+        if (database == null || !database.isOpen()) {
+            database = oneSignalDbHelper.getReadableDatabase();
+        }
+        return database;
+    }
+
+    void cleanNotificationIfNeeded(Context context, OSNotificationReceivedResult receivedResult) {
         List<String> messageIds = new ArrayList<>();
         try {
             if (!receivedResult.payload.additionalData.optBoolean(NotificationNotDisplayingExtender.CANCELS_NOTIFICATION)) {
@@ -76,19 +83,23 @@ class NotificationCleaner {
                     continue;
                 }
                 String collapseId = recipient + "-" + messageId;
-                cancelNotificationByOneCollapseId(collapseId);
+                cancelNotificationByOneCollapseId(context, collapseId);
             }
         } else {
             Log.e(TAG, "cleanNotificationIfNeeded: messageIds.size = 0");
         }
     }
 
-    private void cancelNotificationByOneCollapseId(String collapseId) {
-        try (Cursor cursor = db.query("notification", new String[]{"android_notification_id"}, "collapse_id=?",
+    private void cancelNotificationByOneCollapseId(Context context, String collapseId) {
+        try (Cursor cursor = getDb().query("notification", new String[]{"android_notification_id"}, "collapse_id=?",
                 new String[]{collapseId}, null, null, null)) {
             if (cursor.moveToNext()) {
                 int androidNotId = cursor.getInt(cursor.getColumnIndex("android_notification_id"));
+                // This is still needed for OneSignal organization.
                 OneSignal.cancelNotification(androidNotId);
+                // Sometimes OneSignal will fail if it's not init, call this to make sure android clear notification.
+                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.cancel(androidNotId);
                 Log.d(TAG, "Canceling notification with id: " + androidNotId);
             } else {
                 Log.e(TAG, "Failed to cancelNotificationByOneSignalId,cursor has 0 items.");
@@ -122,9 +133,9 @@ class NotificationCleaner {
     }
 
     void onDestroy() {
-        if (db != null) {
-            db.close();
-            db = null;
+        if (database != null) {
+            database.close();
+            database = null;
         }
     }
 }
