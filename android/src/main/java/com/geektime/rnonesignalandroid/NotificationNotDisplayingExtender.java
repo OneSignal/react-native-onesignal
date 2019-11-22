@@ -24,7 +24,7 @@ public class NotificationNotDisplayingExtender extends NotificationExtenderServi
         if (!receivedResult.isAppInFocus && !isSilent) {
             BackgroundNotificationService.getInstance(getApplicationContext()).updateForPayload(receivedResult);
         }
-        NotificationCleaner.getInstance(getApplicationContext()).cleanNotificationIfNeeded(receivedResult);
+        NotificationCleaner.getInstance(getApplicationContext()).cleanNotificationIfNeeded(getApplicationContext(), receivedResult);
         return shouldHideNotification(receivedResult);
     }
 
