@@ -100,6 +100,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    private void sendEvent(String eventName, Object params) {
+      if(!mReactContext.hasActiveCatalystInstance()) {
+         return;
+      }
+      
       mReactContext
               .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
               .emit(eventName, params);
