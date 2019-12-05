@@ -472,7 +472,7 @@ export default class OneSignal {
      * Outcomes
      */
 
-    static sendOutcome(name, callback=()=>{}) {
+    static sendOutcome(name, callback=function(){}) {
         if (!checkIfInitialized()) return;
 
         if (Platform.OS === "ios") {
@@ -488,7 +488,7 @@ export default class OneSignal {
         RNOneSignal.sendOutcome(name, callback);
     }
 
-    static sendUniqueOutcome(name, callback=()=>{}) {
+    static sendUniqueOutcome(name, callback=function(){}) {
         if (!checkIfInitialized()) return;
 
         if (Platform.OS === "ios") {
@@ -504,7 +504,7 @@ export default class OneSignal {
         RNOneSignal.sendUniqueOutcome(name, callback);
     }
 
-    static sendOutcomeWithValue(name, value, callback=()=>{}) {
+    static sendOutcomeWithValue(name, value, callback=function(){}) {
         if (!checkIfInitialized()) return;
 
         if (Platform.OS === "ios") {
