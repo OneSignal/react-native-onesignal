@@ -1,32 +1,31 @@
 /**
- * Modified MIT License
- *
- * Copyright 2017 OneSignal
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * 1. The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * 2. All copies of substantial portions of the Software may only be used in connection
- * with services provided by OneSignal.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ Modified MIT License
+ 
+ Copyright 2017 OneSignal
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ 1. The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ 2. All copies of substantial portions of the Software may only be used in connection
+ with services provided by OneSignal.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
  */
 
-/***
- 
+/**
  ### Setting up the SDK ###
  Follow the documentation from https://documentation.onesignal.com/docs/ios-sdk-setupto setup OneSignal in your app.
  
@@ -40,8 +39,7 @@
  
  ### More ###
  iOS Push Cert: https://documentation.onesignal.com/docs/generating-an-ios-push-certificate
- 
-***/
+*/
 
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
@@ -68,27 +66,6 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
     OSNotificationDisplayTypeNotification
 };
 
-@interface OSInAppMessageAction : NSObject
-
-// The action name attached to the IAM action
-@property (strong, nonatomic, nullable) NSString *clickName;
-
-// The URL (if any) that should be opened when the action occurs
-@property (strong, nonatomic, nullable) NSURL *clickUrl;
-
-// Whether or not the click action is first click on the IAM
-@property (nonatomic) BOOL firstClick;
-
-// Whether or not the click action dismisses the message
-@property (nonatomic) BOOL closesMessage;
-
-@end
-
-@protocol OSInAppMessageDelegate <NSObject>
-@optional
-- (void)handleMessageAction:(OSInAppMessageAction * _Nonnull)action NS_SWIFT_NAME(handleMessageAction(action:));
-@end
-
 @interface OSNotificationAction : NSObject
 
 /* The type of the notification action */
@@ -99,9 +76,7 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 
 @end
 
-
-// #### Notification Payload Received Object
-
+/* Notification Payload Received Object */
 @interface OSNotificationPayload : NSObject
 
 /* Unique Message Identifier */
@@ -174,7 +149,7 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 
 @end
 
-// ## OneSignal OSNotification
+/* OneSignal OSNotification */
 @interface OSNotification : NSObject
 
 /* Notification Payload */
@@ -204,7 +179,6 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 
 @end
 
-
 @interface OSNotificationOpenedResult : NSObject
 
 @property(readonly)OSNotification* notification;
@@ -214,6 +188,57 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 - (NSString*)stringify;
 
 @end;
+
+@interface OSInAppMessageAction : NSObject
+
+/* The action name attached to the IAM action */
+@property (strong, nonatomic, nullable) NSString *clickName;
+
+/* The URL (if any) that should be opened when the action occurs */
+@property (strong, nonatomic, nullable) NSURL *clickUrl;
+
+/* Whether or not the click action is first click on the IAM */
+@property (nonatomic) BOOL firstClick;
+
+/* Whether or not the click action dismisses the message */
+@property (nonatomic) BOOL closesMessage;
+
+@end
+
+@protocol OSInAppMessageDelegate <NSObject>
+@optional
+- (void)handleMessageAction:(OSInAppMessageAction * _Nonnull)action NS_SWIFT_NAME(handleMessageAction(action:));
+@end
+
+/* OneSignal Session Types */
+typedef NS_ENUM(NSUInteger, Session) {
+    DIRECT,
+    INDIRECT,
+    UNATTRIBUTED,
+    DISABLED
+};
+
+@interface OSOutcomeEvent : NSObject
+
+// Session enum (DIRECT, INDIRECT, UNATTRIBUTED, or DISABLED) to determine code route and request params
+@property (nonatomic) Session session;
+
+// Notification ids for the current session
+@property (strong, nonatomic, nullable) NSArray *notificationIds;
+
+// Id or name of the event
+@property (strong, nonatomic, nonnull) NSString *name;
+
+// Time of the event occurring
+@property (strong, nonatomic, nonnull) NSNumber *timestamp;
+
+// A weight to attach to the outcome name
+@property (strong, nonatomic, nonnull) NSDecimalNumber *weight;
+
+// Convert the object into a NSDictionary
+- (NSDictionary * _Nonnull)jsonRepresentation;
+
+@end
 
 
 typedef NS_ENUM(NSInteger, OSNotificationPermission) {
@@ -308,6 +333,7 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 
 typedef void (^OSWebOpenURLResultBlock)(BOOL shouldOpen);
 
+/*Block for generic results on success and errors on failure*/
 typedef void (^OSResultSuccessBlock)(NSDictionary* result);
 typedef void (^OSFailureBlock)(NSError* error);
 
@@ -322,6 +348,10 @@ typedef void (^OSHandleNotificationActionBlock)(OSNotificationOpenedResult * res
 
 /*Block for handling user click on an in app message*/
 typedef void (^OSHandleInAppMessageActionClickBlock)(OSInAppMessageAction* action);
+
+/*Block for handling outcome event being sent successfully*/
+typedef void (^OSSendOutcomeSuccess)(OSOutcomeEvent* outcome);
+
 
 /*Dictionary of keys to pass alongside the init settings*/
     
@@ -350,8 +380,6 @@ extern NSString * const kOSSettingsKeyInFocusDisplayOption;
 */
 extern NSString * const kOSSettingsKeyProvidesAppNotificationSettings;
 
-
-
 // ======= OneSignal Class Interface =========
 @interface OneSignal : NSObject
 
@@ -362,10 +390,10 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 };
 
 
-/**
+/*
  Initialize OneSignal.
  Sends push token to OneSignal so you can later send notifications.
-*/
+ */
 
 // - Initialization
 + (id)initWithLaunchOptions:(NSDictionary*)launchOptions appId:(NSString*)appId;
@@ -396,7 +424,7 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 
 // - Logging
 + (void)setLogLevel:(ONE_S_LOG_LEVEL)logLevel visualLevel:(ONE_S_LOG_LEVEL)visualLogLevel;
-+ (void) onesignal_Log:(ONE_S_LOG_LEVEL)logLevel message:(NSString*)message;
++ (void)onesignal_Log:(ONE_S_LOG_LEVEL)logLevel message:(NSString*)message;
 
 // - Tagging
 + (void)sendTag:(NSString*)key value:(NSString*)value onSuccess:(OSResultSuccessBlock)successBlock onFailure:(OSFailureBlock)failureBlock;
@@ -466,20 +494,23 @@ typedef void (^OSEmailSuccessBlock)();
 // Email Auth Token is a (recommended) optional parameter that should *NOT* be generated on the client.
 // For security purposes, the emailAuthToken should be generated by your backend server.
 // If you do not have a backend server for your application, use the version of thge setEmail: method without an emailAuthToken parameter.
++ (void)setEmail:(NSString * _Nonnull)email withEmailAuthHashToken:(NSString * _Nullable)hashToken;
 + (void)setEmail:(NSString * _Nonnull)email withEmailAuthHashToken:(NSString * _Nullable)hashToken withSuccess:(OSEmailSuccessBlock _Nullable)successBlock withFailure:(OSEmailFailureBlock _Nullable)failureBlock;
 
 // Sets email without an authentication token
++ (void)setEmail:(NSString * _Nonnull)email;
 + (void)setEmail:(NSString * _Nonnull)email withSuccess:(OSEmailSuccessBlock _Nullable)successBlock withFailure:(OSEmailFailureBlock _Nullable)failureBlock;
 
 // Logs the device out of the current email.
++ (void)logoutEmail;
 + (void)logoutEmailWithSuccess:(OSEmailSuccessBlock _Nullable)successBlock withFailure:(OSEmailFailureBlock _Nullable)failureBlock;
 
-//convenience - no completion blocks
-+ (void)logoutEmail;
-+ (void)setEmail:(NSString * _Nonnull)email;
-+ (void)setEmail:(NSString * _Nonnull)email withEmailAuthHashToken:(NSString * _Nullable)hashToken;
 
-// In App Messaging Trigger methods
+// External user id
++ (void)setExternalUserId:(NSString * _Nonnull)externalId;
++ (void)removeExternalUserId;
+
+// In-App Messaging triggers
 + (void)addTrigger:(NSString * _Nonnull)key withValue:(id _Nonnull)value;
 + (void)addTriggers:(NSDictionary<NSString *, id> * _Nonnull)triggers;
 + (void)removeTriggerForKey:(NSString * _Nonnull)key;
@@ -487,9 +518,13 @@ typedef void (^OSEmailSuccessBlock)();
 + (NSDictionary<NSString *, id> * _Nonnull)getTriggers;
 + (id _Nullable)getTriggerValueForKey:(NSString * _Nonnull)key;
 
-+ (void)setExternalUserId:(NSString * _Nonnull)externalId;
-+ (void)removeExternalUserId;
-
+// Outcome Events
++ (void)sendOutcome:(NSString * _Nonnull)name;
++ (void)sendOutcome:(NSString * _Nonnull)name onSuccess:(OSSendOutcomeSuccess _Nullable)success;
++ (void)sendUniqueOutcome:(NSString * _Nonnull)name;
++ (void)sendUniqueOutcome:(NSString * _Nonnull)name onSuccess:(OSSendOutcomeSuccess _Nullable)success;
++ (void)sendOutcomeWithValue:(NSString * _Nonnull)name value:(NSNumber * _Nonnull)value;
++ (void)sendOutcomeWithValue:(NSString * _Nonnull)name value:(NSNumber * _Nonnull)value onSuccess:(OSSendOutcomeSuccess _Nullable)success;
 @end
 
 #pragma clang diagnostic pop
