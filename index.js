@@ -1,7 +1,7 @@
 
 'use strict';
 
-import { NativeModules, NativeEventEmitter, NetInfo, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import invariant from 'invariant';
 
 const RNOneSignal = NativeModules.OneSignal;

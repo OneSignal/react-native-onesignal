@@ -10,13 +10,13 @@
 [OneSignal](https://onesignal.com/) is a free push notification service for mobile apps. This SDK makes it easy to integrate your native React-Native iOS and/or Android apps with OneSignal.
 
 #### Installation
-See the [Setup Guide](https://documentation.onesignal.com/v5.0/docs/react-native-sdk-setup) for setup instructions.
+See the [Setup Guide](https://documentation.onesignal.com/docs/react-native-sdk-setup) for setup instructions.
 
 #### Change Log
-See this repository's [release tags](https://github.com/geektimecoil/react-native-onesignal/releases) for a complete change log of every released version.
+See this repository's [release tags](https://github.com/OneSignal/react-native-onesignal/releases) for a complete change log of every released version.
 
 #### Support
-Please visit this repository's [Github issue tracker](https://github.com/geektimecoil/react-native-onesignal/issues) for feature requests and bug reports related specifically to the SDK.
+Please visit this repository's [Github issue tracker](https://github.com/OneSignal/react-native-onesignal/issues) for feature requests and bug reports related specifically to the SDK.
 For account issues and support please contact OneSignal support from the [OneSignal.com](https://onesignal.com) dashboard.
 
 #### Demo Project
