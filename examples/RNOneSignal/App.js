@@ -111,6 +111,9 @@ export default class App extends Component {
 
   oneSignalInAppMessagingExamples() {
     // Add a single trigger with a value associated with it
+    OneSignal.addTrigger('trigger1', 'one');
+
+    // Get trigger value for the key
     OneSignal.getTriggerValueForKey('trigger1')
       .then(response => {
         console.log('trigger1 value: ' + response);
