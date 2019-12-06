@@ -49,12 +49,14 @@ export default class App extends Component {
       kOSSettingsKeyAutoPrompt: true,
     });
 
-    // Examples for using native IAM public methods
-    this.oneSignalInAppMessagingExamples();
-    // Examples for using native Outcome Event public methods
-    this.oneSignalOutcomeEventsExamples();
-
     OneSignal.setLogLevel(6, 0);
+    
+    // Examples for using native IAM public methods
+    // this.oneSignalInAppMessagingExamples();
+    
+    // Examples for using native Outcome Event public methods
+    // this.oneSignalOutcomeEventsExamples();
+
   }
 
   async componentDidMount() {
@@ -370,6 +372,36 @@ export default class App extends Component {
                 OneSignal.addTrigger('trigger1', '1');
               }}
               title="Add Trigger"
+              color={this.state.buttonColor}
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              style={styles.button}
+              onPress={() => {
+                OneSignal.sendOutcome('sendOutcome-ro');
+              }}
+              title="Send Outcome"
+              color={this.state.buttonColor}
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              style={styles.button}
+              onPress={() => {
+                OneSignal.sendOutcome('sendUniqueOutcome-ro');
+              }}
+              title="Send Unique Outcome"
+              color={this.state.buttonColor}
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              style={styles.button}
+              onPress={() => {
+                OneSignal.sendOutcomeWithValue('sendOutcomeWithValue-ro', 18.76);
+              }}
+              title="Send Outcome With Value"
               color={this.state.buttonColor}
             />
           </View>
