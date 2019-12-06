@@ -377,8 +377,8 @@ RCT_EXPORT_METHOD(removeTriggerForKey:(NSString *)key) {
     [OneSignal removeTriggerForKey:key];
 }
 
-RCT_REMAP_METHOD(getTriggerValueForKey, 
-                key:(NSString *)key 
+RCT_REMAP_METHOD(getTriggerValueForKey,
+                key:(NSString *)key
                 getTriggerValueForKeyResolver:(RCTPromiseResolveBlock)resolve
                 rejecter:(RCTPromiseRejectBlock)reject) {
 
@@ -404,7 +404,7 @@ RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
          @"clickUrl" : action.clickUrl.absoluteString ?: [NSNull null],
          @"firstClick" : @(action.firstClick),
          @"closesMessage" : @(action.closesMessage)
-        }; 
+        };
         [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:result];
     }];
 }
@@ -412,34 +412,22 @@ RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
 /*
  * Outcomes
  */
-RCT_EXPORT_METHOD(sendOutcome:(NSString *)name withCallback:(RCTResponseSenderBlock)callback) {
-    [OneSignal onesignal_Log:ONE_S_LL_ERROR message:@"Not implemented for iOS"];
-
-    //  [OneSignal sendUniqueOutcome:name onSuccess:^(NSDictionary *result) {
-    //      callback(@[result]);
-    //  } onFailure:^(NSError *error){
-    //      callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    //  }];
+RCT_EXPORT_METHOD(sendOutcome:(NSString *)name :(RCTResponseSenderBlock)callback) {
+    [OneSignal sendOutcome:name onSuccess:^(OSOutcomeEvent *outcome){
+        callback(@[[outcome jsonRepresentation]]);
+    }];
 }
 
-RCT_EXPORT_METHOD(sendUniqueOutcome:(NSString *)name withCallback:(RCTResponseSenderBlock)callback) {
-    [OneSignal onesignal_Log:ONE_S_LL_ERROR message:@"Not implemented for iOS"];
-
-    //  [OneSignal sendUniqueOutcome:name onSuccess:^(NSDictionary *result) {
-    //      callback(@[result]);
-    //  } onFailure:^(NSError *error){
-    //      callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    //  }];
+RCT_EXPORT_METHOD(sendUniqueOutcome:(NSString *)name :(RCTResponseSenderBlock)callback) {
+    [OneSignal sendUniqueOutcome:name onSuccess:^(OSOutcomeEvent *outcome){
+        callback(@[[outcome jsonRepresentation]]);
+    }];
 }
 
-RCT_EXPORT_METHOD(sendOutcomeWithValue:(NSString *)name withValue:(float)value withCallback:(RCTResponseSenderBlock)callback) {
-    [OneSignal onesignal_Log:ONE_S_LL_ERROR message:@"Not implemented for iOS"];
-
-    //  [OneSignal sendOutcomeWithValue:name  onSuccess:^(NSDictionary *result) {
-    //      callback(@[result]);
-    //  } onFailure:^(NSError *error){
-    //      callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    //  }];
+RCT_EXPORT_METHOD(sendOutcomeWithValue:(NSString *)name :(NSNumber * _Nonnull)value :(RCTResponseSenderBlock)callback) {
+    [OneSignal sendOutcomeWithValue:name value:value onSuccess:^(OSOutcomeEvent *outcome){
+        callback(@[[outcome jsonRepresentation]]);
+    }];
 }
 
 @end
