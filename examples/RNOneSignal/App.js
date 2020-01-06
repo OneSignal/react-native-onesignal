@@ -31,6 +31,7 @@ export default class App extends Component {
     let requiresConsent = false;
 
     this.state = {
+      userId: '',
       emailEnabled: false,
       animatingEmailButton: false,
       initialOpenFromPush: 'Did NOT open from push',
@@ -55,7 +56,7 @@ export default class App extends Component {
     // this.oneSignalInAppMessagingExamples();
     
     // Examples for using native Outcome Event public methods
-    // this.oneSignalOutcomeEventsExamples();
+//    this.oneSignalOutcomeEventsExamples();
 
   }
 
@@ -185,6 +186,9 @@ export default class App extends Component {
 
   onIds(device) {
     console.log('Device info: ', device);
+    this.setState({
+        userId: device.userId
+    });
   }
 
   onInAppMessageClicked(actionResult) {
@@ -331,6 +335,21 @@ export default class App extends Component {
                 OneSignal.promptLocation();
               }}
               title="Prompt Location"
+              color={this.state.buttonColor}
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              style={styles.button}
+              onPress={() => {
+                var contents = {'en': 'You got notification from user'};
+                var data = {};
+                // Make sure to send an String Array of playerIds
+                var playerIds = [this.state.userId];
+                var other = {};
+                OneSignal.postNotification(contents, data, playerIds, other);
+              }}
+              title="Post Notification"
               color={this.state.buttonColor}
             />
           </View>

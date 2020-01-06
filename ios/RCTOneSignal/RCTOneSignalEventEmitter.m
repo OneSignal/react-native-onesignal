@@ -310,7 +310,7 @@ RCT_EXPORT_METHOD(promptLocation) {
 }
 
 // The post notification endpoint accepts four parameters.
-RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(id)player_ids other_parameters:(NSDictionary *)other_parameters) {
+RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSArray *)player_ids other_parameters:(NSDictionary *)other_parameters) {
     NSDictionary * additionalData = data ? @{@"p2p_notification": data} : @{};
 
     NSMutableDictionary * extendedData = [additionalData mutableCopy];
@@ -323,12 +323,9 @@ RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *
     notification[@"contents"] = contents;
     notification[@"data"] = extendedData;
 
-    if (player_ids && [player_ids isKindOfClass:[NSArray class]]) {
-        //array of player ids
-        notification[@"include_player_ids"] = (NSArray<NSString *> *)player_ids;
-    } else if (player_ids && [player_ids isKindOfClass:[NSString class]]) {
-        //individual player id
-        notification[@"include_player_ids"] = @[(NSString *)player_ids];
+    if (player_ids) {
+        // Array of player ids
+        notification[@"include_player_ids"] = player_ids;
     }
 
     if (other_parameters) {

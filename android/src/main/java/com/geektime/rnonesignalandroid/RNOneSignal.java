@@ -323,8 +323,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          postNotification.put("contents", new JSONObject(contents));
 
          if (playerId != null) {
-            JSONArray playerIds = new JSONArray();
-            playerIds.put(playerId);
+            JSONArray playerIds = new JSONArray(playerId);
             postNotification.put("include_player_ids", playerIds);
          }
 
