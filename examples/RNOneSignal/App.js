@@ -53,7 +53,7 @@ export default class App extends Component {
     OneSignal.setLogLevel(6, 0);
     
     // Examples for using native IAM public methods
-    // this.oneSignalInAppMessagingExamples();
+//    this.oneSignalInAppMessagingExamples();
     
     // Examples for using native Outcome Event public methods
 //    this.oneSignalOutcomeEventsExamples();
