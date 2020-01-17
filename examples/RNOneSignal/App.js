@@ -128,12 +128,21 @@ export default class App extends Component {
     // Create a set of triggers in a map and add them all at once
     var triggers = {
       trigger2: '2',
-      trigger3: '3',
+      trigger3: true,
     };
     OneSignal.addTriggers(triggers);
 
+    // Get trigger value for the key
+    OneSignal.getTriggerValueForKey('trigger3')
+          .then(response => {
+            console.log('trigger3 value: ' + response);
+          })
+          .catch(e => {
+            console.error(e);
+          });
+
     // Create an array of keys to remove triggers for
-    var removeTriggers = ['trigger2', 'trigger3'];
+    var removeTriggers = ['trigger1', 'trigger2'];
     OneSignal.removeTriggersForKeys(removeTriggers);
   }
 
