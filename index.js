@@ -351,7 +351,10 @@ export default class OneSignal {
     static postNotification(contents, data, player_id, otherParameters) {
         if (!checkIfInitialized()) return;
 
-        RNOneSignal.postNotification(contents, data, player_id, otherParameters);
+        if (Platform.OS === 'android')
+            RNOneSignal.postNotification(JSON.stringify(contents), JSON.stringify(data), JSON.stringify(player_id), JSON.stringify(otherParameters));
+        else
+            RNOneSignal.postNotification(contents, data, player_id, otherParameters);
     }
 
     static clearOneSignalNotifications() {
