@@ -129,6 +129,9 @@ export default class OneSignal {
     }
 
     static clearListeners() {
+        
+        console.warn("OneSignal: the `clearListeners` method has been deprecated. The listeners events are now cleared automatically.");
+        
         if (!checkIfInitialized()) return;
 
         for(var i = 0; i < _eventNames.length; i++) {
