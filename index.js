@@ -197,6 +197,45 @@ export default class OneSignal {
         } else {
             RNOneSignal.init(appId);
         }
+        OneSignal.addEventListener('received', this.events.onReceived)
+        OneSignal.addEventListener('opened', this.events.onOpened)
+        OneSignal.addEventListener('ids', this.events.onIds)
+        OneSignal.addEventListener('emailSubscription', this.events.onEmailRegistrationChange);
+        OneSignal.addEventListener('inAppMessageClicked', this.events.onInAppMessageClicked);
+    }
+
+    static events =  {
+
+        /**
+         * onReceived Hanlder
+         * @param notification Received Notification
+         */
+        onReceived(notification) { },
+
+        /**
+         * onOpened Handler.
+         * @param data Received Data
+         */
+        onOpened(data) { },
+
+        /**
+         * onOpened Handler.
+         * @param device device info
+         */
+        onIds(device) { },
+
+        /**
+         * onEmailRegistrationChange Handler.
+         * @param registration registration info
+         */
+        onEmailRegistrationChange(registration) { },
+
+        /**
+         * onInAppMessageClicked Handler.
+         * @param actionResult actionResult data
+         */
+        onInAppMessageClicked(actionResult) { },
+
     }
 
     static checkPermissions(callback) {
