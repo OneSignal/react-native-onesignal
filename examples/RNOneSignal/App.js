@@ -54,19 +54,16 @@ export default class App extends Component {
       this.onEmailRegistrationChange = this.onEmailRegistrationChange.bind(this);
       this.onInAppMessageClicked = this.onInAppMessageClicked.bind(this);
 
-      OneSignal.addEventListener('received', this.onReceived);
-      OneSignal.addEventListener('opened', this.onOpened);
-      OneSignal.addEventListener('ids', this.onIds);
-      OneSignal.addEventListener('emailSubscription', this.onEmailRegistrationChange);
-      OneSignal.addEventListener('inAppMessageClicked', this.onInAppMessageClicked);
+      OneSignal.events.onReceived = (notifcation) => this.onReceived(notifcation)
+      OneSignal.events.onOpened = (data) => this.onOpened(data)
+      OneSignal.events.onIds = (device) => this.onIds(device)
+      OneSignal.events.onReceived = (notifcation) => this.onReceived(notifcation)
+      OneSignal.events.onEmailRegistrationChange = (registration) => this.onReceived(registration)
+      OneSignal.events.onInAppMessageClicked = (actionResult) => this.onInAppMessageClicked(actionResult)
   }
 
   componentWillUnmount() {
-      OneSignal.removeEventListener('received', this.onReceived);
-      OneSignal.removeEventListener('opened', this.onOpened);
-      OneSignal.removeEventListener('ids', this.onIds);
-      OneSignal.removeEventListener('emailSubscription', this.onEmailRegistrationChange);
-      OneSignal.removeEventListener('inAppMessageClicked', this.onInAppMessageClicked);
+		OneSignal.clearListeners()
   }
 
   validateEmail(email) {
