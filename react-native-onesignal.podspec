@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.name           = "react-native-onesignal"
   s.version        = package_json["version"]
   s.summary        = package_json["description"]
-  s.homepage       = "https://github.com/geektimecoil/react-native-onesignal"
+  s.homepage       = "https://github.com/OneSignal/react-native-onesignal"
   s.license        = package_json["license"]
   s.author         = { package_json["author"] => package_json["author"] }
   s.platform       = :ios, "7.0"
@@ -22,5 +22,5 @@ Pod::Spec.new do |s|
   # pod 'React', :path => '../node_modules/react-native/'
 
   # The Native OneSignal-iOS-SDK from cocoapods.
-  s.dependency 'OneSignal', '2.11.0'
+  s.dependency 'OneSignal', '2.12.5'
 end

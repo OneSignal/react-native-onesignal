@@ -106,14 +106,17 @@ public class RNUtils {
                     writableMap.putBoolean(key, (Boolean) value);
                 } else if (value instanceof Integer) {
                     writableMap.putInt(key, (Integer) value);
-                } else if (value instanceof Double) {
-                    writableMap.putDouble(key, (Double) value);
+                } else if (value instanceof Double || value instanceof Long || value instanceof Float) {
+                    String str = String.valueOf(value);
+                    writableMap.putDouble(key, Double.parseDouble(str));
                 } else if (value instanceof String) {
-                    writableMap.putString(key, (String) value);
+                    writableMap.putString(key, value.toString());
                 } else if (value instanceof JSONObject) {
                     writableMap.putMap(key, jsonToWritableMap((JSONObject) value));
                 } else if (value instanceof JSONArray) {
                     writableMap.putArray(key, jsonArrayToWritableArray((JSONArray) value));
+                } else if (value.getClass().isEnum()) {
+                    writableMap.putString(key, value.toString());
                 }
             } catch (JSONException ex) {
                 // Do nothing and fail silently
@@ -138,20 +141,24 @@ public class RNUtils {
         for (int i = 0 ; i < jsonArray.length(); i++) {
             try {
                 Object value = jsonArray.get(i);
+
                 if (value == null) {
                     writableArray.pushNull();
                 } else if (value instanceof Boolean) {
                     writableArray.pushBoolean((Boolean) value);
                 } else if (value instanceof Integer) {
                     writableArray.pushInt((Integer) value);
-                } else if (value instanceof Double) {
-                    writableArray.pushDouble((Double) value);
+                } else if (value instanceof Double || value instanceof Long || value instanceof Float) {
+                    String str = String.valueOf(value);
+                    writableArray.pushDouble(Double.parseDouble(str));
                 } else if (value instanceof String) {
-                    writableArray.pushString((String) value);
+                    writableArray.pushString(value.toString());
                 } else if (value instanceof JSONObject) {
                     writableArray.pushMap(jsonToWritableMap((JSONObject) value));
                 } else if (value instanceof JSONArray) {
                     writableArray.pushArray(jsonArrayToWritableArray((JSONArray) value));
+                } else if (value.getClass().isEnum()) {
+                    writableArray.pushString(value.toString());
                 }
             } catch (JSONException e) {
                 // Do nothing and fail silently

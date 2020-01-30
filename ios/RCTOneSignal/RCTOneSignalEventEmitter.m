@@ -173,7 +173,7 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     }
 }
 
-RCT_EXPORT_METHOD(setEmail :(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(setEmail:(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
     // Auth hash token created on server and sent to client.
     [OneSignal setEmail:email withEmailAuthHashToken:authHash withSuccess:^{
         callback(@[]);
@@ -310,7 +310,7 @@ RCT_EXPORT_METHOD(promptLocation) {
 }
 
 // The post notification endpoint accepts four parameters.
-RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(id)player_ids other_parameters:(NSDictionary *)other_parameters) {
+RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSArray *)player_ids other_parameters:(NSDictionary *)other_parameters) {
     NSDictionary * additionalData = data ? @{@"p2p_notification": data} : @{};
 
     NSMutableDictionary * extendedData = [additionalData mutableCopy];
@@ -323,12 +323,9 @@ RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *
     notification[@"contents"] = contents;
     notification[@"data"] = extendedData;
 
-    if (player_ids && [player_ids isKindOfClass:[NSArray class]]) {
-        //array of player ids
-        notification[@"include_player_ids"] = (NSArray<NSString *> *)player_ids;
-    } else if (player_ids && [player_ids isKindOfClass:[NSString class]]) {
-        //individual player id
-        notification[@"include_player_ids"] = @[(NSString *)player_ids];
+    if (player_ids) {
+        // Array of player ids
+        notification[@"include_player_ids"] = player_ids;
     }
 
     if (other_parameters) {
@@ -358,6 +355,9 @@ RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
     //unimplemented in iOS
 }
 
+/*
+ * In-App Messaging
+ */
 RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
     //unimplemented in iOS
 }
@@ -374,8 +374,8 @@ RCT_EXPORT_METHOD(removeTriggerForKey:(NSString *)key) {
     [OneSignal removeTriggerForKey:key];
 }
 
-RCT_REMAP_METHOD(getTriggerValueForKey, 
-                key:(NSString *)key 
+RCT_REMAP_METHOD(getTriggerValueForKey,
+                key:(NSString *)key
                 getTriggerValueForKeyResolver:(RCTPromiseResolveBlock)resolve
                 rejecter:(RCTPromiseRejectBlock)reject) {
 
@@ -401,8 +401,29 @@ RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
          @"clickUrl" : action.clickUrl.absoluteString ?: [NSNull null],
          @"firstClick" : @(action.firstClick),
          @"closesMessage" : @(action.closesMessage)
-        }; 
+        };
         [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:result];
+    }];
+}
+
+/*
+ * Outcomes
+ */
+RCT_EXPORT_METHOD(sendOutcome:(NSString *)name :(RCTResponseSenderBlock)callback) {
+    [OneSignal sendOutcome:name onSuccess:^(OSOutcomeEvent *outcome){
+        callback(@[[outcome jsonRepresentation]]);
+    }];
+}
+
+RCT_EXPORT_METHOD(sendUniqueOutcome:(NSString *)name :(RCTResponseSenderBlock)callback) {
+    [OneSignal sendUniqueOutcome:name onSuccess:^(OSOutcomeEvent *outcome){
+        callback(@[[outcome jsonRepresentation]]);
+    }];
+}
+
+RCT_EXPORT_METHOD(sendOutcomeWithValue:(NSString *)name :(NSNumber * _Nonnull)value :(RCTResponseSenderBlock)callback) {
+    [OneSignal sendOutcomeWithValue:name value:value onSuccess:^(OSOutcomeEvent *outcome){
+        callback(@[[outcome jsonRepresentation]]);
     }];
 }
 

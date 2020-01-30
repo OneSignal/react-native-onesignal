@@ -1,7 +1,7 @@
 
 'use strict';
 
-import { NativeModules, NativeEventEmitter, NetInfo, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import invariant from 'invariant';
 
 const RNOneSignal = NativeModules.OneSignal;
@@ -275,11 +275,21 @@ export default class OneSignal {
     static sendTag(key, value) {
         if (!checkIfInitialized()) return;
 
+        if (typeof value === "boolean") {
+            value = value.toString();
+        }
+
         RNOneSignal.sendTag(key, value);
     }
 
     static sendTags(tags) {
         if (!checkIfInitialized()) return;
+
+        Object.keys(tags).forEach((key)=>{
+            if (typeof tags[key] === "boolean"){
+                tags[key] = tags[key].toString();
+            }
+        })
 
         RNOneSignal.sendTags(tags || {});
     }
@@ -380,11 +390,10 @@ export default class OneSignal {
     static postNotification(contents, data, player_id, otherParameters) {
         if (!checkIfInitialized()) return;
 
-        if (Platform.OS === 'android') {
-            RNOneSignal.postNotification(JSON.stringify(contents), JSON.stringify(data), player_id, JSON.stringify(otherParameters));
-        } else {
+        if (Platform.OS === 'android')
+            RNOneSignal.postNotification(JSON.stringify(contents), JSON.stringify(data), JSON.stringify(player_id), JSON.stringify(otherParameters));
+        else
             RNOneSignal.postNotification(contents, data, player_id, otherParameters);
-        }
     }
 
     static clearOneSignalNotifications() {
@@ -464,7 +473,7 @@ export default class OneSignal {
         RNOneSignal.addTriggers(trigger);
     }
 
-    
+
     // Expected format is Map<String, Object>, make sure all values are Objects and keys are Strings
     static addTriggers(triggers) {
         if (!checkIfInitialized()) return;
@@ -497,4 +506,40 @@ export default class OneSignal {
         RNOneSignal.pauseInAppMessages(pause);
     }
 
+    /**
+     * Outcomes
+     */
+
+    static sendOutcome(name, callback=function(){}) {
+        if (!checkIfInitialized()) return;
+
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        RNOneSignal.sendOutcome(name, callback);
+    }
+
+    static sendUniqueOutcome(name, callback=function(){}) {
+        if (!checkIfInitialized()) return;
+
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        RNOneSignal.sendUniqueOutcome(name, callback);
+    }
+
+    static sendOutcomeWithValue(name, value, callback=function(){}) {
+        if (!checkIfInitialized()) return;
+
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+
+        RNOneSignal.sendOutcomeWithValue(name, Number(value), callback);
+    }
 }

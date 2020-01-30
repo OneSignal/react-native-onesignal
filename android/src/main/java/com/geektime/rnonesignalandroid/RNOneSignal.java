@@ -1,6 +1,5 @@
 package com.geektime.rnonesignalandroid;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import android.content.Context;
@@ -18,6 +17,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.Promise;
 import com.onesignal.OSInAppMessageAction;
@@ -28,12 +28,14 @@ import com.onesignal.OSEmailSubscriptionState;
 import com.onesignal.OneSignal;
 import com.onesignal.OneSignal.EmailUpdateHandler;
 import com.onesignal.OneSignal.EmailUpdateError;
+import com.onesignal.OneSignal.OutcomeCallback;
 
 import com.onesignal.OneSignal.InAppMessageClickHandler;
 import com.onesignal.OneSignal.NotificationOpenedHandler;
 import com.onesignal.OneSignal.NotificationReceivedHandler;
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OSNotification;
+import com.onesignal.OutcomeEvent;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -321,8 +323,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          postNotification.put("contents", new JSONObject(contents));
 
          if (playerId != null) {
-            JSONArray playerIds = new JSONArray();
-            playerIds.put(playerId);
+            JSONArray playerIds = new JSONArray(playerId);
             postNotification.put("include_player_ids", playerIds);
          }
 
@@ -422,6 +423,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       this.sendEvent("OneSignal-remoteNotificationOpened", RNUtils.jsonToWritableMap(result.toJSONObject()));
    }
 
+   /**
+    * In-App Messaging
+    */
+
    @ReactMethod
    public void addTrigger(String key, Object object) {
       OneSignal.addTrigger(key, object);
@@ -469,6 +474,53 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       }
       this.sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
    }
+
+   /**
+    * Outcomes
+    */
+
+   @ReactMethod
+   public void sendOutcome(String name, final Callback callback) {
+      OneSignal.sendOutcome(name, new OutcomeCallback() {
+         @Override
+         public void onSuccess(OutcomeEvent outcomeEvent) {
+            if (outcomeEvent == null)
+               callback.invoke(new WritableNativeMap());
+            else
+               callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+         }
+      });
+   }
+
+   @ReactMethod
+   public void sendUniqueOutcome(String name, final Callback callback) {
+      OneSignal.sendUniqueOutcome(name, new OutcomeCallback() {
+         @Override
+         public void onSuccess(OutcomeEvent outcomeEvent) {
+            if (outcomeEvent == null)
+               callback.invoke(new WritableNativeMap());
+            else
+               callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+         }
+      });
+   }
+
+   @ReactMethod
+   public void sendOutcomeWithValue(String name, float value, final Callback callback) {
+      OneSignal.sendOutcomeWithValue(name, value, new OutcomeCallback() {
+         @Override
+         public void onSuccess(OutcomeEvent outcomeEvent) {
+            if (outcomeEvent == null)
+               callback.invoke(new WritableNativeMap());
+            else
+               callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+         }
+      });
+   }
+
+   /**
+    * Overrides
+    */
 
    @Override
    public String getName() {
