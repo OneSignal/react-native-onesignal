@@ -8,484 +8,529 @@
 
 import React, {Component} from 'react';
 import {
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  TextInput,
-  Image,
-  Button,
+    Platform,
+    StyleSheet,
+    Text,
+    View,
+    ScrollView,
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    TextInput,
+    Image,
+    Button,
 } from 'react-native';
 import OneSignal from 'react-native-onesignal';
 
-const imageUri =
-  'https://cdn-images-1.medium.com/max/300/1*7xHdCFeYfD8zrIivMiQcCQ.png';
+const imageUri = 'https://cdn-images-1.medium.com/max/300/1*7xHdCFeYfD8zrIivMiQcCQ.png';
+const buttonColor = Platform.OS == 'ios' ? '#ffffff' : '#d45653';
+const textInputBorderColor = Platform.OS == 'ios' ? '#ffffff' : '#d45653';
+const disabledColor = '#bebebe';
+
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+/**
+ Controls whether the app needs privacy consent or not
+ Will hide the button when false and show it when true
+ */
+var requiresPrivacyConsent = true;
 
 export default class App extends Component {
-  constructor(properties) {
-    super(properties);
 
-    let requiresConsent = false;
+    constructor(properties) {
+        super(properties);
 
-    this.state = {
-      userId: '',
-      emailEnabled: false,
-      animatingEmailButton: false,
-      initialOpenFromPush: 'Did NOT open from push',
-      activityWidth: 0,
-      width: 0,
-      activityMargin: 0,
-      buttonColor: Platform.OS == 'ios' ? '#ffffff' : '#d45653',
-      jsonDebugText: '',
-      privacyButtonTitle: 'Privacy Consent: Not Granted',
-      inAppIsPaused: true,
-      requirePrivacyConsent: requiresConsent,
-    };
+        this.state = {
+            // OneSignal states
+            appId: '77e32082-ea27-42e3-a898-c72e141824ef',
 
-    //OneSignal.setRequiresUserPrivacyConsent(requiresConsent);
-    OneSignal.init('ce8572ae-ff57-4e77-a265-5c91f00ecc4c', {
-      kOSSettingsKeyAutoPrompt: true,
-    });
+            // Privacy consent has not been granted yet, must click button in UI
+            hasPrivacyConsent: false,
+            isPrivacyConsentLoading: requiresPrivacyConsent,
 
-    OneSignal.setLogLevel(6, 0);
-    
-    // Examples for using native IAM public methods
-//    this.oneSignalInAppMessagingExamples();
-    
-    // Examples for using native Outcome Event public methods
-//    this.oneSignalOutcomeEventsExamples();
+            // User states
+            userId: '',
+            pushToken: '',
 
-  }
+            // Subscription states
+            isSubscribed: false,
+            isSubscriptionLoading: false,
 
-  async componentDidMount() {
-    var providedConsent = await OneSignal.userProvidedPrivacyConsent();
+            // External User Id states
+            externalUserId: '',
+            isExternalUserIdLoading: false,
 
-    this.setState({
-      privacyButtonTitle: `Privacy Consent: ${
-        providedConsent ? 'Granted' : 'Not Granted'
-      }`,
-      privacyGranted: providedConsent,
-    });
+            // Email states
+            email: '',
+            emailExternalUserId: '',
+            isEmailLoading: false,
 
-    OneSignal.setLocationShared(true);
+            // In-App Messaging states
+            iam_paused: true,
 
-    OneSignal.inFocusDisplaying(2);
 
-    this.onReceived = this.onReceived.bind(this);
-    this.onOpened = this.onOpened.bind(this);
-    this.onIds = this.onIds.bind(this);
-    this.onEmailRegistrationChange = this.onEmailRegistrationChange.bind(this);
-    this.onInAppMessageClicked = this.onInAppMessageClicked.bind(this);
+            // Demo App states
+            debugText: ''
+        };
 
-    OneSignal.addEventListener('received', this.onReceived);
-    OneSignal.addEventListener('opened', this.onOpened);
-    OneSignal.addEventListener('ids', this.onIds);
-    OneSignal.addEventListener(
-      'emailSubscription',
-      this.onEmailRegistrationChange,
-    );
-    OneSignal.addEventListener(
-      'inAppMessageClicked',
-      this.onInAppMessageClicked,
-    );
-  }
+        OneSignal.setRequiresUserPrivacyConsent(requiresPrivacyConsent);
+        OneSignal.init(this.state.appId, {
+            kOSSettingsKeyAutoPrompt: true,
+        });
 
-  componentWillUnmount() {
-    OneSignal.removeEventListener('received', this.onReceived);
-    OneSignal.removeEventListener('opened', this.onOpened);
-    OneSignal.removeEventListener('ids', this.onIds);
-    OneSignal.removeEventListener(
-      'emailSubscription',
-      this.onEmailRegistrationChange,
-    );
-    OneSignal.removeEventListener(
-      'inAppMessageClicked',
-      this.onInAppMessageClicked,
-    );
-  }
+        OneSignal.setLogLevel(6, 0);
 
-  validateEmail(email) {
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-  }
+        OneSignal.setLocationShared(true);
 
-  oneSignalInAppMessagingExamples() {
-    // Add a single trigger with a value associated with it
-    OneSignal.addTrigger('trigger1', 'one');
+        OneSignal.inFocusDisplaying(2);
 
-    // Get trigger value for the key
-    OneSignal.getTriggerValueForKey('trigger1')
-      .then(response => {
-        console.log('trigger1 value: ' + response);
-      })
-      .catch(e => {
-        console.error(e);
-      });
+        // Set this to however you determine your require privacy consent
+        if (requiresPrivacyConsent) {
+            OneSignal.userProvidedPrivacyConsent().then(async (granted) => {
+                // For UI testing purposes wait 2 seconds
+                await sleep(0)
 
-    // Create a set of triggers in a map and add them all at once
-    var triggers = {
-      trigger2: '2',
-      trigger3: true,
-    };
-    OneSignal.addTriggers(triggers);
+                console.log('PRIVACY CONSENT: ' + granted);
+                this.setState({hasPrivacyConsent:granted, isPrivacyConsentLoading:false});
+            });
+        }
 
-    // Get trigger value for the key
-    OneSignal.getTriggerValueForKey('trigger3')
-          .then(response => {
-            console.log('trigger3 value: ' + response);
-          })
-          .catch(e => {
-            console.error(e);
-          });
+        // Examples for using native IAM public methods
+        //    this.oneSignalInAppMessagingExamples();
 
-    // Create an array of keys to remove triggers for
-    var removeTriggers = ['trigger1', 'trigger2'];
-    OneSignal.removeTriggersForKeys(removeTriggers);
-  }
+        // Examples for using native Outcome Event public methods
+        //    this.oneSignalOutcomeEventsExamples();
 
-  oneSignalOutcomeEventsExamples() {
-    // Send an outcome event with and without a callback
-    OneSignal.sendOutcome('normal_1');
-    OneSignal.sendOutcome('normal_2', response => {
-      console.log('Normal outcome sent successfully!');
-      console.log(response);
-    });
+    }
 
-    // Send a unique outcome event with and without a callback
-    OneSignal.sendUniqueOutcome('unique_1');
-    OneSignal.sendUniqueOutcome('unique_2', response => {
-      console.log('Unique outcome sent successfully!');
-      console.log(response);
-    });
+    async componentDidMount() {
+        this.onNotificationReceived = this.onNotificationReceived.bind(this);
+        this.onNotificationOpened = this.onNotificationOpened.bind(this);
+        this.onIdsAvailable = this.onIdsAvailable.bind(this);
+        this.onSubscriptionChange = this.onSubscriptionChange.bind(this);
+        this.onPermissionChange = this.onPermissionChange.bind(this);
+        this.onEmailSubscriptionChange = this.onEmailSubscriptionChange.bind(this);
+        this.onInAppMessageClicked = this.onInAppMessageClicked.bind(this);
 
-    // Send an outcome event with and without a callback
-    OneSignal.sendOutcomeWithValue('value_1', 9.99);
-    OneSignal.sendOutcomeWithValue('value_2', 5, response => {
-      console.log('Outcome with value sent successfully!');
-      console.log(response);
-    });
-  }
+        OneSignal.addEventListener('received', this.onNotificationReceived);
+        OneSignal.addEventListener('opened', this.onNotificationOpened);
+        OneSignal.addEventListener('ids', this.onIdsAvailable);
+        OneSignal.addEventListener('subscription', this.onSubscriptionChange);
+        OneSignal.addEventListener('permission', this.onPermissionChange);
+        OneSignal.addEventListener('emailSubscription', this.onEmailSubscriptionChange);
+        OneSignal.addEventListener('inAppMessageClicked', this.onInAppMessageClicked);
+    }
 
-  onEmailRegistrationChange(registration) {
-    console.log('onEmailRegistrationChange: ', registration);
-  }
+    componentWillUnmount() {
+        OneSignal.removeEventListener('received', this.onNotificationReceived);
+        OneSignal.removeEventListener('opened', this.onNotificationOpened);
+        OneSignal.removeEventListener('ids', this.onIdsAvailable);
+        OneSignal.removeEventListener('subscription', this.onSubscriptionChange);
+        OneSignal.removeEventListener('permission', this.onPermissionChange);
+        OneSignal.removeEventListener('emailSubscription', this.onEmailSubscriptionChange);
+        OneSignal.removeEventListener('inAppMessageClicked', this.onInAppMessageClicked);
+    }
 
-  onReceived(notification) {
-    console.log('Notification received: ', notification);
+    /**
+     Validate email method
+     */
+    validateEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
 
-    this.setState({
-      jsonDebugText: 'RECEIVED: \n' + JSON.stringify(notification, null, 2),
-    });
-  }
+    /**
+     In-App Message public method examples
+     */
+    oneSignalInAppMessagingExamples() {
+        // Add a single trigger with a value associated with it
+        OneSignal.addTrigger('trigger1', 'one');
 
-  onOpened(openResult) {
-    console.log('Message: ', openResult.notification.payload.body);
-    console.log('Data: ', openResult.notification.payload.additionalData);
-    console.log('isActive: ', openResult.notification.isAppInFocus);
-    console.log('openResult: ', openResult);
+        // Get trigger value for the key
+        OneSignal.getTriggerValueForKey('trigger1')
+            .then(response => {
+                console.log('trigger1 value: ' + response);
+            })
+            .catch(e => {
+                console.error(e);
+            });
 
-    this.setState({
-      jsonDebugText:
-        'OPENED: \n' + JSON.stringify(openResult.notification, null, 2),
-    });
-  }
+        // Create a set of triggers in a map and add them all at once
+        var triggers = {
+            trigger2: '2',
+            trigger3: true,
+        };
+        OneSignal.addTriggers(triggers);
 
-  onIds(device) {
-    console.log('Device info: ', device);
-    this.setState({
-        userId: device.userId
-    });
-  }
+        // Get trigger value for the key
+        OneSignal.getTriggerValueForKey('trigger3')
+            .then(response => {
+                console.log('trigger3 value: ' + response);
+            })
+            .catch(e => {
+                console.error(e);
+            });
 
-  onInAppMessageClicked(actionResult) {
-    console.log('actionResult: ', actionResult);
-    this.setState({
-      jsonDebugText: 'CLICKED: \n' + JSON.stringify(actionResult, null, 2),
-    });
-  }
+        // Create an array of keys to remove triggers for
+        var removeTriggers = ['trigger1', 'trigger2'];
+        OneSignal.removeTriggersForKeys(removeTriggers);
+    }
 
-  render() {
-    return (
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.container}>
-          <View>
-            <Image style={styles.imageStyle} source={{uri: imageUri}} />
-          </View>
-          <Text style={styles.welcome}>Welcome to React Native!</Text>
-          <Text style={styles.instructions}>To get started, edit index.js</Text>
-          <Text style={styles.instructions}>
-            Double tap R on your keyboard to reload,{'\n'}
-            Shake or press menu button for dev menu
-          </Text>
-          <Text style={styles.jsonDebugLabelText}>
-            {this.state.jsonDebugText}
-          </Text>
-          <View style={{flexDirection: 'row', overflow: 'hidden'}}>
-            <View style={styles.buttonContainer}>
-              <Button
-                style={styles.button}
-                onPress={() => {
-                  OneSignal.getTags(tags => {
-                    console.log('Did get tags: ', tags);
+    /**
+     Outcomes public method examples
+     */
+    oneSignalOutcomeEventsExamples() {
+        // Send an outcome event with and without a callback
+        OneSignal.sendOutcome('normal_1');
+        OneSignal.sendOutcome('normal_2', response => {
+              console.log('Normal outcome sent successfully!');
+              console.log(response);
+        });
 
-                    this.setState({
-                      jsonDebugText: JSON.stringify(tags, null, 2),
-                    });
-                  });
-                }}
-                title="Get Tags"
-                color={this.state.buttonColor}
-              />
+        // Send a unique outcome event with and without a callback
+        OneSignal.sendUniqueOutcome('unique_1');
+        OneSignal.sendUniqueOutcome('unique_2', response => {
+              console.log('Unique outcome sent successfully!');
+              console.log(response);
+        });
+
+        // Send an outcome event with and without a callback
+        OneSignal.sendOutcomeWithValue('value_1', 9.99);
+        OneSignal.sendOutcomeWithValue('value_2', 5, response => {
+              console.log('Outcome with value sent successfully!');
+              console.log(response);
+        });
+    }
+
+    /**
+     When a notification is received this will fire
+     */
+    onNotificationReceived(notification) {
+        console.log('Notification received: ', notification);
+
+        let debugMsg = 'RECEIVED: \n' + JSON.stringify(notification, null, 2);
+        this.setState({debugText:debugMsg}, () => {
+            console.log("Debug text successfully changed!");
+        });
+    }
+
+    /**
+
+    */
+    onNotificationOpened(openResult) {
+        console.log('Message: ', openResult.notification.payload.body);
+        console.log('Data: ', openResult.notification.payload.additionalData);
+        console.log('isActive: ', openResult.notification.isAppInFocus);
+        console.log('openResult: ', openResult);
+
+        let debugMsg = 'OPENED: \n' + JSON.stringify(openResult.notification, null, 2);
+        this.setState({debugText:debugMsg}, () => {
+            console.log("Debug text successfully changed!");
+        });
+    }
+
+    /**
+     Once the user is registered/updated the onIds will send back the userId and pushToken
+        of the device
+     */
+    onIdsAvailable(device) {
+        console.log('Device info: ', device);
+        // Save the userId and pushToken for the device, important for updating the device
+        //  record using the SDK, and sending notifications
+        this.setState({
+            userId: device.userId,
+            pushToken: device.pushToken
+        });
+    }å
+
+    /**
+     TODO: Needs to be implemented still in index.js and RNOneSignal.java
+     */
+    onSubscriptionChange(change) {
+        console.log('onSubscriptionChange: ', change);
+    }
+
+    /**
+     TODO: Needs to be implemented still in index.js and RNOneSignal.java
+     */
+    onPermissionChange(change) {
+        console.log('onPermissionChange: ', change);
+    }
+
+    /**
+     Success for the change of state for the email record? or setting subscription state of email record (so logging out)?
+     TODO: Validate functionality and make sure name is correct
+        Should match the onSubscriptionChange and
+
+     TODO: Validate this is working, might be broken after changing name
+     */
+    onEmailSubscriptionChange(change) {
+        console.log('onEmailSubscriptionChange: ', change);
+        this.setState({isEmailLoading:false});
+    }
+
+    /**
+
+    */
+    onInAppMessageClicked(actionResult) {
+        console.log('actionResult: ', actionResult);
+
+        let debugMsg = 'CLICKED: \n' + JSON.stringify(actionResult, null, 2);
+        this.setState({debugText:debugMsg}, () => {
+            console.log("Debug text successfully changed!");
+        });
+    }
+
+    /**
+     Method for creating a generic button with a name and a function attached to it
+     */
+    _renderButtonView = (name, isLoading, callback) => {
+        let isPrivacyConsentButton = name.includes("Consent");
+
+        let isClickable = !isLoading
+            && (!requiresPrivacyConsent
+                || this.state.hasPrivacyConsent
+                || isPrivacyConsentButton);
+
+        if (isPrivacyConsentButton && !requiresPrivacyConsent)
+            return null;
+
+        return (
+            <View
+                key={name + '_parent'}
+                style={styles.buttonContainer}
+            >
+
+                <Button
+                    key={name}
+                    title={isLoading ? name + "..." : name}
+                    style={styles.button}
+                    color={isClickable ? buttonColor : disabledColor}
+                    onPress={() => { isClickable && callback() }}
+
+                />
+
             </View>
-            <View style={styles.buttonContainer}>
-              <Button
-                style={styles.button}
-                onPress={() => {
-                  OneSignal.sendTags({
-                    test_property_1: 'test_value_1',
-                    test_property_2: 'test_value_2',
-                  });
-                }}
-                title="Send Tags"
-                color={this.state.buttonColor}
-              />
-            </View>
-          </View>
-          <View style={{flexDirection: 'row', overflow: 'hidden'}}>
-            <View style={styles.buttonContainer}>
-              <Button
-                style={styles.button}
-                disabled={!this.state.emailEnabled}
-                onPress={() => {
-                  this.setState({
-                    animatingEmailButton: true,
-                    activityWidth: 20,
-                    activityMargin: 10,
-                  });
+        );
+    }
 
-                  OneSignal.setEmail(this.state.email, error => {
-                    console.log('Sent email with error: ', error);
+    _renderFieldView = (name, value, isLoading, callback) => {
+        let isEditable = !isLoading
+            && (!requiresPrivacyConsent
+                || this.state.hasPrivacyConsent);
 
-                    this.setState({
-                      animatingEmailButton: false,
-                      activityWidth: 0,
-                      activityMargin: 0,
-                    });
-                  });
-                }}
-                title="Set Test Email"
-                color={this.state.buttonColor}
-              />
-            </View>
-            <ActivityIndicator
-              style={{
-                width: this.state.activityWidth,
-                marginLeft: this.state.activityMargin,
-              }}
-              animating={this.state.animatingEmailButton}
-            />
-            <View style={styles.buttonContainer}>
-              <Button
-                style={styles.button}
-                onPress={() => {
-                  OneSignal.logoutEmail(error => {
-                    if (error) {
-                      console.log(
-                        'Encountered error while attempting to log out: ',
-                        error,
-                      );
-                    } else {
-                      console.log('Logged out successfully');
+        return (
+            <KeyboardAvoidingView
+                key={name + '_keyboard_avoiding_view'}
+                style={{
+                    width: 300,
+                    height: 40,
+                    borderColor: isEditable ? textInputBorderColor : disabledColor,
+                    borderWidth: 2,
+                    borderRadius: 5,
+                    marginTop: 8}}
+            >
+
+                <TextInput
+                    key={name}
+                    style={styles.textInput}
+                    underlineColorAndroid="rgba(0, 0, 0, 0)"
+                    placeholder={name}
+                    value={value}
+                    multiline={false}
+                    returnKeyType="done"
+                    textAlign="center"
+                    placeholderTextColor="#d1dde3"
+                    editable={isEditable}
+                    autoCapitalize="none"
+                    onChangeText={callback}
+                />
+            </KeyboardAvoidingView>
+        );
+    }
+
+    render() {
+        return (
+            <ScrollView style={styles.scrollView}>
+                <View style={styles.container}>
+
+                    <View>
+                        <Image style={styles.imageStyle} source={{uri: imageUri}} />
+                    </View>
+
+                    <Text style={styles.welcome}>Welcome to React Native!</Text>
+                    <Text style={styles.instructions}>To get started using the OneSignal SDK, edit App.js</Text>
+                    <Text style={styles.instructions}>To get started modifying the OneSignal SDK, edit index.js</Text>
+                    <Text style={styles.instructions}>
+                        Double tap R on your keyboard to reload,{'\n'}
+                        Shake or press menu button for dev menu
+                    </Text>
+
+                    <Text style={styles.jsonDebugLabelText}>
+                        {this.state.debugText}
+                    </Text>
+
+                    <Text style={styles.instructions}>
+                        App Id:{'\n'}
+                        {this.state.appId}
+                    </Text>
+
+                    { // Subscribe/Unsubscribe Button
+                        this._renderButtonView(
+                            this.state.isSubscribed ? "Unsubscribe" : "Subscribe",
+                            this.state.isSubscriptionLoading || this.state.isPrivacyConsentLoading,
+                            () => {
+                                let isSubscribed = !this.state.isSubscribed;
+                                this.setState({isSubscribed:isSubscribed, isSubscriptionLoading: true}, () => {
+                                    OneSignal.setSubscription(isSubscribed);
+
+                                    // TODO: Move this into onSubscriptionChange method once implemented
+                                    this.setState({isSubscriptionLoading: false});
+                                });
+                            }
+                        )
                     }
-                  });
-                }}
-                title="Logout Email"
-                color={this.state.buttonColor}
-              />
-            </View>
-          </View>
-          <KeyboardAvoidingView
-            style={{
-              width: 300,
-              height: 40,
-              borderColor: '#d45653',
-              borderWidth: 2,
-              borderRadius: 5,
-              marginTop: 8,
-            }}>
-            <TextInput
-              style={styles.textInput}
-              underlineColorAndroid="rgba(0, 0, 0, 0)"
-              placeholderText="testing"
-              placeholder="test@email.com"
-              multiline={false}
-              keyboardType="email-address"
-              returnKeyType="done"
-              textAlign="center"
-              placeholderTextColor="#d1dde3"
-              editable={true}
-              autoCapitalize="none"
-              keyboardAppearance="dark"
-              onChangeText={newText => {
-                this.setState({
-                  emailEnabled: this.validateEmail(newText),
-                  email: newText,
-                });
-              }}
-            />
-          </KeyboardAvoidingView>
-          <View style={styles.buttonContainer}>
-            <Button
-              style={styles.button}
-              onPress={() => {
-                OneSignal.promptLocation();
-              }}
-              title="Prompt Location"
-              color={this.state.buttonColor}
-            />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              style={styles.button}
-              onPress={() => {
-                var contents = {'en': 'You got notification from user'};
-                var data = {};
-                // Make sure to send an String Array of playerIds
-                var playerIds = [this.state.userId];
-                var other = {};
-                OneSignal.postNotification(contents, data, playerIds, other);
-              }}
-              title="Post Notification"
-              color={this.state.buttonColor}
-            />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              style={styles.button}
-              onPress={() => {
-                OneSignal.getPermissionSubscriptionState(subscriptionState => {
-                  this.setState({
-                    jsonDebugText: JSON.stringify(subscriptionState, null, 2),
-                  });
-                });
-              }}
-              title="Print Subscription State"
-              color={this.state.buttonColor}
-            />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              style={styles.button}
-              disabled={!this.state.requirePrivacyConsent}
-              onPress={() => {
-                this.setState({
-                  privacyGranted: !this.state.privacyGranted,
-                  privacyButtonTitle: `Privacy State: ${
-                    !this.state.privacyGranted ? 'Granted' : 'Not Granted'
-                  }`,
-                });
-                OneSignal.provideUserConsent(!this.state.privacyGranted);
-              }}
-              title={this.state.privacyButtonTitle}
-              color={this.state.buttonColor}
-            />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              style={styles.button}
-              onPress={() => {
-                OneSignal.addTrigger('trigger1', '1');
-              }}
-              title="Add Trigger"
-              color={this.state.buttonColor}
-            />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              style={styles.button}
-              onPress={() => {
-                OneSignal.sendOutcome('sendOutcome-ro');
-              }}
-              title="Send Outcome"
-              color={this.state.buttonColor}
-            />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              style={styles.button}
-              onPress={() => {
-                OneSignal.sendOutcome('sendUniqueOutcome-ro');
-              }}
-              title="Send Unique Outcome"
-              color={this.state.buttonColor}
-            />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              style={styles.button}
-              onPress={() => {
-                OneSignal.sendOutcomeWithValue('sendOutcomeWithValue-ro', 18.76);
-              }}
-              title="Send Outcome With Value"
-              color={this.state.buttonColor}
-            />
-          </View>
-        </View>
-      </ScrollView>
-    );
-  }
+
+                    { // Privacy Consent Button
+                        this._renderButtonView(
+                            this.state.hasPrivacyConsent ? "Remove Consent" : "Grant Consent",
+                            this.state.isPrivacyConsentLoading,
+                            () => {
+                                let privacyConsent = !this.state.hasPrivacyConsent;
+                                this.setState({hasPrivacyConsent:privacyConsent}, () => {
+                                    OneSignal.provideUserConsent(privacyConsent);
+                                });
+                            }
+                        )
+                    }
+
+                    { // Email TextInput
+                        this._renderFieldView(
+                            "Email",
+                            this.state.email,
+                            this.state.isEmailLoading || this.state.isPrivacyConsentLoading,
+                            (text) => {
+                                this.setState({email:text});
+                            }
+                        )
+                    }
+                    { // Set Email Button
+                        this._renderButtonView(
+                            "Set Email",
+                            this.state.isEmailLoading || this.state.isPrivacyConsentLoading,
+                            () => {
+                                console.log('Attempting to set email: ' + this.state.email);
+
+                                this.setState({isEmailLoading:true}, () => {
+                                    // OneSignal setEmail
+                                    OneSignal.setEmail(this.state.email, null, () => {
+                                        console.log(response);
+
+                                        this.setState({isEmailLoading:false});
+                                    });
+                                });
+                            }
+                        )
+                    }
+                    { // Logout Email Button
+                        this._renderButtonView(
+                            "Logout Email",
+                            this.state.isEmailLoading || this.state.isPrivacyConsentLoading,
+                            () => {
+                                console.log(this.state.email);
+                                //TODO: Logout email
+                            }
+                        )
+                    }
+
+                    { // External User Id TextInput
+                        this._renderFieldView(
+                            "External User Id",
+                            this.state.externalUserId,
+                            this.state.isExternalUserIdLoading || this.state.isPrivacyConsentLoading,
+                            (text) => {
+                                this.setState({externalUserId:text});
+                            }
+                        )
+                    }
+                    { // Set External User Id Button
+                        this._renderButtonView(
+                            "Set External User Id",
+                            this.state.isExternalUserIdLoading || this.state.isPrivacyConsentLoading,
+                            () => {
+                                console.log('Setting external user id: ' + this.state.externalUserId);
+                                //TODO: Set external user id
+                            }
+                        )
+                    }
+                    { // Remove External User Id Button
+                        this._renderButtonView(
+                            "Remove External User Id",
+                            this.state.isExternalUserIdLoading || this.state.isPrivacyConsentLoading,
+                            () => {
+                                console.log('Removing external user id: ' + this.state.externalUserId);
+                                // TODO: Remove external user id
+                            }
+                        )
+                    }
+
+
+
+                </View>
+
+            </ScrollView>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: '#F5FCFF',
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-    marginHorizontal: 10,
-  },
-  jsonDebugLabelText: {
-    textAlign: 'left',
-    color: '#333333',
-    marginBottom: 5,
-    marginHorizontal: 10,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    overflow: 'hidden',
-    borderRadius: 10,
-    marginVertical: 10,
-    marginHorizontal: 10,
-    backgroundColor: '#d45653',
-  },
-  button: {
-    color: '#000000',
-    flex: 1,
-  },
-  imageStyle: {
-    height: 200,
-    width: 200,
-    marginTop: 20,
-  },
-  textInput: {
-    marginHorizontal: 10,
-    height: 40,
-  },
+    scrollView: {
+        backgroundColor: '#F5FCFF',
+    },
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        backgroundColor: '#F5FCFF',
+    },
+    welcome: {
+        fontSize: 20,
+        textAlign: 'center',
+        margin: 10,
+    },
+    instructions: {
+        textAlign: 'center',
+        color: '#333333',
+        marginBottom: 5,
+        marginHorizontal: 10,
+    },
+    jsonDebugLabelText: {
+        textAlign: 'left',
+        color: '#333333',
+        marginBottom: 5,
+        marginHorizontal: 10,
+    },
+    buttonContainer: {
+        flexDirection: 'column',
+        overflow: 'hidden',
+        borderRadius: 10,
+        marginVertical: 10,
+        marginHorizontal: 10,
+        backgroundColor: '#d45653',
+    },
+    button: {
+        color: '#000000',
+        flex: 1,
+    },
+    imageStyle: {
+        height: 200,
+        width: 200,
+        marginTop: 20,
+    },
+    textInput: {
+        marginHorizontal: 10,
+        height: 40,
+    },
 });

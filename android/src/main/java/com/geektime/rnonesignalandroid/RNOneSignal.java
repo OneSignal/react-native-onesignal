@@ -55,6 +55,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
    private OSNotificationOpenResult coldStartNotificationResult;
    private OSInAppMessageAction inAppMessageActionResult;
+
    private boolean hasSetNotificationOpenedHandler = false;
    private boolean hasSetInAppClickedHandler = false;
    private boolean hasSetRequiresPrivacyConsent = false;
@@ -232,6 +233,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       });
    }
 
+   // TODO: This needs to be split out into several different callbacks to the JS and connect
+   //  to the correct native methods
    @ReactMethod
    public void getPermissionSubscriptionState(final Callback callback) {
       OSPermissionSubscriptionState state = OneSignal.getPermissionSubscriptionState();
