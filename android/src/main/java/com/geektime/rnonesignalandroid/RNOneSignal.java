@@ -376,31 +376,25 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public void setExternalUserId(String externalId) {
-      OneSignal.setExternalUserId(externalId);
-   }
-
-   @ReactMethod
-   public void setExternalUserId(String externalId, Callback callback) {
-      OneSignal.setExternalUserId(externalId, new OSExternalUserIdUpdateCompletionHandler() {
+   public void setExternalUserId(@Nonnull final String externalId, @Nullable final Callback callback) {
+      OneSignal.setExternalUserId(externalId, new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
          @Override
-         public void onSuccess(JSONObject results) {
-            callback.invoke(RNUtils.jsonToWritableMap(results);
+         public void onComplete(JSONObject results) {
+            Log.i("OneSignal", "Completed setting external user id: " + externalId + "with results: " + results.toString());
+            if (callback != null)
+               callback.invoke(RNUtils.jsonToWritableMap(results));
          }
       });
    }
 
    @ReactMethod
-   public void removeExternalUserId() {
-      OneSignal.removeExternalUserId();
-   }
-
-   @ReactMethod
-   public void removeExternalUserId(Callback callback) {
-      OneSignal.removeExternalUserId(new OSExternalUserIdUpdateCompletionHandler() {
+   public void removeExternalUserId(@Nullable final Callback callback) {
+      OneSignal.removeExternalUserId(new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
          @Override
-         public void onSuccess(JSONObject results) {
-            callback.invoke(RNUtils.jsonToWritableMap(results);
+         public void onComplete(JSONObject results) {
+            Log.i("OneSignal", "Completed removing external user id with results: " + results.toString());
+            if (callback != null)
+               callback.invoke(RNUtils.jsonToWritableMap(results));
          }
       });
    }

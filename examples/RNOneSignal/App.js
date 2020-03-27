@@ -486,15 +486,12 @@ export default class App extends Component {
                             "Set External User Id",
                             this.state.isExternalUserIdLoading || this.state.isPrivacyConsentLoading,
                             () => {
-                                console.log('Attempting to set external user id' + this.state.externalUserId);
+                                console.log('Attempting to set external user id: ' + this.state.externalUserId);
                                 this.setState({isExternalUserIdLoading:true}, () => {
                                     // OneSignal setExternalUserId
-                                    OneSignal.setExternalUserId(this.state.externalUserId, (error) => {
-                                        if (error) {
-                                            console.log('Error while setting external user id: ' + this.state.externalUserId);
-                                        } else {
-                                            console.log('Success setting external user id: ' + this.state.externalUserId);
-                                        }
+                                    OneSignal.setExternalUserId(this.state.externalUserId, (results) => {
+                                        console.log('Results of setting external user id');
+                                        console.log(results);
 
                                         this.setState({isExternalUserIdLoading:false});
                                     });
@@ -507,15 +504,12 @@ export default class App extends Component {
                             "Remove External User Id",
                             this.state.isExternalUserIdLoading || this.state.isPrivacyConsentLoading,
                             () => {
-                                console.log('Attempting to remove external user id' + this.state.externalUserId);
+                                console.log('Attempting to remove external user id');
                                 this.setState({isExternalUserIdLoading:true}, () => {
                                     // OneSignal setExternalUserId
-                                    OneSignal.removeExternalUserId((error) => {
-                                        if (error) {
-                                            console.log('Error while removing external user id');
-                                        } else {
-                                            console.log('Success removing external user id');
-                                        }
+                                    OneSignal.removeExternalUserId((results) => {
+                                        console.log('Results of removing external user id');
+                                        console.log(results);
 
                                         this.setState({isExternalUserIdLoading:false});
                                     });
