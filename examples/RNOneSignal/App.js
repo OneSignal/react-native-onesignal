@@ -26,15 +26,23 @@ const buttonColor = Platform.OS == 'ios' ? '#ffffff' : '#d45653';
 const textInputBorderColor = Platform.OS == 'ios' ? '#ffffff' : '#d45653';
 const disabledColor = '#bebebe';
 
+/**
+ Method that returns a Promise that timeouts out the thread it is on for X millis
+ */
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
 /**
+ Change to desired app id (dashboard app)
+ */
+var appId = '';
+
+/**
  Controls whether the app needs privacy consent or not
  Will hide the button when false and show it when true
  */
-var requiresPrivacyConsent = true;
+var requiresPrivacyConsent = false;
 
 export default class App extends Component {
 
@@ -43,13 +51,11 @@ export default class App extends Component {
 
         this.state = {
             // OneSignal states
-            appId: '77e32082-ea27-42e3-a898-c72e141824ef',
-
-            // Privacy consent has not been granted yet, must click button in UI
-            hasPrivacyConsent: false,
+            // Privacy Consent states
+            hasPrivacyConsent: false, // App starts without privacy consent
             isPrivacyConsentLoading: requiresPrivacyConsent,
 
-            // User states
+            // Device states
             userId: '',
             pushToken: '',
 
@@ -63,7 +69,6 @@ export default class App extends Component {
 
             // Email states
             email: '',
-            emailExternalUserId: '',
             isEmailLoading: false,
 
             // In-App Messaging states
@@ -75,20 +80,24 @@ export default class App extends Component {
         };
 
         OneSignal.setRequiresUserPrivacyConsent(requiresPrivacyConsent);
-        OneSignal.init(this.state.appId, {
+        OneSignal.init(appId, {
             kOSSettingsKeyAutoPrompt: true,
         });
 
+        // Log level logcat is 6 (VERBOSE) and log level alert is 0 (NONE)
         OneSignal.setLogLevel(6, 0);
 
+        // Share location of device
         OneSignal.setLocationShared(true);
 
+        // Notifications will display as NOTIFICATION type
         OneSignal.inFocusDisplaying(2);
 
-        // Set this to however you determine your require privacy consent
+        // If the app requires privacy consent check if it has been set yet
         if (requiresPrivacyConsent) {
+        // async 'then' is only so I can sleep using the Promise helper method
             OneSignal.userProvidedPrivacyConsent().then(async (granted) => {
-                // For UI testing purposes wait 2 seconds
+                // For UI testing purposes wait X seconds to see the loading state
                 await sleep(0)
 
                 console.log('PRIVACY CONSENT: ' + granted);
@@ -97,10 +106,10 @@ export default class App extends Component {
         }
 
         // Examples for using native IAM public methods
-        //    this.oneSignalInAppMessagingExamples();
+//        this.oneSignalInAppMessagingExamples();
 
         // Examples for using native Outcome Event public methods
-        //    this.oneSignalOutcomeEventsExamples();
+//        this.oneSignalOutcomeEventsExamples();
 
     }
 
@@ -108,16 +117,16 @@ export default class App extends Component {
         this.onNotificationReceived = this.onNotificationReceived.bind(this);
         this.onNotificationOpened = this.onNotificationOpened.bind(this);
         this.onIdsAvailable = this.onIdsAvailable.bind(this);
-        this.onSubscriptionChange = this.onSubscriptionChange.bind(this);
-        this.onPermissionChange = this.onPermissionChange.bind(this);
+//        this.onSubscriptionChange = this.onSubscriptionChange.bind(this);
+//        this.onPermissionChange = this.onPermissionChange.bind(this);
         this.onEmailSubscriptionChange = this.onEmailSubscriptionChange.bind(this);
         this.onInAppMessageClicked = this.onInAppMessageClicked.bind(this);
 
         OneSignal.addEventListener('received', this.onNotificationReceived);
         OneSignal.addEventListener('opened', this.onNotificationOpened);
         OneSignal.addEventListener('ids', this.onIdsAvailable);
-        OneSignal.addEventListener('subscription', this.onSubscriptionChange);
-        OneSignal.addEventListener('permission', this.onPermissionChange);
+//        OneSignal.addEventListener('subscription', this.onSubscriptionChange);
+//        OneSignal.addEventListener('permission', this.onPermissionChange);
         OneSignal.addEventListener('emailSubscription', this.onEmailSubscriptionChange);
         OneSignal.addEventListener('inAppMessageClicked', this.onInAppMessageClicked);
     }
@@ -126,8 +135,8 @@ export default class App extends Component {
         OneSignal.removeEventListener('received', this.onNotificationReceived);
         OneSignal.removeEventListener('opened', this.onNotificationOpened);
         OneSignal.removeEventListener('ids', this.onIdsAvailable);
-        OneSignal.removeEventListener('subscription', this.onSubscriptionChange);
-        OneSignal.removeEventListener('permission', this.onPermissionChange);
+//        OneSignal.removeEventListener('subscription', this.onSubscriptionChange);
+//        OneSignal.removeEventListener('permission', this.onPermissionChange);
         OneSignal.removeEventListener('emailSubscription', this.onEmailSubscriptionChange);
         OneSignal.removeEventListener('inAppMessageClicked', this.onInAppMessageClicked);
     }
@@ -216,8 +225,9 @@ export default class App extends Component {
     }
 
     /**
-
-    */
+     When a notification is opened this will fire
+     The openResult will contain information about the notification opened
+     */
     onNotificationOpened(openResult) {
         console.log('Message: ', openResult.notification.payload.body);
         console.log('Data: ', openResult.notification.payload.additionalData);
@@ -271,8 +281,9 @@ export default class App extends Component {
     }
 
     /**
-
-    */
+     When an element on an IAM is clicked this will fire
+     The actionResult will contain information about the element clicked
+     */
     onInAppMessageClicked(actionResult) {
         console.log('actionResult: ', actionResult);
 
@@ -283,7 +294,7 @@ export default class App extends Component {
     }
 
     /**
-     Method for creating a generic button with a name and a function attached to it
+     Create a red OneSignal Button with a name, loading state, and callback (onPress)
      */
     _renderButtonView = (name, isLoading, callback) => {
         let isPrivacyConsentButton = name.includes("Consent");
@@ -310,11 +321,13 @@ export default class App extends Component {
                     onPress={() => { isClickable && callback() }}
 
                 />
-
             </View>
         );
     }
 
+    /**
+     Create a red OneSignal TextInput with a name, value, loading state, and callback (onPress)
+     */
     _renderFieldView = (name, value, isLoading, callback) => {
         let isEditable = !isLoading
             && (!requiresPrivacyConsent
@@ -373,7 +386,7 @@ export default class App extends Component {
 
                     <Text style={styles.instructions}>
                         App Id:{'\n'}
-                        {this.state.appId}
+                        {appId}
                     </Text>
 
                     { // Subscribe/Unsubscribe Button
@@ -421,11 +434,14 @@ export default class App extends Component {
                             this.state.isEmailLoading || this.state.isPrivacyConsentLoading,
                             () => {
                                 console.log('Attempting to set email: ' + this.state.email);
-
                                 this.setState({isEmailLoading:true}, () => {
                                     // OneSignal setEmail
-                                    OneSignal.setEmail(this.state.email, null, () => {
-                                        console.log(response);
+                                    OneSignal.setEmail(this.state.email, (error) => {
+                                        if (error) {
+                                            console.log('Error while setting email: ' + this.state.email);
+                                        } else {
+                                            console.log('Success setting email: ' + this.state.email);
+                                        }
 
                                         this.setState({isEmailLoading:false});
                                     });
@@ -438,8 +454,19 @@ export default class App extends Component {
                             "Logout Email",
                             this.state.isEmailLoading || this.state.isPrivacyConsentLoading,
                             () => {
-                                console.log(this.state.email);
-                                //TODO: Logout email
+                                console.log('Attempting to logout email');
+                                this.setState({isEmailLoading:true}, () => {
+                                    // OneSignal logoutEmail
+                                    OneSignal.logoutEmail((error) => {
+                                        if (error) {
+                                            console.log('Error while logging out email');
+                                        } else {
+                                            console.log('Success logging out email');
+                                        }
+
+                                        this.setState({isEmailLoading:false});
+                                    });
+                                });
                             }
                         )
                     }
@@ -459,8 +486,19 @@ export default class App extends Component {
                             "Set External User Id",
                             this.state.isExternalUserIdLoading || this.state.isPrivacyConsentLoading,
                             () => {
-                                console.log('Setting external user id: ' + this.state.externalUserId);
-                                //TODO: Set external user id
+                                console.log('Attempting to set external user id' + this.state.externalUserId);
+                                this.setState({isExternalUserIdLoading:true}, () => {
+                                    // OneSignal setExternalUserId
+                                    OneSignal.setExternalUserId(this.state.externalUserId, (error) => {
+                                        if (error) {
+                                            console.log('Error while setting external user id: ' + this.state.externalUserId);
+                                        } else {
+                                            console.log('Success setting external user id: ' + this.state.externalUserId);
+                                        }
+
+                                        this.setState({isExternalUserIdLoading:false});
+                                    });
+                                });
                             }
                         )
                     }
@@ -469,8 +507,19 @@ export default class App extends Component {
                             "Remove External User Id",
                             this.state.isExternalUserIdLoading || this.state.isPrivacyConsentLoading,
                             () => {
-                                console.log('Removing external user id: ' + this.state.externalUserId);
-                                // TODO: Remove external user id
+                                console.log('Attempting to remove external user id' + this.state.externalUserId);
+                                this.setState({isExternalUserIdLoading:true}, () => {
+                                    // OneSignal setExternalUserId
+                                    OneSignal.removeExternalUserId((error) => {
+                                        if (error) {
+                                            console.log('Error while removing external user id');
+                                        } else {
+                                            console.log('Success removing external user id');
+                                        }
+
+                                        this.setState({isExternalUserIdLoading:false});
+                                    });
+                                });
                             }
                         )
                     }

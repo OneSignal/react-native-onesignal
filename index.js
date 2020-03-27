@@ -97,6 +97,8 @@ export default class OneSignal {
     /**
      Listen to events of received, opened, ids, subscription, permission, emailSubscription, inAppMessageClicked
      TODO: We currently have implemented the steps up until connecting the "SUBSCRIPTION_EVENT" and "PERMISSION_EVENT"
+     Currently the getPermissionSubscriptionState is used to get all device information and
+        needs to be broken up into using the native observers to fire these React-Native handlers
      */
     static addEventListener(type, handler) {
         if (!checkIfInitialized()) return;
@@ -114,16 +116,17 @@ export default class OneSignal {
 
         _eventTypeHandler.set(type, handler);
 
-        // Setup for the notification opened handler
+        // Make native request to init notification opened handler
         if (type === NOTIFICATION_OPENED_EVENT) {
             RNOneSignal.initNotificationOpenedHandlerParams();
         }
 
-        // triggers ids event
+        // Make native request to init idsAvailable handler
         if (type === IDS_AVAILABLE_EVENT) {
             RNOneSignal.idsAvailable();
         }
 
+        // Make native request to init IAM handler
         if (type === IN_APP_MESSAGE_CLICKED_EVENT) {
             if (Platform.OS === 'android') {
                 RNOneSignal.initInAppMessageClickHandlerParams();
@@ -316,22 +319,16 @@ export default class OneSignal {
         }
     }
 
+    static setEmail(email, callback) {
+        if (!checkIfInitialized()) return;
+
+        RNOneSignal.setEmail(email, null, callback);
+    }
+
     static setEmail(email, emailAuthCode, callback) {
         if (!checkIfInitialized()) return;
 
-        if (emailAuthCode == undefined) {
-            //emailAuthCode is an optional parameter
-            //since JS does not support function overloading,
-            //unauthenticated setEmail calls will have emailAuthCode as the callback
-
-            RNOneSignal.setUnauthenticatedEmail(email, function(){});
-        } else if (callback == undefined && typeof emailAuthCode == 'function') {
-            RNOneSignal.setUnauthenticatedEmail(email, emailAuthCode);
-        } else if (callback == undefined) {
-            RNOneSignal.setEmail(email, emailAuthCode, function(){});
-        } else {
-            RNOneSignal.setEmail(email, emailAuthCode, callback);
-        }
+        RNOneSignal.setEmail(email, emailAuthCode, callback);
     }
 
     static logoutEmail(callback) {

@@ -28,6 +28,7 @@ import com.onesignal.OSEmailSubscriptionState;
 import com.onesignal.OneSignal;
 import com.onesignal.OneSignal.EmailUpdateHandler;
 import com.onesignal.OneSignal.EmailUpdateError;
+import com.onesignal.OneSignal.OSExternalUserIdUpdateCompletionHandler;
 import com.onesignal.OneSignal.OutcomeCallback;
 
 import com.onesignal.OneSignal.InAppMessageClickHandler;
@@ -158,25 +159,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
                pendingGetTagsCallback.invoke(RNUtils.jsonToWritableMap(tags));
 
             pendingGetTagsCallback = null;
-         }
-      });
-   }
-
-   @ReactMethod
-   public void setUnauthenticatedEmail(String email, final Callback callback) {
-      OneSignal.setEmail(email, null, new OneSignal.EmailUpdateHandler() {
-         @Override
-         public void onSuccess() {
-            callback.invoke();
-         }
-
-         @Override
-         public void onFailure(EmailUpdateError error) {
-            try {
-               callback.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
-            } catch (JSONException exception) {
-               exception.printStackTrace();
-            }
          }
       });
    }
@@ -399,8 +381,28 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
+   public void setExternalUserId(String externalId, Callback callback) {
+      OneSignal.setExternalUserId(externalId, new OSExternalUserIdUpdateCompletionHandler() {
+         @Override
+         public void onSuccess(JSONObject results) {
+            callback.invoke(RNUtils.jsonToWritableMap(results);
+         }
+      });
+   }
+
+   @ReactMethod
    public void removeExternalUserId() {
       OneSignal.removeExternalUserId();
+   }
+
+   @ReactMethod
+   public void removeExternalUserId(Callback callback) {
+      OneSignal.removeExternalUserId(new OSExternalUserIdUpdateCompletionHandler() {
+         @Override
+         public void onSuccess(JSONObject results) {
+            callback.invoke(RNUtils.jsonToWritableMap(results);
+         }
+      });
    }
 
    @ReactMethod
