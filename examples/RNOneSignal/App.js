@@ -20,18 +20,12 @@ import {
     Button,
 } from 'react-native';
 import OneSignal from 'react-native-onesignal';
+import { sleep } from './Util';
 
 const imageUri = 'https://cdn-images-1.medium.com/max/300/1*7xHdCFeYfD8zrIivMiQcCQ.png';
 const buttonColor = Platform.OS == 'ios' ? '#ffffff' : '#d45653';
 const textInputBorderColor = Platform.OS == 'ios' ? '#ffffff' : '#d45653';
 const disabledColor = '#bebebe';
-
-/**
- Method that returns a Promise that timeouts out the thread it is on for X millis
- */
-const sleep = (milliseconds) => {
-  return new Promise(resolve => setTimeout(resolve, milliseconds))
-}
 
 /**
  Change to desired app id (dashboard app)
@@ -42,7 +36,7 @@ var appId = '';
  Controls whether the app needs privacy consent or not
  Will hide the button when false and show it when true
  */
-var requiresPrivacyConsent = false;
+var requiresPrivacyConsent = true;
 
 export default class App extends Component {
 
@@ -72,8 +66,9 @@ export default class App extends Component {
             isEmailLoading: false,
 
             // In-App Messaging states
-            iam_paused: true,
+            iam_paused: false,
 
+            // Add more states here...
 
             // Demo App states
             debugText: ''
@@ -98,12 +93,24 @@ export default class App extends Component {
         // async 'then' is only so I can sleep using the Promise helper method
             OneSignal.userProvidedPrivacyConsent().then(async (granted) => {
                 // For UI testing purposes wait X seconds to see the loading state
-                await sleep(0)
+                await sleep(0);
 
-                console.log('PRIVACY CONSENT: ' + granted);
+                console.log('Privacy Consent status: ' + granted);
                 this.setState({hasPrivacyConsent:granted, isPrivacyConsentLoading:false});
             });
         }
+
+        OneSignal.getPermissionSubscriptionState((response) => {
+            console.log('Device state:');
+            console.log(response);
+
+            let notificationsEnabled = response['notificationsEnabled'];
+            let isSubscribed = response['subscriptionEnabled'];
+
+            this.setState({isSubscribed:notificationsEnabled && isSubscribed, isSubscriptionLoading:false}, () => {
+                OneSignal.setSubscription(isSubscribed);
+            });
+        });
 
         // Examples for using native IAM public methods
 //        this.oneSignalInAppMessagingExamples();
@@ -252,7 +259,7 @@ export default class App extends Component {
             userId: device.userId,
             pushToken: device.pushToken
         });
-    }å
+    }
 
     /**
      TODO: Needs to be implemented still in index.js and RNOneSignal.java
@@ -293,10 +300,32 @@ export default class App extends Component {
         });
     }
 
+    render() {
+        return (
+            <ScrollView style={styles.scrollView}>
+
+                { this.createTitleFields() }
+
+                <View style={styles.container}>
+
+                    { this.createSubscribeFields() }
+
+                    { this.createPrivacyConsentFields() }
+
+                    { this.createEmailFields() }
+
+                    { this.createExternalUserIdFields() }
+
+                </View>
+
+            </ScrollView>
+        );
+    }
+
     /**
      Create a red OneSignal Button with a name, loading state, and callback (onPress)
      */
-    _renderButtonView = (name, isLoading, callback) => {
+    renderButtonView = (name, isLoading, callback) => {
         let isPrivacyConsentButton = name.includes("Consent");
 
         let isClickable = !isLoading
@@ -328,7 +357,7 @@ export default class App extends Component {
     /**
      Create a red OneSignal TextInput with a name, value, loading state, and callback (onPress)
      */
-    _renderFieldView = (name, value, isLoading, callback) => {
+    renderFieldView = (name, value, isLoading, callback) => {
         let isEditable = !isLoading
             && (!requiresPrivacyConsent
                 || this.state.hasPrivacyConsent);
@@ -363,168 +392,267 @@ export default class App extends Component {
         );
     }
 
-    render() {
+    /**
+     ADD MORE GENERIC UI METHODS HERE...
+     */
+
+    /**
+     Create the fields for displaying information about the demo app and some instruction
+        for modifying the demo app or react-native SDK
+     */
+    createTitleFields() {
+        // States used through-out the title fields
+        const {
+            debugText
+        } = this.state;
+
         return (
-            <ScrollView style={styles.scrollView}>
-                <View style={styles.container}>
-
-                    <View>
-                        <Image style={styles.imageStyle} source={{uri: imageUri}} />
-                    </View>
-
-                    <Text style={styles.welcome}>Welcome to React Native!</Text>
-                    <Text style={styles.instructions}>To get started using the OneSignal SDK, edit App.js</Text>
-                    <Text style={styles.instructions}>To get started modifying the OneSignal SDK, edit index.js</Text>
-                    <Text style={styles.instructions}>
-                        Double tap R on your keyboard to reload,{'\n'}
-                        Shake or press menu button for dev menu
-                    </Text>
-
-                    <Text style={styles.jsonDebugLabelText}>
-                        {this.state.debugText}
-                    </Text>
-
-                    <Text style={styles.instructions}>
-                        App Id:{'\n'}
-                        {appId}
-                    </Text>
-
-                    { // Subscribe/Unsubscribe Button
-                        this._renderButtonView(
-                            this.state.isSubscribed ? "Unsubscribe" : "Subscribe",
-                            this.state.isSubscriptionLoading || this.state.isPrivacyConsentLoading,
-                            () => {
-                                let isSubscribed = !this.state.isSubscribed;
-                                this.setState({isSubscribed:isSubscribed, isSubscriptionLoading: true}, () => {
-                                    OneSignal.setSubscription(isSubscribed);
-
-                                    // TODO: Move this into onSubscriptionChange method once implemented
-                                    this.setState({isSubscriptionLoading: false});
-                                });
-                            }
-                        )
-                    }
-
-                    { // Privacy Consent Button
-                        this._renderButtonView(
-                            this.state.hasPrivacyConsent ? "Remove Consent" : "Grant Consent",
-                            this.state.isPrivacyConsentLoading,
-                            () => {
-                                let privacyConsent = !this.state.hasPrivacyConsent;
-                                this.setState({hasPrivacyConsent:privacyConsent}, () => {
-                                    OneSignal.provideUserConsent(privacyConsent);
-                                });
-                            }
-                        )
-                    }
-
-                    { // Email TextInput
-                        this._renderFieldView(
-                            "Email",
-                            this.state.email,
-                            this.state.isEmailLoading || this.state.isPrivacyConsentLoading,
-                            (text) => {
-                                this.setState({email:text});
-                            }
-                        )
-                    }
-                    { // Set Email Button
-                        this._renderButtonView(
-                            "Set Email",
-                            this.state.isEmailLoading || this.state.isPrivacyConsentLoading,
-                            () => {
-                                console.log('Attempting to set email: ' + this.state.email);
-                                this.setState({isEmailLoading:true}, () => {
-                                    // OneSignal setEmail
-                                    OneSignal.setEmail(this.state.email, (error) => {
-                                        if (error) {
-                                            console.log('Error while setting email: ' + this.state.email);
-                                        } else {
-                                            console.log('Success setting email: ' + this.state.email);
-                                        }
-
-                                        this.setState({isEmailLoading:false});
-                                    });
-                                });
-                            }
-                        )
-                    }
-                    { // Logout Email Button
-                        this._renderButtonView(
-                            "Logout Email",
-                            this.state.isEmailLoading || this.state.isPrivacyConsentLoading,
-                            () => {
-                                console.log('Attempting to logout email');
-                                this.setState({isEmailLoading:true}, () => {
-                                    // OneSignal logoutEmail
-                                    OneSignal.logoutEmail((error) => {
-                                        if (error) {
-                                            console.log('Error while logging out email');
-                                        } else {
-                                            console.log('Success logging out email');
-                                        }
-
-                                        this.setState({isEmailLoading:false});
-                                    });
-                                });
-                            }
-                        )
-                    }
-
-                    { // External User Id TextInput
-                        this._renderFieldView(
-                            "External User Id",
-                            this.state.externalUserId,
-                            this.state.isExternalUserIdLoading || this.state.isPrivacyConsentLoading,
-                            (text) => {
-                                this.setState({externalUserId:text});
-                            }
-                        )
-                    }
-                    { // Set External User Id Button
-                        this._renderButtonView(
-                            "Set External User Id",
-                            this.state.isExternalUserIdLoading || this.state.isPrivacyConsentLoading,
-                            () => {
-                                console.log('Attempting to set external user id: ' + this.state.externalUserId);
-                                this.setState({isExternalUserIdLoading:true}, () => {
-                                    // OneSignal setExternalUserId
-                                    OneSignal.setExternalUserId(this.state.externalUserId, (results) => {
-                                        console.log('Results of setting external user id');
-                                        console.log(results);
-
-                                        this.setState({isExternalUserIdLoading:false});
-                                    });
-                                });
-                            }
-                        )
-                    }
-                    { // Remove External User Id Button
-                        this._renderButtonView(
-                            "Remove External User Id",
-                            this.state.isExternalUserIdLoading || this.state.isPrivacyConsentLoading,
-                            () => {
-                                console.log('Attempting to remove external user id');
-                                this.setState({isExternalUserIdLoading:true}, () => {
-                                    // OneSignal setExternalUserId
-                                    OneSignal.removeExternalUserId((results) => {
-                                        console.log('Results of removing external user id');
-                                        console.log(results);
-
-                                        this.setState({isExternalUserIdLoading:false});
-                                    });
-                                });
-                            }
-                        )
-                    }
-
-
-
+            <View style={styles.container}>
+                <View>
+                    <Image style={styles.imageStyle} source={{uri: imageUri}} />
                 </View>
 
-            </ScrollView>
+                <Text style={styles.welcome}>
+                    Welcome to React Native!
+                </Text>
+
+                <Text style={styles.instructions}>
+                    To get started using the OneSignal SDK, edit App.js
+                </Text>
+
+                <Text style={styles.instructions}>
+                    To get started modifying the OneSignal SDK, edit index.js
+                </Text>
+
+                <Text style={styles.instructions}>
+                    Double tap R on your keyboard to reload,{'\n'}
+                    Shake or press menu button for dev menu
+                </Text>
+
+                <Text style={styles.jsonDebugLabelText}>
+                    {debugText}
+                </Text>
+
+                <Text style={styles.instructions}>
+                    App Id:{'\n'}
+                    {appId}
+                </Text>
+            </View>
         );
     }
+
+    /**
+     Create the fields necessary to test subscription with OneSignal SDK
+     */
+    createSubscribeFields() {
+        // States used through-out the subscription fields
+        const {
+            isSubscribed,
+            isSubscriptionLoading,
+            isPrivacyConsentLoading
+        } = this.state;
+
+        let table = [];
+
+        // Subscribe Button
+        let subscribedButton =  this.renderButtonView(
+           isSubscribed ? "Unsubscribe" : "Subscribe",
+           isSubscriptionLoading || isPrivacyConsentLoading,
+           () => {
+               let newSubscription = !isSubscribed;
+               this.setState({isSubscribed:newSubscription, isSubscriptionLoading: true}, () => {
+                   OneSignal.setSubscription(newSubscription);
+
+                   // TODO: Move this into onSubscriptionChange method once implemented
+                   this.setState({isSubscriptionLoading: false});
+               });
+           }
+       );
+
+        table.push(
+            subscribedButton
+        );
+
+        return table;
+    }
+
+    /**
+     Create the fields necessary to test privacy consent with OneSignal SDK
+     */
+    createPrivacyConsentFields() {
+        // States used through-out the privacy consent fields
+        const {
+            hasPrivacyConsent,
+            isPrivacyConsentLoading
+        } = this.state;
+
+        let table = [];
+
+        // Privacy Consent Button
+        let privacyConsentButton = this.renderButtonView(
+            hasPrivacyConsent ? "Remove Consent" : "Grant Consent",
+            isPrivacyConsentLoading,
+            () => {
+                let privacyConsent = !hasPrivacyConsent;
+                this.setState({hasPrivacyConsent:privacyConsent}, () => {
+                    OneSignal.provideUserConsent(privacyConsent);
+                });
+            }
+        );
+
+        table.push(
+            privacyConsentButton
+        );
+
+        return table;
+    }
+
+    /**
+     Create the fields necessary to test email with OneSignal SDK
+     */
+    createEmailFields() {
+        // States used through-out the email fields
+        const {
+            email,
+            isEmailLoading,
+            isPrivacyConsentLoading
+        } = this.state;
+
+        let table = [];
+
+        // Email TextInput
+        let emailTextInput = this.renderFieldView(
+            "Email",
+            email,
+            isEmailLoading || isPrivacyConsentLoading,
+            (text) => {
+                this.setState({email:text});
+            }
+        );
+
+        // Set Email Button
+        let setEmailButton = this.renderButtonView(
+            "Set Email",
+            isEmailLoading || isPrivacyConsentLoading,
+            () => {
+                console.log('Attempting to set email: ' + email);
+                this.setState({isEmailLoading:true}, () => {
+                    // OneSignal setEmail
+                    OneSignal.setEmail(email, null, (error) => {
+                        if (error) {
+                            console.log('Error while setting email: ' + email);
+                        } else {
+                            console.log('Success setting email: ' + email);
+                        }
+
+                        this.setState({isEmailLoading:false});
+                    });
+                });
+            }
+        );
+
+        // Logout Email Button
+        let logoutEmailButton = this.renderButtonView(
+            "Logout Email",
+            isEmailLoading || isPrivacyConsentLoading,
+            () => {
+                console.log('Attempting to logout email');
+                this.setState({isEmailLoading:true}, () => {
+                    // OneSignal logoutEmail
+                    OneSignal.logoutEmail((error) => {
+                        if (error) {
+                            console.log('Error while logging out email');
+                        } else {
+                            console.log('Success logging out email');
+                        }
+
+                        this.setState({isEmailLoading:false});
+                    });
+                });
+            }
+        );
+
+        table.push(
+            emailTextInput,
+            setEmailButton,
+            logoutEmailButton
+        );
+
+        return table;
+    }
+
+    /**
+     Create the fields necessary to test external user id with OneSignal SDK
+     */
+    createExternalUserIdFields() {
+        // States used through-out the email fields
+        const {
+            externalUserId,
+            isExternalUserIdLoading,
+            isPrivacyConsentLoading
+        } = this.state;
+
+        let table = [];
+
+        // External User Id TextInput
+        let externalUserIdTextInput = this.renderFieldView(
+            "External User Id",
+            externalUserId,
+            isExternalUserIdLoading || isPrivacyConsentLoading,
+            (text) => {
+                this.setState({externalUserId:text});
+            }
+        )
+
+        // Set External User Id Button
+        let setExternalUserIdButton = this.renderButtonView(
+            "Set External User Id",
+            isExternalUserIdLoading || isPrivacyConsentLoading,
+            () => {
+                console.log('Attempting to set external user id: ' + externalUserId);
+                this.setState({isExternalUserIdLoading:true}, () => {
+                    // OneSignal setExternalUserId
+                    OneSignal.setExternalUserId(externalUserId, (results) => {
+                        console.log('Results of setting external user id');
+                        console.log(results);
+
+                        this.setState({isExternalUserIdLoading:false});
+                    });
+                });
+            }
+        )
+
+        // Remove External User Id Button
+        let removeExternalUserIdButton = this.renderButtonView(
+            "Remove External User Id",
+            isExternalUserIdLoading || isPrivacyConsentLoading,
+            () => {
+                console.log('Attempting to remove external user id');
+                this.setState({isExternalUserIdLoading:true}, () => {
+                    // OneSignal setExternalUserId
+                    OneSignal.removeExternalUserId((results) => {
+                        console.log('Results of removing external user id');
+                        console.log(results);
+
+                        this.setState({isExternalUserIdLoading:false});
+                    });
+                });
+            }
+        )
+
+        table.push(
+            externalUserIdTextInput,
+            setExternalUserIdButton,
+            removeExternalUserIdButton
+        );
+
+        return table;
+    }
+
+    /**
+     ADD MORE UI METHODS HERE...
+     */
+
 }
 
 const styles = StyleSheet.create({

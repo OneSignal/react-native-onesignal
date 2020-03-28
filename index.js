@@ -8,7 +8,7 @@ const RNOneSignal = NativeModules.OneSignal;
 
 
 /**
- 2.
+ 1.
  These events are used to broadcast events to native code
  */
 const OS_REMOTE_NOTIFICATION_RECEIVED = 'OneSignal-remoteNotificationReceived';
@@ -319,14 +319,14 @@ export default class OneSignal {
         }
     }
 
-    static setEmail(email, callback) {
-        if (!checkIfInitialized()) return;
-
-        RNOneSignal.setEmail(email, null, callback);
-    }
-
     static setEmail(email, emailAuthCode, callback) {
         if (!checkIfInitialized()) return;
+
+        if (emailAuthCode === undefined)
+            emailAuthCode = '';
+
+        if (callback === undefined)
+            callback = function(){};
 
         RNOneSignal.setEmail(email, emailAuthCode, callback);
     }
@@ -438,11 +438,17 @@ export default class OneSignal {
     static setExternalUserId(externalId, callback) {
         if (!checkIfInitialized()) return;
 
+        if (callback === undefined)
+            callback = function(){};
+
         RNOneSignal.setExternalUserId(externalId, callback);
     }
 
     static removeExternalUserId(callback) {
         if (!checkIfInitialized()) return;
+
+        if (callback === undefined)
+            callback = function(){};
 
         RNOneSignal.removeExternalUserId(callback);
     }
