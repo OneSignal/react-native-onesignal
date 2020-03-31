@@ -100,7 +100,7 @@ RCT_EXPORT_METHOD(provideUserConsent:(BOOL)granted) {
 
 RCT_REMAP_METHOD(userProvidedPrivacyConsent, resolver: (RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(@(!OneSignal.requiresUserPrivacyConsent));
+    resolve(@(![OneSignal requiresUserPrivacyConsent]));
 }
 
 RCT_EXPORT_METHOD(initWithAppId:(NSString *)appId settings:(NSDictionary *)settings) {
@@ -176,15 +176,6 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
 RCT_EXPORT_METHOD(setEmail:(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
     // Auth hash token created on server and sent to client.
     [OneSignal setEmail:email withEmailAuthHashToken:authHash withSuccess:^{
-        callback(@[]);
-    } withFailure:^(NSError *error) {
-        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    }];
-}
-
-RCT_EXPORT_METHOD(setUnauthenticatedEmail:(NSString *)email withResponse:(RCTResponseSenderBlock)callback) {
-    // Does not use an email auth has token, uses unauthenticated state
-    [OneSignal setEmail:email withSuccess:^{
         callback(@[]);
     } withFailure:^(NSError *error) {
         callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
@@ -347,19 +338,37 @@ RCT_EXPORT_METHOD(setExternalUserId:(NSString *)externalId) {
     [OneSignal setExternalUserId:externalId];
 }
 
+RCT_EXPORT_METHOD(setExternalUserId:(NSString*)externalId withCompletion:(RCTResponseSenderBlock)callback) {
+    [OneSignal setExternalUserId:externalId withCompletion:^(NSDictionary* results) {
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Set external user id complete"];
+        if (callback) {
+            callback(@[results]);
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(removeExternalUserId) {
     [OneSignal removeExternalUserId];
 }
 
+RCT_EXPORT_METHOD(removeExternalUserId:(RCTResponseSenderBlock)callback) {
+    [OneSignal removeExternalUserId:^(NSDictionary* results) {
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Remove external user id complete"];
+        if (callback) {
+            callback(@[results]);
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
-    //unimplemented in iOS
+    // Not implemented in iOS
 }
 
 /*
  * In-App Messaging
  */
 RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
-    //unimplemented in iOS
+    // Not implemented in iOS
 }
 
 RCT_EXPORT_METHOD(addTriggers:(NSDictionary *)triggers) {

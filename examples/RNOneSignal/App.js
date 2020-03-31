@@ -36,7 +36,7 @@ var appId = '';
  Controls whether the app needs privacy consent or not
  Will hide the button when false and show it when true
  */
-var requiresPrivacyConsent = true;
+var requiresPrivacyConsent = false;
 
 export default class App extends Component {
 
@@ -74,16 +74,16 @@ export default class App extends Component {
             debugText: ''
         };
 
-        OneSignal.setRequiresUserPrivacyConsent(requiresPrivacyConsent);
-        OneSignal.init(appId, {
-            kOSSettingsKeyAutoPrompt: true,
-        });
-
         // Log level logcat is 6 (VERBOSE) and log level alert is 0 (NONE)
         OneSignal.setLogLevel(6, 0);
 
         // Share location of device
         OneSignal.setLocationShared(true);
+
+        OneSignal.setRequiresUserPrivacyConsent(requiresPrivacyConsent);
+        OneSignal.init(appId, {
+            kOSSettingsKeyAutoPrompt: true,
+        });
 
         // Notifications will display as NOTIFICATION type
         OneSignal.inFocusDisplaying(2);
@@ -121,14 +121,6 @@ export default class App extends Component {
     }
 
     async componentDidMount() {
-        this.onNotificationReceived = this.onNotificationReceived.bind(this);
-        this.onNotificationOpened = this.onNotificationOpened.bind(this);
-        this.onIdsAvailable = this.onIdsAvailable.bind(this);
-//        this.onSubscriptionChange = this.onSubscriptionChange.bind(this);
-//        this.onPermissionChange = this.onPermissionChange.bind(this);
-        this.onEmailSubscriptionChange = this.onEmailSubscriptionChange.bind(this);
-        this.onInAppMessageClicked = this.onInAppMessageClicked.bind(this);
-
         OneSignal.addEventListener('received', this.onNotificationReceived);
         OneSignal.addEventListener('opened', this.onNotificationOpened);
         OneSignal.addEventListener('ids', this.onIdsAvailable);
@@ -222,7 +214,7 @@ export default class App extends Component {
     /**
      When a notification is received this will fire
      */
-    onNotificationReceived(notification) {
+    onNotificationReceived = (notification) => {
         console.log('Notification received: ', notification);
 
         let debugMsg = 'RECEIVED: \n' + JSON.stringify(notification, null, 2);
@@ -235,7 +227,7 @@ export default class App extends Component {
      When a notification is opened this will fire
      The openResult will contain information about the notification opened
      */
-    onNotificationOpened(openResult) {
+    onNotificationOpened = (openResult) => {
         console.log('Message: ', openResult.notification.payload.body);
         console.log('Data: ', openResult.notification.payload.additionalData);
         console.log('isActive: ', openResult.notification.isAppInFocus);
@@ -251,7 +243,7 @@ export default class App extends Component {
      Once the user is registered/updated the onIds will send back the userId and pushToken
         of the device
      */
-    onIdsAvailable(device) {
+    onIdsAvailable = (device) => {
         console.log('Device info: ', device);
         // Save the userId and pushToken for the device, important for updating the device
         //  record using the SDK, and sending notifications
@@ -264,14 +256,14 @@ export default class App extends Component {
     /**
      TODO: Needs to be implemented still in index.js and RNOneSignal.java
      */
-    onSubscriptionChange(change) {
+    onSubscriptionChange = (change) => {
         console.log('onSubscriptionChange: ', change);
     }
 
     /**
      TODO: Needs to be implemented still in index.js and RNOneSignal.java
      */
-    onPermissionChange(change) {
+    onPermissionChange = (change) => {
         console.log('onPermissionChange: ', change);
     }
 
@@ -282,7 +274,7 @@ export default class App extends Component {
 
      TODO: Validate this is working, might be broken after changing name
      */
-    onEmailSubscriptionChange(change) {
+    onEmailSubscriptionChange = (change) => {
         console.log('onEmailSubscriptionChange: ', change);
         this.setState({isEmailLoading:false});
     }
@@ -291,7 +283,7 @@ export default class App extends Component {
      When an element on an IAM is clicked this will fire
      The actionResult will contain information about the element clicked
      */
-    onInAppMessageClicked(actionResult) {
+    onInAppMessageClicked = (actionResult) => {
         console.log('actionResult: ', actionResult);
 
         let debugMsg = 'CLICKED: \n' + JSON.stringify(actionResult, null, 2);

@@ -14,8 +14,8 @@ const RNOneSignal = NativeModules.OneSignal;
 const OS_REMOTE_NOTIFICATION_RECEIVED = 'OneSignal-remoteNotificationReceived';
 const OS_REMOTE_NOTIFICATION_OPENED = 'OneSignal-remoteNotificationOpened';
 const OS_IDS_AVAILABLE = 'OneSignal-idsAvailable';
-const OS_SUBSCRIPTION = 'OneSignal-subscription';
-const OS_PERMISSION = 'OneSignal-permission';
+//const OS_SUBSCRIPTION = 'OneSignal-subscription';
+//const OS_PERMISSION = 'OneSignal-permission';
 const OS_EMAIL_SUBSCRIPTION = 'OneSignal-emailSubscription';
 const OS_IN_APP_MESSAGE_CLICKED = 'OneSignal-inAppMessageClicked';
 // Add more native broadcast strings here...
@@ -24,8 +24,8 @@ const _eventBroadcastNames = [
     OS_REMOTE_NOTIFICATION_RECEIVED,
     OS_REMOTE_NOTIFICATION_OPENED,
     OS_IDS_AVAILABLE,
-    OS_SUBSCRIPTION,
-    OS_PERMISSION,
+//    OS_SUBSCRIPTION,
+//    OS_PERMISSION,
     OS_EMAIL_SUBSCRIPTION,
     OS_IN_APP_MESSAGE_CLICKED,
     // Append new native broadcast strings here
@@ -38,8 +38,8 @@ const _eventBroadcastNames = [
 const NOTIFICATION_RECEIVED_EVENT = "received";
 const NOTIFICATION_OPENED_EVENT = "opened";
 const IDS_AVAILABLE_EVENT = "ids";
-const SUBSCRIPTION_EVENT = "subscription";
-const PERMISSION_EVENT = "permission";
+//const SUBSCRIPTION_EVENT = "subscription";
+//const PERMISSION_EVENT = "permission";
 const EMAIL_SUBSCRIPTION_EVENT = "emailSubscription";
 const IN_APP_MESSAGE_CLICKED_EVENT = "inAppMessageClicked";
 // Add more JS string events here...
@@ -48,8 +48,8 @@ const _eventNames = [
     NOTIFICATION_RECEIVED_EVENT,
     NOTIFICATION_OPENED_EVENT,
     IDS_AVAILABLE_EVENT,
-    SUBSCRIPTION_EVENT,
-    PERMISSION_EVENT,
+//    SUBSCRIPTION_EVENT,
+//    PERMISSION_EVENT,
     EMAIL_SUBSCRIPTION_EVENT,
     IN_APP_MESSAGE_CLICKED_EVENT,
     // Append new JS string events here
@@ -107,8 +107,8 @@ export default class OneSignal {
             type === NOTIFICATION_RECEIVED_EVENT ||
             type === NOTIFICATION_OPENED_EVENT ||
             type === IDS_AVAILABLE_EVENT ||
-            type === SUBSCRIPTION_EVENT ||
-            type === PERMISSION_EVENT ||
+//            type === SUBSCRIPTION_EVENT ||
+//            type === PERMISSION_EVENT ||
             type === EMAIL_SUBSCRIPTION_EVENT ||
             type === IN_APP_MESSAGE_CLICKED_EVENT,
             'OneSignal only supports received, opened, ids, subscription, permission, emailSubscription, and inAppMessageClicked events'
@@ -149,8 +149,8 @@ export default class OneSignal {
         invariant(
             type === NOTIFICATION_RECEIVED_EVENT ||
             type === NOTIFICATION_OPENED_EVENT ||
-            type === IDS_AVAILABLE_EVENT ||
-            type === SUBSCRIPTION_EVENT ||
+//            type === IDS_AVAILABLE_EVENT ||
+//            type === SUBSCRIPTION_EVENT ||
             type === PERMISSION_EVENT ||
             type === EMAIL_SUBSCRIPTION_EVENT ||
             type === IN_APP_MESSAGE_CLICKED_EVENT,
