@@ -111,7 +111,7 @@ export default class OneSignal {
 //            type === PERMISSION_EVENT ||
             type === EMAIL_SUBSCRIPTION_EVENT ||
             type === IN_APP_MESSAGE_CLICKED_EVENT,
-            'OneSignal only supports received, opened, ids, subscription, permission, emailSubscription, and inAppMessageClicked events'
+            'OneSignal only supports received, opened, ids, emailSubscription, and inAppMessageClicked events'
         );
 
         _eventTypeHandler.set(type, handler);
@@ -149,12 +149,12 @@ export default class OneSignal {
         invariant(
             type === NOTIFICATION_RECEIVED_EVENT ||
             type === NOTIFICATION_OPENED_EVENT ||
-//            type === IDS_AVAILABLE_EVENT ||
+            type === IDS_AVAILABLE_EVENT ||
 //            type === SUBSCRIPTION_EVENT ||
-            type === PERMISSION_EVENT ||
+//            type === PERMISSION_EVENT ||
             type === EMAIL_SUBSCRIPTION_EVENT ||
             type === IN_APP_MESSAGE_CLICKED_EVENT,
-            'OneSignal only supports received, opened, ids, subscription, permission, emailSubscription, and inAppMessageClicked events'
+            'OneSignal only supports received, opened, ids, emailSubscription, and inAppMessageClicked events'
         );
 
         _eventTypeHandler.delete(type);
@@ -323,7 +323,7 @@ export default class OneSignal {
         if (!checkIfInitialized()) return;
 
         if (emailAuthCode === undefined)
-            emailAuthCode = '';
+            emailAuthCode = null;
 
         if (callback === undefined)
             callback = function(){};

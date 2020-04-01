@@ -23,20 +23,20 @@ import OneSignal from 'react-native-onesignal';
 import { sleep } from './Util';
 
 const imageUri = 'https://cdn-images-1.medium.com/max/300/1*7xHdCFeYfD8zrIivMiQcCQ.png';
-const buttonColor = Platform.OS == 'ios' ? '#ffffff' : '#d45653';
-const textInputBorderColor = Platform.OS == 'ios' ? '#ffffff' : '#d45653';
-const disabledColor = '#bebebe';
+const buttonColor = Platform.OS == 'ios' ? '#3C8AE7' : '#D45653';
+const textInputBorderColor = Platform.OS == 'ios' ? '#3C8AE7' : '#D45653';
+const disabledColor = '#BEBEBE';
 
 /**
  Change to desired app id (dashboard app)
  */
-var appId = '';
+var appId = '77e32082-ea27-42e3-a898-c72e141824ef';
 
 /**
  Controls whether the app needs privacy consent or not
  Will hide the button when false and show it when true
  */
-var requiresPrivacyConsent = false;
+var requiresPrivacyConsent = true;
 
 export default class App extends Component {
 
@@ -295,17 +295,12 @@ export default class App extends Component {
     render() {
         return (
             <ScrollView style={styles.scrollView}>
-
                 { this.createTitleFields() }
 
                 <View style={styles.container}>
-
                     { this.createSubscribeFields() }
-
                     { this.createPrivacyConsentFields() }
-
                     { this.createEmailFields() }
-
                     { this.createExternalUserIdFields() }
 
                 </View>
@@ -320,13 +315,13 @@ export default class App extends Component {
     renderButtonView = (name, isLoading, callback) => {
         let isPrivacyConsentButton = name.includes("Consent");
 
+        if (isPrivacyConsentButton && !requiresPrivacyConsent)
+            return null;
+
         let isClickable = !isLoading
             && (!requiresPrivacyConsent
                 || this.state.hasPrivacyConsent
                 || isPrivacyConsentButton);
-
-        if (isPrivacyConsentButton && !requiresPrivacyConsent)
-            return null;
 
         return (
             <View
@@ -337,10 +332,8 @@ export default class App extends Component {
                 <Button
                     key={name}
                     title={isLoading ? name + "..." : name}
-                    style={styles.button}
-                    color={isClickable ? buttonColor : disabledColor}
+                    color={isClickable ? textInputBorderColor : disabledColor}
                     onPress={() => { isClickable && callback() }}
-
                 />
             </View>
         );
@@ -369,7 +362,6 @@ export default class App extends Component {
                 <TextInput
                     key={name}
                     style={styles.textInput}
-                    underlineColorAndroid="rgba(0, 0, 0, 0)"
                     placeholder={name}
                     value={value}
                     multiline={false}
@@ -444,7 +436,7 @@ export default class App extends Component {
             isPrivacyConsentLoading
         } = this.state;
 
-        let table = [];
+        let elements = [];
 
         // Subscribe Button
         let subscribedButton =  this.renderButtonView(
@@ -461,11 +453,11 @@ export default class App extends Component {
            }
        );
 
-        table.push(
+        elements.push(
             subscribedButton
         );
 
-        return table;
+        return elements;
     }
 
     /**
@@ -478,7 +470,7 @@ export default class App extends Component {
             isPrivacyConsentLoading
         } = this.state;
 
-        let table = [];
+        let elements = [];
 
         // Privacy Consent Button
         let privacyConsentButton = this.renderButtonView(
@@ -492,11 +484,11 @@ export default class App extends Component {
             }
         );
 
-        table.push(
+        elements.push(
             privacyConsentButton
         );
 
-        return table;
+        return elements;
     }
 
     /**
@@ -510,7 +502,7 @@ export default class App extends Component {
             isPrivacyConsentLoading
         } = this.state;
 
-        let table = [];
+        let elements = [];
 
         // Email TextInput
         let emailTextInput = this.renderFieldView(
@@ -564,13 +556,13 @@ export default class App extends Component {
             }
         );
 
-        table.push(
+        elements.push(
             emailTextInput,
             setEmailButton,
             logoutEmailButton
         );
 
-        return table;
+        return elements;
     }
 
     /**
@@ -584,7 +576,7 @@ export default class App extends Component {
             isPrivacyConsentLoading
         } = this.state;
 
-        let table = [];
+        let elements = [];
 
         // External User Id TextInput
         let externalUserIdTextInput = this.renderFieldView(
@@ -632,13 +624,13 @@ export default class App extends Component {
             }
         )
 
-        table.push(
+        elements.push(
             externalUserIdTextInput,
             setExternalUserIdButton,
             removeExternalUserIdButton
         );
 
-        return table;
+        return elements;
     }
 
     /**
@@ -656,7 +648,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#FFFFFF',
     },
     welcome: {
         fontSize: 20,
@@ -681,11 +673,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginVertical: 10,
         marginHorizontal: 10,
-        backgroundColor: '#d45653',
-    },
-    button: {
-        color: '#000000',
-        flex: 1,
     },
     imageStyle: {
         height: 200,
