@@ -100,7 +100,7 @@ RCT_EXPORT_METHOD(provideUserConsent:(BOOL)granted) {
 
 RCT_REMAP_METHOD(userProvidedPrivacyConsent, resolver: (RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(@(![OneSignal requiresUserPrivacyConsent]));
+    resolve(@(!OneSignal.requiresUserPrivacyConsent));
 }
 
 RCT_EXPORT_METHOD(initWithAppId:(NSString *)appId settings:(NSDictionary *)settings) {
