@@ -28,6 +28,7 @@ import com.onesignal.OSEmailSubscriptionState;
 import com.onesignal.OneSignal;
 import com.onesignal.OneSignal.EmailUpdateHandler;
 import com.onesignal.OneSignal.EmailUpdateError;
+import com.onesignal.OneSignal.OSExternalUserIdUpdateCompletionHandler;
 import com.onesignal.OneSignal.OutcomeCallback;
 
 import com.onesignal.OneSignal.InAppMessageClickHandler;
@@ -55,6 +56,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
    private OSNotificationOpenResult coldStartNotificationResult;
    private OSInAppMessageAction inAppMessageActionResult;
+
    private boolean hasSetNotificationOpenedHandler = false;
    private boolean hasSetInAppClickedHandler = false;
    private boolean hasSetRequiresPrivacyConsent = false;
@@ -162,25 +164,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public void setUnauthenticatedEmail(String email, final Callback callback) {
-      OneSignal.setEmail(email, null, new OneSignal.EmailUpdateHandler() {
-         @Override
-         public void onSuccess() {
-            callback.invoke();
-         }
-
-         @Override
-         public void onFailure(EmailUpdateError error) {
-            try {
-               callback.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
-            } catch (JSONException exception) {
-               exception.printStackTrace();
-            }
-         }
-      });
-   }
-
-   @ReactMethod
    public void setEmail(String email, String emailAuthToken, final Callback callback) {
       OneSignal.setEmail(email, emailAuthToken, new EmailUpdateHandler() {
          @Override
@@ -232,6 +215,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       });
    }
 
+   // TODO: This needs to be split out into several different callbacks to the JS and connect
+   //  to the correct native methods
    @ReactMethod
    public void getPermissionSubscriptionState(final Callback callback) {
       OSPermissionSubscriptionState state = OneSignal.getPermissionSubscriptionState();
@@ -391,13 +376,27 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public void setExternalUserId(String externalId) {
-      OneSignal.setExternalUserId(externalId);
+   public void setExternalUserId(@Nonnull final String externalId, @Nullable final Callback callback) {
+      OneSignal.setExternalUserId(externalId, new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
+         @Override
+         public void onComplete(JSONObject results) {
+            Log.i("OneSignal", "Completed setting external user id: " + externalId + "with results: " + results.toString());
+            if (callback != null)
+               callback.invoke(RNUtils.jsonToWritableMap(results));
+         }
+      });
    }
 
    @ReactMethod
-   public void removeExternalUserId() {
-      OneSignal.removeExternalUserId();
+   public void removeExternalUserId(@Nullable final Callback callback) {
+      OneSignal.removeExternalUserId(new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
+         @Override
+         public void onComplete(JSONObject results) {
+            Log.i("OneSignal", "Completed removing external user id with results: " + results.toString());
+            if (callback != null)
+               callback.invoke(RNUtils.jsonToWritableMap(results));
+         }
+      });
    }
 
    @ReactMethod

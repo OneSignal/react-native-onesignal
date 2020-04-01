@@ -6,32 +6,53 @@ import invariant from 'invariant';
 
 const RNOneSignal = NativeModules.OneSignal;
 
+
+/**
+ 1.
+ These events are used to broadcast events to native code
+ */
 const OS_REMOTE_NOTIFICATION_RECEIVED = 'OneSignal-remoteNotificationReceived';
 const OS_REMOTE_NOTIFICATION_OPENED = 'OneSignal-remoteNotificationOpened';
 const OS_IDS_AVAILABLE = 'OneSignal-idsAvailable';
+//const OS_SUBSCRIPTION = 'OneSignal-subscription';
+//const OS_PERMISSION = 'OneSignal-permission';
 const OS_EMAIL_SUBSCRIPTION = 'OneSignal-emailSubscription';
 const OS_IN_APP_MESSAGE_CLICKED = 'OneSignal-inAppMessageClicked';
+// Add more native broadcast strings here...
 
-const eventBroadcastNames = [
+const _eventBroadcastNames = [
     OS_REMOTE_NOTIFICATION_RECEIVED,
     OS_REMOTE_NOTIFICATION_OPENED,
     OS_IDS_AVAILABLE,
+//    OS_SUBSCRIPTION,
+//    OS_PERMISSION,
     OS_EMAIL_SUBSCRIPTION,
-    OS_IN_APP_MESSAGE_CLICKED
+    OS_IN_APP_MESSAGE_CLICKED,
+    // Append new native broadcast strings here
 ];
 
+/**
+ 2.
+ These events are used to interpret events from native code
+ */
 const NOTIFICATION_RECEIVED_EVENT = "received";
 const NOTIFICATION_OPENED_EVENT = "opened";
 const IDS_AVAILABLE_EVENT = "ids";
+//const SUBSCRIPTION_EVENT = "subscription";
+//const PERMISSION_EVENT = "permission";
 const EMAIL_SUBSCRIPTION_EVENT = "emailSubscription";
 const IN_APP_MESSAGE_CLICKED_EVENT = "inAppMessageClicked";
+// Add more JS string events here...
 
 const _eventNames = [
     NOTIFICATION_RECEIVED_EVENT,
     NOTIFICATION_OPENED_EVENT,
     IDS_AVAILABLE_EVENT,
+//    SUBSCRIPTION_EVENT,
+//    PERMISSION_EVENT,
     EMAIL_SUBSCRIPTION_EVENT,
-    IN_APP_MESSAGE_CLICKED_EVENT
+    IN_APP_MESSAGE_CLICKED_EVENT,
+    // Append new JS string events here
 ];
 
 var oneSignalEventEmitter;
@@ -43,8 +64,8 @@ var _listeners = [];
 if (RNOneSignal != null) {
     oneSignalEventEmitter = new NativeEventEmitter(RNOneSignal);
 
-    for(var i = 0; i < eventBroadcastNames.length; i++) {
-        var eventBroadcastName = eventBroadcastNames[i];
+    for(var i = 0; i < _eventBroadcastNames.length; i++) {
+        var eventBroadcastName = _eventBroadcastNames[i];
         var eventName = _eventNames[i];
 
         _listeners[eventName] = handleEventBroadcast(eventName, eventBroadcastName)
@@ -72,31 +93,40 @@ function checkIfInitialized() {
 }
 
 export default class OneSignal {
+
+    /**
+     Listen to events of received, opened, ids, subscription, permission, emailSubscription, inAppMessageClicked
+     TODO: We currently have implemented the steps up until connecting the "SUBSCRIPTION_EVENT" and "PERMISSION_EVENT"
+     Currently the getPermissionSubscriptionState is used to get all device information and
+        needs to be broken up into using the native observers to fire these React-Native handlers
+     */
     static addEventListener(type, handler) {
         if (!checkIfInitialized()) return;
-
-        // Listen to events of notification received, opened, device registered, IDSAvailable, and IAMClicked.
 
         invariant(
             type === NOTIFICATION_RECEIVED_EVENT ||
             type === NOTIFICATION_OPENED_EVENT ||
             type === IDS_AVAILABLE_EVENT ||
+//            type === SUBSCRIPTION_EVENT ||
+//            type === PERMISSION_EVENT ||
             type === EMAIL_SUBSCRIPTION_EVENT ||
             type === IN_APP_MESSAGE_CLICKED_EVENT,
-            'OneSignal only supports `received`, `opened`, `ids`, `emailSubscription`, and `inAppMessageClicked` events'
+            'OneSignal only supports received, opened, ids, emailSubscription, and inAppMessageClicked events'
         );
 
         _eventTypeHandler.set(type, handler);
 
+        // Make native request to init notification opened handler
         if (type === NOTIFICATION_OPENED_EVENT) {
             RNOneSignal.initNotificationOpenedHandlerParams();
         }
 
-        // triggers ids event
+        // Make native request to init idsAvailable handler
         if (type === IDS_AVAILABLE_EVENT) {
             RNOneSignal.idsAvailable();
         }
 
+        // Make native request to init IAM handler
         if (type === IN_APP_MESSAGE_CLICKED_EVENT) {
             if (Platform.OS === 'android') {
                 RNOneSignal.initInAppMessageClickHandlerParams();
@@ -120,9 +150,11 @@ export default class OneSignal {
             type === NOTIFICATION_RECEIVED_EVENT ||
             type === NOTIFICATION_OPENED_EVENT ||
             type === IDS_AVAILABLE_EVENT ||
+//            type === SUBSCRIPTION_EVENT ||
+//            type === PERMISSION_EVENT ||
             type === EMAIL_SUBSCRIPTION_EVENT ||
             type === IN_APP_MESSAGE_CLICKED_EVENT,
-            'OneSignal only supports `received`, `opened`, `ids`, `emailSubscription`, and `inAppMessageClicked` events'
+            'OneSignal only supports received, opened, ids, emailSubscription, and inAppMessageClicked events'
         );
 
         _eventTypeHandler.delete(type);
@@ -290,19 +322,13 @@ export default class OneSignal {
     static setEmail(email, emailAuthCode, callback) {
         if (!checkIfInitialized()) return;
 
-        if (emailAuthCode == undefined) {
-            //emailAuthCode is an optional parameter
-            //since JS does not support function overloading,
-            //unauthenticated setEmail calls will have emailAuthCode as the callback
+        if (emailAuthCode === undefined)
+            emailAuthCode = null;
 
-            RNOneSignal.setUnauthenticatedEmail(email, function(){});
-        } else if (callback == undefined && typeof emailAuthCode == 'function') {
-            RNOneSignal.setUnauthenticatedEmail(email, emailAuthCode);
-        } else if (callback == undefined) {
-            RNOneSignal.setEmail(email, emailAuthCode, function(){});
-        } else {
-            RNOneSignal.setEmail(email, emailAuthCode, callback);
-        }
+        if (callback === undefined)
+            callback = function(){};
+
+        RNOneSignal.setEmail(email, emailAuthCode, callback);
     }
 
     static logoutEmail(callback) {
@@ -409,16 +435,22 @@ export default class OneSignal {
         return RNOneSignal.userProvidedPrivacyConsent();
     }
 
-    static setExternalUserId(externalId) {
+    static setExternalUserId(externalId, callback) {
         if (!checkIfInitialized()) return;
 
-        RNOneSignal.setExternalUserId(externalId);
+        if (callback === undefined)
+            callback = function(){};
+
+        RNOneSignal.setExternalUserId(externalId, callback);
     }
 
-    static removeExternalUserId() {
+    static removeExternalUserId(callback) {
         if (!checkIfInitialized()) return;
 
-        RNOneSignal.removeExternalUserId();
+        if (callback === undefined)
+            callback = function(){};
+
+        RNOneSignal.removeExternalUserId(callback);
     }
 
     /**

@@ -16,6 +16,8 @@ typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
     NotificationReceived,
     NotificationOpened,
     IdsAvailable,
+//    Subscription,
+//    Permission,
     EmailSubscriptionChanged,
     InAppMessageClicked
 };

@@ -182,15 +182,6 @@ RCT_EXPORT_METHOD(setEmail:(NSString *)email withAuthHash:(NSString *)authHash w
     }];
 }
 
-RCT_EXPORT_METHOD(setUnauthenticatedEmail:(NSString *)email withResponse:(RCTResponseSenderBlock)callback) {
-    // Does not use an email auth has token, uses unauthenticated state
-    [OneSignal setEmail:email withSuccess:^{
-        callback(@[]);
-    } withFailure:^(NSError *error) {
-        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
-    }];
-}
-
 RCT_EXPORT_METHOD(logoutEmail:(RCTResponseSenderBlock)callback) {
     [OneSignal logoutEmailWithSuccess:^{
         callback(@[]);
@@ -347,19 +338,37 @@ RCT_EXPORT_METHOD(setExternalUserId:(NSString *)externalId) {
     [OneSignal setExternalUserId:externalId];
 }
 
+RCT_EXPORT_METHOD(setExternalUserId:(NSString*)externalId withCompletion:(RCTResponseSenderBlock)callback) {
+    [OneSignal setExternalUserId:externalId withCompletion:^(NSDictionary* results) {
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Set external user id complete"];
+        if (callback) {
+            callback(@[results]);
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(removeExternalUserId) {
     [OneSignal removeExternalUserId];
 }
 
+RCT_EXPORT_METHOD(removeExternalUserId:(RCTResponseSenderBlock)callback) {
+    [OneSignal removeExternalUserId:^(NSDictionary* results) {
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Remove external user id complete"];
+        if (callback) {
+            callback(@[results]);
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
-    //unimplemented in iOS
+    // Not implemented in iOS
 }
 
 /*
  * In-App Messaging
  */
 RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
-    //unimplemented in iOS
+    // Not implemented in iOS
 }
 
 RCT_EXPORT_METHOD(addTriggers:(NSDictionary *)triggers) {
