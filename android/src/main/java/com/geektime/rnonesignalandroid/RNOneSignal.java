@@ -376,7 +376,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public void setExternalUserId(@Nonnull final String externalId, @Nullable final Callback callback) {
+   public void setExternalUserId(final String externalId, final Callback callback) {
       OneSignal.setExternalUserId(externalId, new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
          @Override
          public void onComplete(JSONObject results) {
@@ -388,7 +388,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public void removeExternalUserId(@Nullable final Callback callback) {
+   public void removeExternalUserId(final Callback callback) {
       OneSignal.removeExternalUserId(new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
          @Override
          public void onComplete(JSONObject results) {
