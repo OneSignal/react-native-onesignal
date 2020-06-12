@@ -59,7 +59,7 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
     /*Notification is silent, or app is in focus but InAppAlertNotifications are disabled*/
     OSNotificationDisplayTypeNone,
     
-    /*Default UIAlertView display*/
+    /*Default UIAlertController display*/
     OSNotificationDisplayTypeInAppAlert,
     
     /*iOS native notification display*/
@@ -210,12 +210,17 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 - (void)handleMessageAction:(OSInAppMessageAction * _Nonnull)action NS_SWIFT_NAME(handleMessageAction(action:));
 @end
 
-/* OneSignal Session Types */
+/* OneSignal Influence Types */
 typedef NS_ENUM(NSUInteger, Session) {
     DIRECT,
     INDIRECT,
     UNATTRIBUTED,
     DISABLED
+};
+/* OneSignal Influence Channels */
+typedef NS_ENUM(NSUInteger, OSInfluenceChannel) {
+    IN_APP_MESSAGE,
+    NOTIFICATION,
 };
 
 @interface OSOutcomeEvent : NSObject
@@ -351,7 +356,6 @@ typedef void (^OSHandleInAppMessageActionClickBlock)(OSInAppMessageAction* actio
 
 /*Block for handling outcome event being sent successfully*/
 typedef void (^OSSendOutcomeSuccess)(OSOutcomeEvent* outcome);
-
 
 /*Dictionary of keys to pass alongside the init settings*/
     
