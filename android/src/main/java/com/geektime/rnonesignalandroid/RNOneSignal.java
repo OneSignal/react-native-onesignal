@@ -479,40 +479,55 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
     */
 
    @ReactMethod
-   public void sendOutcome(String name, final Callback callback) {
+   public void sendOutcome(final String name, final Callback callback) {
       OneSignal.sendOutcome(name, new OutcomeCallback() {
          @Override
          public void onSuccess(OutcomeEvent outcomeEvent) {
             if (outcomeEvent == null)
                callback.invoke(new WritableNativeMap());
-            else
-               callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+            else {
+               try {
+                  callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+               } catch (JSONException e) {
+                  Log.e("OneSignal", "sendOutcome with name: " + name + ", failed with message: " + e.getMessage());
+               }
+            }
          }
       });
    }
 
    @ReactMethod
-   public void sendUniqueOutcome(String name, final Callback callback) {
+   public void sendUniqueOutcome(final String name, final Callback callback) {
       OneSignal.sendUniqueOutcome(name, new OutcomeCallback() {
          @Override
          public void onSuccess(OutcomeEvent outcomeEvent) {
             if (outcomeEvent == null)
                callback.invoke(new WritableNativeMap());
-            else
-               callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+            else {
+               try {
+                  callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+               } catch (JSONException e) {
+                  Log.e("OneSignal", "sendUniqueOutcome with name: " + name + ", failed with message: " + e.getMessage());
+               }
+            }
          }
       });
    }
 
    @ReactMethod
-   public void sendOutcomeWithValue(String name, float value, final Callback callback) {
+   public void sendOutcomeWithValue(final String name, final float value, final Callback callback) {
       OneSignal.sendOutcomeWithValue(name, value, new OutcomeCallback() {
          @Override
          public void onSuccess(OutcomeEvent outcomeEvent) {
             if (outcomeEvent == null)
                callback.invoke(new WritableNativeMap());
-            else
-               callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+            else {
+               try {
+                  callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
+               } catch (JSONException e) {
+                  Log.e("OneSignal", "sendOutcomeWithValue with name: " + name + " and value: " + value + ", failed with message: " + e.getMessage());
+               }
+            }
          }
       });
    }
