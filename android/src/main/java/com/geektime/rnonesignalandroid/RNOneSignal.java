@@ -490,7 +490,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
                } catch (JSONException e) {
                   Log.e("OneSignal", "sendOutcome with name: " + name + ", failed with message: " + e.getMessage());
-                  e.printStackTrace();
                }
             }
          }
@@ -509,7 +508,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
                } catch (JSONException e) {
                   Log.e("OneSignal", "sendUniqueOutcome with name: " + name + ", failed with message: " + e.getMessage());
-                  e.printStackTrace();
                }
             }
          }
@@ -528,7 +526,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
                } catch (JSONException e) {
                   Log.e("OneSignal", "sendOutcomeWithValue with name: " + name + " and value: " + value + ", failed with message: " + e.getMessage());
-                  e.printStackTrace();
                }
             }
          }
