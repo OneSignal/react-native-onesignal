@@ -405,13 +405,7 @@ RCT_EXPORT_METHOD(pauseInAppMessages:(BOOL)pause) {
 
 RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
     [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction *action) {
-        NSDictionary *result = @{
-         @"clickName": action.clickName ?: [NSNull null],
-         @"clickUrl" : action.clickUrl.absoluteString ?: [NSNull null],
-         @"firstClick" : @(action.firstClick),
-         @"closesMessage" : @(action.closesMessage)
-        };
-        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:result];
+        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:[action jsonRepresentation]];
     }];
 }
 
