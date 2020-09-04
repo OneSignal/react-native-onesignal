@@ -1,77 +1,132 @@
+/*
+Modified MIT License
+
+Copyright 2020 OneSignal
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+1. The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+2. All copies of substantial portions of the Software may only be used in connection
+with services provided by OneSignal.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+Authors:
+ - Avishay Bar (creator) - 1/31/16
+ - Brad Hesse
+ - Josh Kasten
+ - Rodrigo Gomez-Palacio
+ - Michael DiCioccio
+*/
+
 package com.geektime.rnonesignalandroid;
 
 import java.util.Iterator;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.content.pm.ApplicationInfo;
 
-import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.bridge.Promise;
-import com.onesignal.OSInAppMessageAction;
+
+import com.onesignal.OSEmailSubscriptionStateChanges;
+import com.onesignal.OneSignal;
+import com.onesignal.OutcomeEvent;
+import com.onesignal.OSDeviceState;
 import com.onesignal.OSPermissionState;
-import com.onesignal.OSPermissionSubscriptionState;
+import com.onesignal.OSInAppMessageAction;
+import com.onesignal.OSNotification;
+import com.onesignal.OSNotificationReceivedEvent;
+import com.onesignal.OSNotificationOpenedResult;
+import com.onesignal.OneSignal.OutcomeCallback;
+import com.onesignal.OneSignal.EmailUpdateError;
+import com.onesignal.OSNotificationGenerationJob;
+
 import com.onesignal.OSSubscriptionState;
 import com.onesignal.OSEmailSubscriptionState;
-import com.onesignal.OneSignal;
+import com.onesignal.OSPermissionSubscriptionState;
+
 import com.onesignal.OneSignal.EmailUpdateHandler;
-import com.onesignal.OneSignal.EmailUpdateError;
+import com.onesignal.OneSignal.OSInAppMessageClickHandler;
+import com.onesignal.OneSignal.OSNotificationOpenedHandler;
 import com.onesignal.OneSignal.OSExternalUserIdUpdateCompletionHandler;
 import com.onesignal.OneSignal.OutcomeCallback;
-
-import com.onesignal.OneSignal.InAppMessageClickHandler;
-import com.onesignal.OneSignal.NotificationOpenedHandler;
-import com.onesignal.OneSignal.NotificationReceivedHandler;
-import com.onesignal.OSNotificationOpenResult;
-import com.onesignal.OSNotification;
+import com.onesignal.OneSignal.OSInAppMessageClickHandler;
 import com.onesignal.OutcomeEvent;
+import com.onesignal.OSDeviceState;
+
+import com.onesignal.OSPermissionObserver;
+import com.onesignal.OSSubscriptionObserver;
+import com.onesignal.OSEmailSubscriptionObserver;
+
+import com.onesignal.OSPermissionStateChanges;
+import com.onesignal.OSSubscriptionStateChanges;
+import com.onesignal.OSEmailSubscriptionObserver;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+public class RNOneSignal extends ReactContextBaseJavaModule
+        implements
+        OSPermissionObserver,
+        OSSubscriptionObserver,
+        OSNotificationOpenedHandler,
+        OSEmailSubscriptionObserver,
+        LifecycleEventListener,
+        OSInAppMessageClickHandler
+{
 
-/**
- * Created by Avishay on 1/31/16.
- */
-public class RNOneSignal extends ReactContextBaseJavaModule implements LifecycleEventListener, NotificationReceivedHandler, NotificationOpenedHandler, InAppMessageClickHandler {
    public static final String HIDDEN_MESSAGE_KEY = "hidden";
 
    private ReactApplicationContext mReactApplicationContext;
    private ReactContext mReactContext;
+
    private boolean oneSignalInitDone;
    private boolean registeredEvents = false;
 
-   private OSNotificationOpenResult coldStartNotificationResult;
    private OSInAppMessageAction inAppMessageActionResult;
+
+   private HashMap<String, OSNotificationReceivedEvent> notificationReceivedEventCache;
 
    private boolean hasSetNotificationOpenedHandler = false;
    private boolean hasSetInAppClickedHandler = false;
    private boolean hasSetRequiresPrivacyConsent = false;
    private boolean waitingForUserPrivacyConsent = false;
 
-   //ensure only one callback exists at a given time due to react-native restriction
+   // A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later.
+   // It is very important to highlight that the callback is not invoked immediately after the native function completes
+   // - remember that bridge communication is asynchronous, and this too is tied to the run loop.
+   // Once you have done invoke() on the callback, you cannot use it again. Store it here.
    private Callback pendingGetTagsCallback;
-
-   public RNOneSignal(ReactApplicationContext reactContext) {
-      super(reactContext);
-      mReactApplicationContext = reactContext;
-      mReactContext = reactContext;
-      mReactContext.addLifecycleEventListener(this);
-      initOneSignal();
-   }
+   private Callback inAppMessageClickedCallback;
 
    private String appIdFromManifest(ReactApplicationContext context) {
       try {
@@ -84,23 +139,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       }
    }
 
-   // Initialize OneSignal only once when an Activity is available.
-   // React creates an instance of this class to late for OneSignal to get the current Activity
-   // based on registerActivityLifecycleCallbacks it uses to listen for the first Activity.
-   // However it seems it is also to soon to call getCurrentActivity() from the reactContext as well.
-   // This will normally succeed when onHostResume fires instead.
-   private void initOneSignal() {
-      // Uncomment to debug init issues.
-      // OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.ERROR);
-
-      OneSignal.sdkType = "react";
-
-      String appId = appIdFromManifest(mReactApplicationContext);
-
-      if (appId != null && appId.length() > 0)
-         init(appId);
-   }
-
    private void sendEvent(String eventName, Object params) {
       mReactContext
               .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -111,8 +149,21 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       return new JSONObject().put("error", errorMessage);
    }
 
-   @ReactMethod
-   public void init(String appId) {
+   public RNOneSignal(ReactApplicationContext reactContext) {
+      super(reactContext);
+      mReactApplicationContext = reactContext;
+      mReactContext = reactContext;
+      mReactContext.addLifecycleEventListener(this);
+      notificationReceivedEventCache = new HashMap<String, OSNotificationReceivedEvent>();
+   }
+
+   // Initialize OneSignal only once when an Activity is available.
+   // React creates an instance of this class to late for OneSignal to get the current Activity
+   // based on registerActivityLifecycleCallbacks it uses to listen for the first Activity.
+   // However it seems it is also to soon to call getCurrentActivity() from the reactContext as well.
+   // This will normally succeed when onHostResume fires instead.
+   private void initOneSignal() {
+      OneSignal.sdkType = "react";
       Context context = mReactApplicationContext.getCurrentActivity();
 
       if (oneSignalInitDone) {
@@ -122,7 +173,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
       oneSignalInitDone = true;
 
-      OneSignal.sdkType = "react";
 
       if (context == null) {
          // in some cases, especially when react-native-navigation is installed,
@@ -130,11 +180,63 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          context = mReactApplicationContext.getApplicationContext();
       }
 
-      OneSignal.getCurrentOrNewInitBuilder().setInAppMessageClickHandler(this);
-      OneSignal.init(context, null, appId, this, this);
+      OneSignal.setInAppMessageClickHandler(this);
+      OneSignal.initWithContext(context);
 
       if (this.hasSetRequiresPrivacyConsent)
          this.waitingForUserPrivacyConsent = true;
+   }
+
+   @ReactMethod
+   public void setAppId(String appId) {
+      OneSignal.setAppId(appId);
+   }
+
+   /* Observers */
+   @Override
+   public void onOSPermissionChanged(OSPermissionStateChanges stateChanges) {
+      Log.e("Onesignal", "sending permission change event");
+      sendEvent("OneSignal-permissionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
+   }
+
+   @Override
+   public void onOSSubscriptionChanged(OSSubscriptionStateChanges stateChanges) {
+      Log.e("Onesignal", "sending subscription change event");
+      sendEvent("OneSignal-subscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
+   }
+
+   @Override
+   public void onOSEmailSubscriptionChanged(OSEmailSubscriptionStateChanges stateChanges) {
+      Log.e("Onesignal", "sending email subscription change event");
+      sendEvent("OneSignal-emailSubscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
+   }
+
+   @ReactMethod
+   public void addPermissionObserver() {
+      OneSignal.addPermissionObserver(this);
+   }
+
+   @ReactMethod
+   public void addSubscriptionObserver() {
+      OneSignal.addSubscriptionObserver(this);
+   }
+
+   @ReactMethod
+   public void addEmailSubscriptionObserver() {
+      OneSignal.addEmailSubscriptionObserver(this);
+   }
+
+   /* Other methods */
+
+   @ReactMethod
+   public void getDeviceState(Promise promise) {
+      OSDeviceState state = OneSignal.getDeviceState();
+      promise.resolve(RNUtils.jsonToWritableMap(state.toJSONObject()));
+   }
+
+   @ReactMethod
+   public void disablePush(boolean disable) {
+      OneSignal.disablePush(disable);
    }
 
    @ReactMethod
@@ -152,7 +254,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       if (pendingGetTagsCallback == null)
          pendingGetTagsCallback = callback;
 
-      OneSignal.getTags(new OneSignal.GetTagsHandler() {
+      OneSignal.getTags(new OneSignal.OSGetTagsHandler() {
          @Override
          public void tagsAvailable(JSONObject tags) {
             if (pendingGetTagsCallback != null)
@@ -201,20 +303,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       });
    }
 
-   @ReactMethod
-   public void idsAvailable() {
-      OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
-         public void idsAvailable(String userId, String registrationId) {
-            final WritableMap params = Arguments.createMap();
-
-            params.putString("userId", userId);
-            params.putString("pushToken", registrationId);
-
-            sendEvent("OneSignal-idsAvailable", params);
-         }
-      });
-   }
-
    // TODO: This needs to be split out into several different callbacks to the JS and connect
    //  to the correct native methods
    @ReactMethod
@@ -257,13 +345,13 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public void inFocusDisplaying(int displayOption) {
-      OneSignal.setInFocusDisplaying(displayOption);
+   public void deleteTag(String key) {
+      OneSignal.deleteTag(key);
    }
 
    @ReactMethod
-   public void deleteTag(String key) {
-      OneSignal.deleteTag(key);
+   public void deleteTags(ReadableArray tags) {
+      OneSignal.deleteTags(RNUtils.convertReableArrayIntoStringCollection(tags));
    }
 
    @ReactMethod
@@ -277,18 +365,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    @ReactMethod
-   public void setSubscription(Boolean enable) {
-      OneSignal.setSubscription(enable);
-   }
-
-   @ReactMethod
    public void promptLocation() {
       OneSignal.promptLocation();
-   }
-
-   @ReactMethod
-   public void syncHashedEmail(String email) {
-      OneSignal.syncHashedEmail(email);
    }
 
    @ReactMethod
@@ -399,32 +477,45 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       });
    }
 
+   /* notification opened / received */
+
    @ReactMethod
-   public void initNotificationOpenedHandlerParams() {
-      this.hasSetNotificationOpenedHandler = true;
-      if (this.coldStartNotificationResult != null) {
-         this.notificationOpened(this.coldStartNotificationResult);
-         this.coldStartNotificationResult = null;
-      }
+   public void setNotificationOpenedHandler() {
+      OneSignal.setNotificationOpenedHandler(this);
    }
 
    @Override
-   public void notificationReceived(OSNotification notification) {
-      this.sendEvent("OneSignal-remoteNotificationReceived", RNUtils.jsonToWritableMap(notification.toJSONObject()));
+   public void notificationOpened(OSNotificationOpenedResult result) {
+      sendEvent("OneSignal-remoteNotificationOpened", RNUtils.jsonToWritableMap(result.toJSONObject()));
    }
 
-   @Override
-   public void notificationOpened(OSNotificationOpenResult result) {
-      if (!this.hasSetNotificationOpenedHandler) {
-         this.coldStartNotificationResult = result;
-         return;
-      }
-      this.sendEvent("OneSignal-remoteNotificationOpened", RNUtils.jsonToWritableMap(result.toJSONObject()));
+   @ReactMethod
+   public void setNotificationWillShowInForegroundHandler() {
+      OneSignal.setNotificationWillShowInForegroundHandler(new OneSignal.OSNotificationWillShowInForegroundHandler() {
+         @Override
+         public void notificationWillShowInForeground(OSNotificationReceivedEvent notificationReceivedEvent) {
+            OSNotification notification = notificationReceivedEvent.getNotification();
+            String notificationJobId = notification.getNotificationId();
+            notificationReceivedEventCache.put(notificationJobId, notificationReceivedEvent);
+
+            sendEvent("OneSignal-notificationWillShowInForeground", RNUtils.jsonToWritableMap(notificationReceivedEvent.toJSONObject()));
+         }
+      });
+   }
+
+   @ReactMethod
+   public void completeNotificationJob(String uuid) {
+      OSNotificationReceivedEvent receivedEvent = notificationReceivedEventCache.get(uuid);
+      OSNotification notification = receivedEvent.getNotification();
+      receivedEvent.complete(notification);
+      notificationReceivedEventCache.remove(uuid);
    }
 
    /**
     * In-App Messaging
     */
+
+   /* triggers */
 
    @ReactMethod
    public void addTrigger(String key, Object object) {
@@ -451,15 +542,26 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
       promise.resolve(OneSignal.getTriggerValueForKey(key));
    }
 
+   /* in app message click */
+
    @ReactMethod
-   public void pauseInAppMessages(Boolean pause) {
-      OneSignal.pauseInAppMessages(pause);
+   public void setInAppMessageClickHandler() {
+      OneSignal.setInAppMessageClickHandler(new OneSignal.OSInAppMessageClickHandler() {
+         @Override
+         public void inAppMessageClicked(OSInAppMessageAction result) {
+            if (!hasSetInAppClickedHandler) {
+               inAppMessageActionResult = result;
+               return;
+            }
+            sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
+         }
+      });
    }
 
    @ReactMethod
    public void initInAppMessageClickHandlerParams() {
       this.hasSetInAppClickedHandler = true;
-      if (inAppMessageActionResult != null) {
+      if (this.inAppMessageActionResult != null) {
          this.inAppMessageClicked(this.inAppMessageActionResult);
          this.inAppMessageActionResult = null;
       }
@@ -472,6 +574,13 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
          return;
       }
       this.sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
+   }
+
+   /* other IAM functions */
+
+   @ReactMethod
+   public void pauseInAppMessages(Boolean pause) {
+      OneSignal.pauseInAppMessages(pause);
    }
 
    /**
@@ -533,7 +642,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    }
 
    /**
-    * Overrides
+    * Native Module Overrides
     */
 
    @Override
@@ -555,5 +664,4 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
    public void onHostResume() {
       initOneSignal();
    }
-
 }
