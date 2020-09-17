@@ -13,6 +13,8 @@
 
 @implementation RCTOneSignalEventEmitter {
     BOOL hasListeners;
+    NSMutableDictionary* notificationCompletionCache;
+    NSMutableDictionary* receivedNotificationCache;
 }
 
 static BOOL _didStartObserving = false;
@@ -38,6 +40,8 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 -(instancetype)init {
     if (self = [super init]) {
         [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Initialized RCTOneSignalEventEmitter"];
+        notificationCompletionCache = [NSMutableDictionary new];
+        receivedNotificationCache = [NSMutableDictionary new];
 
         for (NSString *eventName in [self supportedEvents])
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(emitEvent:) name:eventName object:nil];
@@ -103,10 +107,14 @@ RCT_REMAP_METHOD(userProvidedPrivacyConsent, resolver: (RCTPromiseResolveBlock)r
     resolve(@(!OneSignal.requiresUserPrivacyConsent));
 }
 
-RCT_EXPORT_METHOD(initWithAppId:(NSString *)appId settings:(NSDictionary *)settings) {
+RCT_EXPORT_METHOD(initialize) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[RCTOneSignal sharedInstance] configureWithAppId:appId settings:settings];
+        [[RCTOneSignal sharedInstance] initOneSignal];
     });
+}
+
+RCT_EXPORT_METHOD(setAppId:(NSString* _Nonnull)newAppId) {
+    [OneSignal setAppId:newAppId];
 }
 
 RCT_EXPORT_METHOD(promptForPushNotificationPermissions:(RCTResponseSenderBlock)callback) {
@@ -173,6 +181,42 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     }
 }
 
+RCT_REMAP_METHOD(getDeviceState,
+                getDeviceStateResolver:(RCTPromiseResolveBlock)resolve
+                rejecter:(RCTPromiseRejectBlock)reject) {
+    OSDeviceState *deviceState = [OneSignal getDeviceState];
+
+    if (deviceState) {
+        resolve([deviceState jsonRepresentation]);
+    } else {
+        NSError * error = nil;
+        NSString * message = @"Could not get OneSignal device state";
+        reject(@"no_value", message, error);
+    }
+}
+
+RCT_EXPORT_METHOD(setNotificationOpenedHandler) {
+    [OneSignal setNotificationOpenedHandler:^(OSNotificationOpenedResult *result) {
+        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-remoteNotificationOpened" withBody:[result jsonRepresentation]];
+    }];
+}
+
+RCT_EXPORT_METHOD(setNotificationWillShowInForegroundHandler) {
+    [OneSignal setNotificationWillShowInForegroundHandler:^(OSNotification *notif, OSNotificationDisplayResponse completion) {
+        self->receivedNotificationCache[notif.notificationId] = notif;
+        self->notificationCompletionCache[notif.notificationId] = completion;
+        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationWillShowInForeground" withBody:[notif jsonRepresentation]];
+    }];
+}
+
+RCT_EXPORT_METHOD(completeNotificationJob:(NSString*)notificationId) {
+    OSNotification *notif = self->receivedNotificationCache[notificationId];
+    OSNotificationDisplayResponse completion = self->notificationCompletionCache[notificationId];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        completion(notif);
+    });
+}
+
 RCT_EXPORT_METHOD(setEmail:(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
     // Auth hash token created on server and sent to client.
     [OneSignal setEmail:email withEmailAuthHashToken:authHash withSuccess:^{
@@ -236,14 +280,6 @@ RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callbac
     }]);
 }
 
-RCT_EXPORT_METHOD(setInFocusDisplayType:(int)displayType) {
-    [OneSignal setInFocusDisplayType:displayType];
-}
-
-RCT_EXPORT_METHOD(registerForPushNotifications) {
-    [OneSignal registerForPushNotifications];
-}
-
 RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
     [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
         [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Prompt For Push Notifications Success"];
@@ -253,18 +289,6 @@ RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderB
 
 RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
     [OneSignal sendTag:key value:value];
-}
-
-RCT_EXPORT_METHOD(idsAvailable) {
-    [OneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
-
-        NSDictionary *params = @{
-         @"pushToken": pushToken ?: [NSNull null],
-         @"userId" : userId ?: [NSNull null]
-        };
-
-        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-idsAvailable" withBody:params];
-    }];
 }
 
 RCT_EXPORT_METHOD(sendTags:(NSDictionary *)properties) {
@@ -292,8 +316,8 @@ RCT_EXPORT_METHOD(deleteTag:(NSString *)key) {
     [OneSignal deleteTag:key];
 }
 
-RCT_EXPORT_METHOD(setSubscription:(BOOL)enable) {
-    [OneSignal setSubscription:enable];
+RCT_EXPORT_METHOD(disablePush:(BOOL)disabled) {
+    [OneSignal disablePush:disabled];
 }
 
 RCT_EXPORT_METHOD(promptLocation) {
@@ -326,10 +350,6 @@ RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *
     [OneSignal postNotification:notification];
 }
 
-RCT_EXPORT_METHOD(syncHashedEmail:(NSString*)email) {
-    [OneSignal syncHashedEmail:email];
-}
-
 RCT_EXPORT_METHOD(setLogLevel:(int)logLevel visualLogLevel:(int)visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel:visualLogLevel];
 }
@@ -360,16 +380,9 @@ RCT_EXPORT_METHOD(removeExternalUserId:(RCTResponseSenderBlock)callback) {
     }];
 }
 
-RCT_EXPORT_METHOD(initNotificationOpenedHandlerParams) {
-    // Not implemented in iOS
-}
-
 /*
  * In-App Messaging
  */
-RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
-    // Not implemented in iOS
-}
 
 RCT_EXPORT_METHOD(addTriggers:(NSDictionary *)triggers) {
     [OneSignal addTriggers:triggers];
@@ -383,13 +396,14 @@ RCT_EXPORT_METHOD(removeTriggerForKey:(NSString *)key) {
     [OneSignal removeTriggerForKey:key];
 }
 
+// to do, check this still works
 RCT_REMAP_METHOD(getTriggerValueForKey,
                 key:(NSString *)key
                 getTriggerValueForKeyResolver:(RCTPromiseResolveBlock)resolve
                 rejecter:(RCTPromiseRejectBlock)reject) {
 
     NSString *val = [OneSignal getTriggerValueForKey:key];
-    
+
     if (val) {
         resolve(val);
     } else {
@@ -405,13 +419,7 @@ RCT_EXPORT_METHOD(pauseInAppMessages:(BOOL)pause) {
 
 RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
     [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction *action) {
-        NSDictionary *result = @{
-         @"clickName": action.clickName ?: [NSNull null],
-         @"clickUrl" : action.clickUrl.absoluteString ?: [NSNull null],
-         @"firstClick" : @(action.firstClick),
-         @"closesMessage" : @(action.closesMessage)
-        };
-        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:result];
+        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:[action jsonRepresentation]];
     }];
 }
 
