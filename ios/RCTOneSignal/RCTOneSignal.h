@@ -13,10 +13,6 @@
 
 @property (nonatomic) BOOL didStartObserving;
 
-- (void)configureWithAppId:(NSString *)appId;
-- (void)configureWithAppId:(NSString *)appId settings:(NSDictionary*)settings;
-
-- (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId settings:(NSDictionary*)settings __deprecated_msg(INIT_DEPRECATION_NOTICE);
-- (id)initWithLaunchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId __deprecated_msg(INIT_DEPRECATION_NOTICE);
+- (void)initOneSignal;
 
 @end
