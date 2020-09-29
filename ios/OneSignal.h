@@ -1,21 +1,21 @@
 /**
  Modified MIT License
- 
- Copyright 2017 OneSignal
- 
+
+ Copyright 2020 OneSignal
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  1. The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  2. All copies of substantial portions of the Software may only be used in connection
  with services provided by OneSignal.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,15 +28,15 @@
 /**
  ### Setting up the SDK ###
  Follow the documentation from https://documentation.onesignal.com/docs/ios-sdk-setupto setup OneSignal in your app.
- 
+
  ### API Reference ###
  Follow the documentation from https://documentation.onesignal.com/docs/ios-sdk-api for a detailed explanation of the API.
- 
+
  ### Troubleshoot ###
  Follow the documentation from https://documentation.onesignal.com/docs/troubleshooting-ios to fix common problems.
- 
+
  For help on how to upgrade your code from 1.* SDK to 2.*: https://documentation.onesignal.com/docs/upgrading-to-ios-sdk-20
- 
+
  ### More ###
  iOS Push Cert: https://documentation.onesignal.com/docs/generating-an-ios-push-certificate
 */
@@ -345,10 +345,6 @@ typedef NS_ENUM(NSInteger, OSNotificationPermission) {
 - (NSDictionary*)toDictionary;
 @end
 
-@protocol OSSubscriptionObserver <NSObject>
-- (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges*)stateChanges;
-@end
-
 @protocol OSEmailSubscriptionObserver <NSObject>
 - (void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges*)stateChanges;
 @end
@@ -482,8 +478,6 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 + (BOOL)requiresUserPrivacyConsent; // tells your application if privacy consent is still needed from the current user
 + (void)setRequiresUserPrivacyConsent:(BOOL)required; //used by wrapper SDK's to require user privacy consent
 
-@property (class) OSNotificationDisplayType inFocusDisplayType;
-
 + (NSString*)app_id;
 + (NSString*)sdk_version_raw;
 + (NSString*)sdk_semantic_version;
@@ -520,8 +514,6 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 + (void)syncHashedEmail:(NSString*)email __deprecated_msg("Please refer to our new Email methods/functionality such as setEmail(). This method will be removed in a future version of the OneSignal SDK");
 
 // - Subscription and Permissions
-+ (void)IdsAvailable:(OSIdsAvailableBlock)idsAvailableBlock __deprecated_msg("Please use getPermissionSubscriptionState or addSubscriptionObserver and addPermissionObserver instead.");
-
 + (OSPermissionSubscriptionState*)getPermissionSubscriptionState;
 + (OSDevice*)getUserDevice;
 
