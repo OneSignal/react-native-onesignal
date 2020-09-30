@@ -6,14 +6,13 @@
  * @flow
  */
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
     Platform,
     StyleSheet,
     Text,
     View,
     ScrollView,
-    ActivityIndicator,
     KeyboardAvoidingView,
     TextInput,
     Image,
@@ -29,14 +28,15 @@ const disabledColor = '#BEBEBE';
 
 /**
  Change to desired app id (dashboard app)
+ React Native Demo App: ce8572ae-ff57-4e77-a265-5c91f00ecc4c
  */
-var appId = '77e32082-ea27-42e3-a898-c72e141824ef';
+var appId = 'ce8572ae-ff57-4e77-a265-5c91f00ecc4c';
 
 /**
  Controls whether the app needs privacy consent or not
  Will hide the button when false and show it when true
  */
-var requiresPrivacyConsent = true;
+var requiresPrivacyConsent = false;
 
 export default class App extends Component {
 
@@ -44,7 +44,7 @@ export default class App extends Component {
         super(properties);
 
         this.state = {
-            // OneSignal states
+            /* OneSignal states*/
             // Privacy Consent states
             hasPrivacyConsent: false, // App starts without privacy consent
             isPrivacyConsentLoading: requiresPrivacyConsent,
@@ -66,79 +66,80 @@ export default class App extends Component {
             isEmailLoading: false,
 
             // In-App Messaging states
-            iam_paused: false,
-
-            // Add more states here...
+            iamPaused: false,
 
             // Demo App states
             debugText: ''
+
+            // Add more states here...
         };
 
+    }
+
+    /* R E A C T  L I F E C Y C L E */
+
+    async componentDidMount() {
+        console.log("Mounted!");
+        /* O N E S I G N A L  S E T U P */
         // Log level logcat is 6 (VERBOSE) and log level alert is 0 (NONE)
         OneSignal.setLogLevel(6, 0);
-
-        // Share location of device
-        OneSignal.setLocationShared(true);
-
+        OneSignal.setAppId(appId);
         OneSignal.setRequiresUserPrivacyConsent(requiresPrivacyConsent);
-        OneSignal.init(appId, {
-            kOSSettingsKeyAutoPrompt: true,
+        OneSignal.setLocationShared(true);
+        OneSignal.promptForPushNotificationPermissions(prompt => {
+            console.log("OneSignal permission:", prompt);
+        })
+
+        /* O N E S I G N A L  H A N D L E R S */
+        OneSignal.setNotificationWillShowInForegroundHandler(notifReceived => {
+            console.log("OneSignal: notification will show in foreground:", notifReceived);
+            setTimeout(()=>notifReceived.complete(notifReceived), 0);
+        });
+        OneSignal.setNotificationOpenedHandler(notification => {
+            console.log("OneSignal: notification opened:", notification);
+        });
+        OneSignal.setInAppMessageClickHandler(event => {
+            console.log("OneSignal IAM clicked:", event);
+        });
+        OneSignal.addEmailSubscriptionObserver((event) => {
+            console.log("OneSignal: email subscription changed: ", event);
+        });
+        OneSignal.addSubscriptionObserver(event => {
+            console.log("OneSignal: subscription changed:", event);
+            this.setState({isSubscribed: event.subscribed })
+        });
+        OneSignal.addPermissionObserver(event => {
+            console.log("OneSignal: permission changed:", event);
         });
 
-        // Notifications will display as NOTIFICATION type
-        OneSignal.inFocusDisplaying(2);
-
-        // If the app requires privacy consent check if it has been set yet
+        //If the app requires privacy consent check if it has been set yet
         if (requiresPrivacyConsent) {
         // async 'then' is only so I can sleep using the Promise helper method
             OneSignal.userProvidedPrivacyConsent().then(async (granted) => {
                 // For UI testing purposes wait X seconds to see the loading state
                 await sleep(0);
 
-                console.log('Privacy Consent status: ' + granted);
+                console.log('OneSignal: Privacy Consent status: ' + granted);
                 this.setState({hasPrivacyConsent:granted, isPrivacyConsentLoading:false});
             });
         }
 
-        OneSignal.getPermissionSubscriptionState((response) => {
-            console.log('Device state:');
-            console.log(response);
-
-            let notificationsEnabled = response['notificationsEnabled'];
-            let isSubscribed = response['subscriptionEnabled'];
-
-            this.setState({isSubscribed:notificationsEnabled && isSubscribed, isSubscriptionLoading:false}, () => {
-                OneSignal.setSubscription(isSubscribed);
-            });
-        });
+        let deviceState = await OneSignal.getDeviceState();
+        this.setState({ isSubscribed: deviceState.isSubscribed });
 
         // Examples for using native IAM public methods
-//        this.oneSignalInAppMessagingExamples();
+        // this.oneSignalInAppMessagingExamples();
 
         // Examples for using native Outcome Event public methods
-//        this.oneSignalOutcomeEventsExamples();
+        // this.oneSignalOutcomeEventsExamples();
 
-    }
-
-    async componentDidMount() {
-        OneSignal.addEventListener('received', this.onNotificationReceived);
-        OneSignal.addEventListener('opened', this.onNotificationOpened);
-        OneSignal.addEventListener('ids', this.onIdsAvailable);
-//        OneSignal.addEventListener('subscription', this.onSubscriptionChange);
-//        OneSignal.addEventListener('permission', this.onPermissionChange);
-        OneSignal.addEventListener('emailSubscription', this.onEmailSubscriptionChange);
-        OneSignal.addEventListener('inAppMessageClicked', this.onInAppMessageClicked);
     }
 
     componentWillUnmount() {
-        OneSignal.removeEventListener('received', this.onNotificationReceived);
-        OneSignal.removeEventListener('opened', this.onNotificationOpened);
-        OneSignal.removeEventListener('ids', this.onIdsAvailable);
-//        OneSignal.removeEventListener('subscription', this.onSubscriptionChange);
-//        OneSignal.removeEventListener('permission', this.onPermissionChange);
-        OneSignal.removeEventListener('emailSubscription', this.onEmailSubscriptionChange);
-        OneSignal.removeEventListener('inAppMessageClicked', this.onInAppMessageClicked);
+        OneSignal.clearHandlers();
     }
+
+    /* H E L P E R S */
 
     /**
      Validate email method
@@ -211,87 +212,6 @@ export default class App extends Component {
         });
     }
 
-    /**
-     When a notification is received this will fire
-     */
-    onNotificationReceived = (notification) => {
-        console.log('Notification received: ', notification);
-
-        let debugMsg = 'RECEIVED: \n' + JSON.stringify(notification, null, 2);
-        this.setState({debugText:debugMsg}, () => {
-            console.log("Debug text successfully changed!");
-        });
-    }
-
-    /**
-     When a notification is opened this will fire
-     The openResult will contain information about the notification opened
-     */
-    onNotificationOpened = (openResult) => {
-        console.log('Message: ', openResult.notification.payload.body);
-        console.log('Data: ', openResult.notification.payload.additionalData);
-        console.log('isActive: ', openResult.notification.isAppInFocus);
-        console.log('openResult: ', openResult);
-
-        let debugMsg = 'OPENED: \n' + JSON.stringify(openResult.notification, null, 2);
-        this.setState({debugText:debugMsg}, () => {
-            console.log("Debug text successfully changed!");
-        });
-    }
-
-    /**
-     Once the user is registered/updated the onIds will send back the userId and pushToken
-        of the device
-     */
-    onIdsAvailable = (device) => {
-        console.log('Device info: ', device);
-        // Save the userId and pushToken for the device, important for updating the device
-        //  record using the SDK, and sending notifications
-        this.setState({
-            userId: device.userId,
-            pushToken: device.pushToken
-        });
-    }
-
-    /**
-     TODO: Needs to be implemented still in index.js and RNOneSignal.java
-     */
-    onSubscriptionChange = (change) => {
-        console.log('onSubscriptionChange: ', change);
-    }
-
-    /**
-     TODO: Needs to be implemented still in index.js and RNOneSignal.java
-     */
-    onPermissionChange = (change) => {
-        console.log('onPermissionChange: ', change);
-    }
-
-    /**
-     Success for the change of state for the email record? or setting subscription state of email record (so logging out)?
-     TODO: Validate functionality and make sure name is correct
-        Should match the onSubscriptionChange and
-
-     TODO: Validate this is working, might be broken after changing name
-     */
-    onEmailSubscriptionChange = (change) => {
-        console.log('onEmailSubscriptionChange: ', change);
-        this.setState({isEmailLoading:false});
-    }
-
-    /**
-     When an element on an IAM is clicked this will fire
-     The actionResult will contain information about the element clicked
-     */
-    onInAppMessageClicked = (actionResult) => {
-        console.log('actionResult: ', actionResult);
-
-        let debugMsg = 'CLICKED: \n' + JSON.stringify(actionResult, null, 2);
-        this.setState({debugText:debugMsg}, () => {
-            console.log("Debug text successfully changed!");
-        });
-    }
-
     render() {
         return (
             <ScrollView style={styles.scrollView}>
@@ -302,7 +222,7 @@ export default class App extends Component {
                     { this.createPrivacyConsentFields() }
                     { this.createEmailFields() }
                     { this.createExternalUserIdFields() }
-
+                    { this.createSubscriptionElements() }
                 </View>
 
             </ScrollView>
@@ -377,10 +297,6 @@ export default class App extends Component {
     }
 
     /**
-     ADD MORE GENERIC UI METHODS HERE...
-     */
-
-    /**
      Create the fields for displaying information about the demo app and some instruction
         for modifying the demo app or react-native SDK
      */
@@ -432,7 +348,6 @@ export default class App extends Component {
         // States used through-out the subscription fields
         const {
             isSubscribed,
-            isSubscriptionLoading,
             isPrivacyConsentLoading
         } = this.state;
 
@@ -441,20 +356,38 @@ export default class App extends Component {
         // Subscribe Button
         let subscribedButton =  this.renderButtonView(
            isSubscribed ? "Unsubscribe" : "Subscribe",
-           isSubscriptionLoading || isPrivacyConsentLoading,
+           isPrivacyConsentLoading,
            () => {
-               let newSubscription = !isSubscribed;
-               this.setState({isSubscribed:newSubscription, isSubscriptionLoading: true}, () => {
-                   OneSignal.setSubscription(newSubscription);
-
-                   // TODO: Move this into onSubscriptionChange method once implemented
-                   this.setState({isSubscriptionLoading: false});
-               });
+               console.log(`Setting subscription to ${!isSubscribed}`);
+               OneSignal.disablePush(isSubscribed);
+               this.setState({isSubscribed: !isSubscribed});
            }
        );
 
         elements.push(
             subscribedButton
+        );
+
+        return elements;
+    }
+
+    createSubscriptionElements() {
+        let elements = [];
+        const {
+            isPrivacyConsentLoading
+        } = this.state;
+
+        let getDeviceState = this.renderButtonView(
+            "Get Device State",
+            isPrivacyConsentLoading,
+            async () => {
+                let state = await OneSignal.getDeviceState();
+                console.log("Device state:", state);
+            }
+        );
+
+        elements.push(
+            getDeviceState
         );
 
         return elements;
@@ -546,6 +479,7 @@ export default class App extends Component {
                     OneSignal.logoutEmail((error) => {
                         if (error) {
                             console.log('Error while logging out email');
+                            //OneSignal.deleteTags(['a']);
                         } else {
                             console.log('Success logging out email');
                         }
@@ -556,10 +490,30 @@ export default class App extends Component {
             }
         );
 
+        let sendTagsButtons = this.renderButtonView(
+            "Send Tags",
+            isPrivacyConsentLoading,
+            () => {
+                console.log('Attempting to send tags');
+                OneSignal.sendTags({'a':1, 'b':2});
+            }
+        );
+
+        let deleteTags = this.renderButtonView(
+            "Delete Tags",
+            isPrivacyConsentLoading,
+            () => {
+                console.log('Deleting tags');
+                OneSignal.deleteTags(['b']);
+            }
+        );
+
         elements.push(
             emailTextInput,
             setEmailButton,
-            logoutEmailButton
+            logoutEmailButton,
+            sendTagsButtons,
+            deleteTags,
         );
 
         return elements;
@@ -632,13 +586,9 @@ export default class App extends Component {
 
         return elements;
     }
-
-    /**
-     ADD MORE UI METHODS HERE...
-     */
-
 }
 
+/* S T Y L E S */
 const styles = StyleSheet.create({
     scrollView: {
         backgroundColor: '#F5FCFF',
