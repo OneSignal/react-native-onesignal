@@ -250,6 +250,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
+   public void deleteTags(ReadableArray tagKeys) {
+      OneSignal.deleteTags(RNUtils.convertReableArrayIntoStringCollection(tagKeys));
+   }
+
+   @ReactMethod
    public void getTags(final Callback callback) {
       if (pendingGetTagsCallback == null)
          pendingGetTagsCallback = callback;
@@ -342,16 +347,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       } catch (JSONException e) {
          e.printStackTrace();
       }
-   }
-
-   @ReactMethod
-   public void deleteTag(String key) {
-      OneSignal.deleteTag(key);
-   }
-
-   @ReactMethod
-   public void deleteTags(ReadableArray tags) {
-      OneSignal.deleteTags(RNUtils.convertReableArrayIntoStringCollection(tags));
    }
 
    @ReactMethod

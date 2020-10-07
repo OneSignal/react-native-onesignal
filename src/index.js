@@ -213,26 +213,17 @@ export default class OneSignal {
 
     static getTags(next) {
         if (!checkIfInitialized(RNOneSignal)) return;
-
         RNOneSignal.getTags(next);
     }
 
     static deleteTag(key) {
         if (!checkIfInitialized(RNOneSignal)) return;
-
-        RNOneSignal.deleteTag(key);
+        RNOneSignal.deleteTags([key]);
     }
 
-    static deleteTags(tags) {
+    static deleteTags(tagKeys) {
         if (!checkIfInitialized(RNOneSignal)) return;
-
-        Object.keys(tags).forEach((key)=>{
-            if (typeof tags[key] === "boolean"){
-                tags[key] = tags[key].toString();
-            }
-        })
-
-        RNOneSignal.deleteTags(tags || {});
+        RNOneSignal.deleteTags(tagKeys)
     }
 
     /* V I B R A T I O N */
