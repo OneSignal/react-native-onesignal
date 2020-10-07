@@ -345,16 +345,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
-   public void deleteTag(String key) {
-      OneSignal.deleteTag(key);
-   }
-
-   @ReactMethod
-   public void deleteTags(ReadableArray tags) {
-      OneSignal.deleteTags(RNUtils.convertReableArrayIntoStringCollection(tags));
-   }
-
-   @ReactMethod
    public void enableVibrate(Boolean enable) {
       OneSignal.enableVibrate(enable);
    }
