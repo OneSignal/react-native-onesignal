@@ -142,6 +142,8 @@ export default class OneSignal {
         RNOneSignal.disablePush(disable);
     }
 
+    /* L O C A T I O N */
+
     static setLocationShared(shared) {
         if (!checkIfInitialized(RNOneSignal)) return;
 
@@ -162,7 +164,12 @@ export default class OneSignal {
      */
     static getDeviceState() {
         if (!checkIfInitialized(RNOneSignal)) return Promise.resolve();
-        return RNOneSignal.getDeviceState();
+        const deviceState = RNOneSignal.getDeviceState();
+
+        if (Platform.OS === 'android') {
+            deviceState['hasNotificationPermission'] = deviceState['areNotificationsEnabled'];
+            delete deviceState['areNotificationsEnabled'];
+        }
     }
 
     static userProvidedPrivacyConsent() {
@@ -214,28 +221,6 @@ export default class OneSignal {
             finalTags[key] = "";
         })
         OneSignal.sendTags(finalTags);
-    }
-
-    /* V I B R A T I O N */
-
-    static enableVibrate(enable) {
-        if (!checkIfInitialized(RNOneSignal)) return;
-
-        if (Platform.OS === 'android') {
-            RNOneSignal.enableVibrate(enable);
-        } else {
-            console.log("This function is not supported on iOS");
-        }
-    }
-
-    static enableSound(enable) {
-        if (!checkIfInitialized(RNOneSignal)) return;
-
-        if (Platform.OS === 'android') {
-            RNOneSignal.enableSound(enable);
-        } else {
-            console.log("This function is not supported on iOS");
-        }
     }
 
     /* E M A I L */

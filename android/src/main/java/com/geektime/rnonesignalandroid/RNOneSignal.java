@@ -304,16 +304,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
-   public void enableVibrate(Boolean enable) {
-      OneSignal.enableVibrate(enable);
-   }
-
-   @ReactMethod
-   public void enableSound(Boolean enable) {
-      OneSignal.enableSound(enable);
-   }
-
-   @ReactMethod
    public void promptLocation() {
       OneSignal.promptLocation();
    }
