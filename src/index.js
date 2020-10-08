@@ -159,10 +159,8 @@ export default class OneSignal {
 
     /**
      * Gets the device state.
-     * // TO DO: add more details here
      */
     static getDeviceState() {
-        // TODO: check if we need to return promise?
         if (!checkIfInitialized(RNOneSignal)) return Promise.resolve();
         const deviceState = await RNOneSignal.getDeviceState();
 
@@ -173,13 +171,6 @@ export default class OneSignal {
 
         return deviceState;
     }
-
-    static getPermissionSubscriptionState(handler) {
-        if (!checkIfInitialized(RNOneSignal)) return;
-        isValidCallback(handler);
-        RNOneSignal.getPermissionSubscriptionState(handler);
-    }
-
     static userProvidedPrivacyConsent() {
         if (!checkIfInitialized(RNOneSignal)) return;
 

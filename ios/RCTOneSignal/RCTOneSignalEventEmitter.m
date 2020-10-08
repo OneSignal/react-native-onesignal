@@ -123,33 +123,6 @@ RCT_EXPORT_METHOD(promptForPushNotificationPermissions:(RCTResponseSenderBlock)c
     }];
 }
 
-RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback) {
-    if (RCTRunningInAppExtension()) {
-        callback(@[@{@"alert": @NO, @"badge": @NO, @"sound": @NO}]);
-        return;
-    }
-
-    __block NSUInteger types = 0;
-
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
-            types = [RCTSharedApplication() currentUserNotificationSettings].types;
-        } else {
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-            types = [RCTSharedApplication() enabledRemoteNotificationTypes];
-#endif
-
-        }
-    });
-
-    callback(@[@{
-       @"alert": @((types & UIUserNotificationTypeAlert) > 0),
-       @"badge": @((types & UIUserNotificationTypeBadge) > 0),
-       @"sound": @((types & UIUserNotificationTypeSound) > 0),
-    }]);
-}
-
 RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     if (RCTRunningInAppExtension()) {
         return;
@@ -232,52 +205,6 @@ RCT_EXPORT_METHOD(logoutEmail:(RCTResponseSenderBlock)callback) {
     } withFailure:^(NSError *error) {
         callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
     }];
-}
-
-RCT_EXPORT_METHOD(getPermissionSubscriptionState:(RCTResponseSenderBlock)callback)
-{
-    if (RCTRunningInAppExtension()) {
-        callback(@[@{
-            @"hasPrompted": @NO,
-            @"notificationsEnabled": @NO,
-            @"subscriptionEnabled": @NO,
-            @"userSubscriptionEnabled": @NO,
-            @"pushToken": [NSNull null],
-            @"userId": [NSNull null],
-            @"emailUserId" : [NSNull null],
-            @"emailAddress" : [NSNull null],
-            @"emailSubscribed" : @false
-         }]);
-    }
-
-    OSPermissionSubscriptionState *state = [OneSignal getPermissionSubscriptionState];
-    OSPermissionState *permissionState = state.permissionStatus;
-    OSSubscriptionState *subscriptionState = state.subscriptionStatus;
-    OSEmailSubscriptionState *emailState = state.emailSubscriptionStatus;
-
-    // Received push notification prompt? (iOS only property)
-    BOOL hasPrompted = permissionState.hasPrompted == 1;
-
-    // Notifications enabled for app? (iOS Settings)
-    BOOL notificationsEnabled = permissionState.status == 2;
-
-    // User subscribed to OneSignal? (automatically toggles with notificationsEnabled)
-    BOOL subscriptionEnabled = subscriptionState.subscribed == 1;
-
-    // User's original subscription preference (regardless of notificationsEnabled)
-    BOOL userSubscriptionEnabled = subscriptionState.userSubscriptionSetting == 1;
-
-    callback(@[@{
-       @"hasPrompted": @(hasPrompted),
-       @"notificationsEnabled": @(notificationsEnabled),
-       @"subscriptionEnabled": @(subscriptionEnabled),
-       @"userSubscriptionEnabled": @(userSubscriptionEnabled),
-       @"pushToken": subscriptionState.pushToken ?: [NSNull null],
-       @"userId": subscriptionState.userId ?: [NSNull null],
-       @"emailUserId" : emailState.emailUserId ?: [NSNull null],
-       @"emailSubscribed" : @(emailState.subscribed),
-       @"emailAddress" : emailState.emailAddress ?: [NSNull null]
-    }]);
 }
 
 RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
