@@ -142,6 +142,8 @@ export default class OneSignal {
         RNOneSignal.disablePush(disable);
     }
 
+    /* L O C A T I O N */
+
     static setLocationShared(shared) {
         if (!checkIfInitialized(RNOneSignal)) return;
 
@@ -160,7 +162,7 @@ export default class OneSignal {
     /**
      * Gets the device state.
      */
-    static getDeviceState() {
+    static async getDeviceState() {
         if (!checkIfInitialized(RNOneSignal)) return Promise.resolve();
         const deviceState = await RNOneSignal.getDeviceState();
 
@@ -215,28 +217,6 @@ export default class OneSignal {
     static deleteTags(tagKeys) {
         if (!checkIfInitialized(RNOneSignal)) return;
         RNOneSignal.deleteTags(tagKeys)
-    }
-
-    /* V I B R A T I O N */
-
-    static enableVibrate(enable) {
-        if (!checkIfInitialized(RNOneSignal)) return;
-
-        if (Platform.OS === 'android') {
-            RNOneSignal.enableVibrate(enable);
-        } else {
-            console.log("This function is not supported on iOS");
-        }
-    }
-
-    static enableSound(enable) {
-        if (!checkIfInitialized(RNOneSignal)) return;
-
-        if (Platform.OS === 'android') {
-            RNOneSignal.enableSound(enable);
-        } else {
-            console.log("This function is not supported on iOS");
-        }
     }
 
     /* E M A I L */
