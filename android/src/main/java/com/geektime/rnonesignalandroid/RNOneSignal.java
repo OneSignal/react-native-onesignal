@@ -303,47 +303,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       });
    }
 
-   // TODO: This needs to be split out into several different callbacks to the JS and connect
-   //  to the correct native methods
-   @ReactMethod
-   public void getPermissionSubscriptionState(final Callback callback) {
-      OSPermissionSubscriptionState state = OneSignal.getPermissionSubscriptionState();
-
-      if (state == null)
-         return;
-
-      OSPermissionState permissionState = state.getPermissionStatus();
-      OSSubscriptionState subscriptionState = state.getSubscriptionStatus();
-      OSEmailSubscriptionState emailSubscriptionState = state.getEmailSubscriptionStatus();
-
-      // Notifications enabled for app? (Android Settings)
-      boolean notificationsEnabled = permissionState.getEnabled();
-
-      // User subscribed to OneSignal? (automatically toggles with notificationsEnabled)
-      boolean subscriptionEnabled = subscriptionState.getSubscribed();
-
-      // User's original subscription preference (regardless of notificationsEnabled)
-      boolean userSubscriptionEnabled = subscriptionState.getUserSubscriptionSetting();
-
-      try {
-         JSONObject result = new JSONObject();
-
-         result.put("notificationsEnabled", notificationsEnabled)
-                 .put("subscriptionEnabled", subscriptionEnabled)
-                 .put("userSubscriptionEnabled", userSubscriptionEnabled)
-                 .put("pushToken", subscriptionState.getPushToken())
-                 .put("userId", subscriptionState.getUserId())
-                 .put("emailUserId", emailSubscriptionState.getEmailUserId())
-                 .put("emailAddress", emailSubscriptionState.getEmailAddress());
-
-         Log.d("onesignal", "permission subscription state: " + result.toString());
-
-         callback.invoke(RNUtils.jsonToWritableMap(result));
-      } catch (JSONException e) {
-         e.printStackTrace();
-      }
-   }
-
    @ReactMethod
    public void enableVibrate(Boolean enable) {
       OneSignal.enableVibrate(enable);

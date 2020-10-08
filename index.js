@@ -159,29 +159,10 @@ export default class OneSignal {
 
     /**
      * Gets the device state.
-     * // TO DO: add more details here
      */
     static getDeviceState() {
-        // TODO: check if we need to return promise?
         if (!checkIfInitialized(RNOneSignal)) return Promise.resolve();
         return RNOneSignal.getDeviceState();
-    }
-
-    static checkPermissions(handler) {
-        if (!checkIfInitialized(RNOneSignal)) return;
-
-        if (Platform.OS === 'ios') {
-            isValidCallback(handler);
-            RNOneSignal.checkPermissions(handler);
-        } else {
-            console.log("This function is not supported on Android");
-        }
-    }
-
-    static getPermissionSubscriptionState(handler) {
-        if (!checkIfInitialized(RNOneSignal)) return;
-        isValidCallback(handler);
-        RNOneSignal.getPermissionSubscriptionState(handler);
     }
 
     static userProvidedPrivacyConsent() {
