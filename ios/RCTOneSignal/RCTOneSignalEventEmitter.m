@@ -12,9 +12,9 @@
 
 
 @implementation RCTOneSignalEventEmitter {
-    BOOL hasListeners;
-    NSMutableDictionary* notificationCompletionCache;
-    NSMutableDictionary* receivedNotificationCache;
+    BOOL _hasListeners;
+    NSMutableDictionary* _notificationCompletionCache;
+    NSMutableDictionary* _receivedNotificationCache;
 }
 
 static BOOL _didStartObserving = false;
@@ -40,8 +40,8 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 -(instancetype)init {
     if (self = [super init]) {
         [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Initialized RCTOneSignalEventEmitter"];
-        notificationCompletionCache = [NSMutableDictionary new];
-        receivedNotificationCache = [NSMutableDictionary new];
+        _notificationCompletionCache = [NSMutableDictionary new];
+        _receivedNotificationCache = [NSMutableDictionary new];
 
         for (NSString *eventName in [self supportedEvents])
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(emitEvent:) name:eventName object:nil];
@@ -51,7 +51,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 }
 
 -(void)startObserving {
-    hasListeners = true;
+    _hasListeners = true;
     [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"RCTOneSignalEventEmitter did start observing"];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"didSetBridge" object:nil];
@@ -60,7 +60,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 }
 
 -(void)stopObserving {
-    hasListeners = false;
+    _hasListeners = false;
     [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"RCTOneSignalEventEmitter did stop observing"];
 }
 
@@ -77,7 +77,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 #pragma mark Send Event Methods
 
 - (void)emitEvent:(NSNotification *)notification {
-    if (!hasListeners) {
+    if (!_hasListeners) {
         [OneSignal onesignal_Log:ONE_S_LL_WARN message:[NSString stringWithFormat:@"Attempted to send an event (%@) when no listeners were set.", notification.name]];
         return;
     }
@@ -176,18 +176,30 @@ RCT_EXPORT_METHOD(setNotificationOpenedHandler) {
 
 RCT_EXPORT_METHOD(setNotificationWillShowInForegroundHandler) {
     [OneSignal setNotificationWillShowInForegroundHandler:^(OSNotification *notif, OSNotificationDisplayResponse completion) {
-        self->receivedNotificationCache[notif.notificationId] = notif;
-        self->notificationCompletionCache[notif.notificationId] = completion;
+        self->_receivedNotificationCache[notif.notificationId] = notif;
+        self->_notificationCompletionCache[notif.notificationId] = completion;
         [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationWillShowInForeground" withBody:[notif jsonRepresentation]];
     }];
 }
 
-RCT_EXPORT_METHOD(completeNotificationJob:(NSString*)notificationId) {
-    OSNotification *notif = self->receivedNotificationCache[notificationId];
-    OSNotificationDisplayResponse completion = self->notificationCompletionCache[notificationId];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        completion(notif);
-    });
+RCT_EXPORT_METHOD(completeNotificationEvent:(NSString*)notificationId displayOption:(BOOL)shouldDisplay) {
+    OSNotificationDisplayResponse completion = self->_notificationCompletionCache[notificationId];
+    if (!completion) {
+        [OneSignal onesignal_Log:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"OneSignal (objc): could not find notification completion block with id: %@", notificationId]];
+        return;
+    }
+
+    if (shouldDisplay) {
+        OSNotification *notif = self->_receivedNotificationCache[notificationId];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion(notif);
+        });
+    } else {
+        completion(nil);
+    }
+
+    [_notificationCompletionCache removeObjectForKey:notificationId];
+    [_receivedNotificationCache removeObjectForKey:notificationId];
 }
 
 RCT_EXPORT_METHOD(setEmail:(NSString *)email withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
