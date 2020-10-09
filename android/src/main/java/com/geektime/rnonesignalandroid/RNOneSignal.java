@@ -195,19 +195,19 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    /* Observers */
    @Override
    public void onOSPermissionChanged(OSPermissionStateChanges stateChanges) {
-      Log.e("Onesignal", "sending permission change event");
+      Log.i("Onesignal", "sending permission change event");
       sendEvent("OneSignal-permissionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
    }
 
    @Override
    public void onOSSubscriptionChanged(OSSubscriptionStateChanges stateChanges) {
-      Log.e("Onesignal", "sending subscription change event");
+      Log.i("Onesignal", "sending subscription change event");
       sendEvent("OneSignal-subscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
    }
 
    @Override
    public void onOSEmailSubscriptionChanged(OSEmailSubscriptionStateChanges stateChanges) {
-      Log.e("Onesignal", "sending email subscription change event");
+      Log.i("Onesignal", "sending email subscription change event");
       sendEvent("OneSignal-emailSubscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
    }
 
@@ -439,19 +439,29 @@ public class RNOneSignal extends ReactContextBaseJavaModule
          @Override
          public void notificationWillShowInForeground(OSNotificationReceivedEvent notificationReceivedEvent) {
             OSNotification notification = notificationReceivedEvent.getNotification();
-            String notificationJobId = notification.getNotificationId();
-            notificationReceivedEventCache.put(notificationJobId, notificationReceivedEvent);
+            String notificationId = notification.getNotificationId();
+            notificationReceivedEventCache.put(notificationId, notificationReceivedEvent);
 
-            sendEvent("OneSignal-notificationWillShowInForeground", RNUtils.jsonToWritableMap(notificationReceivedEvent.toJSONObject()));
+            sendEvent("OneSignal-notificationWillShowInForeground", RNUtils.jsonToWritableMap(notification.toJSONObject()));
          }
       });
    }
 
    @ReactMethod
-   public void completeNotificationJob(String uuid) {
+   public void completeNotificationEvent(final String uuid, final boolean shouldDisplay) {
       OSNotificationReceivedEvent receivedEvent = notificationReceivedEventCache.get(uuid);
-      OSNotification notification = receivedEvent.getNotification();
-      receivedEvent.complete(notification);
+
+      if (receivedEvent == null) {
+         Log.e("OneSignal (java): could not find cached notification received event with id "+uuid);
+         return;
+      }
+
+      if (shouldDisplay) {
+         receivedEvent.complete(receivedEvent.getNotification());
+      } else {
+         receivedEvent.complete(null);
+      }
+
       notificationReceivedEventCache.remove(uuid);
    }
 
