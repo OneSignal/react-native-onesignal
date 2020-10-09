@@ -437,16 +437,27 @@ public class RNOneSignal extends ReactContextBaseJavaModule
             String notificationJobId = notification.getNotificationId();
             notificationReceivedEventCache.put(notificationJobId, notificationReceivedEvent);
 
-            sendEvent("OneSignal-notificationWillShowInForeground", RNUtils.jsonToWritableMap(notificationReceivedEvent.toJSONObject()));
+            sendEvent("OneSignal-notificationWillShowInForeground", RNUtils.jsonToWritableMap(notification.toJSONObject()));
          }
       });
    }
 
    @ReactMethod
-   public void completeNotificationJob(String uuid) {
+   public void completeNotificationEvent(final String uuid, final boolean shouldDisplay) {
       OSNotificationReceivedEvent receivedEvent = notificationReceivedEventCache.get(uuid);
-      OSNotification notification = receivedEvent.getNotification();
-      receivedEvent.complete(notification);
+
+      if (receivedEvent == null) {
+         Log.e("OneSignal (java): could not find cached notification received event with id "+uuid);
+         return;
+      }
+
+      if (shouldDisplay) {
+         OSNotification notification = receivedEvent.getNotification();
+         receivedEvent.complete(notification);
+      } else {
+         receivedEvent.getNotification().complete(null);
+      }
+
       notificationReceivedEventCache.remove(uuid);
    }
 
