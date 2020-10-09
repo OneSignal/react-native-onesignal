@@ -452,10 +452,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       }
 
       if (shouldDisplay) {
-         OSNotification notification = receivedEvent.getNotification();
-         receivedEvent.complete(notification);
+         receivedEvent.complete(receivedEvent.getNotification());
       } else {
-         receivedEvent.getNotification().complete(null);
+         receivedEvent.complete(null);
       }
 
       notificationReceivedEventCache.remove(uuid);
