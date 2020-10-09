@@ -2,9 +2,9 @@ import { NativeModules, Platform } from 'react-native';
 const RNOneSignal = NativeModules.OneSignal;
 
 export default class NotificationReceivedEvent {
-    constructor(payload){
+    constructor(receivedEvent){
         if (Platform.OS === 'android') {
-            const { notification }= payload;
+            const { notification }= receivedEvent;
             this.body = notification.body;
             this.title = notification.title;
             this.priority = notification.priority;
@@ -20,21 +20,27 @@ export default class NotificationReceivedEvent {
         }
 
         if (Platform.OS = 'ios') {
-            this.body = payload.body;
-            this.sound = payload.sound;
-            this.title = payload.title;
-            this.rawPayload = payload.rawPayload;
-            this.actionButtons = payload.actionButtons;
-            this.mutableContent = payload.mutableContent;
-            this.notificationId = payload.notificationId;
+            this.body = receivedEvent.body;
+            this.sound = receivedEvent.sound;
+            this.title = receivedEvent.title;
+            this.rawPayload = receivedEvent.rawPayload;
+            this.actionButtons = receivedEvent.actionButtons;
+            this.mutableContent = receivedEvent.mutableContent;
+            this.notificationId = receivedEvent.notificationId;
         }
     }
 
     complete(notificationReceivedEvent) {
         if (!notificationReceivedEvent) {
+            // if the notificationReceivedEvent is null, we want to call the native-side
+            // complete/completion with null to silence the notification
+            RNOneSignal.completeNotificationEvent(this.notificationId, false);
             return;
         }
 
-        RNOneSignal.completeNotificationJob(notificationReceivedEvent.notificationId);
+        // if the notificationReceivedEvent is not null, we want to pass the specific event
+        // future: Android side: make the notification modifiable
+        // the notification id is associated with the native-side complete/completion handler/block
+        RNOneSignal.completeNotificationEvent(notificationReceivedEvent.notificationId, true);
     }
 }
