@@ -162,14 +162,16 @@ export default class OneSignal {
     /**
      * Gets the device state.
      */
-    static getDeviceState() {
+    static async getDeviceState() {
         if (!checkIfInitialized(RNOneSignal)) return Promise.resolve();
-        const deviceState = RNOneSignal.getDeviceState();
-
+        const deviceState = await RNOneSignal.getDeviceState();
+        console.log("1:", deviceState);
         if (Platform.OS === 'android') {
             deviceState['hasNotificationPermission'] = deviceState['areNotificationsEnabled'];
             delete deviceState['areNotificationsEnabled'];
         }
+        console.log("2:", deviceState);
+        return deviceState;
     }
 
     static userProvidedPrivacyConsent() {
