@@ -119,6 +119,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    private boolean hasSetNotificationOpenedHandler = false;
    private boolean hasSetInAppClickedHandler = false;
    private boolean hasSetRequiresPrivacyConsent = false;
+   private boolean hasSetSubscriptionObserver = false;
+   private boolean hasSetEmailSubscriptionObserver = false;
+   private boolean hasSetPermissionObserver = false;
    private boolean waitingForUserPrivacyConsent = false;
 
    // A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later.
@@ -137,6 +140,21 @@ public class RNOneSignal extends ReactContextBaseJavaModule
          t.printStackTrace();
          return null;
       }
+   }
+
+   private void removeObservers() {
+      OneSignal.removeEmailSubscriptionObserver(this);
+      OneSignal.removePermissionObserver(this);
+      OneSignal.removeSubscriptionObserver(this);
+      hasSetEmailSubscriptionObserver = false;
+      hasSetPermissionObserver = false;
+      hasSetSubscriptionObserver = false;
+   }
+
+   private void removeHandlers() {
+      OneSignal.setInAppMessageClickHandler(null);
+      OneSignal.setNotificationOpenedHandler(null);
+      OneSignal.setNotificationWillShowInForegroundHandler(null);
    }
 
    private void sendEvent(String eventName, Object params) {
@@ -213,17 +231,26 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @ReactMethod
    public void addPermissionObserver() {
-      OneSignal.addPermissionObserver(this);
+      if (!hasSetPermissionObserver) {
+         OneSignal.addPermissionObserver(this);
+         hasSetSubscriptionObserver = true;
+      }
    }
 
    @ReactMethod
    public void addSubscriptionObserver() {
-      OneSignal.addSubscriptionObserver(this);
+      if (!hasSetSubscriptionObserver) {
+         OneSignal.addSubscriptionObserver(this);
+         hasSetSubscriptionObserver = true;
+      }
    }
 
    @ReactMethod
    public void addEmailSubscriptionObserver() {
-      OneSignal.addEmailSubscriptionObserver(this);
+      if (!hasSetEmailSubscriptionObserver) {
+         OneSignal.addEmailSubscriptionObserver(this);
+         hasSetEmailSubscriptionObserver = true;
+      }
    }
 
    /* Other methods */
@@ -452,7 +479,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       OSNotificationReceivedEvent receivedEvent = notificationReceivedEventCache.get(uuid);
 
       if (receivedEvent == null) {
-         Log.e("OneSignal (java): could not find cached notification received event with id "+uuid);
+         Log.e("OneSignal", "(java): could not find cached notification received event with id "+uuid);
          return;
       }
 
@@ -606,7 +633,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @Override
    public void onHostDestroy() {
-
+      removeHandlers();
+      removeObservers();
    }
 
    @Override
@@ -617,5 +645,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    @Override
    public void onHostResume() {
       initOneSignal();
+   }
+
+   @Override
+   public void onCatalystInstanceDestroy() {
+      removeHandlers();
+      removeObservers();
    }
 }
