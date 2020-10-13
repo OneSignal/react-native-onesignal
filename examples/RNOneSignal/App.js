@@ -106,7 +106,7 @@ export default class App extends Component {
         });
         OneSignal.addSubscriptionObserver(event => {
             console.log("OneSignal: subscription changed:", event);
-            this.setState({isSubscribed: event.subscribed })
+            this.setState({isSubscribed: event.to.isSubscribed })
         });
         OneSignal.addPermissionObserver(event => {
             console.log("OneSignal: permission changed:", event);
