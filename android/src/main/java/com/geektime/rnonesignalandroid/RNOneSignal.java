@@ -461,8 +461,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule
          @Override
          public void notificationWillShowInForeground(OSNotificationReceivedEvent notificationReceivedEvent) {
             OSNotification notification = notificationReceivedEvent.getNotification();
-            String notificationJobId = notification.getNotificationId();
-            notificationReceivedEventCache.put(notificationJobId, notificationReceivedEvent);
+            String notificationId = notification.getNotificationId();
+            notificationReceivedEventCache.put(notificationId, notificationReceivedEvent);
 
             sendEvent("OneSignal-notificationWillShowInForeground", RNUtils.jsonToWritableMap(notification.toJSONObject()));
          }
