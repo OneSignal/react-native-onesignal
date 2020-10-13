@@ -87,7 +87,7 @@ export default class OneSignal {
         if (Platform.OS === 'ios') {
             RNOneSignal.registerForPushNotifications();
         } else {
-            console.log("This function is not supported on Android");
+            console.log("registerForPushNotifications: this function is not supported on Android");
         }
     }
 
@@ -98,7 +98,7 @@ export default class OneSignal {
             isValidCallback(handler);
             RNOneSignal.promptForPushNotificationsWithUserResponse(handler);
         } else {
-            console.log("This function is not supported on Android");
+            console.log("promptForPushNotificationsWithUserResponse: this function is not supported on Android");
         }
     }
 
@@ -122,7 +122,7 @@ export default class OneSignal {
             }
             RNOneSignal.requestPermissions(requestedPermissions);
         } else {
-            console.log("This function is not supported on Android");
+            console.log("requestPermissions: this function is not supported on Android");
         }
     }
 
@@ -132,7 +132,7 @@ export default class OneSignal {
         if (Platform.OS === 'ios') {
             RNOneSignal.promptForPushNotificationPermissions(handler);
         } else {
-            console.log('This function is not supported on Android');
+            console.log('promptForPushNotificationPermissions: this function is not supported on Android');
         }
     }
 
@@ -165,12 +165,12 @@ export default class OneSignal {
     static async getDeviceState() {
         if (!checkIfInitialized(RNOneSignal)) return Promise.resolve();
         const deviceState = await RNOneSignal.getDeviceState();
-        console.log("1:", deviceState);
+
         if (Platform.OS === 'android') {
             deviceState['hasNotificationPermission'] = deviceState['areNotificationsEnabled'];
             delete deviceState['areNotificationsEnabled'];
         }
-        console.log("2:", deviceState);
+
         return deviceState;
     }
 
@@ -262,7 +262,7 @@ export default class OneSignal {
         if (Platform.OS === 'android') {
             RNOneSignal.clearOneSignalNotifications();
         } else {
-            console.log("This function is not supported on iOS");
+            console.log("clearOneSignalNotifications: this function is not supported on iOS");
         }
     }
 
@@ -272,7 +272,7 @@ export default class OneSignal {
         if (Platform.OS === 'android') {
             RNOneSignal.cancelNotification(id);
         } else {
-            console.log("This function is not supported on iOS");
+            console.log("cancelNotification: this function is not supported on iOS");
         }
     }
 
