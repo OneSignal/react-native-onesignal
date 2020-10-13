@@ -207,22 +207,17 @@ export default class OneSignal {
 
     static getTags(next) {
         if (!checkIfInitialized(RNOneSignal)) return;
-
         RNOneSignal.getTags(next);
     }
 
     static deleteTag(key) {
         if (!checkIfInitialized(RNOneSignal)) return;
-        RNOneSignal.sendTag(key, "");
+        RNOneSignal.deleteTags([key]);
     }
 
     static deleteTags(tagKeys) {
         if (!checkIfInitialized(RNOneSignal)) return;
-        let finalTags = {};
-        tagKeys.forEach((key)=>{
-            finalTags[key] = "";
-        })
-        OneSignal.sendTags(finalTags);
+        RNOneSignal.deleteTags(tagKeys)
     }
 
     /* E M A I L */

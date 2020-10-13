@@ -251,8 +251,8 @@ RCT_EXPORT_METHOD(setLocationShared:(BOOL)shared) {
     [OneSignal setLocationShared:shared];
 }
 
-RCT_EXPORT_METHOD(deleteTag:(NSString *)key) {
-    [OneSignal deleteTag:key];
+RCT_EXPORT_METHOD(deleteTags:(NSArray *)keys) {
+    [OneSignal deleteTags:keys];
 }
 
 RCT_EXPORT_METHOD(disablePush:(BOOL)disabled) {

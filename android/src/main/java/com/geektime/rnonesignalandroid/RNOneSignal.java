@@ -277,6 +277,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
+   public void deleteTags(ReadableArray tagKeys) {
+      OneSignal.deleteTags(tagKeys);
+   }
+
+   @ReactMethod
    public void getTags(final Callback callback) {
       if (pendingGetTagsCallback == null)
          pendingGetTagsCallback = callback;
