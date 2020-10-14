@@ -494,8 +494,9 @@ export default class App extends Component {
             "Send Tags",
             isPrivacyConsentLoading,
             () => {
-                console.log('Attempting to send tags');
-                OneSignal.sendTags({'a':1, 'b':2});
+                const tags = {'a': 1, 'b':2, 'c':3};
+                console.log(`Attempting to send tags ${JSON.stringify(tags)}`);
+                OneSignal.sendTags(tags);
             }
         );
 
