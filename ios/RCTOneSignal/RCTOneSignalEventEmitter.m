@@ -335,7 +335,6 @@ RCT_EXPORT_METHOD(removeTriggerForKey:(NSString *)key) {
     [OneSignal removeTriggerForKey:key];
 }
 
-// to do, check this still works
 RCT_REMAP_METHOD(getTriggerValueForKey,
                 key:(NSString *)key
                 getTriggerValueForKeyResolver:(RCTPromiseResolveBlock)resolve
