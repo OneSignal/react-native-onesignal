@@ -352,6 +352,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @ReactMethod
    public void postNotification(String contents, String data, String playerId, String otherParameters) {
+      Log.e("OneSignal", "postNotification: "+contents+"\n"+data+"\n"+playerId+"\n"+otherParameters);
       try {
          JSONObject postNotification = new JSONObject();
          postNotification.put("contents", new JSONObject(contents));

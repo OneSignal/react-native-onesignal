@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "react": "16.9.0",
-    "react-native": "^0.61.2",
-    "react-native-onesignal": "^3.9.1"
+    "react-native": "^0.63.3",
+    "react-native-onesignal": "file:../../"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",

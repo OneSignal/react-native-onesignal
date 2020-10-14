@@ -93,7 +93,7 @@ export default class App extends Component {
         /* O N E S I G N A L  H A N D L E R S */
         OneSignal.setNotificationWillShowInForegroundHandler(notifReceived => {
             console.log("OneSignal: notification will show in foreground:", notifReceived);
-            setTimeout(()=>notifReceived.complete(notifReceived), 0);
+            setTimeout(()=>notifReceived.complete(notifReceived), 4000);
         });
         OneSignal.setNotificationOpenedHandler(notification => {
             console.log("OneSignal: notification opened:", notification);
@@ -106,7 +106,12 @@ export default class App extends Component {
         });
         OneSignal.addSubscriptionObserver(event => {
             console.log("OneSignal: subscription changed:", event);
-            this.setState({isSubscribed: event.to.isSubscribed })
+
+            if (Platform.OS === 'android') {
+                this.setState({isSubscribed: event.to.isSubscribed })
+            } else if (Platform.OS === 'ios') {
+                this.setState({isSubscribed: event.subscribed})
+            }
         });
         OneSignal.addPermissionObserver(event => {
             console.log("OneSignal: permission changed:", event);
@@ -386,8 +391,20 @@ export default class App extends Component {
             }
         );
 
+        if (Platform.OS === 'ios') console.log("Platform is iOS");
+
+        let postNotification = this.renderButtonView(
+            "Post a Notification",
+            isPrivacyConsentLoading,
+            async () => {
+                let state = await OneSignal.getDeviceState();
+                OneSignal.postNotification({en:"Testing this post"}, {data:"data"}, [state.userId]);
+            }
+        );
+
         elements.push(
-            getDeviceState
+            getDeviceState,
+            postNotification
         );
 
         return elements;
@@ -505,7 +522,7 @@ export default class App extends Component {
             isPrivacyConsentLoading,
             () => {
                 console.log('Deleting tags');
-                OneSignal.deleteTags(['b']);
+                OneSignal.deleteTag('a');
             }
         );
 

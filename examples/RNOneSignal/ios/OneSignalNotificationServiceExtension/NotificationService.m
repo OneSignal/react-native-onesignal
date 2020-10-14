@@ -26,6 +26,7 @@
     // self.bestAttemptContent.body = [@"[Modified] " stringByAppendingString:self.bestAttemptContent.body];
     
     self.contentHandler(self.bestAttemptContent);
+  
 }
 
 - (void)serviceExtensionTimeWillExpire {
