@@ -31,6 +31,7 @@ export default class OneSignal {
     static addPermissionObserver(observer) {
         if (!checkIfInitialized(RNOneSignal)) return;
         isValidCallback(observer);
+
         if (Platform.OS === 'android') {
             RNOneSignal.addPermissionObserver();
         }
@@ -40,6 +41,7 @@ export default class OneSignal {
     static addSubscriptionObserver(observer) {
         if (!checkIfInitialized(RNOneSignal)) return;
         isValidCallback(observer);
+
         if (Platform.OS === 'android') {
             RNOneSignal.addSubscriptionObserver();
         }
@@ -49,6 +51,7 @@ export default class OneSignal {
     static addEmailSubscriptionObserver(observer) {
         if (!checkIfInitialized(RNOneSignal)) return;
         isValidCallback(observer);
+
         if (Platform.OS === 'android') {
             RNOneSignal.addEmailSubscriptionObserver();
         }
@@ -128,8 +131,8 @@ export default class OneSignal {
 
     static promptForPushNotificationPermissions(handler) {
         if (!checkIfInitialized(RNOneSignal)) return;
-
         if (Platform.OS === 'ios') {
+            isValidCallback(handler);
             RNOneSignal.promptForPushNotificationPermissions(handler);
         } else {
             console.log('promptForPushNotificationPermissions: this function is not supported on Android');
@@ -186,6 +189,10 @@ export default class OneSignal {
     static sendTag(key, value) {
         if (!checkIfInitialized(RNOneSignal)) return;
 
+        if (!key || !value) {
+            console.error("OneSignal: sendTag: must include a key and a value");
+        }
+
         if (typeof value === "boolean") {
             value = value.toString();
         }
@@ -195,6 +202,11 @@ export default class OneSignal {
 
     static sendTags(tags) {
         if (!checkIfInitialized(RNOneSignal)) return;
+        let keys = Object.keys(tags);
+
+        if (keys.length === 0) {
+            console.error(`OneSignal: sendTags: argument must be of type object of the form { key : 'value' }`);
+        }
 
         Object.keys(tags).forEach((key)=>{
             if (typeof tags[key] === "boolean"){
@@ -212,11 +224,19 @@ export default class OneSignal {
 
     static deleteTag(key) {
         if (!checkIfInitialized(RNOneSignal)) return;
+        if (typeof key !== "string") {
+            console.error("OneSignal: deleteTag: key argument must be of type string");
+        }
         RNOneSignal.deleteTags([key]);
     }
 
     static deleteTags(tagKeys) {
         if (!checkIfInitialized(RNOneSignal)) return;
+
+        if (!Array.isArray(tagKeys)) {
+            console.error("OneSignal: deleteTags: argument must be of array type");
+        }
+
         RNOneSignal.deleteTags(tagKeys)
     }
 
@@ -309,6 +329,10 @@ export default class OneSignal {
     static addTrigger(key, value) {
         if (!checkIfInitialized(RNOneSignal)) return;
 
+        if (!key || !value) {
+            console.error("OneSignal: addTrigger: must include a key and a value");
+        }
+
         let trigger = {};
         trigger[key] = value;
         RNOneSignal.addTriggers(trigger);
@@ -318,6 +342,12 @@ export default class OneSignal {
     // Expected format is Map<String, Object>, make sure all values are Objects and keys are Strings
     static addTriggers(triggers) {
         if (!checkIfInitialized(RNOneSignal)) return;
+
+        let keys = Object.keys(triggers);
+
+        if (keys.length === 0) {
+            console.error(`OneSignal: addTriggers: argument must be an object of the form { key : 'value' }`);
+        }
 
         RNOneSignal.addTriggers(triggers);
     }
