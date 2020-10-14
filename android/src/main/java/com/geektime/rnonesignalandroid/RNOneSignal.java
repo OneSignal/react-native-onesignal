@@ -213,19 +213,19 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    /* Observers */
    @Override
    public void onOSPermissionChanged(OSPermissionStateChanges stateChanges) {
-      Log.e("Onesignal", "sending permission change event");
+      Log.i("Onesignal", "sending permission change event");
       sendEvent("OneSignal-permissionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
    }
 
    @Override
    public void onOSSubscriptionChanged(OSSubscriptionStateChanges stateChanges) {
-      Log.e("Onesignal", "sending subscription change event");
+      Log.i("Onesignal", "sending subscription change event");
       sendEvent("OneSignal-subscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
    }
 
    @Override
    public void onOSEmailSubscriptionChanged(OSEmailSubscriptionStateChanges stateChanges) {
-      Log.e("Onesignal", "sending email subscription change event");
+      Log.i("Onesignal", "sending email subscription change event");
       sendEvent("OneSignal-emailSubscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
    }
 
