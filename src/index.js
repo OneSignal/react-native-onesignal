@@ -31,30 +31,21 @@ export default class OneSignal {
     static addPermissionObserver(observer) {
         if (!checkIfInitialized(RNOneSignal)) return;
         isValidCallback(observer);
-
-        if (Platform.OS === 'android') {
-            RNOneSignal.addPermissionObserver();
-        }
+        RNOneSignal.addPermissionObserver();
         eventManager.addEventHandler(PERMISSION_CHANGED, observer);
     }
 
     static addSubscriptionObserver(observer) {
         if (!checkIfInitialized(RNOneSignal)) return;
         isValidCallback(observer);
-
-        if (Platform.OS === 'android') {
-            RNOneSignal.addSubscriptionObserver();
-        }
+        RNOneSignal.addSubscriptionObserver();
         eventManager.addEventHandler(SUBSCRIPTION_CHANGED, observer);
     }
 
     static addEmailSubscriptionObserver(observer) {
         if (!checkIfInitialized(RNOneSignal)) return;
         isValidCallback(observer);
-
-        if (Platform.OS === 'android') {
-            RNOneSignal.addEmailSubscriptionObserver();
-        }
+        RNOneSignal.addEmailSubscriptionObserver();
         eventManager.addEventHandler(EMAIL_SUBSCRIPTION_CHANGED, observer);
     }
 
@@ -84,16 +75,6 @@ export default class OneSignal {
 
     /* R E G I S T R A T I O N  E T C */
 
-    static registerForPushNotifications() {
-        if (!checkIfInitialized(RNOneSignal)) return;
-
-        if (Platform.OS === 'ios') {
-            RNOneSignal.registerForPushNotifications();
-        } else {
-            console.log("registerForPushNotifications: this function is not supported on Android");
-        }
-    }
-
     static promptForPushNotificationsWithUserResponse(handler) {
         if (!checkIfInitialized(RNOneSignal)) return;
 
@@ -102,40 +83,6 @@ export default class OneSignal {
             RNOneSignal.promptForPushNotificationsWithUserResponse(handler);
         } else {
             console.log("promptForPushNotificationsWithUserResponse: this function is not supported on Android");
-        }
-    }
-
-    static requestPermissions(permissions) {
-        if (!checkIfInitialized(RNOneSignal)) return;
-
-        let requestedPermissions = {};
-        if (Platform.OS === 'ios') {
-            if (permissions) {
-                requestedPermissions = {
-                    alert: !!permissions.alert,
-                    badge: !!permissions.badge,
-                    sound: !!permissions.sound
-                };
-            } else {
-                requestedPermissions = {
-                    alert: true,
-                    badge: true,
-                    sound: true
-                };
-            }
-            RNOneSignal.requestPermissions(requestedPermissions);
-        } else {
-            console.log("requestPermissions: this function is not supported on Android");
-        }
-    }
-
-    static promptForPushNotificationPermissions(handler) {
-        if (!checkIfInitialized(RNOneSignal)) return;
-        if (Platform.OS === 'ios') {
-            isValidCallback(handler);
-            RNOneSignal.promptForPushNotificationPermissions(handler);
-        } else {
-            console.log('promptForPushNotificationPermissions: this function is not supported on Android');
         }
     }
 
@@ -176,6 +123,7 @@ export default class OneSignal {
 
         return deviceState;
     }
+
     static userProvidedPrivacyConsent() {
         if (!checkIfInitialized(RNOneSignal)) return;
 
@@ -315,11 +263,7 @@ export default class OneSignal {
     static setInAppMessageClickHandler(handler) {
         if (!checkIfInitialized(RNOneSignal)) return;
         isValidCallback(handler);
-
-        if (Platform.OS === 'android') {
-            RNOneSignal.initInAppMessageClickHandlerParams();
-        }
-
+        RNOneSignal.initInAppMessageClickHandlerParams();
         RNOneSignal.setInAppMessageClickHandler();
         eventManager.setEventHandler(IN_APP_MESSAGE_CLICKED, handler);
     }
