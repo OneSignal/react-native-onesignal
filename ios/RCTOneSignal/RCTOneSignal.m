@@ -47,9 +47,6 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
         return;
 
     didInitialize = true;
-    [OneSignal addSubscriptionObserver:self];
-    [OneSignal addEmailSubscriptionObserver:self];
-    [OneSignal initWithLaunchOptions:nil];
 }
 
 - (void)handleRemoteNotificationOpened:(NSString *)result {
@@ -81,25 +78,11 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 }
 
 - (void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges * _Nonnull)stateChanges {
-    // Example of detecting subscribing to OneSignal
-    if (!stateChanges.from.subscribed && stateChanges.to.subscribed) {
-        //Subscribed for OneSignal push notifications!
-    }
-
     [self sendEvent:OSEventString(EmailSubscriptionChanged) withBody:stateChanges.to.toDictionary];
 }
 
-- (void)didBeginObserving {
-    // To continue supporting deprecated initialization methods (which create a new RCTOneSignal instance),
-    // we will only access the didStartObserving property of the shared instance to avoid issues
-    RCTOneSignal.sharedInstance.didStartObserving = true;
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (coldStartOSNotificationOpenedResult) {
-            [self handleRemoteNotificationOpened:[coldStartOSNotificationOpenedResult stringify]];
-            coldStartOSNotificationOpenedResult = nil;
-        }
-    });
+- (void)onOSPermissionChanged:(OSPermissionStateChanges *)stateChanges {
+    [self sendEvent:OSEventString(PermissionChanged) withBody:stateChanges.to.toDictionary];
 }
 
 - (void)dealloc {

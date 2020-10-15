@@ -92,6 +92,18 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 #pragma mark Exported Methods
 
+RCT_EXPORT_METHOD(addPermissionObserver) {
+    [OneSignal addPermissionObserver:[RCTOneSignal sharedInstance]];
+}
+
+RCT_EXPORT_METHOD(addSubscriptionObserver) {
+    [OneSignal addSubscriptionObserver:[RCTOneSignal sharedInstance]];
+}
+
+RCT_EXPORT_METHOD(addEmailSubscriptionObserver) {
+    [OneSignal addEmailSubscriptionObserver:[RCTOneSignal sharedInstance]];
+}
+
 RCT_EXPORT_METHOD(setRequiresUserPrivacyConsent:(BOOL)required) {
     [OneSignal setRequiresUserPrivacyConsent:required];
 }
@@ -335,7 +347,6 @@ RCT_EXPORT_METHOD(removeTriggerForKey:(NSString *)key) {
     [OneSignal removeTriggerForKey:key];
 }
 
-// to do, check this still works
 RCT_REMAP_METHOD(getTriggerValueForKey,
                 key:(NSString *)key
                 getTriggerValueForKeyResolver:(RCTPromiseResolveBlock)resolve
@@ -360,6 +371,10 @@ RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
     [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction *action) {
         [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:[action jsonRepresentation]];
     }];
+}
+
+RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
+    // iOS Stub
 }
 
 /*
