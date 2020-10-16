@@ -90,9 +90,10 @@ export default class App extends Component {
             console.log("Prompt response:", response);
         });
         /* O N E S I G N A L  H A N D L E R S */
-        OneSignal.setNotificationWillShowInForegroundHandler(notifReceived => {
-            console.log("OneSignal: notification will show in foreground:", notifReceived);
-            setTimeout(()=>notifReceived.complete(notifReceived), 0);
+        OneSignal.setNotificationWillShowInForegroundHandler(notifReceivedEvent => {
+            console.log("OneSignal: notification will show in foreground:", notifReceivedEvent);
+            let notif = notifReceivedEvent.getNotification();
+            setTimeout(()=>notifReceivedEvent.complete(notif), 0);
         });
         OneSignal.setNotificationOpenedHandler(notification => {
             console.log("OneSignal: notification opened:", notification);
