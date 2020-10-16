@@ -187,22 +187,27 @@ RCT_EXPORT_METHOD(setNotificationOpenedHandler) {
 }
 
 RCT_EXPORT_METHOD(setNotificationWillShowInForegroundHandler) {
+    __weak RCTOneSignalEventEmitter *weakSelf = self;
     [OneSignal setNotificationWillShowInForegroundHandler:^(OSNotification *notif, OSNotificationDisplayResponse completion) {
-        self->_receivedNotificationCache[notif.notificationId] = notif;
-        self->_notificationCompletionCache[notif.notificationId] = completion;
+        RCTOneSignalEventEmitter *strongSelf = weakSelf;
+        if(!strongSelf) {
+            return;
+        }
+        strongSelf->_receivedNotificationCache[notif.notificationId] = notif;
+        strongSelf->_notificationCompletionCache[notif.notificationId] = completion;
         [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationWillShowInForeground" withBody:[notif jsonRepresentation]];
     }];
 }
 
 RCT_EXPORT_METHOD(completeNotificationEvent:(NSString*)notificationId displayOption:(BOOL)shouldDisplay) {
-    OSNotificationDisplayResponse completion = self->_notificationCompletionCache[notificationId];
+    OSNotificationDisplayResponse completion = _notificationCompletionCache[notificationId];
     if (!completion) {
         [OneSignal onesignal_Log:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"OneSignal (objc): could not find notification completion block with id: %@", notificationId]];
         return;
     }
 
     if (shouldDisplay) {
-        OSNotification *notif = self->_receivedNotificationCache[notificationId];
+        OSNotification *notif = _receivedNotificationCache[notificationId];
         dispatch_async(dispatch_get_main_queue(), ^{
             completion(notif);
         });
