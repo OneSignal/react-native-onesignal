@@ -13,6 +13,9 @@
 
 @implementation RCTOneSignalEventEmitter {
     BOOL _hasListeners;
+    BOOL _hasSetSubscriptionObserver;
+    BOOL _hasSetPermissionObserver;
+    BOOL _hasSetEmailSubscriptionObserver;
     NSMutableDictionary* _notificationCompletionCache;
     NSMutableDictionary* _receivedNotificationCache;
 }
@@ -93,15 +96,24 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 #pragma mark Exported Methods
 
 RCT_EXPORT_METHOD(addPermissionObserver) {
-    [OneSignal addPermissionObserver:[RCTOneSignal sharedInstance]];
+    if (!_hasSetPermissionObserver) {
+        [OneSignal addPermissionObserver:[RCTOneSignal sharedInstance]];
+        _hasSetPermissionObserver = true;
+    }
 }
 
 RCT_EXPORT_METHOD(addSubscriptionObserver) {
-    [OneSignal addSubscriptionObserver:[RCTOneSignal sharedInstance]];
+    if (!_hasSetSubscriptionObserver) {
+        [OneSignal addSubscriptionObserver:[RCTOneSignal sharedInstance]];
+        _hasSetSubscriptionObserver = true;
+    }
 }
 
 RCT_EXPORT_METHOD(addEmailSubscriptionObserver) {
-    [OneSignal addEmailSubscriptionObserver:[RCTOneSignal sharedInstance]];
+    if (!_hasSetEmailSubscriptionObserver) {
+        [OneSignal addEmailSubscriptionObserver:[RCTOneSignal sharedInstance]];
+        _hasSetEmailSubscriptionObserver = true;
+    }
 }
 
 RCT_EXPORT_METHOD(setRequiresUserPrivacyConsent:(BOOL)required) {
