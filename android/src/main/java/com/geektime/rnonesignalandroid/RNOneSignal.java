@@ -44,10 +44,8 @@ import android.content.pm.ApplicationInfo;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -60,27 +58,16 @@ import com.onesignal.OSEmailSubscriptionStateChanges;
 import com.onesignal.OneSignal;
 import com.onesignal.OutcomeEvent;
 import com.onesignal.OSDeviceState;
-import com.onesignal.OSPermissionState;
 import com.onesignal.OSInAppMessageAction;
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationReceivedEvent;
 import com.onesignal.OSNotificationOpenedResult;
 import com.onesignal.OneSignal.OutcomeCallback;
 import com.onesignal.OneSignal.EmailUpdateError;
-import com.onesignal.OSNotificationGenerationJob;
-
-import com.onesignal.OSSubscriptionState;
-import com.onesignal.OSEmailSubscriptionState;
-import com.onesignal.OSPermissionSubscriptionState;
 
 import com.onesignal.OneSignal.EmailUpdateHandler;
 import com.onesignal.OneSignal.OSInAppMessageClickHandler;
 import com.onesignal.OneSignal.OSNotificationOpenedHandler;
-import com.onesignal.OneSignal.OSExternalUserIdUpdateCompletionHandler;
-import com.onesignal.OneSignal.OutcomeCallback;
-import com.onesignal.OneSignal.OSInAppMessageClickHandler;
-import com.onesignal.OutcomeEvent;
-import com.onesignal.OSDeviceState;
 
 import com.onesignal.OSPermissionObserver;
 import com.onesignal.OSSubscriptionObserver;
@@ -88,7 +75,6 @@ import com.onesignal.OSEmailSubscriptionObserver;
 
 import com.onesignal.OSPermissionStateChanges;
 import com.onesignal.OSSubscriptionStateChanges;
-import com.onesignal.OSEmailSubscriptionObserver;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -110,26 +96,21 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    private ReactContext mReactContext;
 
    private boolean oneSignalInitDone;
-   private boolean registeredEvents = false;
 
    private OSInAppMessageAction inAppMessageActionResult;
 
    private HashMap<String, OSNotificationReceivedEvent> notificationReceivedEventCache;
 
-   private boolean hasSetNotificationOpenedHandler = false;
    private boolean hasSetInAppClickedHandler = false;
-   private boolean hasSetRequiresPrivacyConsent = false;
    private boolean hasSetSubscriptionObserver = false;
    private boolean hasSetEmailSubscriptionObserver = false;
    private boolean hasSetPermissionObserver = false;
-   private boolean waitingForUserPrivacyConsent = false;
 
    // A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later.
    // It is very important to highlight that the callback is not invoked immediately after the native function completes
    // - remember that bridge communication is asynchronous, and this too is tied to the run loop.
    // Once you have done invoke() on the callback, you cannot use it again. Store it here.
    private Callback pendingGetTagsCallback;
-   private Callback inAppMessageClickedCallback;
 
    private String appIdFromManifest(ReactApplicationContext context) {
       try {
@@ -200,9 +181,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
       OneSignal.setInAppMessageClickHandler(this);
       OneSignal.initWithContext(context);
-
-      if (this.hasSetRequiresPrivacyConsent)
-         this.waitingForUserPrivacyConsent = true;
    }
 
    @ReactMethod
@@ -233,7 +211,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    public void addPermissionObserver() {
       if (!hasSetPermissionObserver) {
          OneSignal.addPermissionObserver(this);
-         hasSetSubscriptionObserver = true;
+         hasSetPermissionObserver = true;
       }
    }
 
