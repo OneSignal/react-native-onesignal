@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.platform       = :ios, "8.0"
   s.source         = { :git => "#{package_json["repository"]["url"]}.git", :tag => "#{s.version}" }
   s.source_files   = 'ios/RCTOneSignal/*.{h,m}'
-  s.static_framework = true  
+  s.static_framework = true
   # The "React" pod is required due to the use of RCTBridgeModule, RCTEventEmitter, etc
   # Ensuring we have version 0.13.0 or greater to avoid a cocoapods issue noted in React Native's release notes
   #   https://github.com/facebook/react-native/releases/tag/v0.13.0
@@ -22,5 +22,5 @@ Pod::Spec.new do |s|
   # pod 'React', :path => '../node_modules/react-native/'
 
   # The Native OneSignal-iOS-SDK from cocoapods.
-  s.dependency 'OneSignal', '2.15.2'
+  s.dependency 'OneSignal', '2.15.4'
 end
