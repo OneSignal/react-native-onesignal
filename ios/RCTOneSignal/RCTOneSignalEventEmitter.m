@@ -131,12 +131,6 @@ RCT_REMAP_METHOD(userProvidedPrivacyConsent, resolver: (RCTPromiseResolveBlock)r
     resolve(@(!OneSignal.requiresUserPrivacyConsent));
 }
 
-RCT_EXPORT_METHOD(initialize) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[RCTOneSignal sharedInstance] initOneSignal];
-    });
-}
-
 RCT_EXPORT_METHOD(setAppId:(NSString* _Nonnull)newAppId) {
     [OneSignal setAppId:newAppId];
 }
