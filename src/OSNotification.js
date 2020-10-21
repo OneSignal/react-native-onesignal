@@ -34,7 +34,6 @@ export default class OSNotification {
             this.templateId = receivedEvent.templateId;
             this.attachments = receivedEvent.attachments;
             this.templateName = receivedEvent.templateName;
-            this.actionButtons = receivedEvent.actionButtons;
             this.mutableContent = receivedEvent.mutableContent;
             this.badgeIncrement = receivedEvent.badgeIncrement;
             this.contentAvailable = receivedEvent.contentAvailable;
