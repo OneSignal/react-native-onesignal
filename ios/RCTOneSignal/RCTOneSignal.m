@@ -75,15 +75,15 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 }
 
 - (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges * _Nonnull)stateChanges {
-    [self sendEvent:OSEventString(SubscriptionChanged) withBody:stateChanges.to.toDictionary];
+    [self sendEvent:OSEventString(SubscriptionChanged) withBody:stateChanges.toDictionary];
 }
 
 - (void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges * _Nonnull)stateChanges {
-    [self sendEvent:OSEventString(EmailSubscriptionChanged) withBody:stateChanges.to.toDictionary];
+    [self sendEvent:OSEventString(EmailSubscriptionChanged) withBody:stateChanges.toDictionary];
 }
 
 - (void)onOSPermissionChanged:(OSPermissionStateChanges *)stateChanges {
-    [self sendEvent:OSEventString(PermissionChanged) withBody:stateChanges.to.toDictionary];
+    [self sendEvent:OSEventString(PermissionChanged) withBody:stateChanges.toDictionary];
 }
 
 - (void)dealloc {
