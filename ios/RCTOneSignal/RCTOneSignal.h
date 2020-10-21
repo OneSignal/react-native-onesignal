@@ -13,6 +13,6 @@
 
 @property (nonatomic) BOOL didStartObserving;
 
-- (void)initOneSignal;
+- (void)initOneSignal:(NSDictionary *)launchOptions;
 
 @end

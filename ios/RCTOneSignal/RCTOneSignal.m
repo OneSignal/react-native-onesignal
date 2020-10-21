@@ -41,11 +41,12 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     return _sharedInstance;
 }
 
-- (void)initOneSignal {
+- (void)initOneSignal:(NSDictionary *)launchOptions {
 
     if (didInitialize)
         return;
 
+    [OneSignal initWithLaunchOptions:launchOptions];
     didInitialize = true;
 }
 

@@ -3,7 +3,7 @@
 
 @interface RCTOneSignal
 + (RCTOneSignal *) sharedInstance;
-- (void)initOneSignal;
+- (void)initOneSignal:(NSDictionary *)launchOptions;
 @end
 
 @implementation UIApplication(OneSignalReactNative)
@@ -56,7 +56,7 @@ static void injectSelector(Class newClass, SEL newSel, Class addToClass, SEL mak
 }
 
 - (BOOL)oneSignalApplication:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
-    [RCTOneSignal.sharedInstance initOneSignal];
+    [[RCTOneSignal sharedInstance] initOneSignal:launchOptions];
     if ([self respondsToSelector:@selector(oneSignalApplication:didFinishLaunchingWithOptions:)])
         return [self oneSignalApplication:application didFinishLaunchingWithOptions:launchOptions];
     return YES;
