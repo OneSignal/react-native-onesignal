@@ -329,52 +329,23 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
-   public void postNotification(String contents, String data, String playerId, String otherParameters) {
-      try {
-         JSONObject postNotification = new JSONObject();
-         postNotification.put("contents", new JSONObject(contents));
+   public void postNotification(String jsonObjectString, final Callback successCallback, final Callback failureCallback) {
+      OneSignal.postNotification(
+         jsonObjectString,
+         new OneSignal.PostNotificationResponseHandler() {
+           @Override
+           public void onSuccess(JSONObject response) {
+              Log.i("OneSignal", "postNotification Success: " + response.toString());
+              successCallback.invoke(RNUtils.jsonToWritableMap(response));
+           }
 
-         if (playerId != null) {
-            JSONArray playerIds = new JSONArray(playerId);
-            postNotification.put("include_player_ids", playerIds);
+           @Override
+           public void onFailure(JSONObject response) {
+              Log.e("OneSignal", "postNotification Failure: " + response.toString());
+              failureCallback.invoke(RNUtils.jsonToWritableMap(response));
+           }
          }
-
-         if (data != null) {
-            JSONObject additionalData = new JSONObject();
-            additionalData.put("p2p_notification", new JSONObject(data));
-            postNotification.put("data", additionalData);
-         }
-
-         if (otherParameters != null && !otherParameters.trim().isEmpty()) {
-            JSONObject parametersJson = new JSONObject(otherParameters.trim());
-            Iterator<String> keys = parametersJson.keys();
-            while (keys.hasNext()) {
-               String key = keys.next();
-               postNotification.put(key, parametersJson.get(key));
-            }
-
-            if (parametersJson.has(HIDDEN_MESSAGE_KEY) && parametersJson.getBoolean(HIDDEN_MESSAGE_KEY)) {
-               postNotification.getJSONObject("data").put(HIDDEN_MESSAGE_KEY, true);
-            }
-         }
-
-         OneSignal.postNotification(
-                 postNotification,
-                 new OneSignal.PostNotificationResponseHandler() {
-                    @Override
-                    public void onSuccess(JSONObject response) {
-                       Log.i("OneSignal", "postNotification Success: " + response.toString());
-                    }
-
-                    @Override
-                    public void onFailure(JSONObject response) {
-                       Log.e("OneSignal", "postNotification Failure: " + response.toString());
-                    }
-                 }
-         );
-      } catch (JSONException e) {
-         e.printStackTrace();
-      }
+      );
    }
 
    @ReactMethod
