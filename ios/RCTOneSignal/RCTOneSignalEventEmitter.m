@@ -286,30 +286,18 @@ RCT_EXPORT_METHOD(promptLocation) {
     [OneSignal promptLocation];
 }
 
-// The post notification endpoint accepts four parameters.
-RCT_EXPORT_METHOD(postNotification:(NSDictionary *)contents data:(NSDictionary *)data player_id:(NSArray *)player_ids other_parameters:(NSDictionary *)other_parameters) {
-    NSDictionary * additionalData = data ? @{@"p2p_notification": data} : @{};
-
-    NSMutableDictionary * extendedData = [additionalData mutableCopy];
-    BOOL isHidden = [[other_parameters ?: @{} objectForKey:@"hidden"] boolValue];
-    if (isHidden) {
-        [extendedData setObject:[NSNumber numberWithBool:YES] forKey:@"hidden"];
+RCT_EXPORT_METHOD(postNotification:(NSString *)jsonObjectString successCallback:(RCTResponseSenderBlock)successCallback failureCallback:(RCTResponseSenderBlock)failureCallback) {
+    if (!successCallback || !failureCallback) {
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"postNotification must contain success & failure callbacks"];
+        return;
     }
-
-    NSMutableDictionary *notification = [NSMutableDictionary new];
-    notification[@"contents"] = contents;
-    notification[@"data"] = extendedData;
-
-    if (player_ids) {
-        // Array of player ids
-        notification[@"include_player_ids"] = player_ids;
-    }
-
-    if (other_parameters) {
-        [notification addEntriesFromDictionary:other_parameters];
-    }
-
-    [OneSignal postNotification:notification];
+    [OneSignal postNotificationWithJsonString:jsonObjectString onSuccess:^(NSDictionary *success) {
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Successfully sent notification."];
+        successCallback(@[success]);
+    } onFailure:^(NSError *error) {
+        [OneSignal onesignal_Log:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"Notification Send Failure with Error: %@", error]];
+        failureCallback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    }];
 }
 
 RCT_EXPORT_METHOD(setLogLevel:(int)logLevel visualLogLevel:(int)visualLogLevel) {
