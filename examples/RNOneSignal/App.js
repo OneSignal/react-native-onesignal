@@ -129,7 +129,10 @@ export default class App extends Component {
         }
 
         let deviceState = await OneSignal.getDeviceState();
-        this.setState({ isSubscribed: deviceState.isSubscribed });
+        this.setState({
+            isSubscribed: deviceState.isSubscribed,
+            userId      : deviceState.userId
+        });
 
         // Examples for using native IAM public methods
         // this.oneSignalInAppMessagingExamples();
@@ -227,6 +230,7 @@ export default class App extends Component {
                     { this.createEmailFields() }
                     { this.createExternalUserIdFields() }
                     { this.createSubscriptionElements() }
+                    { this.createNotificationElements() }
                 </View>
 
             </ScrollView>
@@ -553,7 +557,7 @@ export default class App extends Component {
             isExternalUserIdLoading || isPrivacyConsentLoading,
             () => {
                 console.log('Attempting to set external user id: ' + externalUserId);
-                this.setState({isExternalUserIdLoading:true}, () => {
+                this.setState({ isExternalUserIdLoading:true }, () => {
                     // OneSignal setExternalUserId
                     OneSignal.setExternalUserId(externalUserId, (results) => {
                         console.log('Results of setting external user id');
@@ -571,22 +575,53 @@ export default class App extends Component {
             isExternalUserIdLoading || isPrivacyConsentLoading,
             () => {
                 console.log('Attempting to remove external user id');
-                this.setState({isExternalUserIdLoading:true}, () => {
+                this.setState({ isExternalUserIdLoading: true }, () => {
                     // OneSignal setExternalUserId
                     OneSignal.removeExternalUserId((results) => {
                         console.log('Results of removing external user id');
                         console.log(results);
 
-                        this.setState({isExternalUserIdLoading:false});
+                        this.setState({ isExternalUserIdLoading:false });
                     });
+                });
+            }
+        )
+    }
+
+    createNotificationElements() {
+        // States used through-out the email fields
+        const {
+            externalUserId,
+            isExternalUserIdLoading,
+            isPrivacyConsentLoading
+        } = this.state;
+
+        let elements = [];
+
+        // Remove External User Id Button
+        let postNotificationButton = this.renderButtonView(
+            "Post Notification",
+            isExternalUserIdLoading || isPrivacyConsentLoading,
+            async () => {
+                const { userId } = await OneSignal.getDeviceState();
+                const notificationObj = {
+                    contents: {en: "Message Body"},
+                    include_player_ids: [userId]
+                };
+                const json = JSON.stringify(notificationObj);
+
+                console.log('Attempting to send notification to '+userId);
+
+                OneSignal.postNotification(json, (success) => {
+                    console.log("Success:", success);
+                }, (failure) => {
+                    console.log("Failure:", failure );
                 });
             }
         )
 
         elements.push(
-            externalUserIdTextInput,
-            setExternalUserIdButton,
-            removeExternalUserIdButton
+            postNotificationButton
         );
 
         return elements;
