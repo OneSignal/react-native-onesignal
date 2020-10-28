@@ -164,9 +164,9 @@ export default class OneSignal {
         RNOneSignal.sendTags(tags || {});
     }
 
-    static getTags(next) {
+    static getTags(callback) {
         if (!checkIfInitialized(RNOneSignal)) return;
-        RNOneSignal.getTags(next);
+        RNOneSignal.getTags(callback);
     }
 
     static deleteTag(key) {
