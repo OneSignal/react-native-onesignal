@@ -3,6 +3,7 @@
   "version": "4.0.0-beta.2",
   "description": "React Native OneSignal SDK",
   "main": "src/index",
+  "typings": "src/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
