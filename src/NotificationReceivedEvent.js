@@ -11,7 +11,7 @@ export default class NotificationReceivedEvent {
         if (!notification) {
             // if the notificationReceivedEvent is null, we want to call the native-side
             // complete/completion with null to silence the notification
-            RNOneSignal.completeNotificationEvent(notification.notificationId, false);
+            RNOneSignal.completeNotificationEvent(this.notification.notificationId, false);
             return;
         }
 
