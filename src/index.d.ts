@@ -73,7 +73,7 @@ declare module 'react-native-onesignal' {
 
     /* N O T I F I C A T I O N   &   I A M   E V E N T S */
     export interface NotificationReceivedEvent {
-        complete        : (notification: OSNotification) => void;
+        complete        : (notification?: OSNotification) => void;
         getNotification : () => OSNotification;
     };
 
