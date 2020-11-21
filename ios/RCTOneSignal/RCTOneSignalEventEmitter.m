@@ -338,11 +338,16 @@ RCT_EXPORT_METHOD(setExternalUserId:(NSString *)externalId) {
     [OneSignal setExternalUserId:externalId];
 }
 
-RCT_EXPORT_METHOD(setExternalUserId:(NSString*)externalId withCompletion:(RCTResponseSenderBlock)callback) {
-    [OneSignal setExternalUserId:externalId withCompletion:^(NSDictionary* results) {
+RCT_EXPORT_METHOD(setExternalUserId:(NSString*)externalId withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
+    [OneSignal setExternalUserId:externalId withExternalIdAuthHashToken:authHash withSuccess:^(NSDictionary* results) {
         [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Set external user id complete"];
         if (callback) {
             callback(@[results]);
+        }
+    } withFailure: ^(NSError* error) {
+        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"Set external user id Failure with error: %@", error]];
+        if (callback) {
+            callback(@[error]);
         }
     }];
 }
