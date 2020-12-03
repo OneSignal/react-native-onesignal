@@ -30,7 +30,7 @@ const disabledColor = '#BEBEBE';
 /**
  Change to desired app id (dashboard app)
  */
-var appId = '380dc082-5231-4cc2-ab51-a03da5a0e4c2';
+var appId = 'ce8572ae-ff57-4e77-a265-5c91f00ecc4c';
 
 /**
  Controls whether the app needs privacy consent or not
