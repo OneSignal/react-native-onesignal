@@ -435,16 +435,16 @@ export default class OneSignal {
         return RNOneSignal.userProvidedPrivacyConsent();
     }
 
-    static setExternalUserId(externalId, callback=function(){}) {
+    static setExternalUserId(externalId, varArg1, varArg2) {
         if (!checkIfInitialized()) return;
 
-        RNOneSignal.setExternalUserId(externalId, null, callback);
-    }
+        if (typeof varArg1 === "function") {
+            RNOneSignal.setExternalUserId(externalId, null, varArg1);
+            return;
+        }
 
-    static setExternalUserIdWithAuthToken(externalId, authHashToken, callback=function(){}) {
-        if (!checkIfInitialized()) return;
+        RNOneSignal.setExternalUserId(externalId, varArg1, varArg2 || function(){});
 
-        RNOneSignal.setExternalUserId(externalId, authHashToken, callback);
     }
 
     static removeExternalUserId(callback) {
