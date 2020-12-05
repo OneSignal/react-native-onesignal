@@ -29,45 +29,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
-// Adds required manifestPlaceholders keys to allow mainifest merge gradle step to complete
-// The OneSignal app id should be set in your JS code.
-// Google project number / FCM Sender ID will be pulled in from the OneSignal dashbaord
-class DefaultManifestPlaceHolders {
-    static final MANIFEST_PLACEHOLDERS_DEFAULTS = [
-        onesignal_app_id: '',
-        onesignal_google_project_number: 'REMOTE'
-    ]
-
-    static void addManifestToAppProject(Project proj) {
-        def androidApp = proj.android
-        MANIFEST_PLACEHOLDERS_DEFAULTS.each { defKey, defValue ->
-            if (!androidApp.defaultConfig.manifestPlaceholders.containsKey(defKey)) {
-                androidApp.defaultConfig.manifestPlaceholders[defKey] = defValue
-
-                androidApp.buildTypes.each { buildType ->
-                    if (!buildType.manifestPlaceholders.containsKey(defKey))
-                        buildType.manifestPlaceholders[defKey] = defValue
-                }
-            }
-        }
-    }
-}
-
-rootProject.childProjects.each { projName, proj ->
-    if (projName != 'app' && projName != 'react-native-onesignal')
-        return
-
-    if (proj.hasProperty('android')) {
-        DefaultManifestPlaceHolders.addManifestToAppProject(proj)
-        return
-    }
-
-    proj.afterEvaluate {
-        DefaultManifestPlaceHolders.addManifestToAppProject(proj)
-    }
-}
-
-
 // Add the following to the top (Line 1) of your app/build.gradle if you run into any issues with duplicate classes.
 // Such as the following error
 //   Error: more than one library with package name 'com.google.android.gms.license'
