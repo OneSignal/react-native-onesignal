@@ -377,10 +377,17 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    public void setExternalUserId(final String externalId, final Callback callback) {
       OneSignal.setExternalUserId(externalId, new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
          @Override
-         public void onComplete(JSONObject results) {
+         public void onSuccess(JSONObject results) {
             Log.i("OneSignal", "Completed setting external user id: " + externalId + "with results: " + results.toString());
+
             if (callback != null)
                callback.invoke(RNUtils.jsonToWritableMap(results));
+         }
+
+         @Override
+         public void onFailure(OneSignal.ExternalIdError error) {
+            if (callback != null)
+               callback.invoke(error.getMessage());
          }
       });
    }
@@ -389,10 +396,17 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    public void removeExternalUserId(final Callback callback) {
       OneSignal.removeExternalUserId(new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
          @Override
-         public void onComplete(JSONObject results) {
+         public void onSuccess(JSONObject results) {
             Log.i("OneSignal", "Completed removing external user id with results: " + results.toString());
+
             if (callback != null)
                callback.invoke(RNUtils.jsonToWritableMap(results));
+         }
+
+         @Override
+         public void onFailure(OneSignal.ExternalIdError error) {
+            if (callback != null)
+               callback.invoke(error.getMessage());
          }
       });
    }
