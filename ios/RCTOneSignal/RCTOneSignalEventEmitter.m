@@ -42,7 +42,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 -(instancetype)init {
     if (self = [super init]) {
-        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Initialized RCTOneSignalEventEmitter"];
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"Initialized RCTOneSignalEventEmitter"];
         _notificationCompletionCache = [NSMutableDictionary new];
         _receivedNotificationCache = [NSMutableDictionary new];
 
@@ -55,7 +55,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 -(void)startObserving {
     _hasListeners = true;
-    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"RCTOneSignalEventEmitter did start observing"];
+    [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"RCTOneSignalEventEmitter did start observing"];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"didSetBridge" object:nil];
 
@@ -64,7 +64,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 -(void)stopObserving {
     _hasListeners = false;
-    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"RCTOneSignalEventEmitter did stop observing"];
+    [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"RCTOneSignalEventEmitter did stop observing"];
 }
 
 -(NSArray<NSString *> *)supportedEvents {
@@ -81,7 +81,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 - (void)emitEvent:(NSNotification *)notification {
     if (!_hasListeners) {
-        [OneSignal onesignal_Log:ONE_S_LL_WARN message:[NSString stringWithFormat:@"Attempted to send an event (%@) when no listeners were set.", notification.name]];
+        [OneSignal onesignalLog:ONE_S_LL_WARN message:[NSString stringWithFormat:@"Attempted to send an event (%@) when no listeners were set.", notification.name]];
         return;
     }
 
@@ -208,7 +208,7 @@ RCT_EXPORT_METHOD(setNotificationWillShowInForegroundHandler) {
 RCT_EXPORT_METHOD(completeNotificationEvent:(NSString*)notificationId displayOption:(BOOL)shouldDisplay) {
     OSNotificationDisplayResponse completion = _notificationCompletionCache[notificationId];
     if (!completion) {
-        [OneSignal onesignal_Log:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"OneSignal (objc): could not find notification completion block with id: %@", notificationId]];
+        [OneSignal onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"OneSignal (objc): could not find notification completion block with id: %@", notificationId]];
         return;
     }
 
@@ -244,7 +244,7 @@ RCT_EXPORT_METHOD(logoutEmail:(RCTResponseSenderBlock)callback) {
 
 RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
     [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
-        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Prompt For Push Notifications Success"];
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"Prompt For Push Notifications Success"];
         callback(@[@(accepted)]);
     }];
 }
@@ -255,17 +255,17 @@ RCT_EXPORT_METHOD(sendTag:(NSString *)key value:(NSString*)value) {
 
 RCT_EXPORT_METHOD(sendTags:(NSDictionary *)properties) {
     [OneSignal sendTags:properties onSuccess:^(NSDictionary *sucess) {
-        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Send Tags Success"];
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"Send Tags Success"];
     } onFailure:^(NSError *error) {
-        [OneSignal onesignal_Log:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"Send Tags Failure With Error: %@", error]];
+        [OneSignal onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"Send Tags Failure With Error: %@", error]];
     }];}
 
 RCT_EXPORT_METHOD(getTags:(RCTResponseSenderBlock)callback) {
     [OneSignal getTags:^(NSDictionary *tags) {
-        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Get Tags Success"];
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"Get Tags Success"];
         callback(@[tags]);
     } onFailure:^(NSError *error) {
-        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"Get Tags Failure with error: %@", error]];
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"Get Tags Failure with error: %@", error]];
         callback(@[error]);
     }];
 }
@@ -288,14 +288,14 @@ RCT_EXPORT_METHOD(promptLocation) {
 
 RCT_EXPORT_METHOD(postNotification:(NSString *)jsonObjectString successCallback:(RCTResponseSenderBlock)successCallback failureCallback:(RCTResponseSenderBlock)failureCallback) {
     if (!successCallback || !failureCallback) {
-        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"postNotification must contain success & failure callbacks"];
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"postNotification must contain success & failure callbacks"];
         return;
     }
     [OneSignal postNotificationWithJsonString:jsonObjectString onSuccess:^(NSDictionary *success) {
-        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Successfully sent notification."];
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"Successfully sent notification."];
         successCallback(@[success]);
     } onFailure:^(NSError *error) {
-        [OneSignal onesignal_Log:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"Notification Send Failure with Error: %@", error]];
+        [OneSignal onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"Notification Send Failure with Error: %@", error]];
         failureCallback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
     }];
 }
@@ -309,12 +309,12 @@ RCT_EXPORT_METHOD(setExternalUserId:(NSString *)externalId) {
 }
 
 RCT_EXPORT_METHOD(setExternalUserId:(NSString*)externalId withCompletion:(RCTResponseSenderBlock)callback) {
-    [OneSignal setExternalUserId:externalId withCompletion:^(NSDictionary* results) {
-        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Set external user id complete"];
+    [OneSignal setExternalUserId:externalId withSuccess:^(NSDictionary* results) {
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"Set external user id complete"];
         if (callback) {
             callback(@[results]);
         }
-    }];
+    } withFailure:^(NSError *error) {}];
 }
 
 RCT_EXPORT_METHOD(removeExternalUserId) {
@@ -323,11 +323,11 @@ RCT_EXPORT_METHOD(removeExternalUserId) {
 
 RCT_EXPORT_METHOD(removeExternalUserId:(RCTResponseSenderBlock)callback) {
     [OneSignal removeExternalUserId:^(NSDictionary* results) {
-        [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Remove external user id complete"];
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"Remove external user id complete"];
         if (callback) {
             callback(@[results]);
         }
-    }];
+    } withFailure:^(NSError *error) {}];
 }
 
 /*
