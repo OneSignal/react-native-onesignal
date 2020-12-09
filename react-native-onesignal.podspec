@@ -22,5 +22,5 @@ Pod::Spec.new do |s|
   # pod 'React', :path => '../node_modules/react-native/'
 
   # The Native OneSignal-iOS-SDK from cocoapods.
-  s.dependency 'OneSignal', '3.0.0-beta2'
+  s.dependency 'OneSignal', '3.0.0'
 end
