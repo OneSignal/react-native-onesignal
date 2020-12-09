@@ -314,7 +314,10 @@ RCT_EXPORT_METHOD(setExternalUserId:(NSString*)externalId withCompletion:(RCTRes
         if (callback) {
             callback(@[results]);
         }
-    } withFailure:^(NSError *error) {}];
+    } withFailure:^(NSError *error) {
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"OneSignal setExternalUserId error: %@", error]];
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    }];
 }
 
 RCT_EXPORT_METHOD(removeExternalUserId) {
@@ -327,7 +330,10 @@ RCT_EXPORT_METHOD(removeExternalUserId:(RCTResponseSenderBlock)callback) {
         if (callback) {
             callback(@[results]);
         }
-    } withFailure:^(NSError *error) {}];
+    } withFailure:^(NSError *error) {
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"OneSignal removeExternalUserId error: %@", error]];
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    }];
 }
 
 /*
