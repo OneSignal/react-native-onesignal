@@ -224,7 +224,6 @@ export default class OneSignal {
         }
     }
 
-    // TO DO: add to migration guide
     static removeNotification(id) {
         if (!checkIfInitialized(RNOneSignal)) return;
 
