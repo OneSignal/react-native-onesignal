@@ -354,8 +354,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
-   public void cancelNotification(int id) {
-      OneSignal.cancelNotification(id);
+   public void removeNotification(int id) {
+      OneSignal.removeNotification(id);
    }
 
    @ReactMethod
