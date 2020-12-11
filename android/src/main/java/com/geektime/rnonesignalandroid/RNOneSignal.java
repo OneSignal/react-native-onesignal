@@ -56,7 +56,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import com.onesignal.OSEmailSubscriptionStateChanges;
 import com.onesignal.OneSignal;
-import com.onesignal.OutcomeEvent;
+import com.onesignal.OSOutcomeEvent;
 import com.onesignal.OSDeviceState;
 import com.onesignal.OSInAppMessageAction;
 import com.onesignal.OSNotification;
@@ -535,7 +535,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    public void sendOutcome(final String name, final Callback callback) {
       OneSignal.sendOutcome(name, new OutcomeCallback() {
          @Override
-         public void onSuccess(OutcomeEvent outcomeEvent) {
+         public void onSuccess(OSOutcomeEvent outcomeEvent) {
             if (outcomeEvent == null)
                callback.invoke(new WritableNativeMap());
             else {
@@ -553,7 +553,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    public void sendUniqueOutcome(final String name, final Callback callback) {
       OneSignal.sendUniqueOutcome(name, new OutcomeCallback() {
          @Override
-         public void onSuccess(OutcomeEvent outcomeEvent) {
+         public void onSuccess(OSOutcomeEvent outcomeEvent) {
             if (outcomeEvent == null)
                callback.invoke(new WritableNativeMap());
             else {
@@ -571,7 +571,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    public void sendOutcomeWithValue(final String name, final float value, final Callback callback) {
       OneSignal.sendOutcomeWithValue(name, value, new OutcomeCallback() {
          @Override
-         public void onSuccess(OutcomeEvent outcomeEvent) {
+         public void onSuccess(OSOutcomeEvent outcomeEvent) {
             if (outcomeEvent == null)
                callback.invoke(new WritableNativeMap());
             else {
