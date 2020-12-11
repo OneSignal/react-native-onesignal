@@ -209,8 +209,15 @@ export default class OneSignal {
 
     /* N O T I F I C A T I O N S */
 
-    static postNotification(notificationObjectString, onSuccess=()=>{}, onFailure=()=>{}) {
+    static postNotification(notificationObjectString, onSuccess, onFailure) {
         if (!checkIfInitialized(RNOneSignal)) return;
+
+        if (!onSuccess)
+            onSuccess = function(){};
+
+        if (!onFailure)
+            onFailure = function(){};
+
         RNOneSignal.postNotification(notificationObjectString, onSuccess, onFailure);
     }
 
