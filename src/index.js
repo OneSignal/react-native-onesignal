@@ -224,13 +224,14 @@ export default class OneSignal {
         }
     }
 
-    static cancelNotification(id) {
+    // TO DO: add to migration guide
+    static removeNotification(id) {
         if (!checkIfInitialized(RNOneSignal)) return;
 
         if (Platform.OS === 'android') {
-            RNOneSignal.cancelNotification(id);
+            RNOneSignal.removeNotification(id);
         } else {
-            console.log("cancelNotification: this function is not supported on iOS");
+            console.log("removeNotification: this function is not supported on iOS");
         }
     }
 
