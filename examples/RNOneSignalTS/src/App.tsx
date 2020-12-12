@@ -19,7 +19,6 @@ import {
 } from 'react-native';
 
 import {
-  Header,
   Colors
 } from 'react-native/Libraries/NewAppScreen';
 import OneSignalDemo from './OneSignalDemo';
@@ -34,12 +33,6 @@ const App = () => {
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
           <View style={styles.body}>
             <OneSignalDemo name="OneSignal"/>
           </View>

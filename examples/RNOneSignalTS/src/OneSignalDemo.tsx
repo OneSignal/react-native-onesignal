@@ -2,6 +2,7 @@ import OneSignal from 'react-native-onesignal';
 import * as React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import OSButtons from './OSButtons';
+import { SubscribeFields } from './models/SubscribeFields';
 
 export interface Props {
   name: string;
@@ -10,6 +11,7 @@ export interface Props {
 export interface State {
     name: string;
     isSubscribed: boolean;
+    isLocationShared: boolean;
     requiresPrivacyConsent: boolean
 }
 
@@ -65,10 +67,14 @@ class OneSignalDemo extends React.Component<Props, State> {
     }
 
     render() {
+        const subscribeFields : SubscribeFields = {
+            isSubscribed        : this.state.isSubscribed,
+        }
+
         return (
             <View style={styles.root}>
-                <Text>OneSignal</Text>
-                <OSButtons isSubscribed={this.state.isSubscribed}/>
+                <Text style={styles.title} >OneSignal</Text>
+                <OSButtons subscribeFields={subscribeFields}/>
             </View>
         );
     }
@@ -79,6 +85,9 @@ const styles = StyleSheet.create({
   root: {
     alignItems: 'center',
     alignSelf: 'center'
+  },
+  title: {
+    fontSize: 40
   },
   buttons: {
     flexDirection: 'row',

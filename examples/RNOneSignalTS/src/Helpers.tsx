@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { Button, View, StyleSheet, Platform, KeyboardAvoidingView, TextInput } from "react-native";
-const textInputBorderColor = Platform.OS == 'ios' ? '#3C8AE7' : '#D45653';
 const disabledColor = '#BEBEBE';
 
-export const renderButtonView = (name: string, callback: Function) => {
+export const renderButtonView = (name: string, color: string, callback: Function) => {
     return (
         <View
             key={name + '_parent'}
@@ -12,7 +11,7 @@ export const renderButtonView = (name: string, callback: Function) => {
             <Button
                 key={name}
                 title={name}
-                color={textInputBorderColor}
+                color={color}
                 onPress={() => { callback() }}
             />
         </View>
