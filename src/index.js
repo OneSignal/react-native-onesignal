@@ -136,7 +136,7 @@ export default class OneSignal {
     static sendTag(key, value) {
         if (!checkIfInitialized(RNOneSignal)) return;
 
-        if (!key || !value) {
+        if (!key || (!value && value !== "")) {
             console.error("OneSignal: sendTag: must include a key and a value");
         }
 
