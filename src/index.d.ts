@@ -257,7 +257,7 @@ declare module 'react-native-onesignal' {
          * @param  {(failure:object)=>void} onFailure
          * @returns void
          */
-        postNotification(notificationObjectString: string, onSuccess: (success: object) => void, onFailure: (failure: object) => void): void;
+        postNotification(notificationObjectString: string, onSuccess?: (success: object) => void, onFailure?: (failure: object) => void): void;
 
         /**
          * Android Only. iOS provides a standard way to clear notifications by clearing badge count.
