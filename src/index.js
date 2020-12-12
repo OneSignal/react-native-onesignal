@@ -203,7 +203,10 @@ export default class OneSignal {
 
     static logoutEmail(handler) {
         if (!checkIfInitialized(RNOneSignal)) return;
-        isValidCallback(handler);
+
+        if (!handler)
+            handler = function(){};
+
         RNOneSignal.logoutEmail(handler);
     }
 
