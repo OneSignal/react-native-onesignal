@@ -239,13 +239,15 @@ export default class OneSignal {
 
     /* E X T E R N A L  U S E R  I D */
 
-    static setExternalUserId(externalId, handler) {
+    static setExternalUserId(externalId, varArg1, varArg2) {
         if (!checkIfInitialized(RNOneSignal)) return;
 
-        if (handler === undefined)
-            handler = function(){};
+        if (typeof varArg1 === "function") {
+            RNOneSignal.setExternalUserId(externalId, null, varArg1);
+            return;
+        }
 
-        RNOneSignal.setExternalUserId(externalId, handler);
+        RNOneSignal.setExternalUserId(externalId, varArg1, varArg2 || function(){});
     }
 
     static removeExternalUserId(handler) {
