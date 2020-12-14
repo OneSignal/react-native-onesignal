@@ -6,6 +6,7 @@ import { SubscribeFields } from './models/SubscribeFields';
 
 export interface Props {
     subscribeFields: SubscribeFields;
+    loggingFunction: Function;
 }
 
 export interface State {
@@ -36,7 +37,7 @@ class OSButtons extends React.Component<Props, State> {
     }
 
     createSubscribeFields() {
-        const { subscribeFields } = this.props;
+        const { subscribeFields, loggingFunction } = this.props;
         const { isSubscribed } = subscribeFields;
         const { isLocationShared } = this.state;
         const color = '#D45653';
@@ -46,7 +47,7 @@ class OSButtons extends React.Component<Props, State> {
             isSubscribed ? "Unsubscribe" : "Subscribe",
             color,
             () => {
-                console.log("Is Push Disabled:", isSubscribed);
+                loggingFunction(`Is Push Disabled: ${isSubscribed}`);
                 OneSignal.disablePush(isSubscribed);
             }
         );
@@ -55,9 +56,9 @@ class OSButtons extends React.Component<Props, State> {
             "Prompt for Push",
             color,
             () => {
-                console.log("Prompting for push with user response...");
+                loggingFunction("Prompting for push with user response...");
                 OneSignal.promptForPushNotificationsWithUserResponse(response => {
-                    console.log("User response:", response);
+                    loggingFunction(`User response: ${response}`);
                 });
             }
         );
@@ -66,7 +67,7 @@ class OSButtons extends React.Component<Props, State> {
             isLocationShared ? "Unshare Location" : "Share Location",
             color,
             () => {
-                console.log("Is Location Shared:", !isLocationShared);
+                loggingFunction(`Is Location Shared: ${!isLocationShared}`);
                 OneSignal.setLocationShared(!isLocationShared);
                 this.setState({ isLocationShared : !isLocationShared });
             }
@@ -76,7 +77,7 @@ class OSButtons extends React.Component<Props, State> {
             "Prompt Location",
             color,
             () => {
-                console.log("Prompting Location");
+                loggingFunction("Prompting Location");
                 OneSignal.promptLocation();
             }
         );
@@ -86,7 +87,7 @@ class OSButtons extends React.Component<Props, State> {
             "Set Email",
             color,
             () => {
-                console.log("Setting email...");
+                loggingFunction("Setting email...");
                 let authCode; // SET AUTH CODE HERE
                 OneSignal.setEmail(email, authCode);
             }
@@ -96,7 +97,7 @@ class OSButtons extends React.Component<Props, State> {
             "Logout Email",
             color,
             () => {
-                console.log("Logging out of email...");
+                loggingFunction("Logging out of email...");
                 OneSignal.logoutEmail();
             }
         );
@@ -113,17 +114,18 @@ class OSButtons extends React.Component<Props, State> {
     createDeviceFields() {
         const color = "#051B2C";
         const elements = [];
+        const { loggingFunction } = this.props;
 
         const deviceStateButton = renderButtonView("Get Device State", color, async () => {
             let deviceState = await OneSignal.getDeviceState();
-            console.log("Device State:", deviceState);
+            loggingFunction(`Device State: ${JSON.stringify(deviceState)}`);
         })
 
         const requireUserProvideConsent = renderButtonView(
             this.state.requireUserConsent ? "Remove User Privacy Consent Requirement" : "Require User Privacy Consent",
             color,
             () => {
-                console.log("Require User Consent:", !this.state.requireUserConsent);
+                loggingFunction(`Require User Consent: ${!this.state.requireUserConsent}`);
                 OneSignal.setRequiresUserPrivacyConsent(!this.state.requireUserConsent);
                 this.setState({ requireUserConsent : !this.state.requireUserConsent });
             }
@@ -131,14 +133,14 @@ class OSButtons extends React.Component<Props, State> {
 
         const provideUserConsentButton = renderButtonView(
             this.state.provideUserConsent ? "Reject User Consent" : "Provide User Consent", color, async () => {
-                console.log("Provide User Consent:", !this.state.provideUserConsent);
+                loggingFunction(`Provide User Consent: ${!this.state.provideUserConsent}`);
                 OneSignal.provideUserConsent(!this.state.provideUserConsent);
                 this.setState({ provideUserConsent: !this.state.provideUserConsent })
         })
 
         const userProvidedPrivacyConsent = renderButtonView("Did User Provide Privacy Consent", color, async () => {
             let didProvide = await OneSignal.userProvidedPrivacyConsent();
-            console.log("Provided Privacy Consent: ", didProvide);
+            loggingFunction(`Provided Privacy Consent: ${didProvide}`);
         })
 
         elements.push(
@@ -153,6 +155,7 @@ class OSButtons extends React.Component<Props, State> {
     createNotificationFields() {
         const color = "#3A3DB3";
         const elements = [];
+        const { loggingFunction } = this.props;
 
         const postNotificationButton = renderButtonView(
             "Post Notification",
@@ -165,12 +168,12 @@ class OSButtons extends React.Component<Props, State> {
                 };
                 const json = JSON.stringify(notificationObj);
 
-                console.log('Attempting to send notification to '+userId);
+                loggingFunction(`Attempting to send notification to ${userId}`);
 
                 OneSignal.postNotification(json, (success) => {
-                    console.log("Success:", success);
+                    loggingFunction(`Success: ${JSON.stringify(success)}`);
                 }, (failure) => {
-                    console.log("Failure:", failure );
+                    loggingFunction(`Failure: ${JSON.stringify(failure)}`);
                 });
             }
         )
@@ -185,10 +188,10 @@ class OSButtons extends React.Component<Props, State> {
         )
 
         const getTags = renderButtonView("Get tags", color, async () => {
-            console.log("Privacy consent required for getting tags");
-            console.log("Getting tags...");
+            loggingFunction("Privacy consent required for getting tags");
+            loggingFunction("Getting tags...");
             OneSignal.getTags((tags) => {
-                console.log("Tags:", tags);
+                loggingFunction(`Tags: ${tags}`);
             });
         });
 
@@ -228,7 +231,7 @@ class OSButtons extends React.Component<Props, State> {
             "Email",
             email,
             (text:string) => {
-                this.setState({ email:text });
+                this.setState({ email : text });
             }
         );
 
@@ -238,7 +241,7 @@ class OSButtons extends React.Component<Props, State> {
             isEmailLoading || isPrivacyConsentLoading,
             () => {
                 console.log('Attempting to set email: ' + email);
-                this.setState({isEmailLoading:true}, () => {
+                this.setState({isEmailLoading : true}, () => {
                     // OneSignal setEmail
                     OneSignal.setEmail(email, null, (error) => {
                         if (error) {

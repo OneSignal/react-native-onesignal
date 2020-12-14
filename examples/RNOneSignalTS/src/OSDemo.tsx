@@ -3,6 +3,7 @@ import * as React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import OSButtons from './OSButtons';
 import { SubscribeFields } from './models/SubscribeFields';
+import OSConsole from './OSConsole';
 
 export interface Props {
   name: string;
@@ -12,17 +13,20 @@ export interface State {
     name: string;
     isSubscribed: boolean;
     isLocationShared: boolean;
-    requiresPrivacyConsent: boolean
+    requiresPrivacyConsent: boolean;
+    consoleValue: string;
 }
 
-class OneSignalDemo extends React.Component<Props, State> {
+class OSDemo extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
         this.state = {
             name: props.name,
             isSubscribed: false,
-            requiresPrivacyConsent: false
+            requiresPrivacyConsent: false,
+            isLocationShared: false,
+            consoleValue: ""
         }
     }
 
@@ -33,30 +37,30 @@ class OneSignalDemo extends React.Component<Props, State> {
         OneSignal.setRequiresUserPrivacyConsent(this.state.requiresPrivacyConsent);
         OneSignal.setLocationShared(true);
         OneSignal.promptForPushNotificationsWithUserResponse(response => {
-            console.log("Prompt response:", response);
+            this.OSLog("Prompt response:", response);
         });
 
         /* O N E S I G N A L  H A N D L E R S */
         OneSignal.setNotificationWillShowInForegroundHandler(notifReceivedEvent => {
-            console.log("OneSignal: notification will show in foreground:", notifReceivedEvent);
+            this.OSLog("OneSignal: notification will show in foreground:", notifReceivedEvent);
             let notif = notifReceivedEvent.getNotification();
             setTimeout(()=>notifReceivedEvent.complete(notif), 0);
         });
         OneSignal.setNotificationOpenedHandler(notification => {
-            console.log("OneSignal: notification opened:", notification);
+            this.OSLog("OneSignal: notification opened:", notification);
         });
         OneSignal.setInAppMessageClickHandler(event => {
-            console.log("OneSignal IAM clicked:", event);
+            this.OSLog("OneSignal IAM clicked:", event);
         });
         OneSignal.addEmailSubscriptionObserver((event) => {
-            console.log("OneSignal: email subscription changed: ", event);
+            this.OSLog("OneSignal: email subscription changed: ", event);
         });
         OneSignal.addSubscriptionObserver(event => {
-            console.log("OneSignal: subscription changed:", event);
+            this.OSLog("OneSignal: subscription changed:", event);
             this.setState({ isSubscribed: event.to.isSubscribed})
         });
         OneSignal.addPermissionObserver(event => {
-            console.log("OneSignal: permission changed:", event);
+            this.OSLog("OneSignal: permission changed:", event);
         });
         const state = await OneSignal.getDeviceState();
 
@@ -64,6 +68,20 @@ class OneSignalDemo extends React.Component<Props, State> {
             name : state.emailAddress,
             isSubscribed : state.isSubscribed
         });
+    }
+
+    OSLog = (message: string, optionalArg: Object) => {
+        if (optionalArg) {
+            message = message + JSON.stringify(optionalArg);
+        }
+        let consoleValue;
+
+        if (this.state.consoleValue) {
+            consoleValue = this.state.consoleValue+"\n"+message
+        } else {
+            consoleValue = message;
+        }
+        this.setState({ consoleValue });
     }
 
     render() {
@@ -74,7 +92,8 @@ class OneSignalDemo extends React.Component<Props, State> {
         return (
             <View style={styles.root}>
                 <Text style={styles.title} >OneSignal</Text>
-                <OSButtons subscribeFields={subscribeFields}/>
+                <OSConsole value={this.state.consoleValue}/>
+                <OSButtons subscribeFields={subscribeFields} loggingFunction={this.OSLog} />
             </View>
         );
     }
@@ -113,4 +132,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default OneSignalDemo;
+export default OSDemo;

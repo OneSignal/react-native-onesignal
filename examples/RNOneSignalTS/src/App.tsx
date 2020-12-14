@@ -14,14 +14,13 @@ import {
   StyleSheet,
   ScrollView,
   View,
-  Text,
   StatusBar,
 } from 'react-native';
 
 import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
-import OneSignalDemo from './OneSignalDemo';
+import OSDemo from './OSDemo';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -34,7 +33,7 @@ const App = () => {
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}>
           <View style={styles.body}>
-            <OneSignalDemo name="OneSignal"/>
+            <OSDemo name="OneSignal"/>
           </View>
         </ScrollView>
       </SafeAreaView>
