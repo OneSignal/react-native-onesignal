@@ -374,8 +374,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
-   public void setExternalUserId(final String externalId, final Callback callback) {
-      OneSignal.setExternalUserId(externalId, new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
+   public void setExternalUserId(final String externalId, final String authHashToken, final Callback callback) {
+      OneSignal.setExternalUserId(externalId, authHashToken, new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
          @Override
          public void onSuccess(JSONObject results) {
             Log.i("OneSignal", "Completed setting external user id: " + externalId + "with results: " + results.toString());
