@@ -266,11 +266,11 @@ declare module 'react-native-onesignal' {
         clearOneSignalNotifications(): void;
 
         /**
-         * Cancels a single OneSignal notification based on its Android notification integer id.
+         * Removes a single OneSignal notification based on its Android notification integer id.
          * @param  {number} id - notification id to cancel
          * @returns void
          */
-        cancelNotification(id: number): void;
+        removeNotification(id: number): void;
 
         /**
          * Allows you to use your own system's user ID's to send push notifications to your users.
