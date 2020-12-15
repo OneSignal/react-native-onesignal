@@ -70,10 +70,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   text: {
-      fontFamily: 'CourierNew',
+      fontFamily: 'Courier',
       flex: 1,
       flexWrap: 'wrap',
-      fontSize: 20,
+      fontSize: 10,
 
   }
 });

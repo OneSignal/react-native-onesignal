@@ -1,4 +1,4 @@
-import OneSignal from 'react-native-onesignal';
+import OneSignal, { OutcomeEvent } from 'react-native-onesignal';
 import * as React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
 import { renderButtonView, renderFieldView } from './Helpers';
@@ -7,6 +7,7 @@ import { SubscribeFields } from './models/SubscribeFields';
 export interface Props {
     subscribeFields: SubscribeFields;
     loggingFunction: Function;
+    inputFieldValue: string;
 }
 
 export interface State {
@@ -14,6 +15,7 @@ export interface State {
     isLocationShared: boolean;
     provideUserConsent: boolean;
     requireUserConsent: boolean;
+    pauseIAM: boolean;
     state: any;
 }
 
@@ -24,9 +26,10 @@ class OSButtons extends React.Component<Props, State> {
 
         this.state = {
             isSubscribed: subscribeFields.isSubscribed,
-            isLocationShared: false,
+            isLocationShared: true,
             provideUserConsent: false,
             requireUserConsent: false,
+            pauseIAM: false,
             state: {}
         };
     }
@@ -44,7 +47,7 @@ class OSButtons extends React.Component<Props, State> {
         const elements = [];
 
         const subscribedButton = renderButtonView(
-            isSubscribed ? "Unsubscribe" : "Subscribe",
+            isSubscribed ? "Disable Push" : "Subscribe",
             color,
             () => {
                 loggingFunction(`Is Push Disabled: ${isSubscribed}`);
@@ -82,27 +85,7 @@ class OSButtons extends React.Component<Props, State> {
             }
         );
 
-        let email = ""; // TO DO: from user input
-        const setEmailButton = renderButtonView(
-            "Set Email",
-            color,
-            () => {
-                loggingFunction("Setting email...");
-                let authCode; // SET AUTH CODE HERE
-                OneSignal.setEmail(email, authCode);
-            }
-        );
-
-        const logoutEmailButton = renderButtonView(
-            "Logout Email",
-            color,
-            () => {
-                loggingFunction("Logging out of email...");
-                OneSignal.logoutEmail();
-            }
-        );
-
-        elements.push(subscribedButton, setLocationShared, promptLocationButton, setEmailButton, logoutEmailButton);
+        elements.push(subscribedButton, setLocationShared, promptLocationButton);
 
         if (Platform.OS === 'ios') {
             elements.push(promptForPush);
@@ -176,14 +159,24 @@ class OSButtons extends React.Component<Props, State> {
                     loggingFunction(`Failure: ${JSON.stringify(failure)}`);
                 });
             }
+        );
+
+        const removeNotificationButton = renderButtonView(
+            "Remove Notification With Android ID",
+            color,
+            () => {
+                const number: number = Number(this.props.inputFieldValue);
+                loggingFunction("Removing notification with id:", number);
+                OneSignal.removeNotification(number);
+            }
         )
 
-        let value = "1"; // TO DO: get this from user input
         const sendTagWithKey = renderButtonView(
-            "Send tag with key myTag",
+            "Send tag with key my_tag",
             color,
             async () => {
-                OneSignal.sendTag("myTag", value);
+                loggingFunction("Sending tag with value: ", this.props.inputFieldValue);
+                OneSignal.sendTag("my_tag", this.props.inputFieldValue);
             }
         )
 
@@ -191,13 +184,13 @@ class OSButtons extends React.Component<Props, State> {
             loggingFunction("Privacy consent required for getting tags");
             loggingFunction("Getting tags...");
             OneSignal.getTags((tags) => {
-                loggingFunction(`Tags: ${tags}`);
+                loggingFunction(`Tags: ${JSON.stringify(tags)}`);
             });
         });
 
-        let key = "myTag"; // TO DO: get this from user input
         const deleteTagWithKey = renderButtonView("Delete Tag With Key", color, async () => {
-            OneSignal.deleteTag(key);
+            loggingFunction("Deleting tag with key: ", this.props.inputFieldValue);
+            OneSignal.deleteTag(this.props.inputFieldValue);
         });
 
         const clearOneSignalNotificationsButton = renderButtonView("Clear OneSignal Notifications", color, async () => {
@@ -209,75 +202,126 @@ class OSButtons extends React.Component<Props, State> {
             sendTagWithKey,
             getTags,
             deleteTagWithKey,
-            clearOneSignalNotificationsButton
+            removeNotificationButton
         );
+
+        if (Platform.OS === "android") {
+            elements.push(clearOneSignalNotificationsButton);
+        }
 
         return elements;
     }
 
-    /**
-     Create the fields necessary to test email with OneSignal SDK
-     */
     createEmailFields() {
         let elements = [];
-        const {
-            email,
-            isEmailLoading,
-            isPrivacyConsentLoading
-        } = this.state.state;
-
-        // Email TextInput
-        let emailTextInput = renderFieldView(
-            "Email",
-            email,
-            (text:string) => {
-                this.setState({ email : text });
-            }
-        );
+        const { loggingFunction } = this.props;
+        const color = "#1E8FEB";
 
         // Set Email Button
-        let setEmailButton = renderButtonView(
+        const setEmailButton = renderButtonView(
             "Set Email",
-            isEmailLoading || isPrivacyConsentLoading,
+            color,
             () => {
-                console.log('Attempting to set email: ' + email);
-                this.setState({isEmailLoading : true}, () => {
-                    // OneSignal setEmail
-                    OneSignal.setEmail(email, null, (error) => {
-                        if (error) {
-                            console.log('Error while setting email: ' + email);
-                        } else {
-                            console.log('Success setting email: ' + email);
-                        }
-
-                        this.setState({isEmailLoading:false});
-                    });
+                loggingFunction('Attempting to set email: ', this.props.inputFieldValue);
+                OneSignal.setEmail(this.props.inputFieldValue, undefined, (res : string) => {
+                    loggingFunction("setEmail completed with result: ", res);
                 });
             }
         );
 
         // Logout Email Button
-        let logoutEmailButton = this.renderButtonView(
+        const logoutEmailButton = renderButtonView(
             "Logout Email",
-            isEmailLoading || isPrivacyConsentLoading,
+            color,
             () => {
-                console.log('Attempting to logout email');
-                this.setState({isEmailLoading:true}, () => {
-                    // OneSignal logoutEmail
-                    OneSignal.logoutEmail((error) => {
-                        if (error) {
-                            console.log('Error while logging out email');
-                            //OneSignal.deleteTags(['a']);
-                        } else {
-                            console.log('Success logging out email');
-                        }
-
-                        this.setState({isEmailLoading:false});
-                    });
+                loggingFunction('Attempting to logout email');
+                OneSignal.logoutEmail((res: string) => {
+                    loggingFunction("logoutEmail completed with result: ", res);
                 });
             }
         );
+
+        const externalUserIdButton = renderButtonView(
+            "Set External User Id",
+            color,
+            () => {
+                loggingFunction("Attempting to set external id: ", this.props.inputFieldValue);
+                OneSignal.setExternalUserId(this.props.inputFieldValue, "aaa", (res: object) => {
+                    loggingFunction("setExternalUserId completed with result: ", JSON.stringify(res));
+                })
+            }
+        )
+
+        const removeExternalIdButton = renderButtonView(
+            "Remove External Id",
+            color,
+            () => {
+                loggingFunction("Removing external id...");
+                OneSignal.removeExternalUserId((res: object) => {
+                    loggingFunction("removeExternalUserId completed with result: ", JSON.stringify(res));
+                })
+            }
+        )
+
+        elements.push(setEmailButton, logoutEmailButton, externalUserIdButton, removeExternalIdButton);
+        return elements;
     }
+
+    createInAppFields() {
+        let elements = [];
+        const { loggingFunction } = this.props;
+        const color = "#FEA61D";
+
+        const addTriggerButton = renderButtonView(
+            "Add trigger with key my_trigger",
+            color,
+            () => {
+                const triggerValue = this.props.inputFieldValue;
+                loggingFunction(`Adding trigger with key 'my_trigger' and value ${triggerValue}`);
+                OneSignal.addTrigger(`my_trigger`, triggerValue);
+            }
+        );
+
+        const removeTriggerButton = renderButtonView(
+            "Remove trigger for key",
+            color,
+            () => {
+                const key = this.props.inputFieldValue;
+                loggingFunction("Removing trigger for key: ", key);
+                OneSignal.removeTriggerForKey(key);
+            }
+        )
+
+        const pauseIamButton = renderButtonView(
+            this.state.pauseIAM ? "Unpause IAM" : "Pause IAM",
+            color,
+            () => {
+                const newPauseState = !this.state.pauseIAM;
+                loggingFunction(`Is IAM Paused: ${newPauseState}`);
+                OneSignal.pauseInAppMessages(newPauseState)
+                this.setState({ pauseIAM: newPauseState })
+            }
+        )
+
+        elements.push(addTriggerButton, removeTriggerButton, pauseIamButton);
+        return elements;
+    }
+
+    createOutcomeFields() {
+        let elements = [];
+        const { loggingFunction } = this.props;
+        const color = "#FF36A0";
+
+        const sendOutcomeButton = renderButtonView(
+            "Send Outcome With Name",
+            color,
+            () => {
+                loggingFunction("Sending outcome: ", this.props.inputFieldValue);
+                OneSignal.sendOutcome(this.props.inputFieldValue, (event: OutcomeEvent) => {
+                    loggingFunction("Outcome Event: ", JSON.stringify(event));
+                });
+            }
+        );
 
         const sendUniqueOutcomeButton = renderButtonView(
             "Send Unique Outcome With Name",
@@ -285,7 +329,7 @@ class OSButtons extends React.Component<Props, State> {
             () => {
                 loggingFunction("Sending unique outcome: ", this.props.inputFieldValue);
                 OneSignal.sendUniqueOutcome(this.props.inputFieldValue, (event: OutcomeEvent) => {
-                    loggingFunction("Unique Outcome Event: ", event);
+                    loggingFunction("Unique Outcome Event: ", JSON.stringify(event));
                 });
             }
         );
@@ -316,6 +360,9 @@ class OSButtons extends React.Component<Props, State> {
                     { this.createSubscribeFields() }
                     { this.createDeviceFields() }
                     { this.createNotificationFields() }
+                    { this.createEmailFields() }
+                    { this.createInAppFields() }
+                    { this.createOutcomeFields() }
                 </View>
             </View>
         );
