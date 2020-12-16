@@ -3,7 +3,7 @@ declare module 'react-native-onesignal' {
     // 0 = None, 1 = Fatal, 2 = Errors, 3 = Warnings, 4 = Info, 5 = Debug, 6 = Verbose
     export type LogLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
-    // 0 = NotDetermined, 1 = Authorized, 2 = Denied, 3 = Provisional, 4 = Ephemeral
+    // 0 = NotDetermined, 1 = Denied, 2 = Authorized, 3 = Provisional, 4 = Ephemeral
     export type IosPermissionStatus = 0 | 1 | 2 | 3 | 4;
 
     // 0 = NotificationClicked, 1 = ButtonClicked
