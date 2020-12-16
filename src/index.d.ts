@@ -278,7 +278,7 @@ declare module 'react-native-onesignal' {
          * @param  {(results:object)=>void} handler
          * @returns void
          */
-        setExternalUserId(externalId: string, handler?: (results: object) => void): void;
+        setExternalUserId(externalId: string, handlerOrAuth?: ((results: object) => void) | string, handler?: (results: object) => void): void;
 
         /**
          * Removes whatever was set as the current user's external user ID.
