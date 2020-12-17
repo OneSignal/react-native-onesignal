@@ -26,7 +26,7 @@ export default class OSNotification {
             this.androidNotificationId = receivedEvent.androidNotificationId;
         }
 
-        if (Platform.OS = 'ios') {
+        if (Platform.OS === 'ios') {
             this.badge = receivedEvent.badge;
             this.category = receivedEvent.category;
             this.threadId = receivedEvent.threadId;
