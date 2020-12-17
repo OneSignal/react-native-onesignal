@@ -303,7 +303,21 @@ class OSButtons extends React.Component<Props, State> {
             }
         )
 
-        elements.push(addTriggerButton, removeTriggerButton, pauseIamButton);
+        const getTriggerValueForKeyButton = renderButtonView(
+            "Get Trigger Value For Key",
+            color,
+            async () => {
+                try {
+                    const key = this.props.inputFieldValue;
+                    const value = await OneSignal.getTriggerValueForKey(key);
+                    loggingFunction(`Trigger value for key ${key}: `, value);
+                } catch (e) {
+                    loggingFunction("Error getting trigger value: ", e.message);
+                }
+            }
+        )
+
+        elements.push(addTriggerButton, removeTriggerButton, pauseIamButton, getTriggerValueForKeyButton);
         return elements;
     }
 
@@ -318,7 +332,7 @@ class OSButtons extends React.Component<Props, State> {
             () => {
                 loggingFunction("Sending outcome: ", this.props.inputFieldValue);
                 OneSignal.sendOutcome(this.props.inputFieldValue, (event: OutcomeEvent) => {
-                    loggingFunction("Outcome Event: ", JSON.stringify(event));
+                    loggingFunction("Outcome Event: ", event);
                 });
             }
         );
@@ -329,7 +343,7 @@ class OSButtons extends React.Component<Props, State> {
             () => {
                 loggingFunction("Sending unique outcome: ", this.props.inputFieldValue);
                 OneSignal.sendUniqueOutcome(this.props.inputFieldValue, (event: OutcomeEvent) => {
-                    loggingFunction("Unique Outcome Event: ", JSON.stringify(event));
+                    loggingFunction("Unique Outcome Event: ", event);
                 });
             }
         );
