@@ -15,6 +15,7 @@ import {
   ScrollView,
   View,
   Text,
+  Platform,
 } from 'react-native';
 
 import {
@@ -45,7 +46,7 @@ class OSConsole extends React.Component<Props, State> {
                   ref={(scrollView) => { this.scrollView = scrollView }}
                   onContentSizeChange={() => this.scrollView.scrollToEnd({animated: true})}>
                   <View style={styles.console}>
-                      <Text style={styles.text}>{this.props.value}</Text>
+                      <Text style={Platform.OS === "android" ? styles.textAndroid : styles.textIOS}>{this.props.value}</Text>
                   </View>
                 </ScrollView>
             </SafeAreaView>
@@ -69,12 +70,16 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: 'row'
   },
-  text: {
+  textIOS: {
       fontFamily: 'Courier',
       flex: 1,
       flexWrap: 'wrap',
       fontSize: 10,
-
+  },
+  textAndroid: {
+      flex: 1,
+      flexWrap: 'wrap',
+      fontSize: 20,
   }
 });
 
