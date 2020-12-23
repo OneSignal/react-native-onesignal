@@ -389,19 +389,25 @@ RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
  */
 RCT_EXPORT_METHOD(sendOutcome:(NSString *)name :(RCTResponseSenderBlock)callback) {
     [OneSignal sendOutcome:name onSuccess:^(OSOutcomeEvent *outcome){
-        callback(@[[outcome jsonRepresentation]]);
+        if (outcome) {
+            callback(@[[outcome jsonRepresentation]]);
+        }
     }];
 }
 
 RCT_EXPORT_METHOD(sendUniqueOutcome:(NSString *)name :(RCTResponseSenderBlock)callback) {
     [OneSignal sendUniqueOutcome:name onSuccess:^(OSOutcomeEvent *outcome){
-        callback(@[[outcome jsonRepresentation]]);
+        if (outcome) {
+            callback(@[[outcome jsonRepresentation]]);
+        }
     }];
 }
 
 RCT_EXPORT_METHOD(sendOutcomeWithValue:(NSString *)name :(NSNumber * _Nonnull)value :(RCTResponseSenderBlock)callback) {
     [OneSignal sendOutcomeWithValue:name value:value onSuccess:^(OSOutcomeEvent *outcome){
-        callback(@[[outcome jsonRepresentation]]);
+        if (outcome) {
+            callback(@[[outcome jsonRepresentation]]);
+        }
     }];
 }
 
