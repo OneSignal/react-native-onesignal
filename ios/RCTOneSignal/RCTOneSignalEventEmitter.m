@@ -391,7 +391,10 @@ RCT_EXPORT_METHOD(sendOutcome:(NSString *)name :(RCTResponseSenderBlock)callback
     [OneSignal sendOutcome:name onSuccess:^(OSOutcomeEvent *outcome){
         if (outcome) {
             callback(@[[outcome jsonRepresentation]]);
+            return;
         }
+
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"sendOutcome OSOutcomeEvent is nil."]];
     }];
 }
 
@@ -399,7 +402,10 @@ RCT_EXPORT_METHOD(sendUniqueOutcome:(NSString *)name :(RCTResponseSenderBlock)ca
     [OneSignal sendUniqueOutcome:name onSuccess:^(OSOutcomeEvent *outcome){
         if (outcome) {
             callback(@[[outcome jsonRepresentation]]);
+            return;
         }
+
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"sendUniqueOutcome OSOutcomeEvent is nil."]];
     }];
 }
 
@@ -407,7 +413,10 @@ RCT_EXPORT_METHOD(sendOutcomeWithValue:(NSString *)name :(NSNumber * _Nonnull)va
     [OneSignal sendOutcomeWithValue:name value:value onSuccess:^(OSOutcomeEvent *outcome){
         if (outcome) {
             callback(@[[outcome jsonRepresentation]]);
+            return;
         }
+
+        [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"sendOutcomeWithValue OSOutcomeEvent is nil."]];
     }];
 }
 
