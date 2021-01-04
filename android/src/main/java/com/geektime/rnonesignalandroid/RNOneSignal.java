@@ -538,6 +538,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
          public void onSuccess(OSOutcomeEvent outcomeEvent) {
             if (outcomeEvent == null)
                callback.invoke(new WritableNativeMap());
+               Log.e("OneSignal", "sendOutcome OSOutcomeEvent is null");
             else {
                try {
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
@@ -556,6 +557,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
          public void onSuccess(OSOutcomeEvent outcomeEvent) {
             if (outcomeEvent == null)
                callback.invoke(new WritableNativeMap());
+               Log.e("OneSignal", "sendUniqueOutcome OSOutcomeEvent is null");
             else {
                try {
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
@@ -574,6 +576,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
          public void onSuccess(OSOutcomeEvent outcomeEvent) {
             if (outcomeEvent == null)
                callback.invoke(new WritableNativeMap());
+               Log.e("OneSignal", "sendOutcomeWithValue OSOutcomeEvent is null");
             else {
                try {
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
