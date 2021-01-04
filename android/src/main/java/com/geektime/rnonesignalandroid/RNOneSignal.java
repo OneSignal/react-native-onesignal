@@ -536,16 +536,16 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       OneSignal.sendOutcome(name, new OutcomeCallback() {
          @Override
          public void onSuccess(OSOutcomeEvent outcomeEvent) {
-            if (outcomeEvent == null)
-               callback.invoke(new WritableNativeMap());
-               Log.e("OneSignal", "sendOutcome OSOutcomeEvent is null");
-            else {
+            if (outcomeEvent) {
                try {
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
                } catch (JSONException e) {
                   Log.e("OneSignal", "sendOutcome with name: " + name + ", failed with message: " + e.getMessage());
                }
+               return;
             }
+
+            Log.e("OneSignal", "sendOutcome OSOutcomeEvent is null");
          }
       });
    }
@@ -555,16 +555,16 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       OneSignal.sendUniqueOutcome(name, new OutcomeCallback() {
          @Override
          public void onSuccess(OSOutcomeEvent outcomeEvent) {
-            if (outcomeEvent == null)
-               callback.invoke(new WritableNativeMap());
-               Log.e("OneSignal", "sendUniqueOutcome OSOutcomeEvent is null");
-            else {
+            if (outcomeEvent) {
                try {
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
                } catch (JSONException e) {
                   Log.e("OneSignal", "sendUniqueOutcome with name: " + name + ", failed with message: " + e.getMessage());
                }
+               return;
             }
+
+            Log.e("OneSignal", "sendUniqueOutcome OSOutcomeEvent is null");
          }
       });
    }
@@ -574,16 +574,16 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       OneSignal.sendOutcomeWithValue(name, value, new OutcomeCallback() {
          @Override
          public void onSuccess(OSOutcomeEvent outcomeEvent) {
-            if (outcomeEvent == null)
-               callback.invoke(new WritableNativeMap());
-               Log.e("OneSignal", "sendOutcomeWithValue OSOutcomeEvent is null");
-            else {
+            if (outcomeEvent) {
                try {
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
                } catch (JSONException e) {
                   Log.e("OneSignal", "sendOutcomeWithValue with name: " + name + " and value: " + value + ", failed with message: " + e.getMessage());
                }
+               return;
             }
+
+            Log.e("OneSignal", "sendOutcomeWithValue OSOutcomeEvent is null");
          }
       });
    }
