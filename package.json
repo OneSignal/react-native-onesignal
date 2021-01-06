@@ -1,8 +1,9 @@
 {
   "name": "react-native-onesignal",
-  "version": "3.9.3",
+  "version": "4.0.0",
   "description": "React Native OneSignal SDK",
-  "main": "index",
+  "main": "src/index",
+  "typings": "src/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

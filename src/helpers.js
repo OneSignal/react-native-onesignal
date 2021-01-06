@@ -1,0 +1,33 @@
+import invariant from 'invariant';
+import {
+    PERMISSION_CHANGED,
+    SUBSCRIPTION_CHANGED,
+    EMAIL_SUBSCRIPTION_CHANGED
+} from './events';
+
+export function isValidCallback(handler) {
+    invariant(
+        typeof handler === 'function',
+        'Must provide a valid callback'
+    );
+}
+
+export function checkIfInitialized(object) {
+    const initialized = object != null;
+    return initialized;
+}
+
+/**
+ * Returns whether the handler associated with the event name can have multiple instances set
+ * @param  {String} eventName
+ */
+export function isMultipleInstancesPossible(eventName) {
+    switch(eventName){
+        case PERMISSION_CHANGED:
+        case SUBSCRIPTION_CHANGED:
+        case EMAIL_SUBSCRIPTION_CHANGED:
+            return true;
+        default:
+            return false;
+    }
+}
