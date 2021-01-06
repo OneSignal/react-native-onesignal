@@ -352,12 +352,14 @@ class OSButtons extends React.Component<Props, State> {
             "Send Outcome 'my_outcome' with value",
             color,
             () => {
-                loggingFunction("Sending outcome of name 'my_outcome' with value: ", this.props.inputFieldValue);
-                if (typeof this.props.inputFieldValue !== 'number') {
+                const value = Number(this.props.inputFieldValue);
+                loggingFunction("Sending outcome of name 'my_outcome' with value: ", value);
+
+                if (Number.isNaN(value)) {
                     console.error("Outcome with value should be a number");
                     return;
                 }
-                OneSignal.sendOutcomeWithValue('my_outcome', this.props.inputFieldValue, (event: OutcomeEvent) => {
+                OneSignal.sendOutcomeWithValue('my_outcome', value, (event: OutcomeEvent) => {
                     loggingFunction("Outcome With Value Event: ", event);
                 });
             }
