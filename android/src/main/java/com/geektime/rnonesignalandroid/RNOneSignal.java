@@ -536,7 +536,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       OneSignal.sendOutcome(name, new OutcomeCallback() {
          @Override
          public void onSuccess(OSOutcomeEvent outcomeEvent) {
-            if (outcomeEvent) {
+            if (outcomeEvent != null) {
                try {
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
                } catch (JSONException e) {
@@ -555,7 +555,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       OneSignal.sendUniqueOutcome(name, new OutcomeCallback() {
          @Override
          public void onSuccess(OSOutcomeEvent outcomeEvent) {
-            if (outcomeEvent) {
+            if (outcomeEvent != null) {
                try {
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
                } catch (JSONException e) {
@@ -574,7 +574,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       OneSignal.sendOutcomeWithValue(name, value, new OutcomeCallback() {
          @Override
          public void onSuccess(OSOutcomeEvent outcomeEvent) {
-            if (outcomeEvent) {
+            if (outcomeEvent != null) {
                try {
                   callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
                } catch (JSONException e) {
