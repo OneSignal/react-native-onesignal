@@ -254,7 +254,7 @@ export default class OneSignal {
             return;
         }
 
-        RNOneSignal.setExternalUserId(externalId, varArg1, varArg2 || function(){});
+        RNOneSignal.setExternalUserId(externalId, varArg1, varArg2);
     }
 
     static removeExternalUserId(handler) {
