@@ -254,6 +254,10 @@ export default class OneSignal {
             return;
         }
 
+        if (!varArg2 && Platform.OS === 'ios') {
+            varArg2 = function(){};
+        }
+
         RNOneSignal.setExternalUserId(externalId, varArg1, varArg2);
     }
 
