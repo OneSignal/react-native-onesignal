@@ -1,6 +1,6 @@
 {
   "name": "react-native-onesignal",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "React Native OneSignal SDK",
   "main": "src/index",
   "typings": "src/index.d.ts",
