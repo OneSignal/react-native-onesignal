@@ -113,7 +113,7 @@ declare module 'react-native-onesignal' {
         isPushDisabled                  : boolean;
         isEmailSubscribed               : boolean;
         hasNotificationPermission       ?: boolean; // ios only
-        notificationPermissionStatus    ?: number;  // ios only
+        notificationPermissionStatus    ?: IosPermissionStatus;  // ios only
         // areNotificationsEnabled (android) not included since it is converted to hasNotificationPermission in bridge
     }
 
