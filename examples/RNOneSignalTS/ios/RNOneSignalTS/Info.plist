@@ -20,6 +20,17 @@
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.834378314361-gs111k3ueqtmua3rvq532ugh2ddud70g</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -37,14 +48,14 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSLocationUsageDescription</key>
-	<string>Your message goes here</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-		<string>Your message goes here</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Your message goes here</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-		<string>Your message goes here</string>
+	<string>Your message goes here</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Your message goes here</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your message goes here</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
