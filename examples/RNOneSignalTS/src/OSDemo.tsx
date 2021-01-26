@@ -5,7 +5,7 @@ import OSButtons from './OSButtons';
 import { SubscribeFields } from './models/SubscribeFields';
 import OSConsole from './OSConsole';
 import { renderButtonView } from './Helpers';
-import auth from '@react-native-firebase/auth';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 export interface Props {
   name: string;
@@ -22,19 +22,21 @@ export interface State {
 
 function PhoneSignIn() {
   // If null, no SMS has been sent
-  const [confirm, setConfirm] = useState(null);
+  const [confirm, setConfirm] = React.useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
 
-  const [code, setCode] = useState('');
+  const [code, setCode] = React.useState('');
 
   // Handle the button press
-  async function signInWithPhoneNumber(phoneNumber) {
+  async function signInWithPhoneNumber(phoneNumber: string) {
     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
     setConfirm(confirmation);
   }
 
   async function confirmCode() {
     try {
-      await confirm.confirm(code);
+      if (confirm != null) {
+        await confirm.confirm(code);
+      }
     } catch (error) {
       console.log('Invalid code.');
     }
@@ -117,6 +119,7 @@ class OSDemo extends React.Component<Props, State> {
             name : state.emailAddress,
             isSubscribed : state.isSubscribed
         });
+        PhoneSignIn();
     }
 
     componentWillUnmount() {
