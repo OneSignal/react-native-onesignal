@@ -1,10 +1,11 @@
 import OneSignal from 'react-native-onesignal';
 import * as React from 'react';
-import { StyleSheet, View, Text, TextInput, Alert} from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, Alert} from 'react-native';
 import OSButtons from './OSButtons';
 import { SubscribeFields } from './models/SubscribeFields';
 import OSConsole from './OSConsole';
 import { renderButtonView } from './Helpers';
+import auth from '@react-native-firebase/auth';
 
 export interface Props {
   name: string;
@@ -17,6 +18,43 @@ export interface State {
     requiresPrivacyConsent: boolean;
     consoleValue: string;
     inputValue: string;
+}
+
+function PhoneSignIn() {
+  // If null, no SMS has been sent
+  const [confirm, setConfirm] = useState(null);
+
+  const [code, setCode] = useState('');
+
+  // Handle the button press
+  async function signInWithPhoneNumber(phoneNumber) {
+    const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+    setConfirm(confirmation);
+  }
+
+  async function confirmCode() {
+    try {
+      await confirm.confirm(code);
+    } catch (error) {
+      console.log('Invalid code.');
+    }
+  }
+
+  if (!confirm) {
+    return (
+      <Button
+        title="Phone Number Sign In"
+        onPress={() => signInWithPhoneNumber('+1 650-555-3434')}
+      />
+    );
+  }
+
+  return (
+    <>
+      <TextInput value={code} onChangeText={text => setCode(text)} />
+      <Button title="Confirm Code" onPress={() => confirmCode()} />
+    </>
+  );
 }
 
 class OSDemo extends React.Component<Props, State> {
@@ -46,16 +84,16 @@ class OSDemo extends React.Component<Props, State> {
         OneSignal.setNotificationWillShowInForegroundHandler(notifReceivedEvent => {
             this.OSLog("OneSignal: notification will show in foreground:", notifReceivedEvent);
             let notif = notifReceivedEvent.getNotification();
+            notifReceivedEvent.complete();
+            // const button1 = {
+            //     text: "Cancel",
+            //     onPress: () => { notifReceivedEvent.complete(); },
+            //     style: "cancel"
+            // };
 
-            const button1 = {
-                text: "Cancel",
-                onPress: () => { notifReceivedEvent.complete(); },
-                style: "cancel"
-            };
+            // const button2 = { text: "Complete", onPress: () => { notifReceivedEvent.complete(notif); }};
 
-            const button2 = { text: "Complete", onPress: () => { notifReceivedEvent.complete(notif); }};
-
-            Alert.alert("Complete notification?", "Test", [ button1, button2], { cancelable: true });
+           // Alert.alert("Complete notification?", "Test", [ button1, button2], { cancelable: true });
         });
         OneSignal.setNotificationOpenedHandler(notification => {
             this.OSLog("OneSignal: notification opened:", notification);

@@ -10,6 +10,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@react-native-firebase/app": "^10.5.0",
     "react": "16.13.1",
     "react-native": "0.63.3",
     "react-native-onesignal": "4.0.3"

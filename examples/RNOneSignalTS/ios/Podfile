@@ -12,6 +12,7 @@ target 'RNOneSignalTS' do
     inherit! :complete
     # Pods for testing
   end
+  pod 'Firebase/Auth'
 
   # Enables Flipper.
   #
