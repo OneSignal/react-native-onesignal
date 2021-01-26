@@ -21,10 +21,12 @@ import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
 import OSDemo from './OSDemo';
+import {PhoneSignIn} from './OSPhoneSignIn';
 
 declare const global: {HermesInternal: null | {}};
 
 const App = () => {
+  PhoneSignIn();
   return (
     <>
       <StatusBar barStyle="dark-content" />
