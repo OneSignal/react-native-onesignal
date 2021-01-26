@@ -10,17 +10,20 @@ export function PhoneSignIn() {
     
     // Handle the button press
     async function signInWithPhoneNumber(phoneNumber: string) {
-        const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+        console.log(phoneNumber);
+        const confirmation = await auth().signInWithPhoneNumber(phoneNumber, true);
+        console.log(confirmation);
         setConfirm(confirmation);
     }
     
     async function confirmCode() {
         try {
-        if (confirm != null) {
-            await confirm.confirm(code);
-        }
+            if (confirm) {
+                await confirm.confirm('123456');
+            }
+            console.log('success');
         } catch (error) {
-        console.log('Invalid code.');
+            console.log('Invalid code.');
         }
     }
     
@@ -28,14 +31,14 @@ export function PhoneSignIn() {
         return (
         <Button
             title="Phone Number Sign In"
-            onPress={() => signInWithPhoneNumber('+1 650-555-3434')}
+            onPress={() => signInWithPhoneNumber('+1 123-456-7890')}
         />
         );
     }
     
     return (
         <>
-        <TextInput value={code} onChangeText={text => setCode(text)} />
+        <TextInput value={'123456'} onChangeText={text => setCode('123456')} />
         <Button title="Confirm Code" onPress={() => confirmCode()} />
         </>
     );

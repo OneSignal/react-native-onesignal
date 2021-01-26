@@ -26,21 +26,7 @@ import {PhoneSignIn} from './OSPhoneSignIn';
 declare const global: {HermesInternal: null | {}};
 
 const App = () => {
-  PhoneSignIn();
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <View style={styles.body}>
-            <OSDemo name="OneSignal"/>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
+  return PhoneSignIn();
 };
 
 const styles = StyleSheet.create({
