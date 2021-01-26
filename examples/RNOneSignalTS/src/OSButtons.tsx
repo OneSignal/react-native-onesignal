@@ -1,4 +1,4 @@
-import OneSignal, { OutcomeEvent } from 'react-native-onesignal';
+//import OneSignal, { OutcomeEvent } from 'react-native-onesignal';
 import * as React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
 import { renderButtonView, renderFieldView } from './Helpers';
@@ -35,8 +35,8 @@ class OSButtons extends React.Component<Props, State> {
     }
 
     async componentDidMount() {
-        let state = await OneSignal.getDeviceState();
-        this.setState({ state })
+        // let state = await OneSignal.getDeviceState();
+        // this.setState({ state })
     }
 
     createSubscribeFields() {
@@ -51,7 +51,7 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction(`Is Push Disabled: ${isSubscribed}`);
-                OneSignal.disablePush(isSubscribed);
+                //OneSignal.disablePush(isSubscribed);
             }
         );
 
@@ -60,9 +60,9 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction("Prompting for push with user response...");
-                OneSignal.promptForPushNotificationsWithUserResponse(response => {
-                    loggingFunction(`User response: ${response}`);
-                });
+                // OneSignal.promptForPushNotificationsWithUserResponse(response => {
+                //     loggingFunction(`User response: ${response}`);
+                // });
             }
         );
 
@@ -71,7 +71,7 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction(`Is Location Shared: ${!isLocationShared}`);
-                OneSignal.setLocationShared(!isLocationShared);
+                //OneSignal.setLocationShared(!isLocationShared);
                 this.setState({ isLocationShared : !isLocationShared });
             }
         );
@@ -81,7 +81,7 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction("Prompting Location");
-                OneSignal.promptLocation();
+                //OneSignal.promptLocation();
             }
         );
 
@@ -100,8 +100,8 @@ class OSButtons extends React.Component<Props, State> {
         const { loggingFunction } = this.props;
 
         const deviceStateButton = renderButtonView("Get Device State", color, async () => {
-            let deviceState = await OneSignal.getDeviceState();
-            loggingFunction(`Device State: ${JSON.stringify(deviceState)}`);
+            // let deviceState = await OneSignal.getDeviceState();
+            // loggingFunction(`Device State: ${JSON.stringify(deviceState)}`);
         })
 
         const requireUserProvideConsent = renderButtonView(
@@ -117,13 +117,13 @@ class OSButtons extends React.Component<Props, State> {
         const provideUserConsentButton = renderButtonView(
             this.state.provideUserConsent ? "Reject User Consent" : "Provide User Consent", color, async () => {
                 loggingFunction(`Provide User Consent: ${!this.state.provideUserConsent}`);
-                OneSignal.provideUserConsent(!this.state.provideUserConsent);
-                this.setState({ provideUserConsent: !this.state.provideUserConsent })
+                // OneSignal.provideUserConsent(!this.state.provideUserConsent);
+                // this.setState({ provideUserConsent: !this.state.provideUserConsent })
         })
 
         const userProvidedPrivacyConsent = renderButtonView("Did User Provide Privacy Consent", color, async () => {
-            let didProvide = await OneSignal.userProvidedPrivacyConsent();
-            loggingFunction(`Provided Privacy Consent: ${didProvide}`);
+            // let didProvide = await OneSignal.userProvidedPrivacyConsent();
+            // loggingFunction(`Provided Privacy Consent: ${didProvide}`);
         })
 
         elements.push(
@@ -144,20 +144,20 @@ class OSButtons extends React.Component<Props, State> {
             "Post Notification",
             color,
             async () => {
-                const { userId } = await OneSignal.getDeviceState();
-                const notificationObj = {
-                    contents: {en: "Message Body"},
-                    include_player_ids: [userId]
-                };
-                const json = JSON.stringify(notificationObj);
+                // const { userId } = await OneSignal.getDeviceState();
+                // const notificationObj = {
+                //     contents: {en: "Message Body"},
+                //     include_player_ids: [userId]
+                // };
+                // const json = JSON.stringify(notificationObj);
 
-                loggingFunction(`Attempting to send notification to ${userId}`);
+                // loggingFunction(`Attempting to send notification to ${userId}`);
 
-                OneSignal.postNotification(json, (success) => {
-                    loggingFunction(`Success: ${JSON.stringify(success)}`);
-                }, (failure) => {
-                    loggingFunction(`Failure: ${JSON.stringify(failure)}`);
-                });
+                // OneSignal.postNotification(json, (success) => {
+                //     loggingFunction(`Success: ${JSON.stringify(success)}`);
+                // }, (failure) => {
+                //     loggingFunction(`Failure: ${JSON.stringify(failure)}`);
+                // });
             }
         );
 
@@ -167,7 +167,7 @@ class OSButtons extends React.Component<Props, State> {
             () => {
                 const number: number = Number(this.props.inputFieldValue);
                 loggingFunction("Removing notification with id:", number);
-                OneSignal.removeNotification(number);
+                //OneSignal.removeNotification(number);
             }
         )
 
@@ -176,25 +176,25 @@ class OSButtons extends React.Component<Props, State> {
             color,
             async () => {
                 loggingFunction("Sending tag with value: ", this.props.inputFieldValue);
-                OneSignal.sendTag("my_tag", this.props.inputFieldValue);
+                //OneSignal.sendTag("my_tag", this.props.inputFieldValue);
             }
         )
 
         const getTags = renderButtonView("Get tags", color, async () => {
             loggingFunction("Privacy consent required for getting tags");
             loggingFunction("Getting tags...");
-            OneSignal.getTags((tags) => {
-                loggingFunction(`Tags: ${JSON.stringify(tags)}`);
-            });
+            // OneSignal.getTags((tags) => {
+            //     loggingFunction(`Tags: ${JSON.stringify(tags)}`);
+            // });
         });
 
         const deleteTagWithKey = renderButtonView("Delete Tag With Key", color, async () => {
             loggingFunction("Deleting tag with key: ", this.props.inputFieldValue);
-            OneSignal.deleteTag(this.props.inputFieldValue);
+            //OneSignal.deleteTag(this.props.inputFieldValue);
         });
 
         const clearOneSignalNotificationsButton = renderButtonView("Clear OneSignal Notifications", color, async () => {
-            OneSignal.clearOneSignalNotifications();
+            //OneSignal.clearOneSignalNotifications();
         })
 
         elements.push(
@@ -223,9 +223,9 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction('Attempting to set email: ', this.props.inputFieldValue);
-                OneSignal.setEmail(this.props.inputFieldValue, undefined, (res : string) => {
-                    loggingFunction("setEmail completed with result: ", res);
-                });
+                // OneSignal.setEmail(this.props.inputFieldValue, undefined, (res : string) => {
+                //     loggingFunction("setEmail completed with result: ", res);
+                // });
             }
         );
 
@@ -235,9 +235,9 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction('Attempting to logout email');
-                OneSignal.logoutEmail((res: string) => {
-                    loggingFunction("logoutEmail completed with result: ", res);
-                });
+                // OneSignal.logoutEmail((res: string) => {
+                //     loggingFunction("logoutEmail completed with result: ", res);
+                // });
             }
         );
 
@@ -246,9 +246,9 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction("Attempting to set external id: ", this.props.inputFieldValue);
-                OneSignal.setExternalUserId(this.props.inputFieldValue, "aaa", (res: object) => {
-                    loggingFunction("setExternalUserId completed with result: ", JSON.stringify(res));
-                })
+                // OneSignal.setExternalUserId(this.props.inputFieldValue, "aaa", (res: object) => {
+                //     loggingFunction("setExternalUserId completed with result: ", JSON.stringify(res));
+                // })
             }
         )
 
@@ -257,9 +257,9 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction("Removing external id...");
-                OneSignal.removeExternalUserId((res: object) => {
-                    loggingFunction("removeExternalUserId completed with result: ", JSON.stringify(res));
-                })
+                // OneSignal.removeExternalUserId((res: object) => {
+                //     loggingFunction("removeExternalUserId completed with result: ", JSON.stringify(res));
+                // })
             }
         )
 
@@ -278,7 +278,7 @@ class OSButtons extends React.Component<Props, State> {
             () => {
                 const triggerValue = this.props.inputFieldValue;
                 loggingFunction(`Adding trigger with key 'my_trigger' and value ${triggerValue}`);
-                OneSignal.addTrigger(`my_trigger`, triggerValue);
+                //OneSignal.addTrigger(`my_trigger`, triggerValue);
             }
         );
 
@@ -288,7 +288,7 @@ class OSButtons extends React.Component<Props, State> {
             () => {
                 const key = this.props.inputFieldValue;
                 loggingFunction("Removing trigger for key: ", key);
-                OneSignal.removeTriggerForKey(key);
+                //OneSignal.removeTriggerForKey(key);
             }
         )
 
@@ -298,7 +298,7 @@ class OSButtons extends React.Component<Props, State> {
             () => {
                 const newPauseState = !this.state.pauseIAM;
                 loggingFunction(`Is IAM Paused: ${newPauseState}`);
-                OneSignal.pauseInAppMessages(newPauseState)
+                //OneSignal.pauseInAppMessages(newPauseState)
                 this.setState({ pauseIAM: newPauseState })
             }
         )
@@ -309,8 +309,8 @@ class OSButtons extends React.Component<Props, State> {
             async () => {
                 try {
                     const key = this.props.inputFieldValue;
-                    const value = await OneSignal.getTriggerValueForKey(key);
-                    loggingFunction(`Trigger value for key ${key}: `, value);
+                    // const value = await OneSignal.getTriggerValueForKey(key);
+                    // loggingFunction(`Trigger value for key ${key}: `, value);
                 } catch (e) {
                     loggingFunction("Error getting trigger value: ", e.message);
                 }
@@ -331,9 +331,9 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction("Sending outcome: ", this.props.inputFieldValue);
-                OneSignal.sendOutcome(this.props.inputFieldValue, (event: OutcomeEvent) => {
-                    loggingFunction("Outcome Event: ", event);
-                });
+                // OneSignal.sendOutcome(this.props.inputFieldValue, (event: OutcomeEvent) => {
+                //     loggingFunction("Outcome Event: ", event);
+                // });
             }
         );
 
@@ -342,9 +342,9 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction("Sending unique outcome: ", this.props.inputFieldValue);
-                OneSignal.sendUniqueOutcome(this.props.inputFieldValue, (event: OutcomeEvent) => {
-                    loggingFunction("Unique Outcome Event: ", event);
-                });
+                // OneSignal.sendUniqueOutcome(this.props.inputFieldValue, (event: OutcomeEvent) => {
+                //     loggingFunction("Unique Outcome Event: ", event);
+                // });
             }
         );
 
@@ -357,9 +357,9 @@ class OSButtons extends React.Component<Props, State> {
                     console.error("Outcome with value should be a number");
                     return;
                 }
-                OneSignal.sendOutcomeWithValue('my_outcome', this.props.inputFieldValue, (event: OutcomeEvent) => {
-                    loggingFunction("Outcome With Value Event: ", event);
-                });
+                // OneSignal.sendOutcomeWithValue('my_outcome', this.props.inputFieldValue, (event: OutcomeEvent) => {
+                //     loggingFunction("Outcome With Value Event: ", event);
+                // });
             }
         );
 
