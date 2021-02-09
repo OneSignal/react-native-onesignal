@@ -21,12 +21,12 @@ import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
 import OSDemo from './OSDemo';
-import PhoneVerification from './OSPhoneSignIn';
+import {PhoneSignIn} from './OSPhoneSignIn';
 
 declare const global: {HermesInternal: null | {}};
 
 const App = () => {
-  return PhoneVerification();
+  return PhoneSignIn();
 };
 
 const styles = StyleSheet.create({

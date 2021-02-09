@@ -46,12 +46,7 @@ static void InitializeFlipper(UIApplication *application) {
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  [UIApplication.sharedApplication.delegate application:UIApplication.sharedApplication didReceiveRemoteNotification:@{} fetchCompletionHandler:nil];
   return YES;
-}
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-  NSLog(@"ECM did receive remote notif");
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
