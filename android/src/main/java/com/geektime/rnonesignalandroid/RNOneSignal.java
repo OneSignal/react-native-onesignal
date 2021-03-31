@@ -236,6 +236,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    @ReactMethod
    public void getDeviceState(Promise promise) {
       OSDeviceState state = OneSignal.getDeviceState();
+      if (state == null) {
+         Log.e("OneSignal", "getDeviceState: OSDeviceState is null");
+         promise.reject("Null OSDeviceState", "OSDeviceState is null");
+         return;
+      }
       promise.resolve(RNUtils.jsonToWritableMap(state.toJSONObject()));
    }
 
