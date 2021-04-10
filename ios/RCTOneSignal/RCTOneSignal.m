@@ -20,8 +20,6 @@
     BOOL didInitialize;
 }
 
-OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
-
 + (RCTOneSignal *) sharedInstance {
     static dispatch_once_t token = 0;
     static id _sharedInstance = nil;
@@ -38,26 +36,6 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 
     [OneSignal initWithLaunchOptions:launchOptions];
     didInitialize = true;
-}
-
-- (void)handleRemoteNotificationOpened:(NSString *)result {
-    NSDictionary *json = [self jsonObjectWithString:result];
-
-    if (json)
-        [self sendEvent:OSEventString(NotificationOpened) withBody:json];
-}
-
-- (NSDictionary *)jsonObjectWithString:(NSString *)jsonString {
-    NSError *jsonError;
-    NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
-
-    if (jsonError) {
-        [OneSignal onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"Unable to serialize JSON string into an object: %@", jsonError]];
-        return nil;
-    }
-
-    return json;
 }
 
 - (void)sendEvent:(NSString *)eventName withBody:(NSDictionary *)body {
