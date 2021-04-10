@@ -13,16 +13,6 @@
 #import "RCTOneSignal.h"
 #import "RCTOneSignalEventEmitter.h"
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-
-#define UIUserNotificationTypeAlert UIRemoteNotificationTypeAlert
-#define UIUserNotificationTypeBadge UIRemoteNotificationTypeBadge
-#define UIUserNotificationTypeSound UIRemoteNotificationTypeSound
-#define UIUserNotificationTypeNone  UIRemoteNotificationTypeNone
-#define UIUserNotificationType      UIRemoteNotificationType
-
-#endif
-
 @interface RCTOneSignal ()
 @end
 
