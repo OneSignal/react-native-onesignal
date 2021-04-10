@@ -54,8 +54,4 @@
     [self sendEvent:OSEventString(PermissionChanged) withBody:stateChanges.toDictionary];
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 @end
