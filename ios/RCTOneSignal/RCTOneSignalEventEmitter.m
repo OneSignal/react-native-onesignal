@@ -124,6 +124,11 @@ RCT_EXPORT_METHOD(addSMSSubscriptionObserver) {
     }
 }
 
+RCT_REMAP_METHOD(requiresUserPrivacyConsent, requiresPrivacyConsentResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(@(OneSignal.requiresUserPrivacyConsent));
+}
+
 RCT_EXPORT_METHOD(setRequiresUserPrivacyConsent:(BOOL)required) {
     [OneSignal setRequiresUserPrivacyConsent:required];
 }
@@ -134,7 +139,7 @@ RCT_EXPORT_METHOD(provideUserConsent:(BOOL)granted) {
     });
 }
 
-RCT_REMAP_METHOD(userProvidedPrivacyConsent, resolver: (RCTPromiseResolveBlock)resolve
+RCT_REMAP_METHOD(userProvidedPrivacyConsent, privacyConsentResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@(!OneSignal.requiresUserPrivacyConsent));
 }
