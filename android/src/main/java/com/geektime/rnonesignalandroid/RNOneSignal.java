@@ -260,6 +260,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
+   public void unsubscribeWhenNotificationsAreDisabled(boolean unsubscribe) {
+      OneSignal.unsubscribeWhenNotificationsAreDisabled(unsubscribe);
+   }
+
+   @ReactMethod
    public void sendTag(String key, String value) {
       OneSignal.sendTag(key, value);
    }
