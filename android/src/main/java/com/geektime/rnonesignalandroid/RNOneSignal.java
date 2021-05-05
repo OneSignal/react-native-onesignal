@@ -417,6 +417,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
+   public void requiresUserPrivacyConsent(Promise promise) {
+      promise.resolve(OneSignal.requiresUserPrivacyConsent());
+   }
+
+   @ReactMethod
    public void setRequiresUserPrivacyConsent(Boolean required) {
       OneSignal.setRequiresUserPrivacyConsent(required);
    }
