@@ -377,6 +377,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
+   public void isLocationShared(Promise promise) {
+      promise.resolve(OneSignal.isLocationShared());
+   }
+
+   @ReactMethod
    public void setLocationShared(Boolean shared) {
       OneSignal.setLocationShared(shared);
    }
