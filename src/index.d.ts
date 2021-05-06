@@ -251,6 +251,21 @@ declare module 'react-native-onesignal' {
         logoutEmail(handler?: Function);
 
         /**
+         * Allows you to set the user's SMS number with the OneSignal SDK.
+         * @param  {string} smsNumber
+         * @param  {string} authCode
+         * @param  {Function} handler
+         * @returns void
+         */
+        setSMSNumber(smsNumber: string, authCode?: string, handler?: Function): void;
+
+        /**
+         * If your app implements logout functionality, you can call logoutSMSNumber to dissociate the SMS number from the device.
+         * @param  {Function} handler
+         */
+        logoutSMSNumber(handler?: Function);
+
+        /**
          * Send a notification
          * @param  {string} notificationObjectString - JSON string payload (see REST API reference)
          * @param  {(success:object)=>void} onSuccess

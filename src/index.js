@@ -210,6 +210,29 @@ export default class OneSignal {
         RNOneSignal.logoutEmail(handler);
     }
 
+    /* S M S */
+
+    static setSMSNumber(smsNumber, smsAuthCode, handler) {
+        if (!checkIfInitialized(RNOneSignal)) return;
+
+        if (smsAuthCode === undefined)
+            smsAuthCode = null;
+
+        if (handler === undefined)
+            handler = function(){};
+
+        RNOneSignal.setSMSNumber(smsNumber, smsAuthCode, handler);
+    }
+
+    static logoutSMSNumber(handler) {
+        if (!checkIfInitialized(RNOneSignal)) return;
+
+        if (!handler)
+            handler = function(){};
+
+        RNOneSignal.logoutSMSNumber(handler);
+    }
+
     /* N O T I F I C A T I O N S */
 
     static postNotification(notificationObjectString, onSuccess, onFailure) {

@@ -319,6 +319,44 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
+   public void setSMSNumber(String smsNumber, String smsAuthToken, final Callback callback) {
+      OneSignal.setSMSNumber(smsNumber, smsAuthToken, new OneSignal.OSSMSUpdateHandler() {
+         @Override
+         public void onSuccess(JSONObject result) {
+            callback.invoke(RNUtils.jsonToWritableMap(result));
+         }
+
+         @Override
+         public void onFailure(OneSignal.OSSMSUpdateError error) {
+            try {
+               callback.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
+            } catch (JSONException exception) {
+               exception.printStackTrace();
+            }
+         }
+      });
+   }
+
+   @ReactMethod
+   public void logoutSMSNumber(final Callback callback) {
+      OneSignal.logoutSMSNumber(new OneSignal.OSSMSUpdateHandler() {
+         @Override
+         public void onSuccess(JSONObject result) {
+            callback.invoke(RNUtils.jsonToWritableMap(result));
+         }
+
+         @Override
+         public void onFailure(OneSignal.OSSMSUpdateError error) {
+            try {
+               callback.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
+            } catch (JSONException exception) {
+               exception.printStackTrace();
+            }
+         }
+      });
+   }
+
+   @ReactMethod
    public void promptLocation() {
       OneSignal.promptLocation();
    }
