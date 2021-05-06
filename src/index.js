@@ -8,7 +8,8 @@ import {
     IN_APP_MESSAGE_CLICKED,
     NOTIFICATION_WILL_SHOW,
     NOTIFICATION_OPENED,
-    EMAIL_SUBSCRIPTION_CHANGED
+    EMAIL_SUBSCRIPTION_CHANGED,
+    SMS_SUBSCRIPTION_CHANGED
 } from './events';
 import { isValidCallback, checkIfInitialized } from './helpers';
 
@@ -47,6 +48,13 @@ export default class OneSignal {
         isValidCallback(observer);
         RNOneSignal.addEmailSubscriptionObserver();
         eventManager.addEventHandler(EMAIL_SUBSCRIPTION_CHANGED, observer);
+    }
+
+    static addSMSSubscriptionObserver(observer) {
+        if (!checkIfInitialized(RNOneSignal)) return;
+        isValidCallback(observer);
+        RNOneSignal.addSMSSubscriptionObserver();
+        eventManager.addEventHandler(SMS_SUBSCRIPTION_CHANGED, observer);
     }
 
     /* H A N D L E R S */

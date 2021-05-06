@@ -35,6 +35,12 @@ declare module 'react-native-onesignal' {
         isEmailSubscribed   : boolean;
     };
 
+    export interface SMSSubscriptionChange {
+        smsNumber         ?: string;
+        smsUserId         ?: string;
+        isSMSSubscribed   : boolean;
+    };
+
     /* N O T I F I C A T I O N S */
     export interface OSNotification {
         body            : string;
@@ -146,6 +152,13 @@ declare module 'react-native-onesignal' {
          * @returns void
          */
         addEmailSubscriptionObserver(observer: (event: ChangeEvent<EmailSubscriptionChange>) => void): void;
+
+        /**
+         * Add a callback that fires when the OneSignal sms subscription changes.
+         * @param  {(event:ChangeEvent<SMSSubscriptionChange>)=>void} observer
+         * @returns void
+         */
+        addSMSSubscriptionObserver(observer: (event: ChangeEvent<SMSSubscriptionChange>) => void): void;
 
         /**
          * Set the callback to run just before displaying a notification while the app is in focus.

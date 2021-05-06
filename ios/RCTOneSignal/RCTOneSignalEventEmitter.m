@@ -16,6 +16,7 @@
     BOOL _hasSetSubscriptionObserver;
     BOOL _hasSetPermissionObserver;
     BOOL _hasSetEmailSubscriptionObserver;
+    BOOL _hasSetSMSSubscriptionObserver;
     NSMutableDictionary* _notificationCompletionCache;
     NSMutableDictionary* _receivedNotificationCache;
 }
@@ -113,6 +114,13 @@ RCT_EXPORT_METHOD(addEmailSubscriptionObserver) {
     if (!_hasSetEmailSubscriptionObserver) {
         [OneSignal addEmailSubscriptionObserver:[RCTOneSignal sharedInstance]];
         _hasSetEmailSubscriptionObserver = true;
+    }
+}
+
+RCT_EXPORT_METHOD(addSMSSubscriptionObserver) {
+    if (!_hasSetSMSSubscriptionObserver) {
+        [OneSignal addSMSSubscriptionObserver:[RCTOneSignal sharedInstance]];
+        _hasSetSMSSubscriptionObserver = true;
     }
 }
 
