@@ -242,6 +242,23 @@ RCT_EXPORT_METHOD(logoutEmail:(RCTResponseSenderBlock)callback) {
     }];
 }
 
+RCT_EXPORT_METHOD(setSMSNumber:(NSString *)smsNumber withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
+    // Auth hash token created on server and sent to client.
+    [OneSignal setSMSNumber:smsNumber withSMSAuthHashToken:authHash withSuccess:^(NSDictionary *results) {
+        callback(@[results]);
+    } withFailure:^(NSError *error) {
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    }];
+}
+
+RCT_EXPORT_METHOD(logoutSMSNumber:(RCTResponseSenderBlock)callback) {
+    [OneSignal logoutSMSNumberWithSuccess:^(NSDictionary *results) {
+        callback(@[results]);
+    } withFailure:^(NSError *error) {
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    }];
+}
+
 RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
     [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
         [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"Prompt For Push Notifications Success"];

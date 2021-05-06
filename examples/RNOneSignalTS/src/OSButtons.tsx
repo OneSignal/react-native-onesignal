@@ -212,6 +212,39 @@ class OSButtons extends React.Component<Props, State> {
         return elements;
     }
 
+    createSMSFields() {
+        let elements = [];
+        const { loggingFunction } = this.props;
+        const color = "#1E8FEB";
+
+        // Set SMS Button
+        const setSMSButton = renderButtonView(
+            "Set SMS Number",
+            color,
+            () => {
+                loggingFunction('Attempting to set SMS number: ', this.props.inputFieldValue);
+                OneSignal.setSMSNumber(this.props.inputFieldValue, undefined, (res : string) => {
+                    loggingFunction("setSMSNumber completed with result: ", res);
+                });
+            }
+        );
+
+        // Logout SMS Button
+        const logoutSMSButton = renderButtonView(
+            "Logout SMS Number",
+            color,
+            () => {
+                loggingFunction('Attempting to logout SMS number');
+                OneSignal.logoutSMSNumber((res: string) => {
+                    loggingFunction("logoutSMSNumber completed with result: ", res);
+                });
+            }
+        );
+
+        elements.push(setSMSButton, logoutSMSButton);
+        return elements;
+    }
+
     createEmailFields() {
         let elements = [];
         const { loggingFunction } = this.props;
@@ -376,6 +409,7 @@ class OSButtons extends React.Component<Props, State> {
                     { this.createSubscribeFields() }
                     { this.createDeviceFields() }
                     { this.createNotificationFields() }
+                    { this.createSMSFields() }
                     { this.createEmailFields() }
                     { this.createInAppFields() }
                     { this.createOutcomeFields() }
