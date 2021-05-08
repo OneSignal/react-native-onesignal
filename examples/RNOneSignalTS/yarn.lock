@@ -5524,10 +5524,10 @@ react-is@^16.12.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-native-onesignal@4.0.0-beta.5:
-  version "4.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-4.0.0-beta.5.tgz#35097278c91c53ce5a4188111853905ac69aa0c7"
-  integrity sha512-jWMbhz8/+RMCn2RoFbvBGpQZZ1PaElhiaFJt6N9TUGOfAMHBMRDDAuveIGh+mkCA4A7NGYGPC9++uHJ8EfrU4w==
+react-native-onesignal@4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-4.0.8.tgz#258d8f0e394257c6368b19bd77e0677b6a1f9433"
+  integrity sha512-N80+WopFz/ztclF+a0RpSGEu+hArlWLOKSSLv/YvYvIttcXUSIr9CpRj9a4Zq6Sc75ns97HHJZ28xXGY88JFTg==
   dependencies:
     invariant "^2.2.2"
 
@@ -6646,9 +6646,9 @@ typescript@^3.8.3:
   integrity sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
 
 ua-parser-js@^0.7.18:
-  version "0.7.22"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.22.tgz#960df60a5f911ea8f1c818f3747b99c6e177eae3"
-  integrity sha512-YUxzMjJ5T71w6a8WWVcMGM6YWOTX27rCoIQgLXiWaxqXSx9D7DNjiGWn1aJIRSQ5qr0xuhra77bSIh6voR/46Q==
+  version "0.7.28"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.28.tgz#8ba04e653f35ce210239c64661685bf9121dec31"
+  integrity sha512-6Gurc1n//gjp9eQNXjD9O3M/sMwVtN5S8Lv9bvOYBfKfDNiIIhqiyi01vMBO45u4zkDE420w/e0se7Vs+sIg+g==
 
 uglify-es@^3.1.9:
   version "3.3.9"
