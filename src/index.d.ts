@@ -319,7 +319,7 @@ declare module 'react-native-onesignal' {
         removeNotification(id: number): void;
 
         /**
-         * Removes a single OneSignal notification based on its Android notification group Id.
+         * Removes all OneSignal notifications based on its Android notification group Id.
          * @param  {string} id - notification group id to cancel
          * @returns void
          */
