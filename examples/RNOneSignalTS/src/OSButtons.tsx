@@ -90,7 +90,7 @@ class OSButtons extends React.Component<Props, State> {
         );
 
         const locationShared = renderButtonView("is Location Shared", color, async () => {
-            let appHasLocationShared = await OneSignal.isLocationShared();
+            const appHasLocationShared = await OneSignal.isLocationShared();
             loggingFunction(`Application has location shared active: ${appHasLocationShared}`);
         })
 
@@ -131,7 +131,7 @@ class OSButtons extends React.Component<Props, State> {
         const { loggingFunction } = this.props;
 
         const deviceStateButton = renderButtonView("Get Device State", color, async () => {
-            let deviceState = await OneSignal.getDeviceState();
+            const deviceState = await OneSignal.getDeviceState();
             loggingFunction(`Device State: ${JSON.stringify(deviceState)}`);
         })
 
@@ -149,7 +149,7 @@ class OSButtons extends React.Component<Props, State> {
             "is Privacy Consent Required",
             color,
             async () => {
-                let appRequiresUserPrivacyConsent = await OneSignal.requiresUserPrivacyConsent();
+                const appRequiresUserPrivacyConsent = await OneSignal.requiresUserPrivacyConsent();
                 loggingFunction(`Application requires privacy consent: ${appRequiresUserPrivacyConsent}`);
          })
 
@@ -161,7 +161,7 @@ class OSButtons extends React.Component<Props, State> {
         })
 
         const userProvidedPrivacyConsent = renderButtonView("Did User Provide Privacy Consent", color, async () => {
-            let didProvide = await OneSignal.userProvidedPrivacyConsent();
+            const didProvide = await OneSignal.userProvidedPrivacyConsent();
             loggingFunction(`Provided Privacy Consent: ${didProvide}`);
         })
 
