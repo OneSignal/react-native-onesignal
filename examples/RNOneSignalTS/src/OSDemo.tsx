@@ -1,6 +1,6 @@
 import OneSignal from 'react-native-onesignal';
 import * as React from 'react';
-import { StyleSheet, View, Text, TextInput, Alert} from 'react-native';
+import { StyleSheet, View, Text, TextInput, Alert, Linking} from 'react-native';
 import OSButtons from './OSButtons';
 import { SubscribeFields } from './models/SubscribeFields';
 import OSConsole from './OSConsole';
@@ -79,6 +79,21 @@ class OSDemo extends React.Component<Props, State> {
             name : state.emailAddress,
             isSubscribed : state.isSubscribed
         });
+
+        Linking.addEventListener('url', this.handleLink);
+
+        Linking.getInitialURL().then((ev) => {
+            if (ev) {
+                this.OSLog("ECM url test: ", ev);
+            }
+          }).catch(err => {
+              console.warn('An error occurred', err);
+          });
+    }
+
+    handleLink(event: {url: string}) {
+        console.log("entered handle link");
+        console.log(event.url);
     }
 
     componentWillUnmount() {
