@@ -13,9 +13,8 @@ export function isValidCallback(handler) {
     );
 }
 
-export function checkIfInitialized(object) {
-    const initialized = object != null;
-    return initialized;
+export function isObjectNonNull(object) {
+  return object != null;
 }
 
 /**
