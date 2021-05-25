@@ -24,6 +24,7 @@ export default class OneSignal {
      * @param {string} appId
      */
     static setAppId(appId) {
+        if (!isObjectNonNull(RNOneSignal)) return;
         RNOneSignal.setAppId(appId);
     }
 
@@ -444,6 +445,7 @@ export default class OneSignal {
     }
 
     static clearHandlers() {
+        if (!isObjectNonNull(RNOneSignal)) return;
         eventManager.clearHandlers();
     }
 }
