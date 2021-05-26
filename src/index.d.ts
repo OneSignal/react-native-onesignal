@@ -115,9 +115,12 @@ declare module 'react-native-onesignal' {
         pushToken                       : string;
         emailUserId                     : string;
         emailAddress                    : string;
+        smsUserId                       : string;
+        smsNumber                       : string;
         isSubscribed                    : boolean;
         isPushDisabled                  : boolean;
         isEmailSubscribed               : boolean;
+        isSMSSubscribed                 : boolean;
         hasNotificationPermission       ?: boolean; // ios only
         notificationPermissionStatus    ?: IosPermissionStatus;  // ios only
         // areNotificationsEnabled (android) not included since it is converted to hasNotificationPermission in bridge
