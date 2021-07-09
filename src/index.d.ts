@@ -182,7 +182,7 @@ declare module 'react-native-onesignal' {
          * @param  {(response:boolean)=>void} handler
          * @returns void
          */
-        promptForPushNotificationsWithUserResponse(handler?: (response: boolean) => void): void;
+        promptForPushNotificationsWithUserResponse(handler: (response: boolean) => void): void;
         
         /**
          * Only applies to iOS (does nothing on Android as it always silently registers)
