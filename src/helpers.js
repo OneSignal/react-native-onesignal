@@ -2,7 +2,8 @@ import invariant from 'invariant';
 import {
     PERMISSION_CHANGED,
     SUBSCRIPTION_CHANGED,
-    EMAIL_SUBSCRIPTION_CHANGED
+    EMAIL_SUBSCRIPTION_CHANGED,
+    SMS_SUBSCRIPTION_CHANGED
 } from './events';
 
 export function isValidCallback(handler) {
@@ -12,9 +13,8 @@ export function isValidCallback(handler) {
     );
 }
 
-export function checkIfInitialized(object) {
-    const initialized = object != null;
-    return initialized;
+export function isObjectNonNull(object) {
+  return object != null;
 }
 
 /**
@@ -26,6 +26,7 @@ export function isMultipleInstancesPossible(eventName) {
         case PERMISSION_CHANGED:
         case SUBSCRIPTION_CHANGED:
         case EMAIL_SUBSCRIPTION_CHANGED:
+        case SMS_SUBSCRIPTION_CHANGED:
             return true;
         default:
             return false;

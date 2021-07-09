@@ -12,6 +12,7 @@ export interface Props {
 
 export interface State {
     isSubscribed: boolean;
+    unSubscribedWhenNotificationDisabled: boolean;
     isLocationShared: boolean;
     provideUserConsent: boolean;
     requireUserConsent: boolean;
@@ -26,6 +27,7 @@ class OSButtons extends React.Component<Props, State> {
 
         this.state = {
             isSubscribed: subscribeFields.isSubscribed,
+            unSubscribedWhenNotificationDisabled: true,
             isLocationShared: true,
             provideUserConsent: false,
             requireUserConsent: false,
@@ -42,7 +44,7 @@ class OSButtons extends React.Component<Props, State> {
     createSubscribeFields() {
         const { subscribeFields, loggingFunction } = this.props;
         const { isSubscribed } = subscribeFields;
-        const { isLocationShared } = this.state;
+        const { unSubscribedWhenNotificationDisabled, isLocationShared } = this.state;
         const color = '#D45653';
         const elements = [];
 
@@ -52,6 +54,16 @@ class OSButtons extends React.Component<Props, State> {
             () => {
                 loggingFunction(`Is Push Disabled: ${isSubscribed}`);
                 OneSignal.disablePush(isSubscribed);
+            }
+        );
+    
+        const unsubscribeWhenNotificationsAreDisabledButton = renderButtonView(
+            unSubscribedWhenNotificationDisabled ? "Unsubscribe When Notifications Disabled" : "Subscribe when notification disabled",
+            color,
+            () => {
+                loggingFunction(`Is application unsubscribed when notification disabled: ${unSubscribedWhenNotificationDisabled}`);
+                OneSignal.unsubscribeWhenNotificationsAreDisabled(unSubscribedWhenNotificationDisabled);
+                this.setState({ unSubscribedWhenNotificationDisabled : !unSubscribedWhenNotificationDisabled });
             }
         );
 
@@ -65,6 +77,22 @@ class OSButtons extends React.Component<Props, State> {
                 });
             }
         );
+
+        const registerForProvisionalAuthorization = renderButtonView(
+            "Register For Provisional Authorization",
+            color,
+            () => {
+                loggingFunction("Register For Provisional Authorization with user response...");
+                OneSignal.registerForProvisionalAuthorization(response => {
+                    loggingFunction(`User response: ${response}`);
+                });
+            }
+        );
+
+        const locationShared = renderButtonView("is Location Shared", color, async () => {
+            const appHasLocationShared = await OneSignal.isLocationShared();
+            loggingFunction(`Application has location shared active: ${appHasLocationShared}`);
+        })
 
         const setLocationShared = renderButtonView(
             isLocationShared ? "Unshare Location" : "Share Location",
@@ -85,7 +113,10 @@ class OSButtons extends React.Component<Props, State> {
             }
         );
 
-        elements.push(subscribedButton, setLocationShared, promptLocationButton);
+        elements.push(subscribedButton, 
+            unsubscribeWhenNotificationsAreDisabledButton, 
+            registerForProvisionalAuthorization,
+            locationShared, setLocationShared, promptLocationButton);
 
         if (Platform.OS === 'ios') {
             elements.push(promptForPush);
@@ -100,7 +131,7 @@ class OSButtons extends React.Component<Props, State> {
         const { loggingFunction } = this.props;
 
         const deviceStateButton = renderButtonView("Get Device State", color, async () => {
-            let deviceState = await OneSignal.getDeviceState();
+            const deviceState = await OneSignal.getDeviceState();
             loggingFunction(`Device State: ${JSON.stringify(deviceState)}`);
         })
 
@@ -114,6 +145,14 @@ class OSButtons extends React.Component<Props, State> {
             }
         )
 
+        const appRequireUserProvideConsent = renderButtonView(
+            "is Privacy Consent Required",
+            color,
+            async () => {
+                const appRequiresUserPrivacyConsent = await OneSignal.requiresUserPrivacyConsent();
+                loggingFunction(`Application requires privacy consent: ${appRequiresUserPrivacyConsent}`);
+         })
+
         const provideUserConsentButton = renderButtonView(
             this.state.provideUserConsent ? "Reject User Consent" : "Provide User Consent", color, async () => {
                 loggingFunction(`Provide User Consent: ${!this.state.provideUserConsent}`);
@@ -122,13 +161,14 @@ class OSButtons extends React.Component<Props, State> {
         })
 
         const userProvidedPrivacyConsent = renderButtonView("Did User Provide Privacy Consent", color, async () => {
-            let didProvide = await OneSignal.userProvidedPrivacyConsent();
+            const didProvide = await OneSignal.userProvidedPrivacyConsent();
             loggingFunction(`Provided Privacy Consent: ${didProvide}`);
         })
 
         elements.push(
             deviceStateButton,
             requireUserProvideConsent,
+            appRequireUserProvideConsent,
             provideUserConsentButton,
             userProvidedPrivacyConsent,
             );
@@ -171,6 +211,16 @@ class OSButtons extends React.Component<Props, State> {
             }
         )
 
+        const removeGroupedNotificationButton = renderButtonView(
+            "Remove Grouped Notifications With Group ID",
+            color,
+            () => {
+                const groupId: string = this.props.inputFieldValue;
+                loggingFunction("Removing notification with group id:", groupId);
+                OneSignal.removeGroupedNotifications(groupId);
+            }
+        )
+
         const sendTagWithKey = renderButtonView(
             "Send tag with key my_tag",
             color,
@@ -202,13 +252,47 @@ class OSButtons extends React.Component<Props, State> {
             sendTagWithKey,
             getTags,
             deleteTagWithKey,
-            removeNotificationButton
+            removeNotificationButton,
+            removeGroupedNotificationButton
         );
 
         if (Platform.OS === "android") {
             elements.push(clearOneSignalNotificationsButton);
         }
 
+        return elements;
+    }
+
+    createSMSFields() {
+        let elements = [];
+        const { loggingFunction } = this.props;
+        const color = "#1E8FEB";
+
+        // Set SMS Button
+        const setSMSButton = renderButtonView(
+            "Set SMS Number",
+            color,
+            () => {
+                loggingFunction('Attempting to set SMS number: ', this.props.inputFieldValue);
+                OneSignal.setSMSNumber(this.props.inputFieldValue, undefined, (res : string) => {
+                    loggingFunction("setSMSNumber completed with result: ", res);
+                });
+            }
+        );
+
+        // Logout SMS Button
+        const logoutSMSButton = renderButtonView(
+            "Logout SMS Number",
+            color,
+            () => {
+                loggingFunction('Attempting to logout SMS number');
+                OneSignal.logoutSMSNumber((res: string) => {
+                    loggingFunction("logoutSMSNumber completed with result: ", res);
+                });
+            }
+        );
+
+        elements.push(setSMSButton, logoutSMSButton);
         return elements;
     }
 
@@ -352,12 +436,14 @@ class OSButtons extends React.Component<Props, State> {
             "Send Outcome 'my_outcome' with value",
             color,
             () => {
-                loggingFunction("Sending outcome of name 'my_outcome' with value: ", this.props.inputFieldValue);
-                if (typeof this.props.inputFieldValue !== 'number') {
+                const value = Number(this.props.inputFieldValue);
+                loggingFunction("Sending outcome of name 'my_outcome' with value: ", value);
+
+                if (Number.isNaN(value)) {
                     console.error("Outcome with value should be a number");
                     return;
                 }
-                OneSignal.sendOutcomeWithValue('my_outcome', this.props.inputFieldValue, (event: OutcomeEvent) => {
+                OneSignal.sendOutcomeWithValue('my_outcome', value, (event: OutcomeEvent) => {
                     loggingFunction("Outcome With Value Event: ", event);
                 });
             }
@@ -374,6 +460,7 @@ class OSButtons extends React.Component<Props, State> {
                     { this.createSubscribeFields() }
                     { this.createDeviceFields() }
                     { this.createNotificationFields() }
+                    { this.createSMSFields() }
                     { this.createEmailFields() }
                     { this.createInAppFields() }
                     { this.createOutcomeFields() }

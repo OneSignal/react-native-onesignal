@@ -82,6 +82,10 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     [self sendEvent:OSEventString(EmailSubscriptionChanged) withBody:stateChanges.toDictionary];
 }
 
+- (void)onOSSMSSubscriptionChanged:(OSSMSSubscriptionStateChanges *)stateChanges {
+    [self sendEvent:OSEventString(SMSSubscriptionChanged) withBody:stateChanges.toDictionary];
+}
+
 - (void)onOSPermissionChanged:(OSPermissionStateChanges *)stateChanges {
     [self sendEvent:OSEventString(PermissionChanged) withBody:stateChanges.toDictionary];
 }

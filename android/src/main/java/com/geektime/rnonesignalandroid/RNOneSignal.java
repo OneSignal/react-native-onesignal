@@ -34,51 +34,46 @@ Authors:
 
 package com.geektime.rnonesignalandroid;
 
-import java.util.Iterator;
-import java.util.HashMap;
-
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.content.pm.ApplicationInfo;
 
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-
-import com.onesignal.OSEmailSubscriptionStateChanges;
-import com.onesignal.OneSignal;
-import com.onesignal.OSOutcomeEvent;
 import com.onesignal.OSDeviceState;
+import com.onesignal.OSEmailSubscriptionObserver;
+import com.onesignal.OSEmailSubscriptionStateChanges;
 import com.onesignal.OSInAppMessageAction;
 import com.onesignal.OSNotification;
-import com.onesignal.OSNotificationReceivedEvent;
 import com.onesignal.OSNotificationOpenedResult;
-import com.onesignal.OneSignal.OutcomeCallback;
+import com.onesignal.OSNotificationReceivedEvent;
+import com.onesignal.OSOutcomeEvent;
+import com.onesignal.OSPermissionObserver;
+import com.onesignal.OSPermissionStateChanges;
+import com.onesignal.OSSMSSubscriptionObserver;
+import com.onesignal.OSSMSSubscriptionStateChanges;
+import com.onesignal.OSSubscriptionObserver;
+import com.onesignal.OSSubscriptionStateChanges;
+import com.onesignal.OneSignal;
 import com.onesignal.OneSignal.EmailUpdateError;
-
 import com.onesignal.OneSignal.EmailUpdateHandler;
 import com.onesignal.OneSignal.OSInAppMessageClickHandler;
 import com.onesignal.OneSignal.OSNotificationOpenedHandler;
+import com.onesignal.OneSignal.OutcomeCallback;
 
-import com.onesignal.OSPermissionObserver;
-import com.onesignal.OSSubscriptionObserver;
-import com.onesignal.OSEmailSubscriptionObserver;
-
-import com.onesignal.OSPermissionStateChanges;
-import com.onesignal.OSSubscriptionStateChanges;
-
-import org.json.JSONObject;
-import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class RNOneSignal extends ReactContextBaseJavaModule
         implements
@@ -87,8 +82,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule
         OSNotificationOpenedHandler,
         OSEmailSubscriptionObserver,
         LifecycleEventListener,
-        OSInAppMessageClickHandler
-{
+        OSInAppMessageClickHandler,
+        OSSMSSubscriptionObserver {
 
    public static final String HIDDEN_MESSAGE_KEY = "hidden";
 
@@ -104,6 +99,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    private boolean hasSetInAppClickedHandler = false;
    private boolean hasSetSubscriptionObserver = false;
    private boolean hasSetEmailSubscriptionObserver = false;
+   private boolean hasSetSMSSubscriptionObserver = false;
    private boolean hasSetPermissionObserver = false;
 
    // A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later.
@@ -166,7 +162,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       Context context = mReactApplicationContext.getCurrentActivity();
 
       if (oneSignalInitDone) {
-         Log.e("onesignal", "Already initialized the OneSignal React-Native SDK");
+         Log.e("OneSignal", "Already initialized the OneSignal React-Native SDK");
          return;
       }
 
@@ -191,20 +187,26 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    /* Observers */
    @Override
    public void onOSPermissionChanged(OSPermissionStateChanges stateChanges) {
-      Log.i("Onesignal", "sending permission change event");
+      Log.i("OneSignal", "sending permission change event");
       sendEvent("OneSignal-permissionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
    }
 
    @Override
    public void onOSSubscriptionChanged(OSSubscriptionStateChanges stateChanges) {
-      Log.i("Onesignal", "sending subscription change event");
+      Log.i("OneSignal", "sending subscription change event");
       sendEvent("OneSignal-subscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
    }
 
    @Override
    public void onOSEmailSubscriptionChanged(OSEmailSubscriptionStateChanges stateChanges) {
-      Log.i("Onesignal", "sending email subscription change event");
+      Log.i("OneSignal", "sending email subscription change event");
       sendEvent("OneSignal-emailSubscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
+   }
+
+   @Override
+   public void onSMSSubscriptionChanged(OSSMSSubscriptionStateChanges stateChanges) {
+      Log.i("OneSignal", "sending SMS subscription change event");
+      sendEvent("OneSignal-smsSubscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
    }
 
    @ReactMethod
@@ -231,17 +233,35 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       }
    }
 
+   @ReactMethod
+   public void addSMSSubscriptionObserver() {
+      if (!hasSetSMSSubscriptionObserver) {
+         OneSignal.addSMSSubscriptionObserver(this);
+         hasSetSMSSubscriptionObserver = true;
+      }
+   }
+
    /* Other methods */
 
    @ReactMethod
    public void getDeviceState(Promise promise) {
       OSDeviceState state = OneSignal.getDeviceState();
+      if (state == null) {
+         Log.e("OneSignal", "getDeviceState: OSDeviceState is null");
+         promise.reject("Null OSDeviceState", "OSDeviceState is null");
+         return;
+      }
       promise.resolve(RNUtils.jsonToWritableMap(state.toJSONObject()));
    }
 
    @ReactMethod
    public void disablePush(boolean disable) {
       OneSignal.disablePush(disable);
+   }
+
+   @ReactMethod
+   public void unsubscribeWhenNotificationsAreDisabled(boolean unsubscribe) {
+      OneSignal.unsubscribeWhenNotificationsAreDisabled(unsubscribe);
    }
 
    @ReactMethod
@@ -314,6 +334,44 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
+   public void setSMSNumber(String smsNumber, String smsAuthToken, final Callback callback) {
+      OneSignal.setSMSNumber(smsNumber, smsAuthToken, new OneSignal.OSSMSUpdateHandler() {
+         @Override
+         public void onSuccess(JSONObject result) {
+            callback.invoke(RNUtils.jsonToWritableMap(result));
+         }
+
+         @Override
+         public void onFailure(OneSignal.OSSMSUpdateError error) {
+            try {
+               callback.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
+            } catch (JSONException exception) {
+               exception.printStackTrace();
+            }
+         }
+      });
+   }
+
+   @ReactMethod
+   public void logoutSMSNumber(final Callback callback) {
+      OneSignal.logoutSMSNumber(new OneSignal.OSSMSUpdateHandler() {
+         @Override
+         public void onSuccess(JSONObject result) {
+            callback.invoke(RNUtils.jsonToWritableMap(result));
+         }
+
+         @Override
+         public void onFailure(OneSignal.OSSMSUpdateError error) {
+            try {
+               callback.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
+            } catch (JSONException exception) {
+               exception.printStackTrace();
+            }
+         }
+      });
+   }
+
+   @ReactMethod
    public void promptLocation() {
       OneSignal.promptLocation();
    }
@@ -321,6 +379,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    @ReactMethod
    public void setLogLevel(int logLevel, int visualLogLevel) {
       OneSignal.setLogLevel(logLevel, visualLogLevel);
+   }
+
+   @ReactMethod
+   public void isLocationShared(Promise promise) {
+      promise.resolve(OneSignal.isLocationShared());
    }
 
    @ReactMethod
@@ -356,6 +419,16 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    @ReactMethod
    public void removeNotification(int id) {
       OneSignal.removeNotification(id);
+   }
+
+   @ReactMethod
+   public void removeGroupedNotifications(String id) {
+      OneSignal.removeGroupedNotifications(id);
+   }
+
+   @ReactMethod
+   public void requiresUserPrivacyConsent(Promise promise) {
+      promise.resolve(OneSignal.requiresUserPrivacyConsent());
    }
 
    @ReactMethod

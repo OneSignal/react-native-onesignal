@@ -35,6 +35,12 @@ declare module 'react-native-onesignal' {
         isEmailSubscribed   : boolean;
     };
 
+    export interface SMSSubscriptionChange {
+        smsNumber         ?: string;
+        smsUserId         ?: string;
+        isSMSSubscribed   : boolean;
+    };
+
     /* N O T I F I C A T I O N S */
     export interface OSNotification {
         body            : string;
@@ -109,11 +115,14 @@ declare module 'react-native-onesignal' {
         pushToken                       : string;
         emailUserId                     : string;
         emailAddress                    : string;
+        smsUserId                       : string;
+        smsNumber                       : string;
         isSubscribed                    : boolean;
         isPushDisabled                  : boolean;
         isEmailSubscribed               : boolean;
+        isSMSSubscribed                 : boolean;
         hasNotificationPermission       ?: boolean; // ios only
-        notificationPermissionStatus    ?: number;  // ios only
+        notificationPermissionStatus    ?: IosPermissionStatus;  // ios only
         // areNotificationsEnabled (android) not included since it is converted to hasNotificationPermission in bridge
     }
 
@@ -148,6 +157,13 @@ declare module 'react-native-onesignal' {
         addEmailSubscriptionObserver(observer: (event: ChangeEvent<EmailSubscriptionChange>) => void): void;
 
         /**
+         * Add a callback that fires when the OneSignal sms subscription changes.
+         * @param  {(event:ChangeEvent<SMSSubscriptionChange>)=>void} observer
+         * @returns void
+         */
+        addSMSSubscriptionObserver(observer: (event: ChangeEvent<SMSSubscriptionChange>) => void): void;
+
+        /**
          * Set the callback to run just before displaying a notification while the app is in focus.
          * @param  {(event:NotificationReceivedEvent)=>void} handler
          * @returns void
@@ -167,6 +183,17 @@ declare module 'react-native-onesignal' {
          * @returns void
          */
         promptForPushNotificationsWithUserResponse(handler: (response: boolean) => void): void;
+        
+        /**
+         * Only applies to iOS (does nothing on Android as it always silently registers)
+         * Request for Direct-To-History push notification authorization
+         * 
+         * For more information: https://documentation.onesignal.com/docs/ios-customizations#provisional-push-notifications
+         * 
+         * @param  {(response:boolean)=>void} handler
+         * @returns void
+         */
+        registerForProvisionalAuthorization(handler?: (response: boolean) => void): void;
 
         /**
          * Disable the push notification subscription to OneSignal.
@@ -174,6 +201,19 @@ declare module 'react-native-onesignal' {
          * @returns void
          */
         disablePush(disable: boolean): void;
+
+        /**
+         * Android Only. If notifications are disabled for your application, unsubscribe the user from OneSignal.
+         * @param  {boolean} unsubscribe
+         * @returns void
+         */
+        unsubscribeWhenNotificationsAreDisabled(unsubscribe: boolean): void;
+
+        /**
+         * True if the application has location share activated, false otherwise
+         * @returns Promise<boolean>
+         */
+        isLocationShared(): Promise<boolean>;
 
         /**
          * Disable or enable location collection (defaults to enabled if your app has location permission).
@@ -193,12 +233,6 @@ declare module 'react-native-onesignal' {
          * @returns Promise<DeviceState>
          */
         getDeviceState(): Promise<DeviceState>;
-
-        /**
-         * Did the user provide privacy consent for GDPR purposes.
-         * @returns Promise<boolean>
-         */
-        userProvidedPrivacyConsent(): Promise<boolean>;
 
         /**
          * Tag a user based on an app event of your choosing so they can be targeted later via segments.
@@ -251,6 +285,21 @@ declare module 'react-native-onesignal' {
         logoutEmail(handler?: Function);
 
         /**
+         * Allows you to set the user's SMS number with the OneSignal SDK.
+         * @param  {string} smsNumber
+         * @param  {string} authCode
+         * @param  {Function} handler
+         * @returns void
+         */
+        setSMSNumber(smsNumber: string, authCode?: string, handler?: Function): void;
+
+        /**
+         * If your app implements logout functionality, you can call logoutSMSNumber to dissociate the SMS number from the device.
+         * @param  {Function} handler
+         */
+        logoutSMSNumber(handler?: Function);
+
+        /**
          * Send a notification
          * @param  {string} notificationObjectString - JSON string payload (see REST API reference)
          * @param  {(success:object)=>void} onSuccess
@@ -271,6 +320,13 @@ declare module 'react-native-onesignal' {
          * @returns void
          */
         removeNotification(id: number): void;
+
+        /**
+         * Removes all OneSignal notifications based on its Android notification group Id.
+         * @param  {string} id - notification group id to cancel
+         * @returns void
+         */
+        removeGroupedNotifications(id: string): void;
 
         /**
          * Allows you to use your own system's user ID's to send push notifications to your users.
@@ -376,6 +432,18 @@ declare module 'react-native-onesignal' {
          * @returns void
          */
         clearHandlers(): void;
+
+        /**
+         * Did the user provide privacy consent for GDPR purposes.
+         * @returns Promise<boolean>
+         */
+        userProvidedPrivacyConsent(): Promise<boolean>;
+
+        /**
+         * True if the application requires user privacy consent, false otherwise
+         * @returns Promise<boolean>
+         */
+        requiresUserPrivacyConsent(): Promise<boolean>;
 
         /**
          * For GDPR users, your application should call this method before setting the App ID.

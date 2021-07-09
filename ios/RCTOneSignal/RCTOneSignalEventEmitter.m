@@ -16,6 +16,7 @@
     BOOL _hasSetSubscriptionObserver;
     BOOL _hasSetPermissionObserver;
     BOOL _hasSetEmailSubscriptionObserver;
+    BOOL _hasSetSMSSubscriptionObserver;
     NSMutableDictionary* _notificationCompletionCache;
     NSMutableDictionary* _receivedNotificationCache;
 }
@@ -116,6 +117,18 @@ RCT_EXPORT_METHOD(addEmailSubscriptionObserver) {
     }
 }
 
+RCT_EXPORT_METHOD(addSMSSubscriptionObserver) {
+    if (!_hasSetSMSSubscriptionObserver) {
+        [OneSignal addSMSSubscriptionObserver:[RCTOneSignal sharedInstance]];
+        _hasSetSMSSubscriptionObserver = true;
+    }
+}
+
+RCT_REMAP_METHOD(requiresUserPrivacyConsent, requiresPrivacyConsentResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(@(OneSignal.requiresUserPrivacyConsent));
+}
+
 RCT_EXPORT_METHOD(setRequiresUserPrivacyConsent:(BOOL)required) {
     [OneSignal setRequiresUserPrivacyConsent:required];
 }
@@ -126,7 +139,7 @@ RCT_EXPORT_METHOD(provideUserConsent:(BOOL)granted) {
     });
 }
 
-RCT_REMAP_METHOD(userProvidedPrivacyConsent, resolver: (RCTPromiseResolveBlock)resolve
+RCT_REMAP_METHOD(userProvidedPrivacyConsent, privacyConsentResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@(!OneSignal.requiresUserPrivacyConsent));
 }
@@ -242,9 +255,32 @@ RCT_EXPORT_METHOD(logoutEmail:(RCTResponseSenderBlock)callback) {
     }];
 }
 
+RCT_EXPORT_METHOD(setSMSNumber:(NSString *)smsNumber withAuthHash:(NSString *)authHash withResponse:(RCTResponseSenderBlock)callback) {
+    // Auth hash token created on server and sent to client.
+    [OneSignal setSMSNumber:smsNumber withSMSAuthHashToken:authHash withSuccess:^(NSDictionary *results) {
+        callback(@[results]);
+    } withFailure:^(NSError *error) {
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    }];
+}
+
+RCT_EXPORT_METHOD(logoutSMSNumber:(RCTResponseSenderBlock)callback) {
+    [OneSignal logoutSMSNumberWithSuccess:^(NSDictionary *results) {
+        callback(@[results]);
+    } withFailure:^(NSError *error) {
+        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+    }];
+}
+
 RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
     [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
         [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"Prompt For Push Notifications Success"];
+        callback(@[@(accepted)]);
+    }];
+}
+
+RCT_EXPORT_METHOD(registerForProvisionalAuthorization:(RCTResponseSenderBlock)callback) {
+    [OneSignal registerForProvisionalAuthorization:^(BOOL accepted) {
         callback(@[@(accepted)]);
     }];
 }
@@ -268,6 +304,14 @@ RCT_EXPORT_METHOD(getTags:(RCTResponseSenderBlock)callback) {
         [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"Get Tags Failure with error: %@", error]];
         callback(@[error]);
     }];
+}
+
+RCT_REMAP_METHOD(isLocationShared,
+                isLocationSharedResolver:(RCTPromiseResolveBlock)resolve
+                rejecter:(RCTPromiseRejectBlock)reject) {
+
+    BOOL locationShared = [OneSignal isLocationShared];
+    resolve(@(locationShared));
 }
 
 RCT_EXPORT_METHOD(setLocationShared:(BOOL)shared) {
