@@ -4,4 +4,5 @@
 @interface RCTOneSignalExtensionService : NSObject
 + (void)serviceExtensionTimeWillExpireRequest:(UNNotificationRequest * _Nonnull)request withMutableNotificationContent:(UNMutableNotificationContent * _Nullable)content;
 + (void)didReceiveNotificationRequest:(UNNotificationRequest * _Nonnull)request withContent:(UNMutableNotificationContent * _Nullable)content;
++ (void)didReceiveNotificationRequest:(UNNotificationRequest * _Nonnull)request withContent:(UNMutableNotificationContent * _Nullable)content withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler;
 @end

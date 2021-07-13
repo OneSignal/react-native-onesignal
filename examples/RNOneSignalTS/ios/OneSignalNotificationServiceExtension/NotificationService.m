@@ -17,15 +17,7 @@
     self.contentHandler = contentHandler;
     self.bestAttemptContent = [request.content mutableCopy];
     
-    [OneSignal didReceiveNotificationExtensionRequest:self.receivedRequest withMutableNotificationContent:self.bestAttemptContent];
-    
-    // DEBUGGING: Uncomment the 2 lines below and comment out the one above to ensure this extension is excuting
-    //            Note, this extension only runs when mutable-content is set
-    //            Setting an attachment or action buttons automatically adds this
-    // NSLog(@"Running NotificationServiceExtension");
-    // self.bestAttemptContent.body = [@"[Modified] " stringByAppendingString:self.bestAttemptContent.body];
-    
-    self.contentHandler(self.bestAttemptContent);
+    [OneSignal didReceiveNotificationExtensionRequest:self.receivedRequest withMutableNotificationContent:self.bestAttemptContent withContentHandler:self.contentHandler];
 }
 
 - (void)serviceExtensionTimeWillExpire {
