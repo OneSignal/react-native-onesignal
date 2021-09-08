@@ -103,10 +103,24 @@ RCT_EXPORT_METHOD(addPermissionObserver) {
     }
 }
 
+RCT_EXPORT_METHOD(removePermissionObserver) {
+    if (_hasSetPermissionObserver) {
+        [OneSignal removePermissionObserver:[RCTOneSignal sharedInstance]];
+        _hasSetPermissionObserver = false;
+    }
+}
+
 RCT_EXPORT_METHOD(addSubscriptionObserver) {
     if (!_hasSetSubscriptionObserver) {
         [OneSignal addSubscriptionObserver:[RCTOneSignal sharedInstance]];
         _hasSetSubscriptionObserver = true;
+    }
+}
+
+RCT_EXPORT_METHOD(removeSubscriptionObserver) {
+    if (_hasSetSubscriptionObserver) {
+        [OneSignal removeSubscriptionObserver:[RCTOneSignal sharedInstance]];
+        _hasSetSubscriptionObserver = false;
     }
 }
 
@@ -117,10 +131,24 @@ RCT_EXPORT_METHOD(addEmailSubscriptionObserver) {
     }
 }
 
+RCT_EXPORT_METHOD(removeEmailSubscriptionObserver) {
+    if (_hasSetEmailSubscriptionObserver) {
+        [OneSignal removeEmailSubscriptionObserver:[RCTOneSignal sharedInstance]];
+        _hasSetEmailSubscriptionObserver = false;
+    }
+}
+
 RCT_EXPORT_METHOD(addSMSSubscriptionObserver) {
     if (!_hasSetSMSSubscriptionObserver) {
         [OneSignal addSMSSubscriptionObserver:[RCTOneSignal sharedInstance]];
         _hasSetSMSSubscriptionObserver = true;
+    }
+}
+
+RCT_EXPORT_METHOD(removeSMSSubscriptionObserver) {
+    if (_hasSetSMSSubscriptionObserver) {
+        [OneSignal addSMSSubscriptionObserver:[RCTOneSignal sharedInstance]];
+        _hasSetSMSSubscriptionObserver = false;
     }
 }
 

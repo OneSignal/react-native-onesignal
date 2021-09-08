@@ -69,6 +69,25 @@ export default class EventManager {
         handlerArray && handlerArray.length > 0 ? handlerArray.push(handler) : this.eventHandlerArrayMap.set(eventName, [handler]);
     }
 
+    /**
+     * Adds the event handler to the corresponding handler array on the JS side of the bridge
+     * @param  {string} eventName
+     * @param  {function} handler
+     */
+    addEventHandler(eventName, handler) {
+        let handlerArray = this.eventHandlerArrayMap.get(eventName);
+        handlerArray && handlerArray.length > 0 ? handlerArray.push(handler) : this.eventHandlerArrayMap.set(eventName, [handler]);
+    }
+
+    /**
+     * clears the event handler(s) for the event name
+     * @param  {string} eventName
+     * @param  {function} handler
+     */
+    clearEventHandler(eventName) {
+        this.eventHandlerArrayMap.delete(eventName);
+    }
+
     // returns an event listener with the js to native mapping
     generateEventListener(eventName) {
         const addListenerCallback = (payload) => {

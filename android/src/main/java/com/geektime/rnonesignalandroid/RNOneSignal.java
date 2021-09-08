@@ -218,10 +218,26 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
+   public void removePermissionObserver() {
+      if (hasSetPermissionObserver) {
+         OneSignal.removePermissionObserver(this);
+         hasSetPermissionObserver = false;
+      }
+   }
+
+   @ReactMethod
    public void addSubscriptionObserver() {
       if (!hasSetSubscriptionObserver) {
          OneSignal.addSubscriptionObserver(this);
          hasSetSubscriptionObserver = true;
+      }
+   }
+
+   @ReactMethod
+   public void removeSubscriptionObserver() {
+      if (hasSetSubscriptionObserver) {
+         OneSignal.removeSubscriptionObserver(this);
+         hasSetSubscriptionObserver = false;
       }
    }
 
@@ -234,9 +250,25 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
+   public void removeEmailSubscriptionObserver() {
+      if (hasSetEmailSubscriptionObserver) {
+         OneSignal.removeEmailSubscriptionObserver(this);
+         hasSetEmailSubscriptionObserver = false;
+      }
+   }
+
+   @ReactMethod
    public void addSMSSubscriptionObserver() {
       if (!hasSetSMSSubscriptionObserver) {
          OneSignal.addSMSSubscriptionObserver(this);
+         hasSetSMSSubscriptionObserver = true;
+      }
+   }
+
+   @ReactMethod
+   public void removeSMSSubscriptionObserver() {
+      if (hasSetSMSSubscriptionObserver) {
+         OneSignal.removeSMSSubscriptionObserver(this);
          hasSetSMSSubscriptionObserver = true;
       }
    }

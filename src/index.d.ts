@@ -143,11 +143,23 @@ declare module 'react-native-onesignal' {
         addPermissionObserver(observer: (event: ChangeEvent<PermissionChange>) => void): void;
 
         /**
+         * Clears current permission observers.
+         * @returns void
+         */
+        clearPermissionObservers(): void;
+
+        /**
          * Add a callback that fires when the OneSignal subscription state changes.
          * @param  {(event:ChangeEvent<SubscriptionChange>)=>void} observer
          * @returns void
          */
         addSubscriptionObserver(observer: (event: ChangeEvent<SubscriptionChange>) => void): void;
+
+        /**
+         * Clears current subscription observers.
+         * @returns void
+         */
+        clearSubscriptionObservers(): void;
 
         /**
          * Add a callback that fires when the OneSignal email subscription changes.
@@ -157,11 +169,23 @@ declare module 'react-native-onesignal' {
         addEmailSubscriptionObserver(observer: (event: ChangeEvent<EmailSubscriptionChange>) => void): void;
 
         /**
+         * Clears current email subscription observers.
+         * @returns void
+         */
+        clearEmailSubscriptionObservers(): void;
+
+        /**
          * Add a callback that fires when the OneSignal sms subscription changes.
          * @param  {(event:ChangeEvent<SMSSubscriptionChange>)=>void} observer
          * @returns void
          */
         addSMSSubscriptionObserver(observer: (event: ChangeEvent<SMSSubscriptionChange>) => void): void;
+
+        /**
+         * Clears current SMS subscription observers.
+         * @returns void
+         */
+         clearSMSSubscriptionObservers(): void;
 
         /**
          * Set the callback to run just before displaying a notification while the app is in focus.
