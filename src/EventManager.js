@@ -70,16 +70,6 @@ export default class EventManager {
     }
 
     /**
-     * Adds the event handler to the corresponding handler array on the JS side of the bridge
-     * @param  {string} eventName
-     * @param  {function} handler
-     */
-    addEventHandler(eventName, handler) {
-        let handlerArray = this.eventHandlerArrayMap.get(eventName);
-        handlerArray && handlerArray.length > 0 ? handlerArray.push(handler) : this.eventHandlerArrayMap.set(eventName, [handler]);
-    }
-
-    /**
      * clears the event handler(s) for the event name
      * @param  {string} eventName
      * @param  {function} handler

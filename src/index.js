@@ -78,8 +78,8 @@ export default class OneSignal {
 
     static clearSMSSubscriptionObservers() {
         if (!isObjectNonNull(RNOneSignal)) return;
-        RNOneSignal.addSMSSubscriptionObserver();
-        eventManager.addEventHandler(SMS_SUBSCRIPTION_CHANGED, observer);
+        RNOneSignal.removeSMSSubscriptionObserver();
+        eventManager.clearEventHandler(SMS_SUBSCRIPTION_CHANGED);
     }
 
     /* H A N D L E R S */

@@ -147,7 +147,7 @@ RCT_EXPORT_METHOD(addSMSSubscriptionObserver) {
 
 RCT_EXPORT_METHOD(removeSMSSubscriptionObserver) {
     if (_hasSetSMSSubscriptionObserver) {
-        [OneSignal addSMSSubscriptionObserver:[RCTOneSignal sharedInstance]];
+        [OneSignal removeSMSSubscriptionObserver:[RCTOneSignal sharedInstance]];
         _hasSetSMSSubscriptionObserver = false;
     }
 }

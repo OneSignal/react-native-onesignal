@@ -269,7 +269,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    public void removeSMSSubscriptionObserver() {
       if (hasSetSMSSubscriptionObserver) {
          OneSignal.removeSMSSubscriptionObserver(this);
-         hasSetSMSSubscriptionObserver = true;
+         hasSetSMSSubscriptionObserver = false;
       }
    }
 
