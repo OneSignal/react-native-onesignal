@@ -37,6 +37,8 @@ export default class OSNotification {
             this.mutableContent = receivedEvent.mutableContent;
             this.badgeIncrement = receivedEvent.badgeIncrement;
             this.contentAvailable = receivedEvent.contentAvailable;
+            this.relevanceScore = receivedEvent.relevanceScore;
+            this.interruptionLevel = receivedEvent.interruptionLevel;
         }
     }
 }
