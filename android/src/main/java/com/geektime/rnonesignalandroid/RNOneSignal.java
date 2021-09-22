@@ -120,12 +120,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    private void removeObservers() {
-      OneSignal.removeEmailSubscriptionObserver(this);
-      OneSignal.removePermissionObserver(this);
-      OneSignal.removeSubscriptionObserver(this);
-      hasSetEmailSubscriptionObserver = false;
-      hasSetPermissionObserver = false;
-      hasSetSubscriptionObserver = false;
+      this.removeEmailSubscriptionObserver();
+      this.removePermissionObserver();
+      this.removeSubscriptionObserver();
    }
 
    private void removeHandlers() {
