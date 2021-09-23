@@ -123,6 +123,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       this.removeEmailSubscriptionObserver();
       this.removePermissionObserver();
       this.removeSubscriptionObserver();
+      this.removeSMSSubscriptionObserver();
    }
 
    private void removeHandlers() {
