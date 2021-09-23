@@ -69,6 +69,15 @@ export default class EventManager {
         handlerArray && handlerArray.length > 0 ? handlerArray.push(handler) : this.eventHandlerArrayMap.set(eventName, [handler]);
     }
 
+    /**
+     * clears the event handler(s) for the event name
+     * @param  {string} eventName
+     * @param  {function} handler
+     */
+    clearEventHandler(eventName) {
+        this.eventHandlerArrayMap.delete(eventName);
+    }
+
     // returns an event listener with the js to native mapping
     generateEventListener(eventName) {
         const addListenerCallback = (payload) => {

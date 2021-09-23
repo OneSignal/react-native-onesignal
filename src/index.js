@@ -37,6 +37,12 @@ export default class OneSignal {
         eventManager.addEventHandler(PERMISSION_CHANGED, observer);
     }
 
+    static clearPermissionObservers() {
+        if (!isObjectNonNull(RNOneSignal)) return;
+        RNOneSignal.removePermissionObserver();
+        eventManager.clearEventHandler(PERMISSION_CHANGED);
+    }
+    
     static addSubscriptionObserver(observer) {
         if (!isObjectNonNull(RNOneSignal)) return;
         isValidCallback(observer);
@@ -44,6 +50,12 @@ export default class OneSignal {
         eventManager.addEventHandler(SUBSCRIPTION_CHANGED, observer);
     }
 
+    static clearSubscriptionObservers() {
+        if (!isObjectNonNull(RNOneSignal)) return;
+        RNOneSignal.removeSubscriptionObserver();
+        eventManager.clearEventHandler(SUBSCRIPTION_CHANGED);
+    }
+    
     static addEmailSubscriptionObserver(observer) {
         if (!isObjectNonNull(RNOneSignal)) return;
         isValidCallback(observer);
@@ -51,11 +63,23 @@ export default class OneSignal {
         eventManager.addEventHandler(EMAIL_SUBSCRIPTION_CHANGED, observer);
     }
 
+    static clearEmailSubscriptionObservers() {
+        if (!isObjectNonNull(RNOneSignal)) return;
+        RNOneSignal.removeEmailSubscriptionObserver();
+        eventManager.clearEventHandler(EMAIL_SUBSCRIPTION_CHANGED);
+    }
+    
     static addSMSSubscriptionObserver(observer) {
         if (!isObjectNonNull(RNOneSignal)) return;
         isValidCallback(observer);
         RNOneSignal.addSMSSubscriptionObserver();
         eventManager.addEventHandler(SMS_SUBSCRIPTION_CHANGED, observer);
+    }
+
+    static clearSMSSubscriptionObservers() {
+        if (!isObjectNonNull(RNOneSignal)) return;
+        RNOneSignal.removeSMSSubscriptionObserver();
+        eventManager.clearEventHandler(SMS_SUBSCRIPTION_CHANGED);
     }
 
     /* H A N D L E R S */
