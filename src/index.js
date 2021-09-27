@@ -356,7 +356,7 @@ export default class OneSignal {
     static removeExternalUserId(handler) {
         if (!isObjectNonNull(RNOneSignal)) return;
 
-        if (handler === undefined)
+        if (handler === undefined && Platform.OS === 'ios')
             handler = function(){};
 
         RNOneSignal.removeExternalUserId(handler);
