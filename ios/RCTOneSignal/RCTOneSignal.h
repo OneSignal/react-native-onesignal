@@ -7,7 +7,7 @@
 
 #define INIT_DEPRECATION_NOTICE "Objective-C Initialization of the OneSignal SDK has been deprecated. Use JavaScript init instead."
 
-@interface RCTOneSignal : NSObject <OSSubscriptionObserver, OSEmailSubscriptionObserver, OSPermissionObserver, OSSMSSubscriptionObserver>
+@interface RCTOneSignal : NSObject <OSSubscriptionObserver, OSEmailSubscriptionObserver, OSPermissionObserver, OSSMSSubscriptionObserver, OSInAppMessageLifecycleHandler>
 
 + (RCTOneSignal *) sharedInstance;
 

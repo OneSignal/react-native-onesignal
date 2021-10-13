@@ -103,6 +103,17 @@ declare module 'react-native-onesignal' {
         tags            ?: object;
     }
 
+    export interface InAppMessage {
+        messageId : string
+    }
+
+    export interface InAppMessageLifecycleHandlerObject {
+        onWillDisplayInAppMessage       ?: (message: InAppMessage) => void;
+        onDidDisplayInAppMessage        ?: (message: InAppMessage) => void;
+        onWillDismissInAppMessage       ?: (message: InAppMessage) => void;
+        onDidDismissInAppMessage        ?: (message: InAppMessage) => void;
+    }
+
     export interface OutcomeEvent {
         session         : string;
         id              : string;
@@ -382,6 +393,13 @@ declare module 'react-native-onesignal' {
          * @returns void
          */
         setInAppMessageClickHandler(handler: (action: InAppMessageAction) => void): void;
+
+         /**
+         * Sets the In-App Message lifecycle handler object to run on displaying and/or dismissing an In-App Message.
+         * @param  {InAppMessageLifecycleHandlerObject} handlerObject
+         * @returns void
+         */
+        setInAppMessageLifecycleHandler(handlerObject: InAppMessageLifecycleHandlerObject) : void;
 
         /**
          * Add an In-App Message Trigger.
