@@ -9,7 +9,11 @@ import {
     NOTIFICATION_WILL_SHOW,
     NOTIFICATION_OPENED,
     EMAIL_SUBSCRIPTION_CHANGED,
-    SMS_SUBSCRIPTION_CHANGED
+    SMS_SUBSCRIPTION_CHANGED,
+    IN_APP_MESSAGE_WILL_DISPLAY,
+    IN_APP_MESSAGE_WILL_DISMISS,
+    IN_APP_MESSAGE_DID_DISMISS,
+    IN_APP_MESSAGE_DID_DISPLAY,
 } from './events';
 import { isValidCallback, isObjectNonNull } from './helpers';
 
@@ -370,6 +374,29 @@ export default class OneSignal {
         RNOneSignal.initInAppMessageClickHandlerParams();
         RNOneSignal.setInAppMessageClickHandler();
         eventManager.setEventHandler(IN_APP_MESSAGE_CLICKED, handler);
+    }
+
+    static setInAppMessageLifecycleHandler(handlers) {
+        if (!isObjectNonNull(RNOneSignal)) return;
+        
+        if (handlers.onWillDisplayInAppMessage) {
+            isValidCallback(handlers.onWillDisplayInAppMessage);
+            eventManager.setEventHandler(IN_APP_MESSAGE_WILL_DISPLAY, handlers.onWillDisplayInAppMessage);
+        }
+        if (handlers.onDidDisplayInAppMessage) {
+            isValidCallback(handlers.onDidDisplayInAppMessage);
+            eventManager.setEventHandler(IN_APP_MESSAGE_DID_DISPLAY, handlers.onDidDisplayInAppMessage);
+        }
+        if (handlers.onWillDismissInAppMessage) {
+            isValidCallback(handlers.onWillDismissInAppMessage);
+            eventManager.setEventHandler(IN_APP_MESSAGE_WILL_DISMISS, handlers.onWillDismissInAppMessage);
+        }
+        if (handlers.onDidDismissInAppMessage) {
+            isValidCallback(handlers.onDidDismissInAppMessage);
+            eventManager.setEventHandler(IN_APP_MESSAGE_DID_DISMISS, handlers.onDidDismissInAppMessage);
+        }
+
+        RNOneSignal.setInAppMessageLifecycleHandler();
     }
 
     // Pass a String key and any value and creates a trigger map to pass to addTriggers()

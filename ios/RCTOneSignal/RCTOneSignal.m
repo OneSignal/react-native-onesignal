@@ -90,6 +90,22 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     [self sendEvent:OSEventString(PermissionChanged) withBody:stateChanges.toDictionary];
 }
 
+- (void)onWillDisplayInAppMessage:(OSInAppMessage * _Nonnull)message {
+    [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:@{@"messageId": message.messageId}];
+}
+
+- (void)onDidDisplayInAppMessage:(OSInAppMessage * _Nonnull)message {
+    [self sendEvent:OSEventString(InAppMessageDidDisplay) withBody:@{@"messageId": message.messageId}];
+}
+
+- (void)onWillDismissInAppMessage:(OSInAppMessage * _Nonnull)message {
+    [self sendEvent:OSEventString(InAppMessageWillDismiss) withBody:@{@"messageId": message.messageId}];
+}
+
+- (void)onDidDismissInAppMessage:(OSInAppMessage * _Nonnull)message {
+    [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:@{@"messageId": message.messageId}];
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }

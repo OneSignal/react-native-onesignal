@@ -17,6 +17,7 @@
     BOOL _hasSetPermissionObserver;
     BOOL _hasSetEmailSubscriptionObserver;
     BOOL _hasSetSMSSubscriptionObserver;
+    BOOL _hasSetInAppMessageLifecycleHandler;
     NSMutableDictionary* _notificationCompletionCache;
     NSMutableDictionary* _receivedNotificationCache;
 }
@@ -149,6 +150,13 @@ RCT_EXPORT_METHOD(removeSMSSubscriptionObserver) {
     if (_hasSetSMSSubscriptionObserver) {
         [OneSignal removeSMSSubscriptionObserver:[RCTOneSignal sharedInstance]];
         _hasSetSMSSubscriptionObserver = false;
+    }
+}
+
+RCT_EXPORT_METHOD(setInAppMessageLifecycleHandler) {
+    if (!_hasSetInAppMessageLifecycleHandler) {
+        [OneSignal setInAppMessageLifecycleHandler:[RCTOneSignal sharedInstance]];
+        _hasSetInAppMessageLifecycleHandler = true;
     }
 }
 

@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.onesignal.OSInAppMessage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -175,5 +176,22 @@ public class RNUtils {
                 strings.add((String) object);
         }
         return strings;
+    }
+    
+    /**
+     * Converts an OSInAppMessage into a JSON object as OSInAppMessage lacks a toJSONObject() method.
+     * TODO: add toJSONObject() to OSInAppMessage and remove this method.
+     *
+     * @param message to convert to JSON Object
+     * @return JSONObject that contains the messageId
+     */
+    public static JSONObject inAppMessageToJson(OSInAppMessage message) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("messageId", message.getMessageId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
     }
 }
