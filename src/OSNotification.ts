@@ -1,7 +1,43 @@
 import { Platform } from 'react-native';
 
 export default class OSNotification {
-    constructor(receivedEvent) {
+        body            : string;
+        sound           ?: string;
+        title           ?: string;
+        launchURL       ?: string;
+        rawPayload      : object | string; // platform bridges return different types
+        actionButtons   ?: object[];
+        additionalData  : object;
+        notificationId  : string;
+        // android only
+        groupKey                ?: string;
+        groupMessage            ?: string;
+        ledColor                ?: string;
+        priority                ?: number;
+        smallIcon               ?: string;
+        largeIcon               ?: string;
+        bigPicture              ?: string;
+        collapseId              ?: string;
+        fromProjectNumber       ?: string;
+        smallIconAccentColor    ?: string;
+        lockScreenVisibility    ?: string;
+        androidNotificationId   ?: number;
+        // ios only
+        badge               ?: string;
+        badgeIncrement      ?: string;
+        category            ?: string;
+        threadId            ?: string;
+        subtitle            ?: string;
+        templateId          ?: string;
+        templateName        ?: string;
+        attachments         ?: object;
+        mutableContent      ?: boolean;
+        contentAvailable    ?: string;
+        relevanceScore      ?: number;
+        interruptionLevel   ?: string;
+    
+    //TODO: can constructor for OSNotification take in OSNotification??
+    constructor(receivedEvent: OSNotification) { //TODO: can receivedEvent be null?
         this.body = receivedEvent.body;
         this.sound = receivedEvent.sound;
         this.title = receivedEvent.title;
@@ -22,7 +58,7 @@ export default class OSNotification {
             this.groupMessage = receivedEvent.groupMessage;
             this.fromProjectNumber = receivedEvent.fromProjectNumber;
             this.smallIconAccentColor = receivedEvent.smallIconAccentColor;
-            this.lockScreenVisibility = receivedEvent.lockScreenVisibililty;
+            this.lockScreenVisibility = receivedEvent.lockScreenVisibility;
             this.androidNotificationId = receivedEvent.androidNotificationId;
         }
 
