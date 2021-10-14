@@ -77,6 +77,16 @@ RCT_EXPORT_MODULE(RCTOneSignal)
     return events;
 }
 
+- (NSArray<NSString *> *)processNSError:(NSError *)error {
+    if (error.userInfo[@"error"]) {
+        return @[error.userInfo[@"error"]];
+    } else if (error.userInfo[@"returned"]) {
+        return @[error.userInfo[@"returned"]];
+    } else {
+        return @[error.localizedDescription];
+    }
+}
+
 
 #pragma mark Send Event Methods
 
@@ -275,7 +285,7 @@ RCT_EXPORT_METHOD(setEmail:(NSString *)email withAuthHash:(NSString *)authHash w
     [OneSignal setEmail:email withEmailAuthHashToken:authHash withSuccess:^{
         callback(@[]);
     } withFailure:^(NSError *error) {
-        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+        callback([self processNSError:error]);
     }];
 }
 
@@ -283,7 +293,7 @@ RCT_EXPORT_METHOD(logoutEmail:(RCTResponseSenderBlock)callback) {
     [OneSignal logoutEmailWithSuccess:^{
         callback(@[]);
     } withFailure:^(NSError *error) {
-        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+        callback([self processNSError:error]);
     }];
 }
 
@@ -292,7 +302,7 @@ RCT_EXPORT_METHOD(setSMSNumber:(NSString *)smsNumber withAuthHash:(NSString *)au
     [OneSignal setSMSNumber:smsNumber withSMSAuthHashToken:authHash withSuccess:^(NSDictionary *results) {
         callback(@[results]);
     } withFailure:^(NSError *error) {
-        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+        callback([self processNSError:error]);
     }];
 }
 
@@ -300,7 +310,7 @@ RCT_EXPORT_METHOD(logoutSMSNumber:(RCTResponseSenderBlock)callback) {
     [OneSignal logoutSMSNumberWithSuccess:^(NSDictionary *results) {
         callback(@[results]);
     } withFailure:^(NSError *error) {
-        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+        callback([self processNSError:error]);
     }];
 }
 
@@ -372,7 +382,7 @@ RCT_EXPORT_METHOD(postNotification:(NSString *)jsonObjectString successCallback:
         successCallback(@[success]);
     } onFailure:^(NSError *error) {
         [OneSignal onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"Notification Send Failure with Error: %@", error]];
-        failureCallback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+        failureCallback([self processNSError:error]);
     }];
 }
 
@@ -393,7 +403,7 @@ RCT_EXPORT_METHOD(setExternalUserId:(NSString*)externalId withAuthHash:(NSString
     } withFailure:^(NSError *error) {
         [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"OneSignal setExternalUserId error: %@", error]];
         if (callback) {
-            callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+            callback([self processNSError:error]);
         }
     }];
 }
@@ -410,7 +420,7 @@ RCT_EXPORT_METHOD(removeExternalUserId:(RCTResponseSenderBlock)callback) {
         }
     } withFailure:^(NSError *error) {
         [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:[NSString stringWithFormat:@"OneSignal removeExternalUserId error: %@", error]];
-        callback(@[error.userInfo[@"error"] ?: error.localizedDescription]);
+        callback([self processNSError:error]);
     }];
 }
 
