@@ -20,26 +20,26 @@ declare module 'react-native-onesignal' {
         hasPrompted             ?: boolean;   // ios
         provisional             ?: boolean;   // ios
         areNotificationsEnabled ?: boolean;   // android
-    };
+    }
 
     export interface SubscriptionChange {
         userId                  ?: string;
         pushToken               ?: string;
         isSubscribed            : boolean;
         isPushDisabled          : boolean;
-    };
+    }
 
     export interface EmailSubscriptionChange {
         emailAddress        ?: string;
         emailUserId         ?: string;
         isEmailSubscribed   : boolean;
-    };
+    }
 
     export interface SMSSubscriptionChange {
         smsNumber         ?: string;
         smsUserId         ?: string;
         isSMSSubscribed   : boolean;
-    };
+    }
 
     /* N O T I F I C A T I O N S */
     export interface OSNotification {
@@ -83,7 +83,7 @@ declare module 'react-native-onesignal' {
     export interface NotificationReceivedEvent {
         complete        : (notification?: OSNotification) => void;
         getNotification : () => OSNotification;
-    };
+    }
 
     export interface OpenedEvent {
         action          : OpenedEventAction;
@@ -311,7 +311,7 @@ declare module 'react-native-onesignal' {
          * Deletes multiple tags that were previously set on a user.
          * @param  {string[]} keys
          */
-        deleteTags(keys: string[]);
+        deleteTags(keys: string[]): void;
 
         /**
          * Allows you to set the user's email address with the OneSignal SDK.
@@ -326,7 +326,7 @@ declare module 'react-native-onesignal' {
          * If your app implements logout functionality, you can call logoutEmail to dissociate the email from the device.
          * @param  {Function} handler
          */
-        logoutEmail(handler?: Function);
+        logoutEmail(handler?: Function): void;
 
         /**
          * Allows you to set the user's SMS number with the OneSignal SDK.
@@ -341,7 +341,7 @@ declare module 'react-native-onesignal' {
          * If your app implements logout functionality, you can call logoutSMSNumber to dissociate the SMS number from the device.
          * @param  {Function} handler
          */
-        logoutSMSNumber(handler?: Function);
+        logoutSMSNumber(handler?: Function): void;
 
         /**
          * Send a notification
