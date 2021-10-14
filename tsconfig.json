@@ -1,0 +1,23 @@
+
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "target": "es5",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "lib": [
+      "es6", 
+      "dom",
+    ],
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true, 
+    "esModuleInterop": true,
+    "strict": true, 
+  },
+  "exclude": [
+    "node_modules",
+    "android",
+    "examples",
+    "ios"
+  ]
+}
