@@ -6,14 +6,14 @@ import {
     SMS_SUBSCRIPTION_CHANGED
 } from './events';
 
-export function isValidCallback(handler) {
+export function isValidCallback(handler: Function) {
     invariant(
         typeof handler === 'function',
         'Must provide a valid callback'
     );
 }
 
-export function isObjectNonNull(object) {
+export function isObjectNonNull<T extends any>(object: T): object is Exclude<T, null | undefined> {
   return object != null;
 }
 
@@ -21,7 +21,7 @@ export function isObjectNonNull(object) {
  * Returns whether the handler associated with the event name can have multiple instances set
  * @param  {String} eventName
  */
-export function isMultipleInstancesPossible(eventName) {
+export function isMultipleInstancesPossible(eventName: string) {
     switch(eventName){
         case PERMISSION_CHANGED:
         case SUBSCRIPTION_CHANGED:
