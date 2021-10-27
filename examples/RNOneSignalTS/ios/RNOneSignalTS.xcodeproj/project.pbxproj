@@ -81,6 +81,7 @@
 		36D4E6F2A4B2D0FD6204CDC5 /* Pods-RNOneSignalTS-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignalTS-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-RNOneSignalTS-tvOSTests/Pods-RNOneSignalTS-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4D0B08EF16DFB3514375DEA2 /* Pods-RNOneSignalTS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignalTS.release.xcconfig"; path = "Target Support Files/Pods-RNOneSignalTS/Pods-RNOneSignalTS.release.xcconfig"; sourceTree = "<group>"; };
 		5401CE55296AD758D8D4E142 /* libPods-OneSignalNotificationServiceExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneSignalNotificationServiceExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B7A85C92729D68D00649E63 /* OneSignalNotificationServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneSignalNotificationServiceExtension.entitlements; sourceTree = "<group>"; };
 		5B888D71258AA3AB00DE2069 /* RNOneSignalTS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNOneSignalTS.entitlements; path = RNOneSignalTS/RNOneSignalTS.entitlements; sourceTree = "<group>"; };
 		5BDA87912729D4C200A19CB9 /* OneSignalNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OneSignalNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BDA87932729D4C200A19CB9 /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
@@ -194,6 +195,7 @@
 		5BDA87922729D4C200A19CB9 /* OneSignalNotificationServiceExtension */ = {
 			isa = PBXGroup;
 			children = (
+				5B7A85C92729D68D00649E63 /* OneSignalNotificationServiceExtension.entitlements */,
 				5BDA87932729D4C200A19CB9 /* NotificationService.h */,
 				5BDA87942729D4C200A19CB9 /* NotificationService.m */,
 				5BDA87962729D4C200A19CB9 /* Info.plist */,
@@ -989,6 +991,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = OneSignalNotificationServiceExtension/OneSignalNotificationServiceExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 99SW8E36CT;
@@ -1016,6 +1019,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = OneSignalNotificationServiceExtension/OneSignalNotificationServiceExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
