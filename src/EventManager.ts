@@ -1,4 +1,4 @@
-import { NativeEventEmitter } from 'react-native';
+import { EmitterSubscription, NativeEventEmitter, NativeModule } from 'react-native';
 import NotificationReceivedEvent from './NotificationReceivedEvent';
 import { isMultipleInstancesPossible } from './helpers';
 import {
@@ -14,6 +14,8 @@ import {
     IN_APP_MESSAGE_DID_DISMISS,
     IN_APP_MESSAGE_DID_DISPLAY,
 } from './events';
+import { ChangeEvent } from './models/Subscription';
+import OSNotification from './OSNotification';
 
 const eventList = [
     PERMISSION_CHANGED,
@@ -30,17 +32,24 @@ const eventList = [
 ]
 
 export default class EventManager {
-    constructor(RNOneSignal) {
+    RNOneSignal: NativeModule;
+    notificationCache: Map<any, any>;
+    oneSignalEventEmitter: NativeEventEmitter;
+    eventHandlerMap: Map<string, (event: any) => void>;
+    eventHandlerArrayMap: Map<string, Array<(event: any) => void>>;
+    listeners: { [key: string]: EmitterSubscription };
+
+    constructor(RNOneSignal: NativeModule) {
         this.RNOneSignal = RNOneSignal;
         this.notificationCache = new Map();
         this.oneSignalEventEmitter = new NativeEventEmitter(RNOneSignal);
         this.eventHandlerMap = new Map();       // used for setters (single replacable callback)
         this.eventHandlerArrayMap = new Map();  // used for adders (multiple callbacks possible)
-        this.listeners = [];
+        this.listeners = {};
         this.setupListeners();
     }
 
-    setupListeners() {
+    setupListeners(): void {
         // set up the event emitter and listeners
         if (this.RNOneSignal != null) {
 
@@ -52,7 +61,7 @@ export default class EventManager {
     }
 
     // clear handlers
-    clearHandlers() {
+    clearHandlers(): void {
         this.eventHandlerMap = new Map();
         this.eventHandlerArrayMap = new Map();
     }
@@ -62,8 +71,9 @@ export default class EventManager {
      * Supports only one handler at a time
      * @param  {string} eventName
      * @param  {function} handler
+     * @returns void
      */
-    setEventHandler(eventName, handler) {
+    setEventHandler<T>(eventName: string, handler: (event: T) => void): void {
         this.eventHandlerMap.set(eventName, handler);
     }
 
@@ -71,8 +81,9 @@ export default class EventManager {
      * Adds the event handler to the corresponding handler array on the JS side of the bridge
      * @param  {string} eventName
      * @param  {function} handler
+     * @returns void
      */
-    addEventHandler(eventName, handler) {
+    addEventHandler<T>(eventName: string, handler: (event: ChangeEvent<T>) => void): void {
         let handlerArray = this.eventHandlerArrayMap.get(eventName);
         handlerArray && handlerArray.length > 0 ? handlerArray.push(handler) : this.eventHandlerArrayMap.set(eventName, [handler]);
     }
@@ -80,15 +91,15 @@ export default class EventManager {
     /**
      * clears the event handler(s) for the event name
      * @param  {string} eventName
-     * @param  {function} handler
+     * @returns void
      */
-    clearEventHandler(eventName) {
+    clearEventHandler(eventName: string): void {
         this.eventHandlerArrayMap.delete(eventName);
     }
 
     // returns an event listener with the js to native mapping
-    generateEventListener(eventName) {
-        const addListenerCallback = (payload) => {
+    generateEventListener(eventName: string): EmitterSubscription {
+        const addListenerCallback = (payload: Object) => {
             if (isMultipleInstancesPossible(eventName)) {
                 // used for adders
                 let handlerArray = this.eventHandlerArrayMap.get(eventName);
@@ -112,10 +123,10 @@ export default class EventManager {
         return this.oneSignalEventEmitter.addListener(eventName, addListenerCallback);
     }
 
-    getFinalPayload(eventName, payload) {
+    getFinalPayload(eventName: string, payload: Object): Object {
         switch(eventName) {
             case NOTIFICATION_WILL_SHOW:
-                return new NotificationReceivedEvent(payload);
+                return new NotificationReceivedEvent(payload as OSNotification);
             default:
                 return payload;
         }
