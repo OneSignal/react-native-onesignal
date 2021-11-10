@@ -356,7 +356,8 @@ export default class OneSignal {
     static removeExternalUserId(handler) {
         if (!isObjectNonNull(RNOneSignal)) return;
 
-        if (handler === undefined)
+        // Android workaround for the current issue of callback fired more than once
+        if (handler === undefined && Platform.OS === 'ios')
             handler = function(){};
 
         RNOneSignal.removeExternalUserId(handler);
