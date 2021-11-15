@@ -63,6 +63,20 @@ class OSDemo extends React.Component<Props, State> {
         OneSignal.setInAppMessageClickHandler(event => {
             this.OSLog("OneSignal IAM clicked:", event);
         });
+        OneSignal.setInAppMessageLifecycleHandler({
+            onWillDisplayInAppMessage: message => {
+                this.OSLog("OneSignal: will display IAM: ", message.messageId)
+            },
+            onDidDisplayInAppMessage: message => {
+                this.OSLog("OneSignal: did display IAM: ", message.messageId)
+            },
+            onWillDismissInAppMessage: message => {
+                this.OSLog("OneSignal: will dismiss IAM: ", message.messageId)
+            },
+            onDidDismissInAppMessage: message => {
+                this.OSLog("OneSignal: did dismiss IAM: ", message.messageId)
+            }
+        });
         OneSignal.addEmailSubscriptionObserver((event) => {
             this.OSLog("OneSignal: email subscription changed: ", event);
         });

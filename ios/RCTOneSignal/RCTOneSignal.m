@@ -90,6 +90,22 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     [self sendEvent:OSEventString(PermissionChanged) withBody:stateChanges.toDictionary];
 }
 
+- (void)onWillDisplayInAppMessage:(OSInAppMessage * _Nonnull)message {
+    [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:[message jsonRepresentation]];
+}
+
+- (void)onDidDisplayInAppMessage:(OSInAppMessage * _Nonnull)message {
+    [self sendEvent:OSEventString(InAppMessageDidDisplay) withBody:[message jsonRepresentation]];
+}
+
+- (void)onWillDismissInAppMessage:(OSInAppMessage * _Nonnull)message {
+    [self sendEvent:OSEventString(InAppMessageWillDismiss) withBody:[message jsonRepresentation]];
+}
+
+- (void)onDidDismissInAppMessage:(OSInAppMessage * _Nonnull)message {
+    [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:[message jsonRepresentation]];
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }

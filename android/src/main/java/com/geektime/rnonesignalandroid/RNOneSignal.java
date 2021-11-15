@@ -67,6 +67,8 @@ import com.onesignal.OneSignal;
 import com.onesignal.OneSignal.EmailUpdateError;
 import com.onesignal.OneSignal.EmailUpdateHandler;
 import com.onesignal.OneSignal.OSInAppMessageClickHandler;
+import com.onesignal.OSInAppMessageLifecycleHandler;
+import com.onesignal.OSInAppMessage;
 import com.onesignal.OneSignal.OSNotificationOpenedHandler;
 import com.onesignal.OneSignal.OutcomeCallback;
 
@@ -130,6 +132,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       OneSignal.setInAppMessageClickHandler(null);
       OneSignal.setNotificationOpenedHandler(null);
       OneSignal.setNotificationWillShowInForegroundHandler(null);
+      OneSignal.setInAppMessageLifecycleHandler(null);
    }
 
    private void sendEvent(String eventName, Object params) {
@@ -626,6 +629,34 @@ public class RNOneSignal extends ReactContextBaseJavaModule
          return;
       }
       this.sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
+   }
+   
+   /* in app message lifecycle */
+
+   @ReactMethod
+   public void setInAppMessageLifecycleHandler() {
+      OneSignal.setInAppMessageLifecycleHandler(new OSInAppMessageLifecycleHandler() {
+         @Override
+         public void onWillDisplayInAppMessage(OSInAppMessage message) {
+            sendEvent("OneSignal-inAppMessageWillDisplay",
+                    RNUtils.jsonToWritableMap(message.toJSONObject()));
+         }
+         @Override
+         public void onDidDisplayInAppMessage(OSInAppMessage message) {
+            sendEvent("OneSignal-inAppMessageDidDisplay",
+                    RNUtils.jsonToWritableMap(message.toJSONObject()));
+         }
+         @Override
+         public void onWillDismissInAppMessage(OSInAppMessage message) {
+            sendEvent("OneSignal-inAppMessageWillDismiss",
+                    RNUtils.jsonToWritableMap(message.toJSONObject()));
+         }
+         @Override
+         public void onDidDismissInAppMessage(OSInAppMessage message) {
+            sendEvent("OneSignal-inAppMessageDidDismiss",
+                    RNUtils.jsonToWritableMap(message.toJSONObject()));
+         }
+      });
    }
 
    /* other IAM functions */
