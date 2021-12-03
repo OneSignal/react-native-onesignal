@@ -36,8 +36,7 @@ export default class OSNotification {
         relevanceScore      ?: number;
         interruptionLevel   ?: string;
     
-    //TODO: can constructor for OSNotification take in OSNotification??
-    constructor(receivedEvent: OSNotification) { //TODO: can receivedEvent be null?
+    constructor(receivedEvent: OSNotification) {
         this.body = receivedEvent.body;
         this.sound = receivedEvent.sound;
         this.title = receivedEvent.title;

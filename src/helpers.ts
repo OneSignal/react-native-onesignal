@@ -6,14 +6,14 @@ import {
     SMS_SUBSCRIPTION_CHANGED
 } from './events';
 
-export function isValidCallback(handler: any) { // type will be checked in this method
+export function isValidCallback(handler: Function) { // type will be checked in this method
     invariant(
         typeof handler === 'function',
         'Must provide a valid callback'
     );
 }
 
-export function isObjectNonNull(object: any) {
+export function isObjectNonNull<T extends any>(object: T): object is Exclude<T, null | undefined> {
   return object != null;
 }
 

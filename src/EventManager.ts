@@ -14,6 +14,9 @@ import {
     IN_APP_MESSAGE_DID_DISMISS,
     IN_APP_MESSAGE_DID_DISPLAY,
 } from './events';
+import { ChangeEvent, ObserverChangeEvent } from './models/Subscription';
+import { OSEvent } from './models/NotificationEvents';
+import OSNotification from './OSNotification';
 
 const eventList = [
     PERMISSION_CHANGED,
@@ -70,7 +73,7 @@ export default class EventManager {
      * @param  {string} eventName
      * @param  {function} handler
      */
-    setEventHandler(eventName: string, handler: (event: any) => void): void {
+    setEventHandler<T>(eventName: string, handler: (event: T) => void): void {
         this.eventHandlerMap.set(eventName, handler);
     }
 
@@ -79,7 +82,7 @@ export default class EventManager {
      * @param  {string} eventName
      * @param  {function} handler
      */
-    addEventHandler(eventName: string, handler: (event: any) => void): void {
+    addEventHandler<T>(eventName: string, handler: (event: ChangeEvent<T>) => void): void {
         let handlerArray = this.eventHandlerArrayMap.get(eventName);
         handlerArray && handlerArray.length > 0 ? handlerArray.push(handler) : this.eventHandlerArrayMap.set(eventName, [handler]);
     }
@@ -94,7 +97,9 @@ export default class EventManager {
 
     // returns an event listener with the js to native mapping
     generateEventListener(eventName: string): EmitterSubscription {
-        const addListenerCallback = (payload: any) => {
+        const addListenerCallback = (payload: object | OSNotification) => {
+            console.log("💛💛 NL generateEventListener payload: " + JSON.stringify(payload));
+
             if (isMultipleInstancesPossible(eventName)) {
                 // used for adders
                 let handlerArray = this.eventHandlerArrayMap.get(eventName);
@@ -107,6 +112,7 @@ export default class EventManager {
                 // used for setters
                 let handler = this.eventHandlerMap.get(eventName);
                 payload = this.getFinalPayload(eventName, payload);
+                console.log("💛💛 NL generateEventListener getFinalPayload: " + JSON.stringify(payload));
 
                 // Check if we have added listener for this type yet
                 if (handler) {
@@ -118,7 +124,7 @@ export default class EventManager {
         return this.oneSignalEventEmitter.addListener(eventName, addListenerCallback);
     }
 
-    getFinalPayload(eventName: string, payload: any): any {
+    getFinalPayload(eventName: string, payload: object | OSNotification): Object {
         switch(eventName) {
             case NOTIFICATION_WILL_SHOW:
                 return new NotificationReceivedEvent(payload);
@@ -127,4 +133,3 @@ export default class EventManager {
         }
     }
 }
-

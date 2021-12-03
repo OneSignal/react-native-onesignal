@@ -19,10 +19,12 @@ export interface DeviceState {
 }
 
 /* O B S E R V E R  C H A N G E  E V E N T S */
-export interface ChangeEvent<T> {
-    from : T;
-    to   : T;
+export interface ChangeEvent<ObserverChangeEvent> {
+    from : ObserverChangeEvent;
+    to   : ObserverChangeEvent;
 }
+
+export type ObserverChangeEvent = PermissionChange | SubscriptionChange | EmailSubscriptionChange | SMSSubscriptionChange
 
 export interface PermissionChange {
     status                  ?: IosPermissionStatus;    // ios

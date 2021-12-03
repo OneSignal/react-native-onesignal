@@ -22,18 +22,18 @@ import {
     SubscriptionChange,
     EmailSubscriptionChange,
     SMSSubscriptionChange,
-} from '../types/Subscription';
+} from './models/Subscription';
 import NotificationReceivedEvent from './NotificationReceivedEvent';
-import { OpenedEvent } from '../types/NotificationEvents';
-import { OutcomeEvent } from '../types/Outcomes';
-import { InAppMessageAction, InAppMessageLifecycleHandlerObject } from '../types/InAppMessage';
+import { OpenedEvent } from './models/NotificationEvents';
+import { OutcomeEvent } from './models/Outcomes';
+import { InAppMessage, InAppMessageAction, InAppMessageLifecycleHandlerObject } from './models/InAppMessage';
 import { isValidCallback, isObjectNonNull } from './helpers';
 
 const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
 
 // 0 = None, 1 = Fatal, 2 = Errors, 3 = Warnings, 4 = Info, 5 = Debug, 6 = Verbose
-export type LogLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+type LogLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export default class OneSignal {
     /* I N I T I A L I Z A T I O N */
@@ -60,7 +60,7 @@ export default class OneSignal {
         if (!isObjectNonNull(RNOneSignal)) return;
         isValidCallback(observer);
         RNOneSignal.addPermissionObserver();
-        eventManager.addEventHandler(PERMISSION_CHANGED, observer);
+        eventManager.addEventHandler<PermissionChange>(PERMISSION_CHANGED, observer);
     }
 
     /**
@@ -82,7 +82,7 @@ export default class OneSignal {
         if (!isObjectNonNull(RNOneSignal)) return;
         isValidCallback(observer);
         RNOneSignal.addSubscriptionObserver();
-        eventManager.addEventHandler(SUBSCRIPTION_CHANGED, observer);
+        eventManager.addEventHandler<SubscriptionChange>(SUBSCRIPTION_CHANGED, observer);
     }
 
     /**
@@ -104,7 +104,7 @@ export default class OneSignal {
         if (!isObjectNonNull(RNOneSignal)) return;
         isValidCallback(observer);
         RNOneSignal.addEmailSubscriptionObserver();
-        eventManager.addEventHandler(EMAIL_SUBSCRIPTION_CHANGED, observer);
+        eventManager.addEventHandler<EmailSubscriptionChange>(EMAIL_SUBSCRIPTION_CHANGED, observer);
     }
 
     /**
@@ -126,7 +126,7 @@ export default class OneSignal {
         if (!isObjectNonNull(RNOneSignal)) return;
         isValidCallback(observer);
         RNOneSignal.addSMSSubscriptionObserver();
-        eventManager.addEventHandler(SMS_SUBSCRIPTION_CHANGED, observer);
+        eventManager.addEventHandler<SMSSubscriptionChange>(SMS_SUBSCRIPTION_CHANGED, observer);
     }
 
     /**
@@ -152,7 +152,7 @@ export default class OneSignal {
         if (!isObjectNonNull(RNOneSignal)) return;
         isValidCallback(handler);
         RNOneSignal.setNotificationWillShowInForegroundHandler();
-        eventManager.setEventHandler(NOTIFICATION_WILL_SHOW, handler);
+        eventManager.setEventHandler<NotificationReceivedEvent>(NOTIFICATION_WILL_SHOW, handler);
     }
 
     /**
@@ -165,7 +165,7 @@ export default class OneSignal {
         isValidCallback(handler);
 
         RNOneSignal.setNotificationOpenedHandler();
-        eventManager.setEventHandler(NOTIFICATION_OPENED, handler);
+        eventManager.setEventHandler<OpenedEvent>(NOTIFICATION_OPENED, handler);
     }
 
     /* R E G I S T R A T I O N  E T C */
@@ -195,7 +195,7 @@ export default class OneSignal {
      * @param  {(response:boolean)=>void} handler
      * @returns void
      */
-    static registerForProvisionalAuthorization(handler?: (response: boolean) => void): void {
+    static registerForProvisionalAuthorization(handler: (response: boolean) => void): void {
         if (!isObjectNonNull(RNOneSignal)) return;
 
         if (Platform.OS === 'ios') {
@@ -238,9 +238,9 @@ export default class OneSignal {
      * True if the application has location share activated, false otherwise
      * @returns Promise<boolean>
      */
-    static isLocationShared(): Promise<boolean | void> {
+    static isLocationShared(): Promise<boolean> {
         // must return a promise
-        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve();
+        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve(false);
         return RNOneSignal.isLocationShared();
     }
 
@@ -271,10 +271,10 @@ export default class OneSignal {
     /**
      * Gets the device state.
      * This method returns a "snapshot" of the device state for when it was called.
-     * @returns Promise<DeviceState>
+     * @returns Promise<DeviceState | null>
      */
-    static async getDeviceState(): Promise<DeviceState | void> {
-        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve();
+    static async getDeviceState(): Promise<DeviceState | null> {
+        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve(null);
         const deviceState = await RNOneSignal.getDeviceState();
 
         if (Platform.OS === 'android') {
@@ -304,15 +304,11 @@ export default class OneSignal {
      * @param  {string} value
      * @returns void
      */
-    static sendTag(key: string, value: string | boolean): void {
+    static sendTag(key: string, value: string): void {
         if (!isObjectNonNull(RNOneSignal)) return;
 
         if (!key || (!value && value !== "")) {
             console.error("OneSignal: sendTag: must include a key and a value");
-        }
-
-        if (typeof value === "boolean") {
-            value = value.toString();
         }
 
         RNOneSignal.sendTag(key, value);
@@ -564,7 +560,7 @@ export default class OneSignal {
         isValidCallback(handler);
         RNOneSignal.initInAppMessageClickHandlerParams();
         RNOneSignal.setInAppMessageClickHandler();
-        eventManager.setEventHandler(IN_APP_MESSAGE_CLICKED, handler);
+        eventManager.setEventHandler<InAppMessageAction>(IN_APP_MESSAGE_CLICKED, handler);
     }
 
     /**
@@ -577,19 +573,19 @@ export default class OneSignal {
         
         if (handlerObject.onWillDisplayInAppMessage) {
             isValidCallback(handlerObject.onWillDisplayInAppMessage);
-            eventManager.setEventHandler(IN_APP_MESSAGE_WILL_DISPLAY, handlerObject.onWillDisplayInAppMessage);
+            eventManager.setEventHandler<InAppMessage>(IN_APP_MESSAGE_WILL_DISPLAY, handlerObject.onWillDisplayInAppMessage);
         }
         if (handlerObject.onDidDisplayInAppMessage) {
             isValidCallback(handlerObject.onDidDisplayInAppMessage);
-            eventManager.setEventHandler(IN_APP_MESSAGE_DID_DISPLAY, handlerObject.onDidDisplayInAppMessage);
+            eventManager.setEventHandler<InAppMessage>(IN_APP_MESSAGE_DID_DISPLAY, handlerObject.onDidDisplayInAppMessage);
         }
         if (handlerObject.onWillDismissInAppMessage) {
             isValidCallback(handlerObject.onWillDismissInAppMessage);
-            eventManager.setEventHandler(IN_APP_MESSAGE_WILL_DISMISS, handlerObject.onWillDismissInAppMessage);
+            eventManager.setEventHandler<InAppMessage>(IN_APP_MESSAGE_WILL_DISMISS, handlerObject.onWillDismissInAppMessage);
         }
         if (handlerObject.onDidDismissInAppMessage) {
             isValidCallback(handlerObject.onDidDismissInAppMessage);
-            eventManager.setEventHandler(IN_APP_MESSAGE_DID_DISMISS, handlerObject.onDidDismissInAppMessage);
+            eventManager.setEventHandler<InAppMessage>(IN_APP_MESSAGE_DID_DISMISS, handlerObject.onDidDismissInAppMessage);
         }
 
         RNOneSignal.setInAppMessageLifecycleHandler();
@@ -601,14 +597,14 @@ export default class OneSignal {
      * @param  {string} value
      * @returns void
      */
-    static addTrigger(key: string, value: string): void {
+    static addTrigger(key: string, value: string | number | boolean): void {
         if (!isObjectNonNull(RNOneSignal)) return;
 
-        if (!key || !value) {
+        if (!key || !value) { //Nan-Li TODO: problem if boolean is false
             console.error("OneSignal: addTrigger: must include a key and a value");
         }
 
-        let trigger: { [key: string]: string } = {};
+        let trigger: { [key: string]: string | number | boolean } = {};
         trigger[key] = value;
         RNOneSignal.addTriggers(trigger);
     }
@@ -654,7 +650,7 @@ export default class OneSignal {
     /**
      * Gets a trigger value for a provided trigger key.
      * @param  {string} key
-     * @returns Promise<string>
+     * @returns Promise<string | void>
      */
     static getTriggerValueForKey(key: string): Promise<string | void> {
         // must return a promise
@@ -680,7 +676,7 @@ export default class OneSignal {
      * @param  {(event:OutcomeEvent)=>void} handler
      * @returns void
      */
-    static sendOutcom(name: string, handler?: (event: OutcomeEvent) => void): void {
+    static sendOutcome(name: string, handler?: (event: OutcomeEvent) => void): void {
         if (!isObjectNonNull(RNOneSignal)) return;
         RNOneSignal.sendOutcome(name, handler);
     }
@@ -715,8 +711,8 @@ export default class OneSignal {
      * Did the user provide privacy consent for GDPR purposes.
      * @returns Promise<boolean>
      */
-    static userProvidedPrivacyConsent(): Promise<boolean | void> {
-        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve();
+    static userProvidedPrivacyConsent(): Promise<boolean> {
+        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve(false);
 
         //returns a promise
         return RNOneSignal.userProvidedPrivacyConsent();
@@ -726,8 +722,8 @@ export default class OneSignal {
      * True if the application requires user privacy consent, false otherwise
      * @returns Promise<boolean>
      */
-    static requiresUserPrivacyConsent(): Promise<boolean | void> {
-        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve();
+    static requiresUserPrivacyConsent(): Promise<boolean> {
+        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve(false);
 
         //returns a promise
         return RNOneSignal.requiresUserPrivacyConsent();
