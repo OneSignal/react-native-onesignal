@@ -2,9 +2,11 @@
   "name": "react-native-onesignal",
   "version": "4.3.3",
   "description": "React Native OneSignal SDK",
-  "main": "src/index",
-  "typings": "src/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "prepare": "yarn run build",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -30,5 +32,9 @@
     "url": "https://github.com/OneSignal/react-native-onesignal"
   },
   "author": "OneSignal <https://www.onesignal.com>, Geektime <http://www.geektime.co.il>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/invariant": "^2.2.2",
+    "@types/react-native": "^0.66.8"
+  }
 }
