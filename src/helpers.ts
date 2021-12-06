@@ -4,7 +4,7 @@ import {
     SUBSCRIPTION_CHANGED,
     EMAIL_SUBSCRIPTION_CHANGED,
     SMS_SUBSCRIPTION_CHANGED
-} from './events';
+} from './events/events';
 
 export function isValidCallback(handler: Function) {
     invariant(

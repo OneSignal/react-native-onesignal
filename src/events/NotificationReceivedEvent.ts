@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import OSNotification from './OSNotification';
+import OSNotification from '../OSNotification';
 const RNOneSignal = NativeModules.OneSignal;
 
 export default class NotificationReceivedEvent {

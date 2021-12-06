@@ -1,7 +1,7 @@
 'use strict';
 
 import { NativeModules, Platform } from 'react-native';
-import EventManager from './EventManager';
+import EventManager from './events/EventManager';
 import {
     PERMISSION_CHANGED,
     SUBSCRIPTION_CHANGED,
@@ -14,7 +14,7 @@ import {
     IN_APP_MESSAGE_WILL_DISMISS,
     IN_APP_MESSAGE_DID_DISMISS,
     IN_APP_MESSAGE_DID_DISPLAY,
-} from './events';
+} from './events/events';
 import {
     DeviceState,
     ChangeEvent,
@@ -23,7 +23,7 @@ import {
     EmailSubscriptionChange,
     SMSSubscriptionChange,
 } from './models/Subscription';
-import NotificationReceivedEvent from './NotificationReceivedEvent';
+import NotificationReceivedEvent from './events/NotificationReceivedEvent';
 import { OpenedEvent } from './models/NotificationEvents';
 import { OutcomeEvent } from './models/Outcomes';
 import { InAppMessage, InAppMessageAction, InAppMessageLifecycleHandlerObject } from './models/InAppMessage';
