@@ -1,6 +1,6 @@
 import { EmitterSubscription, NativeEventEmitter, NativeModule } from 'react-native';
 import NotificationReceivedEvent from './NotificationReceivedEvent';
-import { isMultipleInstancesPossible } from './helpers';
+import { isMultipleInstancesPossible } from '../helpers';
 import {
     PERMISSION_CHANGED,
     SUBSCRIPTION_CHANGED,
@@ -14,8 +14,8 @@ import {
     IN_APP_MESSAGE_DID_DISMISS,
     IN_APP_MESSAGE_DID_DISPLAY,
 } from './events';
-import { ChangeEvent } from './models/Subscription';
-import OSNotification from './OSNotification';
+import { ChangeEvent } from '../models/Subscription';
+import OSNotification from '../OSNotification';
 
 const eventList = [
     PERMISSION_CHANGED,
