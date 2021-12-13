@@ -80,6 +80,9 @@ class OSDemo extends React.Component<Props, State> {
         OneSignal.addEmailSubscriptionObserver((event) => {
             this.OSLog("OneSignal: email subscription changed: ", event);
         });
+        OneSignal.addSMSSubscriptionObserver((event) => {
+            this.OSLog("OneSignal: SMS subscription changed: ", event);
+        });
         OneSignal.addSubscriptionObserver(event => {
             this.OSLog("OneSignal: subscription changed:", event);
             this.setState({ isSubscribed: event.to.isSubscribed})
@@ -90,8 +93,9 @@ class OSDemo extends React.Component<Props, State> {
         const state = await OneSignal.getDeviceState();
 
         this.setState({
-            name : state.emailAddress,
-            isSubscribed : state.isSubscribed
+            // state is possibly 'null' so need to check
+            name : state? state.emailAddress : "",
+            isSubscribed : state ? state.isSubscribed : false,
         });
     }
 
