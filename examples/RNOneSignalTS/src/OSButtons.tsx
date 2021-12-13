@@ -56,7 +56,7 @@ class OSButtons extends React.Component<Props, State> {
                 OneSignal.disablePush(isSubscribed);
             }
         );
-    
+
         const unsubscribeWhenNotificationsAreDisabledButton = renderButtonView(
             unSubscribedWhenNotificationDisabled ? "Unsubscribe When Notifications Disabled" : "Subscribe when notification disabled",
             color,
@@ -194,7 +194,10 @@ class OSButtons extends React.Component<Props, State> {
             "Post Notification",
             color,
             async () => {
-                const { userId } = await OneSignal.getDeviceState();
+                // Property 'userId' does not exist on type 'DeviceState | null' so need to check
+                const deviceState = await OneSignal.getDeviceState();
+                const userId = deviceState ? deviceState.userId : "";
+
                 const notificationObj = {
                     contents: {en: "Message Body"},
                     include_player_ids: [userId]
