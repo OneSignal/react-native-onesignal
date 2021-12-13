@@ -768,3 +768,24 @@ export default class OneSignal {
         eventManager.clearHandlers();
     }
 }
+
+/* Export all public models */
+
+export {
+    ChangeEvent,
+    PermissionChange,
+    SubscriptionChange,
+    EmailSubscriptionChange,
+    SMSSubscriptionChange,
+    NotificationReceivedEvent,
+    OpenedEvent,
+    InAppMessage,
+    InAppMessageAction,
+    InAppMessageLifecycleHandlerObject,
+    OutcomeEvent,
+    DeviceState,
+}
+
+export { default as OSNotification } from './OSNotification';
+export { OpenedEventAction, OpenedEventActionType } from './models/NotificationEvents';
+export { IosPermissionStatus, ObserverChangeEvent } from './models/Subscription';
