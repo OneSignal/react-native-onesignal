@@ -90,8 +90,9 @@ class OSDemo extends React.Component<Props, State> {
         const state = await OneSignal.getDeviceState();
 
         this.setState({
-            name : state.emailAddress,
-            isSubscribed : state.isSubscribed
+            // state is possibly 'null' so need to check
+            name : state? state.emailAddress : "",
+            isSubscribed : state ? state.isSubscribed : false,
         });
     }
 

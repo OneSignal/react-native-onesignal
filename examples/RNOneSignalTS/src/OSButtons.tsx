@@ -1,7 +1,7 @@
 import OneSignal, { OutcomeEvent } from 'react-native-onesignal';
 import * as React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { renderButtonView, renderFieldView } from './Helpers';
+import { renderButtonView } from './Helpers';
 import { SubscribeFields } from './models/SubscribeFields';
 
 export interface Props {
@@ -56,7 +56,7 @@ class OSButtons extends React.Component<Props, State> {
                 OneSignal.disablePush(isSubscribed);
             }
         );
-    
+
         const unsubscribeWhenNotificationsAreDisabledButton = renderButtonView(
             unSubscribedWhenNotificationDisabled ? "Unsubscribe When Notifications Disabled" : "Subscribe when notification disabled",
             color,
@@ -113,8 +113,8 @@ class OSButtons extends React.Component<Props, State> {
             }
         );
 
-        elements.push(subscribedButton, 
-            unsubscribeWhenNotificationsAreDisabledButton, 
+        elements.push(subscribedButton,
+            unsubscribeWhenNotificationsAreDisabledButton,
             registerForProvisionalAuthorization,
             locationShared, setLocationShared, promptLocationButton);
 
@@ -136,8 +136,8 @@ class OSButtons extends React.Component<Props, State> {
         })
 
         const setLanguageButton = renderButtonView(
-            "Set Language", 
-            color, 
+            "Set Language",
+            color,
             () => {
                 loggingFunction('Attempting to set language: ', this.props.inputFieldValue);
                 OneSignal.setLanguage(this.props.inputFieldValue);
@@ -194,7 +194,10 @@ class OSButtons extends React.Component<Props, State> {
             "Post Notification",
             color,
             async () => {
-                const { userId } = await OneSignal.getDeviceState();
+                // Property 'userId' does not exist on type 'DeviceState | null' so need to check
+                const deviceState = await OneSignal.getDeviceState();
+                const userId = deviceState ? deviceState.userId : "";
+
                 const notificationObj = {
                     contents: {en: "Message Body"},
                     include_player_ids: [userId]
