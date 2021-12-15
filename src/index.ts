@@ -27,7 +27,7 @@ import NotificationReceivedEvent from './events/NotificationReceivedEvent';
 import { OpenedEvent } from './models/NotificationEvents';
 import { OutcomeEvent } from './models/Outcomes';
 import { InAppMessage, InAppMessageAction, InAppMessageLifecycleHandlerObject } from './models/InAppMessage';
-import { isValidCallback, isObjectNonNull } from './helpers';
+import { isValidCallback, isNativeModuleLoaded } from './helpers';
 
 const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
@@ -44,7 +44,7 @@ export default class OneSignal {
      * @returns void
      */
     static setAppId(appId: string): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.setAppId(appId);
     }
 
@@ -56,7 +56,7 @@ export default class OneSignal {
      * @returns void
      */
     static addPermissionObserver(observer: (event: ChangeEvent<PermissionChange>) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         isValidCallback(observer);
         RNOneSignal.addPermissionObserver();
         eventManager.addEventHandler<PermissionChange>(PERMISSION_CHANGED, observer);
@@ -67,7 +67,7 @@ export default class OneSignal {
      * @returns void
      */
     static clearPermissionObservers(): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.removePermissionObserver();
         eventManager.clearEventHandler(PERMISSION_CHANGED);
     }
@@ -78,7 +78,7 @@ export default class OneSignal {
      * @returns void
      */
     static addSubscriptionObserver(observer: (event: ChangeEvent<SubscriptionChange>) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         isValidCallback(observer);
         RNOneSignal.addSubscriptionObserver();
         eventManager.addEventHandler<SubscriptionChange>(SUBSCRIPTION_CHANGED, observer);
@@ -89,7 +89,7 @@ export default class OneSignal {
      * @returns void
      */
     static clearSubscriptionObservers(): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.removeSubscriptionObserver();
         eventManager.clearEventHandler(SUBSCRIPTION_CHANGED);
     }
@@ -100,7 +100,7 @@ export default class OneSignal {
      * @returns void
      */
     static addEmailSubscriptionObserver(observer: (event: ChangeEvent<EmailSubscriptionChange>) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         isValidCallback(observer);
         RNOneSignal.addEmailSubscriptionObserver();
         eventManager.addEventHandler<EmailSubscriptionChange>(EMAIL_SUBSCRIPTION_CHANGED, observer);
@@ -111,7 +111,7 @@ export default class OneSignal {
      * @returns void
      */
     static clearEmailSubscriptionObservers(): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.removeEmailSubscriptionObserver();
         eventManager.clearEventHandler(EMAIL_SUBSCRIPTION_CHANGED);
     }
@@ -122,7 +122,7 @@ export default class OneSignal {
      * @returns void
      */
     static addSMSSubscriptionObserver(observer: (event: ChangeEvent<SMSSubscriptionChange>) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         isValidCallback(observer);
         RNOneSignal.addSMSSubscriptionObserver();
         eventManager.addEventHandler<SMSSubscriptionChange>(SMS_SUBSCRIPTION_CHANGED, observer);
@@ -133,7 +133,7 @@ export default class OneSignal {
      * @returns void
      */
     static clearSMSSubscriptionObservers(): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.removeSMSSubscriptionObserver();
         eventManager.clearEventHandler(SMS_SUBSCRIPTION_CHANGED);
     }
@@ -148,7 +148,7 @@ export default class OneSignal {
      * @param  {(event:NotificationReceivedEvent) => void} handler
      */
     static setNotificationWillShowInForegroundHandler(handler: (event: NotificationReceivedEvent) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         isValidCallback(handler);
         RNOneSignal.setNotificationWillShowInForegroundHandler();
         eventManager.setEventHandler<NotificationReceivedEvent>(NOTIFICATION_WILL_SHOW, handler);
@@ -160,7 +160,7 @@ export default class OneSignal {
      * @returns void
      */
     static setNotificationOpenedHandler(handler: (openedEvent: OpenedEvent) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         isValidCallback(handler);
 
         RNOneSignal.setNotificationOpenedHandler();
@@ -175,7 +175,7 @@ export default class OneSignal {
      * @returns void
      */
     static promptForPushNotificationsWithUserResponse(handler: (response: boolean) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (Platform.OS === 'ios') {
             isValidCallback(handler);
@@ -195,7 +195,7 @@ export default class OneSignal {
      * @returns void
      */
     static registerForProvisionalAuthorization(handler: (response: boolean) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (Platform.OS === 'ios') {
             isValidCallback(handler);
@@ -211,7 +211,7 @@ export default class OneSignal {
      * @returns void
      */
     static disablePush(disable: boolean): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.disablePush(disable);
     }
@@ -222,7 +222,7 @@ export default class OneSignal {
      * @returns void
      */
     static unsubscribeWhenNotificationsAreDisabled(unsubscribe: boolean): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (Platform.OS === 'android') {
             RNOneSignal.unsubscribeWhenNotificationsAreDisabled(unsubscribe);
@@ -239,7 +239,7 @@ export default class OneSignal {
      */
     static isLocationShared(): Promise<boolean> {
         // must return a promise
-        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve(false);
+        if (!isNativeModuleLoaded(RNOneSignal)) return Promise.resolve(false);
         return RNOneSignal.isLocationShared();
     }
 
@@ -249,7 +249,7 @@ export default class OneSignal {
      * @returns void
      */
     static setLocationShared(shared: boolean): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.setLocationShared(shared);
     }
@@ -259,7 +259,7 @@ export default class OneSignal {
      * @returns void
      */
     static promptLocation(): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         //Supported in both iOS & Android
         RNOneSignal.promptLocation();
@@ -273,7 +273,7 @@ export default class OneSignal {
      * @returns Promise<DeviceState | null>
      */
     static async getDeviceState(): Promise<DeviceState | null> {
-        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve(null);
+        if (!isNativeModuleLoaded(RNOneSignal)) return Promise.resolve(null);
         const deviceState = await RNOneSignal.getDeviceState();
 
         if (Platform.OS === 'android') {
@@ -290,7 +290,7 @@ export default class OneSignal {
      * @returns void
      */
     static setLanguage(language: string): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.setLanguage(language);
     }
@@ -304,7 +304,7 @@ export default class OneSignal {
      * @returns void
      */
     static sendTag(key: string, value: string): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (!key || (!value && value !== "")) {
             console.error("OneSignal: sendTag: must include a key and a value");
@@ -319,7 +319,7 @@ export default class OneSignal {
      * @returns void
      */
     static sendTags(tags: { [key: string]: string }): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         let keys = Object.keys(tags);
 
         if (keys.length === 0) {
@@ -335,7 +335,7 @@ export default class OneSignal {
      * @returns void
      */
     static getTags(handler: (tags: { [key: string]: string }) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.getTags(handler);
     }
 
@@ -345,7 +345,7 @@ export default class OneSignal {
      * @returns void
      */
     static deleteTag(key: string): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         if (typeof key !== "string") {
             console.error("OneSignal: deleteTag: key argument must be of type string");
         }
@@ -357,7 +357,7 @@ export default class OneSignal {
      * @param  {string[]} keys
      */
     static deleteTags(keys: string[]): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (!Array.isArray(keys)) {
             console.error("OneSignal: deleteTags: argument must be of array type");
@@ -376,7 +376,7 @@ export default class OneSignal {
      * @returns void
      */
     static setEmail(email: string, emailAuthCode?: string | null, handler?: Function): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (emailAuthCode === undefined)
             emailAuthCode = null;
@@ -392,7 +392,7 @@ export default class OneSignal {
      * @param  {Function} handler
      */
     static logoutEmail(handler?: Function): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (!handler)
             handler = function(){};
@@ -410,7 +410,7 @@ export default class OneSignal {
      * @returns void
      */
     static setSMSNumber(smsNumber: string, smsAuthCode?: string | null, handler?: Function): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (smsAuthCode === undefined)
             smsAuthCode = null;
@@ -426,7 +426,7 @@ export default class OneSignal {
      * @param  {Function} handler
      */
     static logoutSMSNumber(handler?: Function): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (!handler)
             handler = function(){};
@@ -444,7 +444,7 @@ export default class OneSignal {
      * @returns void
      */
     static postNotification(notificationObjectString: string, onSuccess?: (success: object) => void, onFailure?: (failure: object) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (!onSuccess)
             onSuccess = function(){};
@@ -460,7 +460,7 @@ export default class OneSignal {
      * @returns void
      */
     static clearOneSignalNotifications(): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (Platform.OS === 'android') {
             RNOneSignal.clearOneSignalNotifications();
@@ -476,7 +476,7 @@ export default class OneSignal {
      * @returns void
      */
     static removeNotification(id: number): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (Platform.OS === 'android') {
             RNOneSignal.removeNotification(id);
@@ -492,7 +492,7 @@ export default class OneSignal {
      * @returns void
      */
     static removeGroupedNotifications(id: string): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (Platform.OS === 'android') {
             RNOneSignal.removeGroupedNotifications(id);
@@ -512,7 +512,7 @@ export default class OneSignal {
      */
     static setExternalUserId(externalId: string, handlerOrAuth?: ((results: object) => void) | string, handler?: (results: object) => void): void {
 
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (typeof handlerOrAuth === "function") {
             RNOneSignal.setExternalUserId(externalId, null, handlerOrAuth);
@@ -532,7 +532,7 @@ export default class OneSignal {
      * @returns void
      */
     static removeExternalUserId(handler?: (results: object) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         // Android workaround for the current issue of callback fired more than once
         if (handler === undefined && Platform.OS === 'ios')
@@ -549,7 +549,7 @@ export default class OneSignal {
      * @returns void
      */
     static setInAppMessageClickHandler(handler: (action: InAppMessageAction) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         isValidCallback(handler);
         RNOneSignal.initInAppMessageClickHandlerParams();
         RNOneSignal.setInAppMessageClickHandler();
@@ -562,7 +562,7 @@ export default class OneSignal {
      * @returns void
      */
     static setInAppMessageLifecycleHandler(handlerObject: InAppMessageLifecycleHandlerObject): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         if (handlerObject.onWillDisplayInAppMessage) {
             isValidCallback(handlerObject.onWillDisplayInAppMessage);
@@ -591,7 +591,7 @@ export default class OneSignal {
      * @returns void
      */
     static addTrigger(key: string, value: string | number | boolean): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         // value can be assigned to `false` so we cannot just check `!value`
         if (!key || value == null) {
@@ -609,7 +609,7 @@ export default class OneSignal {
      * @returns void
      */
     static addTriggers(triggers: { [key: string]: string | number | boolean }): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         let keys = Object.keys(triggers);
 
@@ -626,7 +626,7 @@ export default class OneSignal {
      * @returns void
      */
     static removeTriggersForKeys(keys: string[]): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.removeTriggersForKeys(keys);
     }
@@ -637,7 +637,7 @@ export default class OneSignal {
      * @returns void
      */
     static removeTriggerForKey(key: string): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.removeTriggerForKey(key);
     }
 
@@ -648,7 +648,7 @@ export default class OneSignal {
      */
     static getTriggerValueForKey(key: string): Promise<string | number | boolean | null> {
         // must return a promise
-        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve(null);
+        if (!isNativeModuleLoaded(RNOneSignal)) return Promise.resolve(null);
         return RNOneSignal.getTriggerValueForKey(key);
     }
 
@@ -658,7 +658,7 @@ export default class OneSignal {
      * @returns void
      */
     static pauseInAppMessages(pause: boolean): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.pauseInAppMessages(pause);
     }
 
@@ -671,7 +671,7 @@ export default class OneSignal {
      * @returns void
      */
     static sendOutcome(name: string, handler?: (event: OutcomeEvent) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.sendOutcome(name, handler);
     }
 
@@ -682,7 +682,7 @@ export default class OneSignal {
      * @returns void
      */
     static sendUniqueOutcome(name: string, handler?: (event: OutcomeEvent) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.sendUniqueOutcome(name, handler);
     }
 
@@ -695,7 +695,7 @@ export default class OneSignal {
      * @returns void
      */
     static sendOutcomeWithValue(name: string, value: string | number, handler?: (event: OutcomeEvent) => void): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.sendOutcomeWithValue(name, Number(value), handler);
     }
 
@@ -706,7 +706,7 @@ export default class OneSignal {
      * @returns Promise<boolean>
      */
     static userProvidedPrivacyConsent(): Promise<boolean> {
-        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve(false);
+        if (!isNativeModuleLoaded(RNOneSignal)) return Promise.resolve(false);
 
         //returns a promise
         return RNOneSignal.userProvidedPrivacyConsent();
@@ -717,7 +717,7 @@ export default class OneSignal {
      * @returns Promise<boolean>
      */
     static requiresUserPrivacyConsent(): Promise<boolean> {
-        if (!isObjectNonNull(RNOneSignal)) return Promise.resolve(false);
+        if (!isNativeModuleLoaded(RNOneSignal)) return Promise.resolve(false);
 
         //returns a promise
         return RNOneSignal.requiresUserPrivacyConsent();
@@ -729,7 +729,7 @@ export default class OneSignal {
      * @returns void
      */
     static setRequiresUserPrivacyConsent(required: boolean): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.setRequiresUserPrivacyConsent(required);
     }
@@ -740,7 +740,7 @@ export default class OneSignal {
      * @returns void
      */
     static provideUserConsent(granted: boolean): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.provideUserConsent(granted);
     }
@@ -754,7 +754,7 @@ export default class OneSignal {
      * @returns void
      */
     static setLogLevel(nsLogLevel: LogLevel, visualLogLevel: LogLevel): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.setLogLevel(nsLogLevel, visualLogLevel);
     }
@@ -764,7 +764,7 @@ export default class OneSignal {
      * @returns void
      */
     static clearHandlers(): void {
-        if (!isObjectNonNull(RNOneSignal)) return;
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
         eventManager.clearHandlers();
     }
 }

@@ -1,4 +1,5 @@
 import invariant from 'invariant';
+import { NativeModule } from 'react-native';
 import {
     PERMISSION_CHANGED,
     SUBSCRIPTION_CHANGED,
@@ -13,8 +14,12 @@ export function isValidCallback(handler: Function) {
     );
 }
 
-export function isObjectNonNull<T extends any>(object: T): object is Exclude<T, null | undefined> {
-  return object != null;
+export function isNativeModuleLoaded(module: NativeModule): boolean {
+    if (module == null) {
+        console.error("Could not load RNOneSignal native module. Make sure native dependencies are properly linked.");
+        return false;
+    }
+    return true;
 }
 
 /**
