@@ -381,7 +381,8 @@ export default class OneSignal {
         if (emailAuthCode === undefined)
             emailAuthCode = null;
 
-        if (handler === undefined)
+        // Android workaround for the current issue of callback fired more than once
+        if (!handler && Platform.OS === 'ios')
             handler = function(){};
 
         RNOneSignal.setEmail(email, emailAuthCode, handler);
@@ -394,7 +395,8 @@ export default class OneSignal {
     static logoutEmail(handler?: Function): void {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-        if (!handler)
+        // Android workaround for the current issue of callback fired more than once
+        if (!handler && Platform.OS === 'ios')
             handler = function(){};
 
         RNOneSignal.logoutEmail(handler);
@@ -415,7 +417,8 @@ export default class OneSignal {
         if (smsAuthCode === undefined)
             smsAuthCode = null;
 
-        if (handler === undefined)
+        // Android workaround for the current issue of callback fired more than once
+        if (!handler && Platform.OS === 'ios')
             handler = function(){};
 
         RNOneSignal.setSMSNumber(smsNumber, smsAuthCode, handler);
@@ -428,7 +431,8 @@ export default class OneSignal {
     static logoutSMSNumber(handler?: Function): void {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-        if (!handler)
+        // Android workaround for the current issue of callback fired more than once
+        if (!handler && Platform.OS === 'ios')
             handler = function(){};
 
         RNOneSignal.logoutSMSNumber(handler);
