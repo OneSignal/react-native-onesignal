@@ -1,13 +1,15 @@
-import { NativeModules, Platform } from 'react-native';
-import OSNotification from './OSNotification';
+import { NativeModules } from 'react-native';
+import OSNotification from '../OSNotification';
 const RNOneSignal = NativeModules.OneSignal;
 
 export default class NotificationReceivedEvent {
-    constructor(receivedEvent){
+    private notification: OSNotification;
+
+    constructor(receivedEvent: OSNotification){
         this.notification = new OSNotification(receivedEvent);
     }
 
-    complete(notification) {
+    complete(notification?: OSNotification): void {
         if (!notification) {
             // if the notificationReceivedEvent is null, we want to call the native-side
             // complete/completion with null to silence the notification
@@ -21,7 +23,7 @@ export default class NotificationReceivedEvent {
         RNOneSignal.completeNotificationEvent(notification.notificationId, true);
     }
 
-    getNotification() {
+    getNotification(): OSNotification {
         return this.notification;
     }
 }
