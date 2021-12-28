@@ -594,7 +594,13 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @ReactMethod
    public void getTriggerValueForKey(String key, Promise promise) {
-      promise.resolve(OneSignal.getTriggerValueForKey(key));
+      Object val = OneSignal.getTriggerValueForKey(key);
+      if (val == null) {
+         Log.e("OneSignal", "getTriggerValueForKey: There was no value for the key: " + key);
+         promise.reject("No Value", "There was no value for the key: " + key);
+         return;
+      }
+      promise.resolve(val);
    }
 
    /* in app message click */
