@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.homepage       = "https://github.com/OneSignal/react-native-onesignal"
   s.license        = package_json["license"]
   s.author         = { package_json["author"] => package_json["author"] }
-  s.platform       = :ios, "8.0"
+  s.platform       = :ios, "9.0"
   s.source         = { :git => "#{package_json["repository"]["url"]}.git", :tag => "#{s.version}" }
   s.source_files   = 'ios/RCTOneSignal/*.{h,m}'
   s.static_framework = true
