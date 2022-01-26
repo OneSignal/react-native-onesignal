@@ -505,6 +505,21 @@ export default class OneSignal {
         }
     }
 
+    /**
+     * This method can be used to set if launch URLs should be opened in safari or within the application.
+     * @param  {boolean} isEnabled
+     * @returns
+     */
+    static setLaunchURLsInApp(isEnabled: boolean): void {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (Platform.OS === 'ios') {
+        RNOneSignal.setLaunchURLsInApp(isEnabled);
+      } else {
+        console.log("setLaunchURLsInApp: this function is not supported on Android");
+      }
+    }
+
     /* E X T E R N A L  U S E R  I D */
 
     /**
