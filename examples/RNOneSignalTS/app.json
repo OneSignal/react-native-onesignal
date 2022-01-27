@@ -1,4 +1,19 @@
 {
-  "name": "RNOneSignalTS",
-  "displayName": "RNOneSignalTS"
+  "expo": {
+    "name": "my-project",
+    "slug": "my-project",
+    "version": "1.0.0",
+    "sdkVersion": "44.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "android": {
+      "package": "com.rgomezp.myproject"
+    },
+    "ios": {
+      "bundleIdentifier": "com.testapp.rodrigo"
+    }
+  }
 }
