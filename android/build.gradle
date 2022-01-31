@@ -29,7 +29,7 @@ dependencies {
 
     // api is used instead of implementation so the parent :app project can access any of the OneSignal Java
     //   classes if needed. Such as com.onesignal.NotificationExtenderService
-    api 'com.onesignal:OneSignal:4.6.5'
+    api 'com.onesignal:OneSignal:4.6.6'
 
     testImplementation 'junit:junit:4.12'
 }

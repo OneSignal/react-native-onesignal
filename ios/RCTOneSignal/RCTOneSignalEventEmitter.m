@@ -394,6 +394,10 @@ RCT_EXPORT_METHOD(postNotification:(NSString *)jsonObjectString successCallback:
     }];
 }
 
+RCT_EXPORT_METHOD(setLaunchURLsInApp:(BOOL)isEnabled) {
+  [OneSignal setLaunchURLsInApp:isEnabled];
+}
+
 RCT_EXPORT_METHOD(setLogLevel:(int)logLevel visualLogLevel:(int)visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel:visualLogLevel];
 }
