@@ -331,10 +331,10 @@ export default class OneSignal {
 
     /**
      * Retrieve a list of tags that have been set on the user from the OneSignal server.
-     * @param  {(tags: {[key: string]: string}) => void} handler
+     * @param  {(tags: {[key: string]: string} | null) => void} handler
      * @returns void
      */
-    static getTags(handler: (tags: { [key: string]: string }) => void): void {
+    static getTags(handler: (tags: { [key: string]: string } | null) => void): void {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
         RNOneSignal.getTags(handler);
     }
