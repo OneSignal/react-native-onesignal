@@ -7,7 +7,7 @@ export default class OSNotification {
         launchURL           ?: string;
         rawPayload          : object | string; // platform bridges return different types
         actionButtons       ?: object[];
-        additionalData      : object;
+        additionalData      ?: object;
         notificationId      : string;
         // android only
         groupKey                ?: string;
