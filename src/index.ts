@@ -691,6 +691,11 @@ export default class OneSignal {
      */
     static sendOutcome(name: string, handler?: (event: OutcomeEvent) => void): void {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+        if (!handler) {
+            handler = function(){};
+        }
+
         RNOneSignal.sendOutcome(name, handler);
     }
 
@@ -702,6 +707,11 @@ export default class OneSignal {
      */
     static sendUniqueOutcome(name: string, handler?: (event: OutcomeEvent) => void): void {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+        if (!handler) {
+            handler = function(){};
+        }
+
         RNOneSignal.sendUniqueOutcome(name, handler);
     }
 
@@ -715,6 +725,11 @@ export default class OneSignal {
      */
     static sendOutcomeWithValue(name: string, value: string | number, handler?: (event: OutcomeEvent) => void): void {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+        if (!handler) {
+            handler = function(){};
+        }
+
         RNOneSignal.sendOutcomeWithValue(name, Number(value), handler);
     }
 
