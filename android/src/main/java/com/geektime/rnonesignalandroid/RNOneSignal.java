@@ -335,23 +335,22 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @ReactMethod
    public void setEmail(String email, String emailAuthToken, final Callback callback) {
+     final Callback[] callbackArr = new Callback[]{ callback };
       OneSignal.setEmail(email, emailAuthToken, new EmailUpdateHandler() {
          @Override
          public void onSuccess() {
-            Callback callbackCopy = callback;
-            if (callbackCopy != null) {
-              callbackCopy.invoke();
-              callbackCopy = null;
-           }
+            if (callbackArr[0] != null) {
+               callbackArr[0].invoke();
+               callbackArr[0] = null;
+            }
          }
 
          @Override
          public void onFailure(EmailUpdateError error) {
             try {
-              Callback callbackCopy = callback;
-              if (callbackCopy != null) {
-                callbackCopy.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
-                callbackCopy = null;
+              if (callbackArr[0] != null) {
+                callbackArr[0].invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
+                callbackArr[0] = null;
               }
             } catch (JSONException exception) {
                exception.printStackTrace();
@@ -362,23 +361,22 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @ReactMethod
    public void logoutEmail(final Callback callback) {
+      final Callback[] callbackArr = new Callback[]{ callback };
       OneSignal.logoutEmail(new EmailUpdateHandler() {
          @Override
          public void onSuccess() {
-           Callback callbackCopy = callback;
-           if (callbackCopy != null) {
-            callbackCopy.invoke();
-            callbackCopy = null;
-           }
+            if (callbackArr[0] != null) {
+               callbackArr[0].invoke();
+               callbackArr[0] = null;
+            }
          }
 
          @Override
          public void onFailure(EmailUpdateError error) {
             try {
-              Callback callbackCopy = callback;
-              if (callbackCopy != null) {
-                callbackCopy.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
-                callbackCopy = null;
+              if (callbackArr[0] != null) {
+                callbackArr[0].invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
+                callbackArr[0] = null;
               }
             } catch (JSONException exception) {
                exception.printStackTrace();
@@ -389,23 +387,22 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @ReactMethod
    public void setSMSNumber(String smsNumber, String smsAuthToken, final Callback callback) {
+      final Callback[] callbackArr = new Callback[]{ callback };
       OneSignal.setSMSNumber(smsNumber, smsAuthToken, new OneSignal.OSSMSUpdateHandler() {
          @Override
          public void onSuccess(JSONObject result) {
-           Callback callbackCopy = callback;
-           if (callbackCopy != null) {
-            callbackCopy.invoke(RNUtils.jsonToWritableMap(result));
-            callbackCopy = null;
-           }
+            if (callbackArr[0] != null) {
+               callbackArr[0].invoke(RNUtils.jsonToWritableMap(result));
+               callbackArr[0] = null;
+            }
          }
 
          @Override
          public void onFailure(OneSignal.OSSMSUpdateError error) {
             try {
-              Callback callbackCopy = callback;
-              if (callbackCopy != null) {
-                callbackCopy.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
-                callbackCopy = null;
+              if (callbackArr[0] != null) {
+                callbackArr[0].invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
+                callbackArr[0] = null;
               }
             } catch (JSONException exception) {
                exception.printStackTrace();
@@ -416,23 +413,22 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @ReactMethod
    public void logoutSMSNumber(final Callback callback) {
+      final Callback[] callbackArr = new Callback[]{ callback };
       OneSignal.logoutSMSNumber(new OneSignal.OSSMSUpdateHandler() {
          @Override
          public void onSuccess(JSONObject result) {
-            Callback callbackCopy = callback;
-            if (callbackCopy != null) {
-              callbackCopy.invoke(RNUtils.jsonToWritableMap(result));
-              callbackCopy = null;
-           }
+            if (callbackArr[0] != null) {
+               callbackArr[0].invoke(RNUtils.jsonToWritableMap(result));
+               callbackArr[0] = null;
+            }
          }
 
          @Override
          public void onFailure(OneSignal.OSSMSUpdateError error) {
             try {
-              Callback callbackCopy = callback;
-              if (callbackCopy != null) {
-                callbackCopy.invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
-                callbackCopy = null;
+              if (callbackArr[0] != null) {
+                callbackArr[0].invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
+                callbackArr[0] = null;
               }
             } catch (JSONException exception) {
                exception.printStackTrace();
@@ -463,19 +459,26 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @ReactMethod
    public void postNotification(String jsonObjectString, final Callback successCallback, final Callback failureCallback) {
+      final Callback[] callbackArr = new Callback[]{ successCallback, failureCallback };
       OneSignal.postNotification(
          jsonObjectString,
          new OneSignal.PostNotificationResponseHandler() {
            @Override
            public void onSuccess(JSONObject response) {
               Log.i("OneSignal", "postNotification Success: " + response.toString());
-              successCallback.invoke(RNUtils.jsonToWritableMap(response));
+              if (callbackArr[0] != null) {
+                callbackArr[0].invoke(RNUtils.jsonToWritableMap(response));
+                callbackArr[0] = null;
+              }
            }
 
            @Override
            public void onFailure(JSONObject response) {
               Log.e("OneSignal", "postNotification Failure: " + response.toString());
-              failureCallback.invoke(RNUtils.jsonToWritableMap(response));
+              if (callbackArr[1] != null) {
+                callbackArr[1].invoke(RNUtils.jsonToWritableMap(response));
+                callbackArr[1] = null;
+              }
            }
          }
       );
@@ -516,51 +519,49 @@ public class RNOneSignal extends ReactContextBaseJavaModule
       promise.resolve(OneSignal.userProvidedPrivacyConsent());
    }
 
-   @ReactMethod
-   public void setExternalUserId(final String externalId, final String authHashToken, final Callback callback) {
-      OneSignal.setExternalUserId(externalId, authHashToken, new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
-         @Override
-         public void onSuccess(JSONObject results) {
-            Log.i("OneSignal", "Completed setting external user id: " + externalId + "with results: " + results.toString());
+  @ReactMethod
+  public void setExternalUserId(final String externalId, final String authHashToken, final Callback callback) {
+    final Callback[] callbackArr = new Callback[]{ callback };
+    OneSignal.setExternalUserId(externalId, authHashToken, new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
+      @Override
+      public void onSuccess(JSONObject results) {
+        Log.i("OneSignal", "Completed setting external user id: " + externalId + "with results: " + results.toString());
 
-            Callback callbackCopy = callback;
-            if (callbackCopy != null) {
-               callbackCopy.invoke(RNUtils.jsonToWritableMap(results));
-               callbackCopy = null;
-            }
-         }
+        if (callbackArr[0] != null) {
+            callbackArr[0].invoke(RNUtils.jsonToWritableMap(results));
+            callbackArr[0] = null;
+        }
+      }
 
-         @Override
-         public void onFailure(OneSignal.ExternalIdError error) {
-            Callback callbackCopy = callback;
-            if (callbackCopy != null) {
-               callbackCopy.invoke(error.getMessage());
-               callbackCopy = null;
-            }
-         }
-      });
-   }
+      @Override
+      public void onFailure(OneSignal.ExternalIdError error) {
+        if (callbackArr[0] != null) {
+            callbackArr[0].invoke(error.getMessage());
+            callbackArr[0] = null;
+        }
+      }
+    });
+  }
 
    @ReactMethod
    public void removeExternalUserId(final Callback callback) {
+      final Callback[] callbackArr = new Callback[]{ callback };
       OneSignal.removeExternalUserId(new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
          @Override
          public void onSuccess(JSONObject results) {
             Log.i("OneSignal", "Completed removing external user id with results: " + results.toString());
 
-            Callback callbackCopy = callback;
-            if (callbackCopy != null) {
-              callbackCopy.invoke(RNUtils.jsonToWritableMap(results));
-              callbackCopy = null;
+            if (callbackArr[0] != null) {
+               callbackArr[0].invoke(RNUtils.jsonToWritableMap(results));
+               callbackArr[0] = null;
             }
          }
 
          @Override
          public void onFailure(OneSignal.ExternalIdError error) {
-            Callback callbackCopy = callback;
-            if (callbackCopy != null) {
-              callbackCopy.invoke(error.getMessage());
-              callbackCopy = null;
+            if (callbackArr[0] != null) {
+               callbackArr[0].invoke(error.getMessage());
+               callbackArr[0] = null;
             }
          }
       });
