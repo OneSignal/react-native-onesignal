@@ -245,8 +245,12 @@ RCT_REMAP_METHOD(getDeviceState,
     }
 }
 
-RCT_EXPORT_METHOD(setLanguage:(NSString *)language) {
-    [OneSignal setLanguage:language];
+RCT_EXPORT_METHOD(setLanguage:(NSString *)language successCallback:(RCTResponseSenderBlock)successCallback failureCallback:(RCTResponseSenderBlock)failureCallback) {
+    [OneSignal setLanguage:language withSuccess:^(NSDictionary *success) {
+        successCallback(@[success]);
+    } withFailure:^(NSError *error) {
+        failureCallback([self processNSError:error]);
+    }];
 }
 
 RCT_EXPORT_METHOD(setNotificationOpenedHandler) {

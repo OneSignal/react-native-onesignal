@@ -287,12 +287,21 @@ export default class OneSignal {
     /**
      * Allows you to set the app defined language with the OneSignal SDK.
      * @param  {string} language
+     * @param  {(success:object) => void} onSuccess
+     * @param  {(failure:object) => void} onFailure
      * @returns void
      */
-    static setLanguage(language: string): void {
+     static setLanguage(language: string, onSuccess?: (success: object) => void, onFailure?: (failure: object) => void): void {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-        RNOneSignal.setLanguage(language);
+        if (!onSuccess) {
+            onSuccess = function(){};
+        }
+
+        if (!onFailure) {
+            onFailure = function(){};
+        }
+        RNOneSignal.setLanguage(language, onSuccess, onFailure);
     }
 
     /* T A G S */
