@@ -288,8 +288,38 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
-   public void setLanguage(String language) {
-      OneSignal.setLanguage(language);
+   public void setLanguage(String language, final Callback successCallback, final Callback failureCallback) {
+      OneSignal.setLanguage(language, new OneSignal.OSSetLanguageCompletionHandler() {
+         final Callback[] callbackArr = new Callback[]{ successCallback, failureCallback };
+         @Override
+         public void onSuccess(String results) {
+            if (callbackArr[0] != null) {
+               if (results == null) {
+                  results = "{'success' : 'true', 'message' : 'Successfully set language.'}";
+               }
+               callbackArr[0].invoke(results);
+               callbackArr[0] = null;
+               callbackArr[1] = null; // prevent other callback from being invoked by another channel
+            }
+         }
+
+         @Override
+         public void onFailure(OneSignal.OSLanguageError error) {
+            try {
+               if (callbackArr[1] != null) {
+                  String errorMessage = error.getMessage();
+                  if (errorMessage == null) {
+                     errorMessage = "Failed to set language.";
+                  }
+                  callbackArr[1].invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(errorMessage)));
+                  callbackArr[0] = null;
+                  callbackArr[1] = null;
+               }
+            } catch (JSONException exception) {
+               exception.printStackTrace();
+            }
+         }
+      });
    }
 
    @ReactMethod
