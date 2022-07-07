@@ -5000,9 +5000,9 @@ minimatch@^3.0.2, minimatch@^3.0.4:
     brace-expansion "^1.1.7"
 
 minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
-  integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.6.tgz#8637a5b759ea0d6e98702cfb3a9283323c93af44"
+  integrity sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==
 
 mixin-deep@^1.2.0:
   version "1.3.2"
@@ -5630,10 +5630,10 @@ react-native-codegen@^0.0.6:
     jscodeshift "^0.11.0"
     nullthrows "^1.1.1"
 
-react-native-onesignal@^4.3.10:
-  version "4.3.10"
-  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-4.3.10.tgz#3db2dbcd0862f885717e65726e90d4c6bbbc6145"
-  integrity sha512-rAwRO3kyADAJ3rZo6cSG3dyF8FMLP8rxDJTquaMMo5SBJ1D9O0O/UMou86BH1+bqoLsPTVr2fnAqFv+NiMXILA==
+react-native-onesignal@^4.3.11:
+  version "4.3.11"
+  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-4.3.11.tgz#ad017f8daf0f1674babf19eb10f70b2bda80e32d"
+  integrity sha512-sBIFu6/+I/fXeH+GAOP1zUYUy2eJmchPOPj7RRDsArURTGcSR5jcGgoFjo9b6BT2tHkIeo39GkeojQD7pIvPzA==
   dependencies:
     invariant "^2.2.2"
 
