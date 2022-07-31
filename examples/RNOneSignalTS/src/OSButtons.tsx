@@ -72,7 +72,7 @@ class OSButtons extends React.Component<Props, State> {
             color,
             () => {
                 loggingFunction("Prompting for push with user response...");
-                OneSignal.promptForPushNotificationsWithUserResponse(response => {
+                OneSignal.promptForPushNotificationsWithUserResponse(true, response => {
                     loggingFunction(`User response: ${response}`);
                 });
             }
@@ -115,13 +115,8 @@ class OSButtons extends React.Component<Props, State> {
 
         elements.push(subscribedButton,
             unsubscribeWhenNotificationsAreDisabledButton,
-            registerForProvisionalAuthorization,
+            registerForProvisionalAuthorization, promptForPush,
             locationShared, setLocationShared, promptLocationButton);
-
-        if (Platform.OS === 'ios') {
-            elements.push(promptForPush);
-        }
-
         return elements;
     }
 
