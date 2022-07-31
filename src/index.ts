@@ -170,19 +170,36 @@ export default class OneSignal {
     /* R E G I S T R A T I O N  E T C */
 
     /**
-     * Prompts the iOS user for push notifications.
+     * Prompts the user for push notifications permission in iOS and Android 13+.
+     * Use the fallbackToSettings parameter to prompt to open the settings app if a user has already declined push permissions.
+     *
+     * Call with promptForPushNotificationsWithUserResponse(fallbackToSettings?, handler?)
+     *
+     * Recommended: Do not use and instead follow: https://documentation.onesignal.com/docs/ios-push-opt-in-prompt.
+     * @param  {boolean} fallbackToSettings
      * @param  {(response:boolean) => void} handler
      * @returns void
      */
-    static promptForPushNotificationsWithUserResponse(handler: (response: boolean) => void): void {
+    static promptForPushNotificationsWithUserResponse(fallbackToSettingsOrHandler?: boolean | ((response: boolean) => void), handler?: (response: boolean) => void): void {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-        if (Platform.OS === 'ios') {
-            isValidCallback(handler);
-            RNOneSignal.promptForPushNotificationsWithUserResponse(handler);
-        } else {
-            console.log("promptForPushNotificationsWithUserResponse: this function is not supported on Android");
+        var fallbackToSettings = false;
+
+        if (typeof fallbackToSettingsOrHandler === "function") {
+            // Method was called like promptForPushNotificationsWithUserResponse(handler: function)
+            handler = fallbackToSettingsOrHandler;
         }
+        else if (typeof fallbackToSettingsOrHandler === "boolean") {
+            // Method was called like promptForPushNotificationsWithUserResponse(fallbackToSettings: boolean, handler?: function)
+            fallbackToSettings = fallbackToSettingsOrHandler;
+        }
+        // Else method was called like promptForPushNotificationsWithUserResponse(), no need to modify
+
+        if (!handler && Platform.OS === 'ios') {
+            handler = function(){};
+        }
+
+        RNOneSignal.promptForPushNotificationsWithUserResponse(fallbackToSettings, handler);
     }
 
     /**

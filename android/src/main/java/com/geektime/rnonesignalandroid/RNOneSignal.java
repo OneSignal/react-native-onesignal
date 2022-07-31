@@ -468,6 +468,20 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    @ReactMethod
+   public void promptForPushNotificationsWithUserResponse(final boolean fallbackToSettings, final Callback callback) {
+      final Callback[] callbackArr = new Callback[]{ callback };
+      OneSignal.promptForPushNotifications(fallbackToSettings, new OneSignal.PromptForPushNotificationPermissionResponseHandler() {
+         @Override
+         public void response(boolean accepted) {
+            if (callbackArr[0] != null) {
+               callbackArr[0].invoke(accepted);
+               callbackArr[0] = null;
+            }
+         }
+      });
+   }
+
+   @ReactMethod
    public void promptLocation() {
       OneSignal.promptLocation();
    }
