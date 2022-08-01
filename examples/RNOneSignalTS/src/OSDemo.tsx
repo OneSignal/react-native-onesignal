@@ -38,9 +38,6 @@ class OSDemo extends React.Component<Props, State> {
         OneSignal.setAppId("ce8572ae-ff57-4e77-a265-5c91f00ecc4c");
         OneSignal.setLogLevel(6, 0);
         OneSignal.setRequiresUserPrivacyConsent(this.state.requiresPrivacyConsent);
-        OneSignal.promptForPushNotificationsWithUserResponse(response => {
-            this.OSLog("Prompt response:", response);
-        });
 
         /* O N E S I G N A L  H A N D L E R S */
         OneSignal.setNotificationWillShowInForegroundHandler(notifReceivedEvent => {

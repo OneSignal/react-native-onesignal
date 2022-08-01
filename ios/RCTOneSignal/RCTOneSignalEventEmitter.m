@@ -194,12 +194,6 @@ RCT_EXPORT_METHOD(setAppId:(NSString* _Nonnull)newAppId) {
     [OneSignal setAppId:newAppId];
 }
 
-RCT_EXPORT_METHOD(promptForPushNotificationPermissions:(RCTResponseSenderBlock)callback) {
-    [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
-        callback(@[@(accepted)]);
-    }];
-}
-
 RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions) {
     if (RCTRunningInAppExtension()) {
         return;
@@ -326,11 +320,11 @@ RCT_EXPORT_METHOD(logoutSMSNumber:(RCTResponseSenderBlock)callback) {
     }];
 }
 
-RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(promptForPushNotificationsWithUserResponse:(BOOL)fallbackToSettings withResponse:(RCTResponseSenderBlock)callback) {
     [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
         [OneSignal onesignalLog:ONE_S_LL_VERBOSE message:@"Prompt For Push Notifications Success"];
         callback(@[@(accepted)]);
-    }];
+    } fallbackToSettings:fallbackToSettings];
 }
 
 RCT_EXPORT_METHOD(registerForProvisionalAuthorization:(RCTResponseSenderBlock)callback) {
