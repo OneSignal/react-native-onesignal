@@ -183,7 +183,7 @@ export default class OneSignal {
     static promptForPushNotificationsWithUserResponse(fallbackToSettingsOrHandler?: boolean | ((response: boolean) => void), handler?: (response: boolean) => void): void {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-        var fallbackToSettings = false;
+        let fallbackToSettings = false;
 
         if (typeof fallbackToSettingsOrHandler === "function") {
             // Method was called like promptForPushNotificationsWithUserResponse(handler: function)
