@@ -15,7 +15,8 @@
   "peerDependencies": {
     "@babel/runtime": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "jest" : "*"
   },
   "devDependencies": {
     "@types/invariant": "^2.2.2",
