@@ -5,12 +5,23 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "yarn run build",
+    "prepare": "install-peers && yarn run build",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tsc && jest --coverage"
   },
   "dependencies": {
     "invariant": "^2.2.2"
+  },
+  "peerDependencies": {
+    "@babel/runtime": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@types/invariant": "^2.2.2",
+    "@types/jest": "^27.1.8",
+    "@types/react-native": "^0.66.8",
+    "install-peers-cli": "^2.2.0"
   },
   "keywords": [
     "react-component",
@@ -32,9 +43,5 @@
     "url": "https://github.com/OneSignal/react-native-onesignal"
   },
   "author": "OneSignal <https://www.onesignal.com>, Geektime <http://www.geektime.co.il>",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/invariant": "^2.2.2",
-    "@types/react-native": "^0.66.8"
-  }
+  "license": "MIT"
 }
