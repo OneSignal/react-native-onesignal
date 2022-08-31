@@ -1,6 +1,7 @@
 // events
-export const NOTIFICATION_WILL_SHOW = 'OneSignal-notificationWillShowInForeground';
-export const NOTIFICATION_OPENED    = 'OneSignal-remoteNotificationOpened'
+export const NOTIFICATION_WILL_SHOW =
+  'OneSignal-notificationWillShowInForeground';
+export const NOTIFICATION_OPENED = 'OneSignal-remoteNotificationOpened';
 export const IN_APP_MESSAGE_CLICKED = 'OneSignal-inAppMessageClicked';
 
 // In-App Message lifecycle events
