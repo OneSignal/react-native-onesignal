@@ -1,27 +1,45 @@
+# node.js
+#
 node_modules/
+npm-debug.log
+yarn-error.log
+
+# tsc
+#
+dist
+
+# OSX
+#
+.DS_Store
+examples/.DS_Store
 
 # examples node_modules
+#
 examples/CocoapodsDemo/node_modules
 examples/RNOneSignal/node_modules
 *.iml
 local.properties
 
-# examples mobile device
+# examples android device Data
+#
 examples/CocoapodsDemo/android/app/build
 examples/CocoapodsDemo/android/.gradle
 examples/CocoapodsDemo/android/.idea
 examples/CocoapodsDemo/android/build
+examples/RNOneSignalTS/android/app/build
+examples/RNOneSignalTS/android/app/debug.keystore
+examples/RNOneSignalTS/android/.gradle
+examples/RNOneSignalTS/android/.idea
+examples/RNOneSignalTS/android/build
+
+# examples iOS data
+#
 examples/CocoapodsDemo/ios/CocoapodsDemo.xcodeproj/project.xcworkspace/xcshareddata
 examples/CocoapodsDemo/ios/CocoapodsDemo.xcodeproj/project.xcworkspace/xcuserdata
 examples/CocoapodsDemo/ios/CocoapodsDemo.xcodeproj/xcuserdata
 examples/CocoapodsDemo/ios/CocoapodsDemo.xcworkspace/xcshareddata
 examples/CocoapodsDemo/ios/CocoapodsDemo.xcworkspace/xcuserdata
 examples/CocoapodsDemo/ios/Pods/Pods.xcodeproj/xcuserdata
-examples/RNOneSignalTS/android/app/build
-examples/RNOneSignalTS/android/app/debug.keystore
-examples/RNOneSignalTS/android/.gradle
-examples/RNOneSignalTS/android/.idea
-examples/RNOneSignalTS/android/build
 examples/RNOneSignalTS/ios/RNOneSignal.xcodeproj/project.xcworkspace/xcshareddata
 examples/RNOneSignalTS/ios/RNOneSignal.xcodeproj/project.xcworkspace/xcuserdata
 examples/RNOneSignalTS/ios/RNOneSignal.xcodeproj/xcuserdata
@@ -29,16 +47,6 @@ examples/RNOneSignalTS/ios/RNOneSignal.xcworkspace/xcshareddata
 examples/RNOneSignalTS/ios/RNOneSignal.xcworkspace/xcuserdata
 examples/RNOneSignal/ios/Pods/Pods.xcodeproj/xcuserdata
 
-images
-dist
-# OSX
-#
-.DS_Store
-examples/.DS_Store
 
-# node.js
-#
-node_modules/
-npm-debug.log
-yarn-error.log
+
 
