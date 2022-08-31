@@ -1,9 +1,0 @@
-machine:
-  node:
-    version: 7
-dependencies:
-  override:
-    - cd examples && cd RNOneSignal && npm install
-test:
-  override:
-    - cd examples && cd RNOneSignal && npm test
