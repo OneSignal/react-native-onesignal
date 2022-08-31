@@ -7,7 +7,7 @@
   "scripts": {
     "prepare": "install-peers && yarn run build",
     "build": "tsc",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx; prettier --check src",
     "test": "tsc && jest --coverage"
   },
   "dependencies": {
@@ -25,7 +25,9 @@
     "@types/jest": "^27.1.8",
     "@types/react-native": "^0.66.8",
     "eslint": "^6.5.1",
+    "eslint-config-prettier": "^8.5.0",
     "install-peers-cli": "^2.2.0",
+    "prettier": "^2.7.1",
     "typescript": "^3.8.3"
   },
   "keywords": [
