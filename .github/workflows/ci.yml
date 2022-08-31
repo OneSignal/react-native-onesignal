@@ -1,11 +1,27 @@
-name: CI
-on: push
+name: Test
+
+on:
+  pull_request:
+    branches: "**"
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-    - name: Install modules
-      run: yarn
-    - name: Run tests
-      run: yarn test
+      - uses: actions/checkout@v3
+      - name: "[Setup] Node"
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: "[Setup] Dependencies"
+        run: yarn
+      - name: "[Test] Linting"
+        run: yarn lint
+      - name: "[Test] SDK Unit Tests"
+        run: yarn test
+      - name: Unit tests results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit-tests-results
+          path: .
