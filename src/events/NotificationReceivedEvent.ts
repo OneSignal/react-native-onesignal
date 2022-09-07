@@ -1,4 +1,4 @@
-import {NativeModules} from 'react-native';
+import { NativeModules } from 'react-native';
 import OSNotification from '../OSNotification';
 const RNOneSignal = NativeModules.OneSignal;
 

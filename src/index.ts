@@ -1,6 +1,6 @@
 'use strict';
 
-import {NativeModules, Platform} from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 import EventManager from './events/EventManager';
 import {
   PERMISSION_CHANGED,
@@ -24,14 +24,14 @@ import {
   SMSSubscriptionChange,
 } from './models/Subscription';
 import NotificationReceivedEvent from './events/NotificationReceivedEvent';
-import {OpenedEvent} from './models/NotificationEvents';
-import {OutcomeEvent} from './models/Outcomes';
+import { OpenedEvent } from './models/NotificationEvents';
+import { OutcomeEvent } from './models/Outcomes';
 import {
   InAppMessage,
   InAppMessageAction,
   InAppMessageLifecycleHandlerObject,
 } from './models/InAppMessage';
-import {isValidCallback, isNativeModuleLoaded} from './helpers';
+import { isValidCallback, isNativeModuleLoaded } from './helpers';
 
 const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
@@ -433,7 +433,7 @@ export default class OneSignal {
    * @param  {[key: string]: string} tags
    * @returns void
    */
-  static sendTags(tags: {[key: string]: string}): void {
+  static sendTags(tags: { [key: string]: string }): void {
     if (!isNativeModuleLoaded(RNOneSignal)) {
       return;
     }
@@ -454,7 +454,7 @@ export default class OneSignal {
    * @returns void
    */
   static getTags(
-    handler: (tags: {[key: string]: string} | null) => void,
+    handler: (tags: { [key: string]: string } | null) => void,
   ): void {
     if (!isNativeModuleLoaded(RNOneSignal)) {
       return;
@@ -827,7 +827,7 @@ export default class OneSignal {
       console.error('OneSignal: addTrigger: must include a key and a value');
     }
 
-    let trigger: {[key: string]: string | number | boolean} = {};
+    let trigger: { [key: string]: string | number | boolean } = {};
     trigger[key] = value;
     RNOneSignal.addTriggers(trigger);
   }
@@ -1074,9 +1074,12 @@ export {
   DeviceState,
 };
 
-export {default as OSNotification} from './OSNotification';
+export { default as OSNotification } from './OSNotification';
 export {
   OpenedEventAction,
   OpenedEventActionType,
 } from './models/NotificationEvents';
-export {IosPermissionStatus, ObserverChangeEvent} from './models/Subscription';
+export {
+  IosPermissionStatus,
+  ObserverChangeEvent,
+} from './models/Subscription';

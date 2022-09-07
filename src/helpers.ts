@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import {NativeModule} from 'react-native';
+import { NativeModule } from 'react-native';
 import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,

@@ -4,7 +4,7 @@ import {
   NativeModule,
 } from 'react-native';
 import NotificationReceivedEvent from './NotificationReceivedEvent';
-import {isMultipleInstancesPossible} from '../helpers';
+import { isMultipleInstancesPossible } from '../helpers';
 import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
@@ -18,7 +18,7 @@ import {
   IN_APP_MESSAGE_DID_DISMISS,
   IN_APP_MESSAGE_DID_DISPLAY,
 } from './events';
-import {ChangeEvent} from '../models/Subscription';
+import { ChangeEvent } from '../models/Subscription';
 import OSNotification from '../OSNotification';
 
 const eventList = [
@@ -40,7 +40,7 @@ export default class EventManager {
   private oneSignalEventEmitter: NativeEventEmitter;
   private eventHandlerMap: Map<string, (event: any) => void>;
   private eventHandlerArrayMap: Map<string, Array<(event: any) => void>>;
-  private listeners: {[key: string]: EmitterSubscription};
+  private listeners: { [key: string]: EmitterSubscription };
 
   constructor(RNOneSignal: NativeModule) {
     this.RNOneSignal = RNOneSignal;
