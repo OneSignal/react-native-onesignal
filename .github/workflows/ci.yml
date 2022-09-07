@@ -19,6 +19,7 @@ jobs:
         run: yarn lint
       - name: "[Test] SDK Unit Tests"
         run: yarn test
+
       - name: Unit tests results
         if: failure()
         uses: actions/upload-artifact@v3
