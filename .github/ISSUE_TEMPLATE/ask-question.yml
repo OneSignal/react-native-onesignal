@@ -1,0 +1,27 @@
+name: 🙋‍♂️ Ask a question
+description: Tell us what's on your mind
+title: "[question]: "
+labels: ["question"]
+# assignees:
+#   - OneSignal/ios-sdk
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Having issues integrating this SDK?
+  - type: textarea
+    id: question
+    attributes:
+      label: How can we help?
+      description: Specific question regarding integrating this SDK.
+      placeholder: How do I...?
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/OneSignal/react-native-onesignal/blob/main/CONTRIBUTING.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

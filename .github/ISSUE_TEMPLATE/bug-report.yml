@@ -1,0 +1,72 @@
+name: 🪳 Bug report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug", "triage"]
+# assignees:
+#   - OneSignal/ios-sdk
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Provide a thorough description of whats going on.
+      placeholder: e.g. The latest version of the SDK causes my screen to go blank when I tap on the screen three times.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to reproduce?
+      description: Provide as much detail as posible to reproduce the issue.
+      placeholder: |
+        1. Install vX.Y.Z of dependency
+        2. Launch the app on iOS device
+        3. Tap the screen three times
+        4. Note that the app crashes
+      render: Markdown
+    validations:
+      required: true
+  - type: textarea
+    id: what-are-expectations
+    attributes:
+      label: What did you expect to happen?
+      description: Also tell us, what did you expect to happen?
+      placeholder: I expected the app to continue running no matter how many times I tap the screen.
+    validations:
+      required: true
+  - type: input
+    id: react-native-onesignal-version
+    attributes:
+      label: React Native OneSignal SDK version
+      description: What version of the React Native OneSignal SDK are you using?
+      placeholder: Release 4.4.1
+    validations:
+      required: true
+  - type: checkboxes
+    id: platforms
+    attributes:
+      label: Which platform(s) are affected?
+      description: Indicate which mobile platforms this issue is affecting
+      options:
+        - label: iOS
+          required: false
+        - label: Android
+          required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: Shell
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/OneSignal/react-native-onesignal/blob/main/CONTRIBUTING.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
