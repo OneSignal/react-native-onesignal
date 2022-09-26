@@ -1,0 +1,27 @@
+name: 📣 General feedback
+description: Tell us what's on your mind
+title: "[Feedback]: "
+labels: ["triage"]
+# assignees:
+#   - OneSignal/ios-sdk
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing your valuable feedback!
+  - type: textarea
+    id: feedback
+    attributes:
+      label: What's on your mind?
+      description: Feedback regarding this SDK.
+      placeholder: Share your feedback...
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/OneSignal/react-native-onesignal/blob/main/CONTRIBUTING.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
