@@ -9,6 +9,7 @@
     ],
     "declaration": true,
     "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "strict": true,
     "noUnusedLocals": true,
