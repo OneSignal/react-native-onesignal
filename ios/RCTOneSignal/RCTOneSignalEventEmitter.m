@@ -396,6 +396,28 @@ RCT_EXPORT_METHOD(setLaunchURLsInApp:(BOOL)isEnabled) {
   [OneSignal setLaunchURLsInApp:isEnabled];
 }
 
+/*
+ * Live Activity
+ */
+
+RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId withToken:(NSString *)token withResponse:(RCTResponseSenderBlock)callback) {
+    // Auth hash token created on server and sent to client.
+    [OneSignal enterLiveActivity:activityId withToken:token withSuccess:^{
+        callback(@[]);
+    } withFailure:^(NSError *error) {
+        callback([self processNSError:error]);
+    }];
+}
+
+RCT_EXPORT_METHOD(exitLiveActivity:(NSString *)activityId withResponse:(RCTResponseSenderBlock)callback) {
+    // Auth hash token created on server and sent to client.
+    [OneSignal exitLiveActivity:activityId withToken:token withSuccess:^{
+        callback(@[]);
+    } withFailure:^(NSError *error) {
+        callback([self processNSError:error]);
+    }];
+}
+
 RCT_EXPORT_METHOD(setLogLevel:(int)logLevel visualLogLevel:(int)visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel:visualLogLevel];
 }
