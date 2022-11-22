@@ -319,6 +319,54 @@ export default class OneSignal {
       );
     }
   }
+  /* L I V E   A C T I V I T Y  */
+
+  /**
+   * Associates a temporary push token with an Activity ID on the OneSignal server.
+   * @param  {string} activityId
+   * @param  {string} token
+   * @param  {Function} handler
+   * @returns void
+   */
+  static enterLiveActivity(
+    activityId: string,
+    token: string,
+    handler?: Function,
+  ): void {
+    if (!isNativeModuleLoaded(RNOneSignal)) {
+      return;
+    }
+
+    if (!handler) {
+      handler = function () {};
+    }
+
+    // Only Available on iOS
+    if (Platform.OS === 'ios') {
+      RNOneSignal.enterLiveActivity(activityId, token, handler);
+    }
+  }
+
+  /**
+   * Deletes activityId associated temporary push token on the OneSignal server.
+   * @param  {string} activityId
+   * @param  {Function} handler
+   * @returns void
+   */
+  static exitLiveActivity(activityId: string, handler?: Function): void {
+    if (!isNativeModuleLoaded(RNOneSignal)) {
+      return;
+    }
+
+    if (!handler) {
+      handler = function () {};
+    }
+
+    // Only Available on iOS
+    if (Platform.OS === 'ios') {
+      RNOneSignal.enterLiveActivity(activityId, handler);
+    }
+  }
 
   /* L O C A T I O N */
 
