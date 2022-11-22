@@ -401,7 +401,6 @@ RCT_EXPORT_METHOD(setLaunchURLsInApp:(BOOL)isEnabled) {
  */
 
 RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId withToken:(NSString *)token withResponse:(RCTResponseSenderBlock)callback) {
-    // Auth hash token created on server and sent to client.
     [OneSignal enterLiveActivity:activityId withToken:token withSuccess:^{
         callback(@[]);
     } withFailure:^(NSError *error) {
@@ -410,7 +409,6 @@ RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId withToken:(NSString *
 }
 
 RCT_EXPORT_METHOD(exitLiveActivity:(NSString *)activityId withResponse:(RCTResponseSenderBlock)callback) {
-    // Auth hash token created on server and sent to client.
     [OneSignal exitLiveActivity:activityId withToken:token withSuccess:^{
         callback(@[]);
     } withFailure:^(NSError *error) {

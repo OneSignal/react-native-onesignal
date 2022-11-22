@@ -33,7 +33,7 @@ import {
 } from './models/InAppMessage';
 import { isValidCallback, isNativeModuleLoaded } from './helpers';
 
-const  RNOneSignal = NativeModules.OneSignal;
+const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
 
 // 0 = None, 1 = Fatal, 2 = Errors, 3 = Warnings, 4 = Info, 5 = Debug, 6 = Verbose
@@ -319,9 +319,9 @@ export default class OneSignal {
       );
     }
   }
-   /* L I V E   A C T I V I T Y  */
+  /* L I V E   A C T I V I T Y  */
 
-    /**
+  /**
    * Associates a temporary push token with an Activity ID on the OneSignal server.
    * @param  {string} activityId
    * @param  {string} token
@@ -337,42 +337,36 @@ export default class OneSignal {
       return;
     }
 
-    // Android workaround for the current issue of callback fired more than once
-    if (!handler && Platform.OS === 'ios') {
+    if (!handler) {
       handler = function () {};
     }
 
     // Only Available on iOS
-    if (Platform.OS === 'ios'){
+    if (Platform.OS === 'ios') {
       RNOneSignal.enterLiveActivity(activityId, token, handler);
     }
   }
 
-   /**
+  /**
    * Deletes activityId associated temporary push token on the OneSignal server.
    * @param  {string} activityId
    * @param  {Function} handler
    * @returns void
    */
-    static exitLiveActivity(
-      activityId: string,
-      handler?: Function,
-    ): void {
-      if (!isNativeModuleLoaded(RNOneSignal)) {
-        return;
-      }
-  
-      // Android workaround for the current issue of callback fired more than once
-      if (!handler && Platform.OS === 'ios') {
-        handler = function () {};
-      }
-  
-      // Only Available on iOS
-      if (Platform.OS === 'ios'){
-        RNOneSignal.enterLiveActivity(activityId, handler);
-      }
+  static exitLiveActivity(activityId: string, handler?: Function): void {
+    if (!isNativeModuleLoaded(RNOneSignal)) {
+      return;
     }
 
+    if (!handler) {
+      handler = function () {};
+    }
+
+    // Only Available on iOS
+    if (Platform.OS === 'ios') {
+      RNOneSignal.enterLiveActivity(activityId, handler);
+    }
+  }
 
   /* L O C A T I O N */
 
