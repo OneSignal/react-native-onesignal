@@ -71,6 +71,9 @@ class OSButtons extends React.Component<Props, State> {
             "Prompt for Push",
             color,
             () => {
+                OneSignal.enterLiveActivity("test", "test", response => {
+                    loggingFunction(`User response: ${response}`);
+                });
                 loggingFunction("Prompting for push with user response...");
                 OneSignal.promptForPushNotificationsWithUserResponse(true, response => {
                     loggingFunction(`User response: ${response}`);
