@@ -364,7 +364,7 @@ export default class OneSignal {
 
     // Only Available on iOS
     if (Platform.OS === 'ios') {
-      RNOneSignal.enterLiveActivity(activityId, handler);
+      RNOneSignal.exitLiveActivity(activityId, handler);
     }
   }
 
