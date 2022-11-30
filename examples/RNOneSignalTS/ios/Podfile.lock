@@ -10,15 +10,15 @@ PODS:
     - React-jsi (= 0.64.1)
     - ReactCommon/turbomodule/core (= 0.64.1)
   - glog (0.3.5)
-  - OneSignalXCFramework (3.11.2):
-    - OneSignalXCFramework/OneSignalCore (= 3.11.2)
-    - OneSignalXCFramework/OneSignalExtension (= 3.11.2)
-    - OneSignalXCFramework/OneSignalOutcomes (= 3.11.2)
-  - OneSignalXCFramework/OneSignalCore (3.11.2)
-  - OneSignalXCFramework/OneSignalExtension (3.11.2):
+  - OneSignalXCFramework (3.12.3):
+    - OneSignalXCFramework/OneSignalCore (= 3.12.3)
+    - OneSignalXCFramework/OneSignalExtension (= 3.12.3)
+    - OneSignalXCFramework/OneSignalOutcomes (= 3.12.3)
+  - OneSignalXCFramework/OneSignalCore (3.12.3)
+  - OneSignalXCFramework/OneSignalExtension (3.12.3):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalOutcomes
-  - OneSignalXCFramework/OneSignalOutcomes (3.11.2):
+  - OneSignalXCFramework/OneSignalOutcomes (3.12.3):
     - OneSignalXCFramework/OneSignalCore
   - RCT-Folly (2020.01.13.00):
     - boost-for-react-native
@@ -214,7 +214,7 @@ PODS:
     - React-perflogger (= 0.64.1)
   - React-jsinspector (0.64.1)
   - react-native-onesignal (4.4.1):
-    - OneSignalXCFramework (= 3.11.2)
+    - OneSignalXCFramework (= 3.12.3)
     - React (< 1.0.0, >= 0.13.0)
   - React-perflogger (0.64.1)
   - React-RCTActionSheet (0.64.1):
@@ -384,9 +384,9 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: 7b423f9e248eae65987838148c36eec1dbfe0b53
-  FBReactNativeSpec: 0f77c6b9465fd20bb440f57e061bcb8d9ccb9bf2
+  FBReactNativeSpec: 24caa029596b15294bf7ac235d35b59765ae5469
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
-  OneSignalXCFramework: 81ceac017a290f23793443323090cfbe888f74ea
+  OneSignalXCFramework: 75844c29607ca95e6176f6f21257b4382c7fdbfb
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
   RCTRequired: ec2ebc96b7bfba3ca5c32740f5a0c6a014a274d2
   RCTTypeSafety: 22567f31e67c3e088c7ac23ea46ab6d4779c0ea5
@@ -398,7 +398,7 @@ SPEC CHECKSUMS:
   React-jsi: 5de8204706bd872b78ea646aee5d2561ca1214b6
   React-jsiexecutor: 124e8f99992490d0d13e0649d950d3e1aae06fe9
   React-jsinspector: 500a59626037be5b3b3d89c5151bc3baa9abf1a9
-  react-native-onesignal: e1f82b98767a9014d2c46f395b083330cfa29cea
+  react-native-onesignal: 422286fc3ac6db94e7d568a1b41d9db411a1d3c7
   React-perflogger: aad6d4b4a267936b3667260d1f649b6f6069a675
   React-RCTActionSheet: fc376be462c9c8d6ad82c0905442fd77f82a9d2a
   React-RCTAnimation: ba0a1c3a2738be224a08092fa7f1b444ab77d309

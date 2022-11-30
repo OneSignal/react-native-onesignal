@@ -401,16 +401,16 @@ RCT_EXPORT_METHOD(setLaunchURLsInApp:(BOOL)isEnabled) {
  */
 
 RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId withToken:(NSString *)token withResponse:(RCTResponseSenderBlock)callback) {
-    [OneSignal enterLiveActivity:activityId withToken:token withSuccess:^{
-        callback(@[]);
+    [OneSignal enterLiveActivity:activityId withToken:token withSuccess:^(NSDictionary *result) {
+        callback(@[result]);
     } withFailure:^(NSError *error) {
         callback([self processNSError:error]);
     }];
 }
 
 RCT_EXPORT_METHOD(exitLiveActivity:(NSString *)activityId withResponse:(RCTResponseSenderBlock)callback) {
-    [OneSignal exitLiveActivity:activityId withToken:token withSuccess:^{
-        callback(@[]);
+     [OneSignal exitLiveActivity:activityId withSuccess:^(NSDictionary *result) {
+        callback(@[result]);
     } withFailure:^(NSError *error) {
         callback([self processNSError:error]);
     }];

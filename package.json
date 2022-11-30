@@ -5,28 +5,19 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "install-peers && yarn run build",
+    "prepare": "yarn run build",
     "build": "tsc",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx; prettier --check src __test__",
-    "test": "tsc && jest --coverage"
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx; prettier --check src"
   },
   "dependencies": {
     "invariant": "^2.2.2"
   },
-  "peerDependencies": {
-    "@babel/runtime": "*",
-    "jest": "*",
-    "react": "*",
-    "react-native": "*"
-  },
   "devDependencies": {
     "@react-native-community/eslint-config": "^1.1.0",
     "@types/invariant": "^2.2.2",
-    "@types/jest": "^27.1.8",
     "@types/react-native": "^0.66.8",
     "eslint": "^6.5.1",
     "eslint-config-prettier": "^8.5.0",
-    "install-peers-cli": "^2.2.0",
     "prettier": "^2.7.1",
     "typescript": "^3.8.3"
   },
