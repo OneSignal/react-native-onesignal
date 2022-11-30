@@ -17,8 +17,6 @@ jobs:
         run: yarn
       - name: "[Test] Linting"
         run: yarn lint
-      - name: "[Test] SDK Unit Tests"
-        run: yarn test
 
       - name: Unit tests results
         if: failure()
