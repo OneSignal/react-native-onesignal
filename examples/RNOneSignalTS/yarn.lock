@@ -4299,9 +4299,9 @@ json-stringify-safe@~5.0.1:
   integrity sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==
 
 json5@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.1.tgz#655d50ed1e6f95ad1a3caababd2b0efda10b395c"
-  integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.2.tgz#64471c5bdcc564c18f7c1d4df2e2297f2457c5ab"
+  integrity sha512-46Tk9JiOL2z7ytNQWFLpj99RZkVgeHf87yGQKsIkaPz1qSH9UczKH1rO7K3wgRselo0tYMUNfecYpm/p1vC7tQ==
 
 jsonfile@^2.1.0:
   version "2.4.0"
@@ -5505,10 +5505,10 @@ react-native-codegen@^0.0.6:
     jscodeshift "^0.11.0"
     nullthrows "^1.1.1"
 
-react-native-onesignal@^4.4.1:
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-4.4.1.tgz#c79c94ea8622012adcd3d1e36ba91be6fa126453"
-  integrity sha512-vbS0E2TO5KljT0l1nAce04aOZF6FLv9oUaliffhFQR92oTHAbwNmwwMpxZF6CIcNANDDKkYtKPw5h7baUxmQdw==
+react-native-onesignal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-4.5.0.tgz#a5fef4348d429903bf3691e480d95a3ddf7bf5c1"
+  integrity sha512-9rocNYJXrAFUk1yG50vu0D7aYEeX8imEA3qDeBT+iwyFpy6E1xXNy3z9OPazzeuGi9/YaseEAiswpKBlaoJV3A==
   dependencies:
     invariant "^2.2.2"
 
