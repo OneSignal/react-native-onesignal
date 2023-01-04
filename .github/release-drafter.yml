@@ -1,0 +1,27 @@
+name-template: $RESOLVED_VERSION
+tag-template: $RESOLVED_VERSION
+categories:
+  - title: 🚀 Features
+    label: Enhancement / Feature
+  - title: 🐛 Bug Fixes
+    label: Bug
+  - title: 🧰 Improvements
+    label: Improvement  
+  - title: down arrow Dependency Updates
+    label: Dependencies 
+change-template: '- $TITLE (#$NUMBER)'
+version-resolver:
+  major:
+    labels:
+      - 'major'
+  minor:
+    labels:
+      - 'minor'
+  patch:
+    labels:
+      - 'patch'
+  default: patch
+template: |
+  ## Other Changes
+  
+  $CHANGES
