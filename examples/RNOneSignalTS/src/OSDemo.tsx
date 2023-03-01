@@ -1,179 +1,184 @@
-import OneSignal from 'react-native-onesignal';
+import {OneSignal} from 'react-native-onesignal';
 import * as React from 'react';
-import { StyleSheet, View, Text, TextInput, Alert} from 'react-native';
+import {Alert, StyleSheet, View, ScrollView, SafeAreaView} from 'react-native';
 import OSButtons from './OSButtons';
-import { SubscribeFields } from './models/SubscribeFields';
+// import {SubscribeFields} from './models/SubscribeFields';
 import OSConsole from './OSConsole';
-import { renderButtonView } from './Helpers';
+import {renderButtonView} from './Helpers';
+import {TextInput, Text} from "@react-native-material/core";
+
+// const APP_ID = 'ce8572ae-ff57-4e77-a265-5c91f00ecc4c'; // original
+// const APP_ID = 'aab9c276-832e-4f54-a428-097f70df80db';
+const APP_ID = '77e32082-ea27-42e3-a898-c72e141824ef';
 
 export interface Props {
   name: string;
 }
 
 export interface State {
-    name: string;
-    isSubscribed: boolean;
-    isLocationShared: boolean;
-    requiresPrivacyConsent: boolean;
-    consoleValue: string;
-    inputValue: string;
+  name: string;
+  consoleValue: string;
+  inputValue: string;
 }
 
 class OSDemo extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
+  constructor(props: Props) {
+    super(props);
 
-        this.state = {
-            name: props.name,
-            isSubscribed: false,
-            requiresPrivacyConsent: false,
-            isLocationShared: false,
-            inputValue: "",
-            consoleValue: ""
-        }
+    this.state = {
+      name: props.name,
+      inputValue: '',
+      consoleValue: '',
+    };
+  }
+
+  async componentDidMount() {
+    OneSignal.initialize(APP_ID);
+    OneSignal.Debug.setLogLevel(6);
+
+    OneSignal.Notifications.setNotificationWillShowInForegroundHandler(
+      (notifReceivedEvent) => {
+        this.OSLog('OneSignal: notification will show in foreground:', notifReceivedEvent);
+        const notification = notifReceivedEvent.getNotification();
+
+        const cancelButton = {
+          text: 'Cancel',
+          onPress: () => {
+            notifReceivedEvent.complete();
+          },
+          style: 'cancel',
+        };
+
+        const completeButton = {
+          text: 'Complete',
+          onPress: () => {
+            notifReceivedEvent.complete(notification);
+          },
+        };
+
+        Alert.alert('Complete notification?', 'Test', [cancelButton, completeButton], {
+          cancelable: true,
+        });
+      },
+    );
+
+    OneSignal.Notifications.setNotificationOpenedHandler((notification) => {
+      this.OSLog('OneSignal: notification opened:', notification);
+    });
+
+    OneSignal.InAppMessages.setClickHandler((event) => {
+      this.OSLog('OneSignal IAM clicked:', event);
+    });
+
+    OneSignal.InAppMessages.setLifecycleHandler({
+      onWillDisplayInAppMessage: (message) => {
+        this.OSLog('OneSignal: will display IAM: ', message.messageId);
+      },
+      onDidDisplayInAppMessage: (message) => {
+        this.OSLog('OneSignal: did display IAM: ', message.messageId);
+      },
+      onWillDismissInAppMessage: (message) => {
+        this.OSLog('OneSignal: will dismiss IAM: ', message.messageId);
+      },
+      onDidDismissInAppMessage: (message) => {
+        this.OSLog('OneSignal: did dismiss IAM: ', message.messageId);
+      }
+    });
+
+    OneSignal.User.PushSubscription.addObserver((event) => {
+      this.OSLog('OneSignal: subscription changed:', event);
+    });
+
+    OneSignal.Notifications.addPermissionObserver((event) => {
+      this.OSLog('OneSignal: permission changed:', event);
+    });
+  }
+
+  componentWillUnmount() {
+    OneSignal.clearHandlers();
+  }
+
+  OSLog = (message: string, optionalArg: any = null) => {
+    if (optionalArg !== null) {
+      message = message + JSON.stringify(optionalArg);
     }
 
-    async componentDidMount() {
-        /* O N E S I G N A L   S E T U P */
-        OneSignal.setAppId("ce8572ae-ff57-4e77-a265-5c91f00ecc4c");
-        OneSignal.setLogLevel(6, 0);
-        OneSignal.setRequiresUserPrivacyConsent(this.state.requiresPrivacyConsent);
+    console.log(message);
 
-        /* O N E S I G N A L  H A N D L E R S */
-        OneSignal.setNotificationWillShowInForegroundHandler(notifReceivedEvent => {
-            this.OSLog("OneSignal: notification will show in foreground:", notifReceivedEvent);
-            let notif = notifReceivedEvent.getNotification();
+    let consoleValue;
 
-            const button1 = {
-                text: "Cancel",
-                onPress: () => { notifReceivedEvent.complete(); },
-                style: "cancel"
-            };
-
-            const button2 = { text: "Complete", onPress: () => { notifReceivedEvent.complete(notif); }};
-
-            Alert.alert("Complete notification?", "Test", [ button1, button2], { cancelable: true });
-        });
-        OneSignal.setNotificationOpenedHandler(notification => {
-            this.OSLog("OneSignal: notification opened:", notification);
-        });
-        OneSignal.setInAppMessageClickHandler(event => {
-            this.OSLog("OneSignal IAM clicked:", event);
-        });
-        OneSignal.setInAppMessageLifecycleHandler({
-            onWillDisplayInAppMessage: message => {
-                this.OSLog("OneSignal: will display IAM: ", message.messageId)
-            },
-            onDidDisplayInAppMessage: message => {
-                this.OSLog("OneSignal: did display IAM: ", message.messageId)
-            },
-            onWillDismissInAppMessage: message => {
-                this.OSLog("OneSignal: will dismiss IAM: ", message.messageId)
-            },
-            onDidDismissInAppMessage: message => {
-                this.OSLog("OneSignal: did dismiss IAM: ", message.messageId)
-            }
-        });
-        OneSignal.addEmailSubscriptionObserver((event) => {
-            this.OSLog("OneSignal: email subscription changed: ", event);
-        });
-        OneSignal.addSMSSubscriptionObserver((event) => {
-            this.OSLog("OneSignal: SMS subscription changed: ", event);
-        });
-        OneSignal.addSubscriptionObserver(event => {
-            this.OSLog("OneSignal: subscription changed:", event);
-            this.setState({ isSubscribed: event.to.isSubscribed})
-        });
-        OneSignal.addPermissionObserver(event => {
-            this.OSLog("OneSignal: permission changed:", event);
-        });
-        const state = await OneSignal.getDeviceState();
-
-        this.setState({
-            // state is possibly 'null' so need to check
-            name : state? state.emailAddress : "",
-            isSubscribed : state ? state.isSubscribed : false,
-        });
+    if (this.state.consoleValue) {
+      consoleValue = `${this.state.consoleValue}\n${message}`;
+    } else {
+      consoleValue = message;
     }
+    this.setState({consoleValue});
+  };
 
-    componentWillUnmount() {
-        OneSignal.clearHandlers();
-    }
+  inputChange = (text: string) => {
+    this.setState({inputValue: text});
+  };
 
-    OSLog = (message: string, optionalArg?: Object) => {
+  render() {
+    // const subscribeFields: SubscribeFields = {
+    //   isSubscribed: this.state.isSubscribed,
+    // };
 
-        if (optionalArg) {
-            message = message + JSON.stringify(optionalArg);
-        }
-
-        console.log(message);
-
-        let consoleValue;
-
-        if (this.state.consoleValue) {
-            consoleValue = this.state.consoleValue+"\n"+message
-        } else {
-            consoleValue = message;
-        }
-        this.setState({ consoleValue });
-    }
-
-    inputChange = (text: string) => {
-        this.setState({ inputValue: text })
-    }
-
-    render() {
-        const subscribeFields : SubscribeFields = {
-            isSubscribed : this.state.isSubscribed,
-        }
-
-        return (
-            <View style={styles.root}>
-                <Text style={styles.title} >OneSignal</Text>
-                {renderButtonView("Clear", 'gray', () => { this.setState({ consoleValue: "" }) })}
-                <OSConsole value={this.state.consoleValue}/>
-                <TextInput style={styles.input} placeholder="Input" onChangeText={this.inputChange}/>
-                <OSButtons subscribeFields={subscribeFields} loggingFunction={this.OSLog} inputFieldValue={this.state.inputValue}/>
-            </View>
-        );
-    }
-};
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>OneSignal</Text>
+          <OSConsole value={this.state.consoleValue} />
+          <View style={styles.clearButton}>
+            {renderButtonView('X', () => {
+              this.setState({consoleValue: ''});
+            })}
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Input"
+            onChangeText={this.inputChange}
+          />
+        </View>
+        <ScrollView style={styles.scrollView}>
+          <OSButtons 
+            loggingFunction={this.OSLog}
+            inputFieldValue={this.state.inputValue}
+          />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+}
 
 // styles
 const styles = StyleSheet.create({
-  root: {
-    alignItems: 'center',
-    alignSelf: 'center'
-  },
-  title: {
-    fontSize: 40
-  },
-  buttons: {
-    flexDirection: 'row',
-    minHeight: 70,
-    alignItems: 'stretch',
-    alignSelf: 'center',
-    borderWidth: 5
-  },
   container: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: 'stretch',
+    backgroundColor: '#fff',
   },
-  button: {
-    flex: 1,
-    paddingVertical: 0
+  header: {
+    flex: .5,
+  },
+  scrollView: {
+    flex: .5,
+  },
+  title: {
+    fontSize: 40,
+    alignSelf: 'center',
+    paddingVertical: 10,
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 0,
+    top: 70,
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 2,
-    borderRadius: 5,
-    width: 300,
-    margin: 10
-  }
+    marginTop: 10,
+  },
 });
 
 export default OSDemo;

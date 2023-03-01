@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: 'grey',
-    height: 200,
     flex: 1,
     flexGrow: 1,
     flexDirection: 'row'

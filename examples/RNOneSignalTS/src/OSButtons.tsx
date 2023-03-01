@@ -1,508 +1,536 @@
-import OneSignal, { OutcomeEvent } from 'react-native-onesignal';
+import {OneSignal, OutcomeEvent} from 'react-native-onesignal';
 import * as React from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
-import { renderButtonView } from './Helpers';
-import { SubscribeFields } from './models/SubscribeFields';
+import {StyleSheet, View, Platform} from 'react-native';
+import {renderButtonView} from './Helpers';
+import {Text, Divider} from "@react-native-material/core";
 
 export interface Props {
-    subscribeFields: SubscribeFields;
     loggingFunction: Function;
     inputFieldValue: string;
 }
 
-export interface State {
-    isSubscribed: boolean;
-    unSubscribedWhenNotificationDisabled: boolean;
-    isLocationShared: boolean;
-    provideUserConsent: boolean;
-    requireUserConsent: boolean;
-    pauseIAM: boolean;
-    state: any;
-}
+class OSButtons extends React.Component<Props> {
+    createInAppMessagesFields() {
+        const {loggingFunction} = this.props;
 
-class OSButtons extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        const subscribeFields = props.subscribeFields;
-
-        this.state = {
-            isSubscribed: subscribeFields.isSubscribed,
-            unSubscribedWhenNotificationDisabled: true,
-            isLocationShared: true,
-            provideUserConsent: false,
-            requireUserConsent: false,
-            pauseIAM: false,
-            state: {}
-        };
-    }
-
-    async componentDidMount() {
-        let state = await OneSignal.getDeviceState();
-        this.setState({ state })
-    }
-
-    createSubscribeFields() {
-        const { subscribeFields, loggingFunction } = this.props;
-        const { isSubscribed } = subscribeFields;
-        const { unSubscribedWhenNotificationDisabled, isLocationShared } = this.state;
-        const color = '#D45653';
-        const elements = [];
-
-        const subscribedButton = renderButtonView(
-            isSubscribed ? "Disable Push" : "Subscribe",
-            color,
-            () => {
-                loggingFunction(`Is Push Disabled: ${isSubscribed}`);
-                OneSignal.disablePush(isSubscribed);
-            }
-        );
-
-        const unsubscribeWhenNotificationsAreDisabledButton = renderButtonView(
-            unSubscribedWhenNotificationDisabled ? "Unsubscribe When Notifications Disabled" : "Subscribe when notification disabled",
-            color,
-            () => {
-                loggingFunction(`Is application unsubscribed when notification disabled: ${unSubscribedWhenNotificationDisabled}`);
-                OneSignal.unsubscribeWhenNotificationsAreDisabled(unSubscribedWhenNotificationDisabled);
-                this.setState({ unSubscribedWhenNotificationDisabled : !unSubscribedWhenNotificationDisabled });
-            }
-        );
-
-        const promptForPush = renderButtonView(
-            "Prompt for Push",
-            color,
-            () => {
-                loggingFunction("Prompting for push with user response...");
-                OneSignal.promptForPushNotificationsWithUserResponse(true, response => {
-                    loggingFunction(`User response: ${response}`);
-                });
-            }
-        );
-
-        const registerForProvisionalAuthorization = renderButtonView(
-            "Register For Provisional Authorization",
-            color,
-            () => {
-                loggingFunction("Register For Provisional Authorization with user response...");
-                OneSignal.registerForProvisionalAuthorization(response => {
-                    loggingFunction(`User response: ${response}`);
-                });
-            }
-        );
-
-        const locationShared = renderButtonView("is Location Shared", color, async () => {
-            const appHasLocationShared = await OneSignal.isLocationShared();
-            loggingFunction(`Application has location shared active: ${appHasLocationShared}`);
-        })
-
-        const setLocationShared = renderButtonView(
-            isLocationShared ? "Unshare Location" : "Share Location",
-            color,
-            () => {
-                loggingFunction(`Is Location Shared: ${!isLocationShared}`);
-                OneSignal.setLocationShared(!isLocationShared);
-                this.setState({ isLocationShared : !isLocationShared });
-            }
-        );
-
-        const promptLocationButton = renderButtonView(
-            "Prompt Location",
-            color,
-            () => {
-                loggingFunction("Prompting Location");
-                OneSignal.promptLocation();
-            }
-        );
-
-        elements.push(subscribedButton,
-            unsubscribeWhenNotificationsAreDisabledButton,
-            registerForProvisionalAuthorization, promptForPush,
-            locationShared, setLocationShared, promptLocationButton);
-        return elements;
-    }
-
-    createDeviceFields() {
-        const color = "#051B2C";
-        const elements = [];
-        const { loggingFunction } = this.props;
-
-        const deviceStateButton = renderButtonView("Get Device State", color, async () => {
-            const deviceState = await OneSignal.getDeviceState();
-            loggingFunction(`Device State: ${JSON.stringify(deviceState)}`);
-        })
-
-        const setLanguageButton = renderButtonView(
-            "Set Language",
-            color,
-            () => {
-                loggingFunction('Attempting to set language: ', this.props.inputFieldValue);
-                OneSignal.setLanguage(this.props.inputFieldValue);
-            }
-        );
-
-        const requireUserProvideConsent = renderButtonView(
-            this.state.requireUserConsent ? "Remove User Privacy Consent Requirement" : "Require User Privacy Consent",
-            color,
-            () => {
-                loggingFunction(`Require User Consent: ${!this.state.requireUserConsent}`);
-                OneSignal.setRequiresUserPrivacyConsent(!this.state.requireUserConsent);
-                this.setState({ requireUserConsent : !this.state.requireUserConsent });
-            }
-        )
-
-        const appRequireUserProvideConsent = renderButtonView(
-            "is Privacy Consent Required",
-            color,
+        const getPausedButton = renderButtonView(
+            'Get paused',
             async () => {
-                const appRequiresUserPrivacyConsent = await OneSignal.requiresUserPrivacyConsent();
-                loggingFunction(`Application requires privacy consent: ${appRequiresUserPrivacyConsent}`);
-         })
-
-        const provideUserConsentButton = renderButtonView(
-            this.state.provideUserConsent ? "Reject User Consent" : "Provide User Consent", color, async () => {
-                loggingFunction(`Provide User Consent: ${!this.state.provideUserConsent}`);
-                OneSignal.provideUserConsent(!this.state.provideUserConsent);
-                this.setState({ provideUserConsent: !this.state.provideUserConsent })
-        })
-
-        const userProvidedPrivacyConsent = renderButtonView("Did User Provide Privacy Consent", color, async () => {
-            const didProvide = await OneSignal.userProvidedPrivacyConsent();
-            loggingFunction(`Provided Privacy Consent: ${didProvide}`);
-        })
-
-        elements.push(
-            deviceStateButton,
-            setLanguageButton,
-            requireUserProvideConsent,
-            appRequireUserProvideConsent,
-            provideUserConsentButton,
-            userProvidedPrivacyConsent,
-            );
-        return elements;
-    }
-
-    createNotificationFields() {
-        const color = "#3A3DB3";
-        const elements = [];
-        const { loggingFunction } = this.props;
-
-        const postNotificationButton = renderButtonView(
-            "Post Notification",
-            color,
-            async () => {
-                // Property 'userId' does not exist on type 'DeviceState | null' so need to check
-                const deviceState = await OneSignal.getDeviceState();
-                const userId = deviceState ? deviceState.userId : "";
-
-                const notificationObj = {
-                    contents: {en: "Message Body"},
-                    include_player_ids: [userId]
-                };
-                const json = JSON.stringify(notificationObj);
-
-                loggingFunction(`Attempting to send notification to ${userId}`);
-
-                OneSignal.postNotification(json, (success) => {
-                    loggingFunction(`Success: ${JSON.stringify(success)}`);
-                }, (failure) => {
-                    loggingFunction(`Failure: ${JSON.stringify(failure)}`);
-                });
+                const paused = await OneSignal.InAppMessages.getPaused();
+                loggingFunction(`Is IAM Paused: ${paused}`);
             }
         );
 
-        const removeNotificationButton = renderButtonView(
-            "Remove Notification With Android ID",
-            color,
+        const pauseIamButton = renderButtonView(
+            'Pause IAM',
             () => {
-                const number: number = Number(this.props.inputFieldValue);
-                loggingFunction("Removing notification with id:", number);
-                OneSignal.removeNotification(number);
-            }
-        )
-
-        const removeGroupedNotificationButton = renderButtonView(
-            "Remove Grouped Notifications With Group ID",
-            color,
-            () => {
-                const groupId: string = this.props.inputFieldValue;
-                loggingFunction("Removing notification with group id:", groupId);
-                OneSignal.removeGroupedNotifications(groupId);
-            }
-        )
-
-        const sendTagWithKey = renderButtonView(
-            "Send tag with key my_tag",
-            color,
-            async () => {
-                loggingFunction("Sending tag with value: ", this.props.inputFieldValue);
-                OneSignal.sendTag("my_tag", this.props.inputFieldValue);
-            }
-        )
-
-        const getTags = renderButtonView("Get tags", color, async () => {
-            loggingFunction("Privacy consent required for getting tags");
-            loggingFunction("Getting tags...");
-            OneSignal.getTags((tags) => {
-                loggingFunction(`Tags: ${JSON.stringify(tags)}`);
-            });
-        });
-
-        const deleteTagWithKey = renderButtonView("Delete Tag With Key", color, async () => {
-            loggingFunction("Deleting tag with key: ", this.props.inputFieldValue);
-            OneSignal.deleteTag(this.props.inputFieldValue);
-        });
-
-        const clearOneSignalNotificationsButton = renderButtonView("Clear OneSignal Notifications", color, async () => {
-            OneSignal.clearOneSignalNotifications();
-        })
-
-        elements.push(
-            postNotificationButton,
-            sendTagWithKey,
-            getTags,
-            deleteTagWithKey,
-            removeNotificationButton,
-            removeGroupedNotificationButton
-        );
-
-        if (Platform.OS === "android") {
-            elements.push(clearOneSignalNotificationsButton);
-        }
-
-        return elements;
-    }
-
-    createSMSFields() {
-        let elements = [];
-        const { loggingFunction } = this.props;
-        const color = "#1E8FEB";
-
-        // Set SMS Button
-        const setSMSButton = renderButtonView(
-            "Set SMS Number",
-            color,
-            () => {
-                loggingFunction('Attempting to set SMS number: ', this.props.inputFieldValue);
-                OneSignal.setSMSNumber(this.props.inputFieldValue, undefined, (res : string) => {
-                    loggingFunction("setSMSNumber completed with result: ", res);
-                });
+                OneSignal.InAppMessages.setPaused(true);
+                loggingFunction('IAM Paused: true');
             }
         );
 
-        // Logout SMS Button
-        const logoutSMSButton = renderButtonView(
-            "Logout SMS Number",
-            color,
+        const unPauseIamButton = renderButtonView(
+            'Unpause IAM',
             () => {
-                loggingFunction('Attempting to logout SMS number');
-                OneSignal.logoutSMSNumber((res: string) => {
-                    loggingFunction("logoutSMSNumber completed with result: ", res);
-                });
-            }
-        );
-
-        elements.push(setSMSButton, logoutSMSButton);
-        return elements;
-    }
-
-    createEmailFields() {
-        let elements = [];
-        const { loggingFunction } = this.props;
-        const color = "#1E8FEB";
-
-        // Set Email Button
-        const setEmailButton = renderButtonView(
-            "Set Email",
-            color,
-            () => {
-                loggingFunction('Attempting to set email: ', this.props.inputFieldValue);
-                OneSignal.setEmail(this.props.inputFieldValue, undefined, (res : string) => {
-                    loggingFunction("setEmail completed with result: ", res);
-                });
-            }
-        );
-
-        // Logout Email Button
-        const logoutEmailButton = renderButtonView(
-            "Logout Email",
-            color,
-            () => {
-                loggingFunction('Attempting to logout email');
-                OneSignal.logoutEmail((res: string) => {
-                    loggingFunction("logoutEmail completed with result: ", res);
-                });
-            }
-        );
-
-        const externalUserIdButton = renderButtonView(
-            "Set External User Id",
-            color,
-            () => {
-                loggingFunction("Attempting to set external id: ", this.props.inputFieldValue);
-                OneSignal.setExternalUserId(this.props.inputFieldValue, "aaa", (res: object) => {
-                    loggingFunction("setExternalUserId completed with result: ", JSON.stringify(res));
-                })
-            }
-        )
-
-        const removeExternalIdButton = renderButtonView(
-            "Remove External Id",
-            color,
-            () => {
-                loggingFunction("Removing external id...");
-                OneSignal.removeExternalUserId((res: object) => {
-                    loggingFunction("removeExternalUserId completed with result: ", JSON.stringify(res));
-                })
-            }
-        )
-
-        elements.push(setEmailButton, logoutEmailButton, externalUserIdButton, removeExternalIdButton);
-        return elements;
-    }
-
-    createInAppFields() {
-        let elements = [];
-        const { loggingFunction } = this.props;
-        const color = "#FEA61D";
-
-        const addTriggerButton = renderButtonView(
-            "Add trigger with key my_trigger",
-            color,
-            () => {
-                const triggerValue = this.props.inputFieldValue;
-                loggingFunction(`Adding trigger with key 'my_trigger' and value ${triggerValue}`);
-                OneSignal.addTrigger(`my_trigger`, triggerValue);
+                OneSignal.InAppMessages.setPaused(false);
+                loggingFunction('IAM Paused: true');
             }
         );
 
         const removeTriggerButton = renderButtonView(
-            "Remove trigger for key",
-            color,
+            'Remove trigger for key',
             () => {
                 const key = this.props.inputFieldValue;
-                loggingFunction("Removing trigger for key: ", key);
-                OneSignal.removeTriggerForKey(key);
+                loggingFunction('Removing trigger for key: ', key);
+                OneSignal.InAppMessages.removeTrigger(key);
             }
-        )
-
-        const pauseIamButton = renderButtonView(
-            this.state.pauseIAM ? "Unpause IAM" : "Pause IAM",
-            color,
+        );
+        
+        const addTriggerButton = renderButtonView(
+            'Add trigger with key my_trigger',
             () => {
-                const newPauseState = !this.state.pauseIAM;
-                loggingFunction(`Is IAM Paused: ${newPauseState}`);
-                OneSignal.pauseInAppMessages(newPauseState)
-                this.setState({ pauseIAM: newPauseState })
+                const triggerValue = this.props.inputFieldValue;
+                loggingFunction(`Adding trigger with key 'my_trigger' and value ${triggerValue}`);
+                OneSignal.InAppMessages.addTrigger('my_trigger', triggerValue);
             }
-        )
+        );
 
-        const getTriggerValueForKeyButton = renderButtonView(
-            "Get Trigger Value For Key",
-            color,
-            async () => {
-                try {
-                    const key = this.props.inputFieldValue;
-                    const value = await OneSignal.getTriggerValueForKey(key);
-                    loggingFunction(`Trigger value for key ${key}: `, value);
-                } catch (e) {
-                    loggingFunction("Error getting trigger value: ", e.message);
-                }
+        const addTriggersButton = renderButtonView(
+            'Add list of test triggers',
+            () => {
+                loggingFunction('Adding a list of test triggers');
+                OneSignal.User.addAliases({
+                    'my_trigger_1': 'my_trigger_1_value',
+                    'my_trigger_2': 'my_trigger_2_value',
+                    'my_trigger_3': 'my_trigger_3_value', 
+                });
             }
-        )
+        );
 
-        elements.push(addTriggerButton, removeTriggerButton, pauseIamButton, getTriggerValueForKeyButton);
-        return elements;
+        const removeTriggersButton = renderButtonView(
+            'Remove list of test triggers',
+            () => {
+                loggingFunction('Removing list of test triggers');
+                OneSignal.User.removeAliases(['my_trigger_1', 'my_trigger_2', 'my_trigger_3']);
+            }
+        );
+
+        const clearAllTriggersButton = renderButtonView(
+            'Clear all triggers',
+            () => {
+                const triggerValue = this.props.inputFieldValue;
+                loggingFunction(`Clearing all triggers`);
+                OneSignal.InAppMessages.clearTriggers();
+            }
+        );
+
+        return [
+            getPausedButton,
+            pauseIamButton, 
+            unPauseIamButton,
+            addTriggerButton, 
+            removeTriggerButton,
+            addTriggersButton,
+            removeTriggersButton,
+            clearAllTriggersButton,
+        ];
     }
 
-    createOutcomeFields() {
-        let elements = [];
-        const { loggingFunction } = this.props;
-        const color = "#FF36A0";
+    createLocationFields() {
+        const {loggingFunction} = this.props;
+        const locationShared = renderButtonView(
+            'Is Location Shared',
+            async () => {
+                const isLocationShared = await OneSignal.Location.isShared();
+                loggingFunction(`Application has location shared active: ${isLocationShared}`);
+            });
+
+        const setLocationShared = renderButtonView(
+            'Share Location',
+            () => {
+                loggingFunction('Sharing location');
+                OneSignal.Location.setShared(true);
+                
+            }
+        );
+
+        const setLocationUnshared = renderButtonView(
+            'Unshare Location',
+            () => {
+                loggingFunction('Unsharing location');
+                OneSignal.Location.setShared(false);
+            }
+        );
+
+        const requestPermissionButton = renderButtonView(
+            'Request Location Permission',
+            () => {
+                loggingFunction('Request Location permission');
+                OneSignal.Location.requestPermission();
+            }
+        );
+
+        return [
+            locationShared, 
+            setLocationShared, 
+            setLocationUnshared, 
+            requestPermissionButton
+        ];
+    }
+
+    createNotificationFields() {
+        const {loggingFunction} = this.props;
+
+        const hasPermissionButton = renderButtonView(
+            'Has Notification Permission',
+            async () => {
+                const granted = await OneSignal.Notifications.hasPermission();
+                loggingFunction(`Has Notification Permission: ${granted}`);
+            }
+        );
+
+        const canRequestPermissionButton = renderButtonView(
+            'Can Request Permission',
+            async () => {
+                const granted = await OneSignal.Notifications.canRequestPermission();
+                loggingFunction(`Can Request Permission: ${granted}`);
+            }
+        );
+
+        const requestPermissionButton = renderButtonView(
+            'Request Permission',
+            async () => {
+                loggingFunction('Requesting notification permission');
+                OneSignal.Notifications.requestPermission();
+            }
+        );
+
+        const requestProvisionalPermissionButton = renderButtonView(
+            'Register For Provisional Authorization',
+            () => {
+                loggingFunction('Requesting provisional notification permission:');
+
+                OneSignal.Notifications.registerForProvisionalAuthorization(response => {
+                    loggingFunction(`User response: ${response}`);
+                });
+            }
+        );
+
+        const clearOneSignalNotificationsButton = renderButtonView(
+            'Clear OneSignal Notifications',
+            () => {
+                loggingFunction('Clearing all OneSignal Notifications');
+                OneSignal.Notifications.clearAll();
+            }
+        );
+
+        return [
+            hasPermissionButton,
+            canRequestPermissionButton,
+            requestPermissionButton,
+            requestProvisionalPermissionButton,
+            clearOneSignalNotificationsButton
+        ];
+    }
+
+    createSessionFields() {
+        const {loggingFunction} = this.props;
 
         const sendOutcomeButton = renderButtonView(
-            "Send Outcome With Name",
-            color,
+            'Send Outcome With Name',
             () => {
-                loggingFunction("Sending outcome: ", this.props.inputFieldValue);
-                OneSignal.sendOutcome(this.props.inputFieldValue, (event: OutcomeEvent) => {
-                    loggingFunction("Outcome Event: ", event);
-                });
+                loggingFunction('Sending outcome: ', this.props.inputFieldValue);
+                OneSignal.Session.addOutcome(this.props.inputFieldValue);
             }
         );
 
         const sendUniqueOutcomeButton = renderButtonView(
-            "Send Unique Outcome With Name",
-            color,
+            'Send Unique Outcome With Name',
             () => {
-                loggingFunction("Sending unique outcome: ", this.props.inputFieldValue);
-                OneSignal.sendUniqueOutcome(this.props.inputFieldValue, (event: OutcomeEvent) => {
-                    loggingFunction("Unique Outcome Event: ", event);
-                });
+                loggingFunction('Sending unique outcome: ', this.props.inputFieldValue);
+                OneSignal.Session.addUniqueOutcome(this.props.inputFieldValue);
             }
         );
 
         const sendOutcomeWithValueButton = renderButtonView(
-            "Send Outcome 'my_outcome' with value",
-            color,
+            'Send "my_outcome" with value',
             () => {
                 const value = Number(this.props.inputFieldValue);
-                loggingFunction("Sending outcome of name 'my_outcome' with value: ", value);
+                loggingFunction('Sending outcome of name "my_outcome" with value: ', value);
 
                 if (Number.isNaN(value)) {
-                    console.error("Outcome with value should be a number");
+                    console.error('Outcome with value should be a number');
                     return;
                 }
-                OneSignal.sendOutcomeWithValue('my_outcome', value, (event: OutcomeEvent) => {
-                    loggingFunction("Outcome With Value Event: ", event);
+                OneSignal.Session.addOutcomeWithValue('my_outcome', value);
+            }
+        );
+
+        return [sendOutcomeButton, sendUniqueOutcomeButton, sendOutcomeWithValueButton];
+    }
+
+    createUserFields() {
+        const {loggingFunction} = this.props;
+
+        const addEmailButton = renderButtonView(
+            'Add Email',
+            () => {
+                loggingFunction('Attempting to set email: ', this.props.inputFieldValue);
+                OneSignal.User.addEmail(this.props.inputFieldValue);
+            }
+        );
+
+        const removeEmailButton = renderButtonView(
+            'Remove Email',
+            () => {
+                loggingFunction('Attempting to remove email: ', this.props.inputFieldValue);
+                OneSignal.User.removeEmail(this.props.inputFieldValue);
+            }
+        );
+
+        const loginButton = renderButtonView(
+            'Login',
+            () => {
+                loggingFunction('Attempting to login a user: ', this.props.inputFieldValue);
+                OneSignal.login(this.props.inputFieldValue);
+            }
+        )
+
+        const logoutButton = renderButtonView(
+            'Logout',
+            () => {
+                loggingFunction('Attempting to logout a user: ');
+                OneSignal.logout();
+            }
+        )
+
+        const sendTagWithKeyButton = renderButtonView(
+            'Send tag with key my_tag',
+            async () => {
+                loggingFunction('Sending tag with value: ', this.props.inputFieldValue);
+                OneSignal.User.addTag('my_tag', this.props.inputFieldValue);
+            }
+        );
+
+        const deleteTagWithKeyButton = renderButtonView(
+            'Delete Tag With Key',
+            async () => {
+                loggingFunction('Deleting tag with key: ', this.props.inputFieldValue);
+                OneSignal.User.removeTag(this.props.inputFieldValue);
+            }
+        );
+
+        const addTagsButton = renderButtonView(
+            'Add list of tags',
+            () => {
+                loggingFunction('Adding list of tags');
+                OneSignal.User.addTags({'my_tag1': 'my_value', 'my_tag2': 'my_value2'});
+            }
+        );
+
+        const removeTagsButton = renderButtonView(
+            'Remove list of tags',
+            () => {
+                loggingFunction('Removing list of tags');
+                OneSignal.User.removeTags(['my_tag1', 'my_tag2']);
+            }
+        );
+
+        const setLanguageButton = renderButtonView(
+            'Set Language',
+            () => {
+                loggingFunction('Attempting to set language: ', this.props.inputFieldValue);
+                OneSignal.User.setLanguage(this.props.inputFieldValue);
+            }
+        );
+
+        const addSmsButton = renderButtonView(
+            'Set SMS Number',
+            () => {
+                loggingFunction('Attempting to set SMS number: ', this.props.inputFieldValue);
+                OneSignal.User.addSms(this.props.inputFieldValue,);
+            }
+        );
+
+        const removeSmsButton = renderButtonView(
+            'Logout SMS Number',
+            () => {
+                loggingFunction('Attempting to remove SMS number: ', this.props.inputFieldValue);
+                OneSignal.User.removeSms(this.props.inputFieldValue);
+            }
+        );
+
+        const addAliasButton = renderButtonView(
+            'Add my_alias with value',
+            () => {
+                loggingFunction('Adding my_alias alias with value: ', this.props.inputFieldValue);
+                OneSignal.User.addAlias('my_alias', this.props.inputFieldValue);
+            }
+        );
+
+        const removeAliasButton = renderButtonView(
+            'Remove my_alias',
+            () => {
+                loggingFunction('Removing my_alias');
+                OneSignal.User.removeAlias('my_alias');
+            }
+        );
+
+        const addAliasesButton = renderButtonView(
+            'Add list of test aliases',
+            () => {
+                loggingFunction('Adding a list of test aliases ');
+                OneSignal.User.addAliases({
+                    'my_alias_1': 'my_alias_1_id',
+                    'my_alias_2': 'my_alias_2_id',
+                    'my_alias_3': 'my_alias_3_id', 
                 });
             }
         );
 
-        elements.push(sendOutcomeButton, sendUniqueOutcomeButton, sendOutcomeWithValueButton);
-        return elements;
+        const removeAliasesButton = renderButtonView(
+            'Remove list of test aliases',
+            () => {
+                loggingFunction('Removing list of test aliases');
+                OneSignal.User.removeAliases(['my_alias_1', 'my_alias_2', 'my_alias_3']);
+            }
+        );
+
+        return [
+            loginButton,
+            logoutButton,
+            addEmailButton,
+            removeEmailButton,
+            sendTagWithKeyButton,
+            deleteTagWithKeyButton,
+            addTagsButton,
+            removeTagsButton,
+            setLanguageButton,
+            addSmsButton,
+            removeSmsButton,
+            addAliasButton,
+            removeAliasButton,
+            addAliasesButton,
+            removeAliasesButton,
+        ];
+    }
+
+    pushSubscriptionFields() {
+        const {loggingFunction} = this.props;
+
+        const getPushSubscriptionIdButton = renderButtonView(
+            'Get Push Subscription Id',
+            async () => {
+                const id = await OneSignal.User.PushSubscription.getPushSubscriptionId();
+                loggingFunction('Push Subscription Id: ', id);
+            }
+        );
+
+        const getPushSubscriptionTokenButton = renderButtonView(
+            'Get Push Subscription Token',
+            async () => {
+                const token = await OneSignal.User.PushSubscription.getPushSubscriptionToken();
+                loggingFunction('Push Subscription Id: ', token);
+            }
+        );
+
+        const getOptedInButton = renderButtonView(
+            'Is Opted In',
+            async () => {
+                const optedIn = await OneSignal.User.PushSubscription.getOptedIn();
+                loggingFunction('Subscribed for the push notifications: ', optedIn);
+            }
+        );
+
+        const optInButton = renderButtonView(
+            'Opt In',
+            () => {
+                loggingFunction('Subscribing for the push notifications');
+                OneSignal.User.PushSubscription.optIn();
+            }
+        );
+
+        const optOutButton = renderButtonView(
+            'Opt Out',
+            () => {
+                loggingFunction('Unsubscribing from the push notifications');
+                OneSignal.User.PushSubscription.optOut();
+            }
+        );
+
+        return [
+            getPushSubscriptionIdButton,
+            getPushSubscriptionTokenButton,
+            getOptedInButton,
+            optInButton,
+            optOutButton,
+        ];
+    }
+
+    privacyConsentFields() {
+        const {loggingFunction} = this.props;
+
+        const getPrivacyConsentButton = renderButtonView(
+            'Get Privacy Consent',
+            async () => {
+                const granted = await OneSignal.getPrivacyConsent();
+                loggingFunction('Privacy consent granted: ', granted);
+            }
+        );
+
+        const setPrivacyConsentTrueButton = renderButtonView(
+            'Set Privacy Consent to true',
+            async () => {
+                await OneSignal.setPrivacyConsent(true);
+                loggingFunction('Privacy Consent set to true');
+            }
+        );
+
+        const setPrivacyConsentFalseButton = renderButtonView(
+            'Set Privacy Consent to false',
+            async () => {
+                await OneSignal.setPrivacyConsent(false);
+                loggingFunction('Privacy Consent set to false');
+            }
+        );
+
+        const getRequiresPrivacyConsentButton = renderButtonView(
+            'Get Requires Privacy Consent',
+            async () => {
+                const granted = await OneSignal.getRequiresPrivacyConsent();
+                loggingFunction('Requires Privacy Consent: ', granted);
+            }
+        );
+
+        const setRequiresPrivacyConsentTrueButton = renderButtonView(
+            'Set Requiers Privacy Consent to true',
+            async () => {
+                await OneSignal.setRequiresPrivacyConsent(true);
+                loggingFunction('Requires Privacy Consent set to true');
+            }
+        );
+        
+        const setRequiresPrivacyConsentFalseButton = renderButtonView(
+            'Set Requiers Privacy Consent to false',
+            async () => {
+                await OneSignal.setRequiresPrivacyConsent(false);
+                loggingFunction('Requires Privacy Consent set to false');
+            }
+        );
+        
+        return [
+            getPrivacyConsentButton,
+            setPrivacyConsentTrueButton,
+            setPrivacyConsentFalseButton,
+            getRequiresPrivacyConsentButton,
+            setRequiresPrivacyConsentTrueButton,
+            setRequiresPrivacyConsentFalseButton,
+        ];
     }
 
     render() {
         return (
-            <View style={ styles.root }>
-                <View style={ styles.container }>
-                    { this.createSubscribeFields() }
-                    { this.createDeviceFields() }
-                    { this.createNotificationFields() }
-                    { this.createSMSFields() }
-                    { this.createEmailFields() }
-                    { this.createInAppFields() }
-                    { this.createOutcomeFields() }
-                </View>
+            <View>
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                <Text variant="h5">InAppMessages</Text>
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                { this.createInAppMessagesFields() }
+
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                <Text variant="h5">Location</Text>
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                { this.createLocationFields() }
+
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                <Text variant="h5">Notifications</Text>
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                { this.createNotificationFields() }
+                
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                <Text variant="h5">Session</Text>
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                { this.createSessionFields() }
+
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                <Text variant="h5">User</Text>
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                { this.createUserFields() }
+
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                <Text variant="h5">Push Subscription</Text>
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                { this.pushSubscriptionFields() }
+
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                <Text variant="h5">Privacy Consent</Text>
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                { this.privacyConsentFields() }
             </View>
         );
     }
 };
 
-// styles
 const styles = StyleSheet.create({
-  root: {
-    alignItems: 'center',
-    alignSelf: 'center'
-  },
-  buttons: {
-    flexDirection: 'row',
-    minHeight: 70,
-    alignItems: 'stretch',
-    alignSelf: 'center',
-    borderWidth: 5
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    backgroundColor: '#FFFFFF',
-    flexWrap: 'wrap'
-  },
-  button: {
-    flex: 1,
-    paddingVertical: 0
-  },
   greeting: {
     color: '#999',
     fontWeight: 'bold'
