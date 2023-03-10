@@ -7,6 +7,9 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   issues:
     types: [closed]
+    
+permissions:
+  issues: read
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -20,10 +23,12 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Call Zapier web hook to close Asana task
         if: ${{ !github.event.issue.pull_request }}
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
           curl --location --request POST 'https://hooks.zapier.com/hooks/catch/12728683/b7009qc/' \
           --header 'Content-Type: application/json' \
           --header 'Accept: application/json' \
           --data-raw '{
-            "task_name" : "${{ github.event.issue.title }}"
+            "task_name" : "$ISSUE_TITLE"
           }'
