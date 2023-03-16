@@ -1,7 +1,7 @@
 /*
 Modified MIT License
 
-Copyright 2020 OneSignal
+Copyright 2023 OneSignal
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ Authors:
  - Josh Kasten
  - Rodrigo Gomez-Palacio
  - Michael DiCioccio
+ - Ruslan Kesheshian
 */
 
 package com.geektime.rnonesignalandroid;
@@ -38,7 +39,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.util.Log;
-
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -49,821 +49,546 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.onesignal.OSDeviceState;
-import com.onesignal.OSEmailSubscriptionObserver;
-import com.onesignal.OSEmailSubscriptionStateChanges;
-import com.onesignal.OSInAppMessageAction;
-import com.onesignal.OSNotification;
-import com.onesignal.OSNotificationOpenedResult;
-import com.onesignal.OSNotificationReceivedEvent;
-import com.onesignal.OSOutcomeEvent;
-import com.onesignal.OSPermissionObserver;
-import com.onesignal.OSPermissionStateChanges;
-import com.onesignal.OSSMSSubscriptionObserver;
-import com.onesignal.OSSMSSubscriptionStateChanges;
-import com.onesignal.OSSubscriptionObserver;
-import com.onesignal.OSSubscriptionStateChanges;
+import com.onesignal.Continue;
 import com.onesignal.OneSignal;
-import com.onesignal.OneSignal.EmailUpdateError;
-import com.onesignal.OneSignal.EmailUpdateHandler;
-import com.onesignal.OneSignal.OSInAppMessageClickHandler;
-import com.onesignal.OSInAppMessageLifecycleHandler;
-import com.onesignal.OSInAppMessage;
-import com.onesignal.OneSignal.OSNotificationOpenedHandler;
-import com.onesignal.OneSignal.OutcomeCallback;
-
+import com.onesignal.debug.LogLevel;
+import com.onesignal.inAppMessages.IInAppMessage;
+import com.onesignal.inAppMessages.IInAppMessageClickHandler;
+import com.onesignal.inAppMessages.IInAppMessageClickResult;
+import com.onesignal.inAppMessages.IInAppMessageLifecycleHandler;
+import com.onesignal.notifications.INotification;
+import com.onesignal.notifications.INotificationClickHandler;
+import com.onesignal.notifications.INotificationClickResult;
+import com.onesignal.notifications.INotificationReceivedEvent;
+import com.onesignal.notifications.INotificationWillShowInForegroundHandler;
+import com.onesignal.notifications.IPermissionChangedHandler;
+import com.onesignal.user.subscriptions.IPushSubscription;
+import com.onesignal.user.subscriptions.ISubscription;
+import com.onesignal.user.subscriptions.ISubscriptionChangedHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class RNOneSignal extends ReactContextBaseJavaModule
-        implements
-        OSPermissionObserver,
-        OSSubscriptionObserver,
-        OSNotificationOpenedHandler,
-        OSEmailSubscriptionObserver,
-        LifecycleEventListener,
-        OSInAppMessageClickHandler,
-        OSSMSSubscriptionObserver {
-
-   public static final String HIDDEN_MESSAGE_KEY = "hidden";
-
-   private ReactApplicationContext mReactApplicationContext;
-   private ReactContext mReactContext;
-
-   private boolean oneSignalInitDone;
-
-   private OSInAppMessageAction inAppMessageActionResult;
-
-   private HashMap<String, OSNotificationReceivedEvent> notificationReceivedEventCache;
-
-   private boolean hasSetInAppClickedHandler = false;
-   private boolean hasSetSubscriptionObserver = false;
-   private boolean hasSetEmailSubscriptionObserver = false;
-   private boolean hasSetSMSSubscriptionObserver = false;
-   private boolean hasSetPermissionObserver = false;
-
-   // A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later.
-   // It is very important to highlight that the callback is not invoked immediately after the native function completes
-   // - remember that bridge communication is asynchronous, and this too is tied to the run loop.
-   // Once you have done invoke() on the callback, you cannot use it again. Store it here.
-   private Callback pendingGetTagsCallback;
-
-   private String appIdFromManifest(ReactApplicationContext context) {
-      try {
-         ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), context.getPackageManager().GET_META_DATA);
-         Bundle bundle = ai.metaData;
-         return bundle.getString("onesignal_app_id");
-      } catch (Throwable t) {
-         t.printStackTrace();
-         return null;
-      }
-   }
-
-   private void removeObservers() {
-      this.removeEmailSubscriptionObserver();
-      this.removePermissionObserver();
-      this.removeSubscriptionObserver();
-      this.removeSMSSubscriptionObserver();
-   }
-
-   private void removeHandlers() {
-      OneSignal.setInAppMessageClickHandler(null);
-      OneSignal.setNotificationOpenedHandler(null);
-      OneSignal.setNotificationWillShowInForegroundHandler(null);
-      OneSignal.setInAppMessageLifecycleHandler(null);
-   }
-
-   private void sendEvent(String eventName, Object params) {
-      mReactContext
-              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-              .emit(eventName, params);
-   }
-
-   private JSONObject jsonFromErrorMessageString(String errorMessage) throws JSONException {
-      return new JSONObject().put("error", errorMessage);
-   }
-
-   public RNOneSignal(ReactApplicationContext reactContext) {
-      super(reactContext);
-      mReactApplicationContext = reactContext;
-      mReactContext = reactContext;
-      mReactContext.addLifecycleEventListener(this);
-      notificationReceivedEventCache = new HashMap<String, OSNotificationReceivedEvent>();
-   }
-
-   // Initialize OneSignal only once when an Activity is available.
-   // React creates an instance of this class to late for OneSignal to get the current Activity
-   // based on registerActivityLifecycleCallbacks it uses to listen for the first Activity.
-   // However it seems it is also to soon to call getCurrentActivity() from the reactContext as well.
-   // This will normally succeed when onHostResume fires instead.
-   private void initOneSignal() {
-      OneSignal.sdkType = "react";
-      Context context = mReactApplicationContext.getCurrentActivity();
-
-      if (oneSignalInitDone) {
-         Log.e("OneSignal", "Already initialized the OneSignal React-Native SDK");
-         return;
-      }
-
-      oneSignalInitDone = true;
-
-
-      if (context == null) {
-         // in some cases, especially when react-native-navigation is installed,
-         // the activity can be null, so we can initialize with the context instead
-         context = mReactApplicationContext.getApplicationContext();
-      }
-
-      OneSignal.setInAppMessageClickHandler(this);
-      OneSignal.initWithContext(context);
-   }
-
-   @ReactMethod
-   public void setAppId(String appId) {
-      OneSignal.setAppId(appId);
-   }
-
-   /* Observers */
-   @Override
-   public void onOSPermissionChanged(OSPermissionStateChanges stateChanges) {
-      Log.i("OneSignal", "sending permission change event");
-      sendEvent("OneSignal-permissionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
-   }
-
-   @Override
-   public void onOSSubscriptionChanged(OSSubscriptionStateChanges stateChanges) {
-      Log.i("OneSignal", "sending subscription change event");
-      sendEvent("OneSignal-subscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
-   }
-
-   @Override
-   public void onOSEmailSubscriptionChanged(OSEmailSubscriptionStateChanges stateChanges) {
-      Log.i("OneSignal", "sending email subscription change event");
-      sendEvent("OneSignal-emailSubscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
-   }
-
-   @Override
-   public void onSMSSubscriptionChanged(OSSMSSubscriptionStateChanges stateChanges) {
-      Log.i("OneSignal", "sending SMS subscription change event");
-      sendEvent("OneSignal-smsSubscriptionChanged", RNUtils.jsonToWritableMap(stateChanges.toJSONObject()));
-   }
-
-   @ReactMethod
-   public void addPermissionObserver() {
-      if (!hasSetPermissionObserver) {
-         OneSignal.addPermissionObserver(this);
-         hasSetPermissionObserver = true;
-      }
-   }
-
-   @ReactMethod
-   public void removePermissionObserver() {
-      if (hasSetPermissionObserver) {
-         OneSignal.removePermissionObserver(this);
-         hasSetPermissionObserver = false;
-      }
-   }
-
-   @ReactMethod
-   public void addSubscriptionObserver() {
-      if (!hasSetSubscriptionObserver) {
-         OneSignal.addSubscriptionObserver(this);
-         hasSetSubscriptionObserver = true;
-      }
-   }
-
-   @ReactMethod
-   public void removeSubscriptionObserver() {
-      if (hasSetSubscriptionObserver) {
-         OneSignal.removeSubscriptionObserver(this);
-         hasSetSubscriptionObserver = false;
-      }
-   }
-
-   @ReactMethod
-   public void addEmailSubscriptionObserver() {
-      if (!hasSetEmailSubscriptionObserver) {
-         OneSignal.addEmailSubscriptionObserver(this);
-         hasSetEmailSubscriptionObserver = true;
-      }
-   }
-
-   @ReactMethod
-   public void removeEmailSubscriptionObserver() {
-      if (hasSetEmailSubscriptionObserver) {
-         OneSignal.removeEmailSubscriptionObserver(this);
-         hasSetEmailSubscriptionObserver = false;
-      }
-   }
-
-   @ReactMethod
-   public void addSMSSubscriptionObserver() {
-      if (!hasSetSMSSubscriptionObserver) {
-         OneSignal.addSMSSubscriptionObserver(this);
-         hasSetSMSSubscriptionObserver = true;
-      }
-   }
-
-   @ReactMethod
-   public void removeSMSSubscriptionObserver() {
-      if (hasSetSMSSubscriptionObserver) {
-         OneSignal.removeSMSSubscriptionObserver(this);
-         hasSetSMSSubscriptionObserver = false;
-      }
-   }
-
-   /* Other methods */
-
-   @ReactMethod
-   public void getDeviceState(Promise promise) {
-      OSDeviceState state = OneSignal.getDeviceState();
-      if (state == null) {
-         Log.e("OneSignal", "getDeviceState: OSDeviceState is null");
-         promise.reject("Null OSDeviceState", "OSDeviceState is null");
-         return;
-      }
-      promise.resolve(RNUtils.jsonToWritableMap(state.toJSONObject()));
-   }
-
-   @ReactMethod
-   public void setLanguage(String language, final Callback successCallback, final Callback failureCallback) {
-      OneSignal.setLanguage(language, new OneSignal.OSSetLanguageCompletionHandler() {
-         final Callback[] callbackArr = new Callback[]{ successCallback, failureCallback };
-         @Override
-         public void onSuccess(String results) {
-            if (callbackArr[0] != null) {
-               if (results == null) {
-                  results = "{'success' : 'true', 'message' : 'Successfully set language.'}";
-               }
-               callbackArr[0].invoke(results);
-               callbackArr[0] = null;
-               callbackArr[1] = null; // prevent other callback from being invoked by another channel
-            }
-         }
-
-         @Override
-         public void onFailure(OneSignal.OSLanguageError error) {
-            try {
-               if (callbackArr[1] != null) {
-                  String errorMessage = error.getMessage();
-                  if (errorMessage == null) {
-                     errorMessage = "Failed to set language.";
-                  }
-                  callbackArr[1].invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(errorMessage)));
-                  callbackArr[0] = null;
-                  callbackArr[1] = null;
-               }
-            } catch (JSONException exception) {
-               exception.printStackTrace();
-            }
-         }
-      });
-   }
-
-   @ReactMethod
-   public void disablePush(boolean disable) {
-      OneSignal.disablePush(disable);
-   }
-
-   @ReactMethod
-   public void unsubscribeWhenNotificationsAreDisabled(boolean unsubscribe) {
-      OneSignal.unsubscribeWhenNotificationsAreDisabled(unsubscribe);
-   }
-
-   @ReactMethod
-   public void sendTag(String key, String value) {
-      OneSignal.sendTag(key, value);
-   }
-
-   @ReactMethod
-   public void sendTags(ReadableMap tags) {
-      OneSignal.sendTags(RNUtils.readableMapToJson(tags));
-   }
-
-   @ReactMethod
-   public void deleteTags(ReadableArray tagKeys) {
-      OneSignal.deleteTags(RNUtils.convertReableArrayIntoStringCollection(tagKeys));
-   }
-
-   @ReactMethod
-   public void getTags(final Callback callback) {
-      if (pendingGetTagsCallback == null)
-         pendingGetTagsCallback = callback;
-
-      OneSignal.getTags(new OneSignal.OSGetTagsHandler() {
-         @Override
-         public void tagsAvailable(JSONObject tags) {
-            if (pendingGetTagsCallback != null)
-               pendingGetTagsCallback.invoke(RNUtils.jsonToWritableMap(tags));
-
-            pendingGetTagsCallback = null;
-         }
-      });
-   }
-
-   @ReactMethod
-   public void setEmail(String email, String emailAuthToken, final Callback callback) {
-     final Callback[] callbackArr = new Callback[]{ callback };
-      OneSignal.setEmail(email, emailAuthToken, new EmailUpdateHandler() {
-         @Override
-         public void onSuccess() {
-            if (callbackArr[0] != null) {
-               callbackArr[0].invoke();
-               callbackArr[0] = null;
-            }
-         }
-
-         @Override
-         public void onFailure(EmailUpdateError error) {
-            try {
-              if (callbackArr[0] != null) {
-                callbackArr[0].invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
-                callbackArr[0] = null;
-              }
-            } catch (JSONException exception) {
-               exception.printStackTrace();
-            }
-         }
-      });
-   }
-
-   @ReactMethod
-   public void logoutEmail(final Callback callback) {
-      final Callback[] callbackArr = new Callback[]{ callback };
-      OneSignal.logoutEmail(new EmailUpdateHandler() {
-         @Override
-         public void onSuccess() {
-            if (callbackArr[0] != null) {
-               callbackArr[0].invoke();
-               callbackArr[0] = null;
-            }
-         }
-
-         @Override
-         public void onFailure(EmailUpdateError error) {
-            try {
-              if (callbackArr[0] != null) {
-                callbackArr[0].invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
-                callbackArr[0] = null;
-              }
-            } catch (JSONException exception) {
-               exception.printStackTrace();
-            }
-         }
-      });
-   }
-
-   @ReactMethod
-   public void setSMSNumber(String smsNumber, String smsAuthToken, final Callback callback) {
-      final Callback[] callbackArr = new Callback[]{ callback };
-      OneSignal.setSMSNumber(smsNumber, smsAuthToken, new OneSignal.OSSMSUpdateHandler() {
-         @Override
-         public void onSuccess(JSONObject result) {
-            if (callbackArr[0] != null) {
-               callbackArr[0].invoke(RNUtils.jsonToWritableMap(result));
-               callbackArr[0] = null;
-            }
-         }
-
-         @Override
-         public void onFailure(OneSignal.OSSMSUpdateError error) {
-            try {
-              if (callbackArr[0] != null) {
-                callbackArr[0].invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
-                callbackArr[0] = null;
-              }
-            } catch (JSONException exception) {
-               exception.printStackTrace();
-            }
-         }
-      });
-   }
-
-   @ReactMethod
-   public void logoutSMSNumber(final Callback callback) {
-      final Callback[] callbackArr = new Callback[]{ callback };
-      OneSignal.logoutSMSNumber(new OneSignal.OSSMSUpdateHandler() {
-         @Override
-         public void onSuccess(JSONObject result) {
-            if (callbackArr[0] != null) {
-               callbackArr[0].invoke(RNUtils.jsonToWritableMap(result));
-               callbackArr[0] = null;
-            }
-         }
-
-         @Override
-         public void onFailure(OneSignal.OSSMSUpdateError error) {
-            try {
-              if (callbackArr[0] != null) {
-                callbackArr[0].invoke(RNUtils.jsonToWritableMap(jsonFromErrorMessageString(error.getMessage())));
-                callbackArr[0] = null;
-              }
-            } catch (JSONException exception) {
-               exception.printStackTrace();
-            }
-         }
-      });
-   }
-
-   @ReactMethod
-   public void promptForPushNotificationsWithUserResponse(final boolean fallbackToSettings, final Callback callback) {
-      final Callback[] callbackArr = new Callback[]{ callback };
-      OneSignal.promptForPushNotifications(fallbackToSettings, new OneSignal.PromptForPushNotificationPermissionResponseHandler() {
-         @Override
-         public void response(boolean accepted) {
-            if (callbackArr[0] != null) {
-               callbackArr[0].invoke(accepted);
-               callbackArr[0] = null;
-            }
-         }
-      });
-   }
-
-   @ReactMethod
-   public void promptLocation() {
-      OneSignal.promptLocation();
-   }
-
-   @ReactMethod
-   public void setLogLevel(int logLevel, int visualLogLevel) {
-      OneSignal.setLogLevel(logLevel, visualLogLevel);
-   }
-
-   @ReactMethod
-   public void isLocationShared(Promise promise) {
-      promise.resolve(OneSignal.isLocationShared());
-   }
-
-   @ReactMethod
-   public void setLocationShared(Boolean shared) {
-      OneSignal.setLocationShared(shared);
-   }
-
-   @ReactMethod
-   public void postNotification(String jsonObjectString, final Callback successCallback, final Callback failureCallback) {
-      final Callback[] callbackArr = new Callback[]{ successCallback, failureCallback };
-      OneSignal.postNotification(
-         jsonObjectString,
-         new OneSignal.PostNotificationResponseHandler() {
-           @Override
-           public void onSuccess(JSONObject response) {
-              Log.i("OneSignal", "postNotification Success: " + response.toString());
-              if (callbackArr[0] != null) {
-                callbackArr[0].invoke(RNUtils.jsonToWritableMap(response));
-                callbackArr[0] = null;
-              }
-           }
-
-           @Override
-           public void onFailure(JSONObject response) {
-              Log.e("OneSignal", "postNotification Failure: " + response.toString());
-              if (callbackArr[1] != null) {
-                callbackArr[1].invoke(RNUtils.jsonToWritableMap(response));
-                callbackArr[1] = null;
-              }
-           }
-         }
-      );
-   }
-
-   @ReactMethod
-   public void clearOneSignalNotifications() {
-      OneSignal.clearOneSignalNotifications();
-   }
-
-   @ReactMethod
-   public void removeNotification(int id) {
-      OneSignal.removeNotification(id);
-   }
-
-   @ReactMethod
-   public void removeGroupedNotifications(String id) {
-      OneSignal.removeGroupedNotifications(id);
-   }
-
-   @ReactMethod
-   public void requiresUserPrivacyConsent(Promise promise) {
-      promise.resolve(OneSignal.requiresUserPrivacyConsent());
-   }
-
-   @ReactMethod
-   public void setRequiresUserPrivacyConsent(Boolean required) {
-      OneSignal.setRequiresUserPrivacyConsent(required);
-   }
-
-   @ReactMethod
-   public void provideUserConsent(Boolean granted) {
-      OneSignal.provideUserConsent(granted);
-   }
-
-   @ReactMethod
-   public void userProvidedPrivacyConsent(Promise promise) {
-      promise.resolve(OneSignal.userProvidedPrivacyConsent());
-   }
-
-  @ReactMethod
-  public void setExternalUserId(final String externalId, final String authHashToken, final Callback callback) {
-    final Callback[] callbackArr = new Callback[]{ callback };
-    OneSignal.setExternalUserId(externalId, authHashToken, new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
-      @Override
-      public void onSuccess(JSONObject results) {
-        Log.i("OneSignal", "Completed setting external user id: " + externalId + "with results: " + results.toString());
-
-        if (callbackArr[0] != null) {
-            callbackArr[0].invoke(RNUtils.jsonToWritableMap(results));
-            callbackArr[0] = null;
+public class RNOneSignal extends ReactContextBaseJavaModule implements
+        ISubscriptionChangedHandler,
+        IPermissionChangedHandler,
+        LifecycleEventListener {
+    public static final String HIDDEN_MESSAGE_KEY = "hidden";
+
+    private ReactApplicationContext mReactApplicationContext;
+    private ReactContext mReactContext;
+
+    private boolean oneSignalInitDone;
+    private boolean hasSetPermissionObserver = false;
+    private boolean hasSetPushSubscriptionObserver = false;
+
+    private HashMap<String, INotificationReceivedEvent> notificationReceivedEventCache;
+
+
+    private void removeObservers() {
+        this.removePermissionChangedHandler();
+        this.rmeovePushSubscriptionChangeHandler();
+    }
+
+    private void removeHandlers() {
+        OneSignal.getInAppMessages().setInAppMessageClickHandler(null);
+        OneSignal.getInAppMessages().setInAppMessageLifecycleHandler(null);
+        OneSignal.getNotifications().setNotificationClickHandler(null);
+        OneSignal.getNotifications().setNotificationWillShowInForegroundHandler(null);
+    }
+
+    private void sendEvent(String eventName, Object params) {
+        mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+    }
+
+    public RNOneSignal(ReactApplicationContext reactContext) {
+        super(reactContext);
+        mReactApplicationContext = reactContext;
+        mReactContext = reactContext;
+        mReactContext.addLifecycleEventListener(this);
+        notificationReceivedEventCache = new HashMap<String, INotificationReceivedEvent>();
+    }
+
+
+    /** Native Module Overrides */
+    @Override
+    public String getName() {
+        return "OneSignal";
+    }
+
+    @Override
+    public void onHostDestroy() {
+        removeHandlers();
+        removeObservers();
+    }
+
+    @Override
+    public void onHostPause() {}
+
+    @Override
+    public void onHostResume() {}
+
+    @Override
+    public void onCatalystInstanceDestroy() {
+        removeHandlers();
+        removeObservers();
+    }
+
+    // OneSignal namespace methods
+    @ReactMethod
+    public void initialize(String appId) {
+        Context context = mReactApplicationContext.getCurrentActivity();
+
+        if (oneSignalInitDone) {
+            Log.e("OneSignal", "Already initialized the OneSignal React-Native SDK");
+            return;
         }
-      }
 
-      @Override
-      public void onFailure(OneSignal.ExternalIdError error) {
-        if (callbackArr[0] != null) {
-            callbackArr[0].invoke(error.getMessage());
-            callbackArr[0] = null;
+        oneSignalInitDone = true;
+
+        if (context == null) {
+            // in some cases, especially when react-native-navigation is installed,
+            // the activity can be null, so we can initialize with the context instead
+            context = mReactApplicationContext.getApplicationContext();
         }
-      }
-    });
-  }
 
-   @ReactMethod
-   public void removeExternalUserId(final Callback callback) {
-      final Callback[] callbackArr = new Callback[]{ callback };
-      OneSignal.removeExternalUserId(new OneSignal.OSExternalUserIdUpdateCompletionHandler() {
-         @Override
-         public void onSuccess(JSONObject results) {
-            Log.i("OneSignal", "Completed removing external user id with results: " + results.toString());
+        OneSignal.initWithContext(context, appId);
+    }
 
-            if (callbackArr[0] != null) {
-               callbackArr[0].invoke(RNUtils.jsonToWritableMap(results));
-               callbackArr[0] = null;
+    @ReactMethod
+    public void setPrivacyConsent(Boolean value) {
+        OneSignal.setPrivacyConsent(value);
+    }
+
+    @ReactMethod
+    public void getPrivacyConsent(Promise promise) {
+        promise.resolve(OneSignal.getPrivacyConsent());
+    }
+
+    @ReactMethod
+    public void setRequiresPrivacyConsent(Boolean required) {
+        OneSignal.setRequiresPrivacyConsent(required);
+    }
+
+    @ReactMethod
+    public void getRequiresPrivacyConsent(Promise promise) {
+        promise.resolve(OneSignal.getRequiresPrivacyConsent());
+    }
+
+
+    // OneSignal.Debug namespace methods
+    @ReactMethod
+    public void setLogLevel(int logLevel) {
+        OneSignal.getDebug().setLogLevel(LogLevel.fromInt(logLevel));
+    }
+
+    @ReactMethod
+    public void setAlertLevel(int logLevel) {
+        OneSignal.getDebug().setAlertLevel(LogLevel.fromInt(logLevel));
+    }
+
+
+    // OneSignal.InAppMessages namespace methods
+    @ReactMethod
+    public void setInAppMessageClickHandler() {
+        OneSignal.getInAppMessages().setInAppMessageClickHandler(new IInAppMessageClickHandler() {
+            @Override
+            public void inAppMessageClicked(IInAppMessageClickResult result) {
+                try {
+                    sendEvent("OneSignal-inAppMessageClicked", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageClickedActionToMap(result)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-         }
+        });
+    }
 
-         @Override
-         public void onFailure(OneSignal.ExternalIdError error) {
-            if (callbackArr[0] != null) {
-               callbackArr[0].invoke(error.getMessage());
-               callbackArr[0] = null;
-            }
-         }
-      });
-   }
-
-   /* notification opened / received */
-
-   @ReactMethod
-   public void setNotificationOpenedHandler() {
-      OneSignal.setNotificationOpenedHandler(this);
-   }
-
-   @Override
-   public void notificationOpened(OSNotificationOpenedResult result) {
-      sendEvent("OneSignal-remoteNotificationOpened", RNUtils.jsonToWritableMap(result.toJSONObject()));
-   }
-
-   @ReactMethod
-   public void setNotificationWillShowInForegroundHandler() {
-      OneSignal.setNotificationWillShowInForegroundHandler(new OneSignal.OSNotificationWillShowInForegroundHandler() {
-         @Override
-         public void notificationWillShowInForeground(OSNotificationReceivedEvent notificationReceivedEvent) {
-            OSNotification notification = notificationReceivedEvent.getNotification();
-            String notificationId = notification.getNotificationId();
-            notificationReceivedEventCache.put(notificationId, notificationReceivedEvent);
-
-            sendEvent("OneSignal-notificationWillShowInForeground", RNUtils.jsonToWritableMap(notification.toJSONObject()));
-         }
-      });
-   }
-
-   @ReactMethod
-   public void completeNotificationEvent(final String uuid, final boolean shouldDisplay) {
-      OSNotificationReceivedEvent receivedEvent = notificationReceivedEventCache.get(uuid);
-
-      if (receivedEvent == null) {
-         Log.e("OneSignal", "(java): could not find cached notification received event with id "+uuid);
-         return;
-      }
-
-      if (shouldDisplay) {
-         receivedEvent.complete(receivedEvent.getNotification());
-      } else {
-         receivedEvent.complete(null);
-      }
-
-      notificationReceivedEventCache.remove(uuid);
-   }
-
-   /**
-    * In-App Messaging
-    */
-
-   /* triggers */
-
-   @ReactMethod
-   public void addTrigger(String key, Object object) {
-      OneSignal.addTrigger(key, object);
-   }
-
-   @ReactMethod
-   public void addTriggers(ReadableMap triggers) {
-      OneSignal.addTriggers(triggers.toHashMap());
-   }
-
-   @ReactMethod
-   public void removeTriggerForKey(String key) {
-      OneSignal.removeTriggerForKey(key);
-   }
-
-   @ReactMethod
-   public void removeTriggersForKeys(ReadableArray keys) {
-      OneSignal.removeTriggersForKeys(RNUtils.convertReableArrayIntoStringCollection(keys));
-   }
-
-   @ReactMethod
-   public void getTriggerValueForKey(String key, Promise promise) {
-      Object val = OneSignal.getTriggerValueForKey(key);
-      if (val == null) {
-         Log.e("OneSignal", "getTriggerValueForKey: There was no value for the key: " + key);
-         promise.reject("No Value", "There was no value for the key: " + key);
-         return;
-      }
-      promise.resolve(val);
-   }
-
-   /* in app message click */
-
-   @ReactMethod
-   public void setInAppMessageClickHandler() {
-      OneSignal.setInAppMessageClickHandler(new OneSignal.OSInAppMessageClickHandler() {
-         @Override
-         public void inAppMessageClicked(OSInAppMessageAction result) {
-            if (!hasSetInAppClickedHandler) {
-               inAppMessageActionResult = result;
-               return;
-            }
-            sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
-         }
-      });
-   }
-
-   @ReactMethod
-   public void initInAppMessageClickHandlerParams() {
-      this.hasSetInAppClickedHandler = true;
-      if (this.inAppMessageActionResult != null) {
-         this.inAppMessageClicked(this.inAppMessageActionResult);
-         this.inAppMessageActionResult = null;
-      }
-   }
-
-   @Override
-   public void inAppMessageClicked(OSInAppMessageAction result) {
-      if (!this.hasSetInAppClickedHandler) {
-         this.inAppMessageActionResult = result;
-         return;
-      }
-      this.sendEvent("OneSignal-inAppMessageClicked", RNUtils.jsonToWritableMap(result.toJSONObject()));
-   }
-
-   /* in app message lifecycle */
-
-   @ReactMethod
-   public void setInAppMessageLifecycleHandler() {
-      OneSignal.setInAppMessageLifecycleHandler(new OSInAppMessageLifecycleHandler() {
-         @Override
-         public void onWillDisplayInAppMessage(OSInAppMessage message) {
-            sendEvent("OneSignal-inAppMessageWillDisplay",
-                    RNUtils.jsonToWritableMap(message.toJSONObject()));
-         }
-         @Override
-         public void onDidDisplayInAppMessage(OSInAppMessage message) {
-            sendEvent("OneSignal-inAppMessageDidDisplay",
-                    RNUtils.jsonToWritableMap(message.toJSONObject()));
-         }
-         @Override
-         public void onWillDismissInAppMessage(OSInAppMessage message) {
-            sendEvent("OneSignal-inAppMessageWillDismiss",
-                    RNUtils.jsonToWritableMap(message.toJSONObject()));
-         }
-         @Override
-         public void onDidDismissInAppMessage(OSInAppMessage message) {
-            sendEvent("OneSignal-inAppMessageDidDismiss",
-                    RNUtils.jsonToWritableMap(message.toJSONObject()));
-         }
-      });
-   }
-
-   /* other IAM functions */
-
-   @ReactMethod
-   public void pauseInAppMessages(Boolean pause) {
-      OneSignal.pauseInAppMessages(pause);
-   }
-
-   /**
-    * Outcomes
-    */
-
-   @ReactMethod
-   public void sendOutcome(final String name, final Callback callback) {
-      OneSignal.sendOutcome(name, new OutcomeCallback() {
-         @Override
-         public void onSuccess(OSOutcomeEvent outcomeEvent) {
-            if (outcomeEvent != null) {
-               try {
-                  callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
-               } catch (JSONException e) {
-                  Log.e("OneSignal", "sendOutcome with name: " + name + ", failed with message: " + e.getMessage());
-               }
-               return;
+    @ReactMethod
+    public void setInAppMessagesLifecycleHandler() {
+        OneSignal.getInAppMessages().setInAppMessageLifecycleHandler(new IInAppMessageLifecycleHandler() {
+            @Override
+            public void onWillDisplayInAppMessage(IInAppMessage message) {
+                try {
+                    sendEvent("OneSignal-inAppMessageWillDisplay", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(message)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
-            Log.e("OneSignal", "sendOutcome OSOutcomeEvent is null");
-         }
-      });
-   }
-
-   @ReactMethod
-   public void sendUniqueOutcome(final String name, final Callback callback) {
-      OneSignal.sendUniqueOutcome(name, new OutcomeCallback() {
-         @Override
-         public void onSuccess(OSOutcomeEvent outcomeEvent) {
-            if (outcomeEvent != null) {
-               try {
-                  callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
-               } catch (JSONException e) {
-                  Log.e("OneSignal", "sendUniqueOutcome with name: " + name + ", failed with message: " + e.getMessage());
-               }
-               return;
+            @Override
+            public void onDidDisplayInAppMessage(IInAppMessage message) {
+                try {
+                    sendEvent("OneSignal-inAppMessageDidDisplay", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(message)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
-            Log.e("OneSignal", "sendUniqueOutcome OSOutcomeEvent is null");
-         }
-      });
-   }
-
-   @ReactMethod
-   public void sendOutcomeWithValue(final String name, final float value, final Callback callback) {
-      OneSignal.sendOutcomeWithValue(name, value, new OutcomeCallback() {
-         @Override
-         public void onSuccess(OSOutcomeEvent outcomeEvent) {
-            if (outcomeEvent != null) {
-               try {
-                  callback.invoke(RNUtils.jsonToWritableMap(outcomeEvent.toJSONObject()));
-               } catch (JSONException e) {
-                  Log.e("OneSignal", "sendOutcomeWithValue with name: " + name + " and value: " + value + ", failed with message: " + e.getMessage());
-               }
-               return;
+            @Override
+            public void onWillDismissInAppMessage(IInAppMessage message) {
+                try {
+                    sendEvent("OneSignal-inAppMessageWillDismiss", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(message)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
-            Log.e("OneSignal", "sendOutcomeWithValue OSOutcomeEvent is null");
-         }
-      });
-   }
+            @Override
+            public void onDidDismissInAppMessage(IInAppMessage message) {
+                try {
+                    sendEvent("OneSignal-inAppMessageDidDismiss", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(message)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
-   /**
-    * Native Module Overrides
-    */
+    @ReactMethod
+    public void getPaused(Promise promise) {
+        promise.resolve(OneSignal.getInAppMessages().getPaused());
+    }
 
-   @Override
-   public String getName() {
-      return "OneSignal";
-   }
+    @ReactMethod
+    public void paused(Boolean pause) {
+        OneSignal.getInAppMessages().setPaused(pause);
+    }
 
-   @Override
-   public void onHostDestroy() {
-      removeHandlers();
-      removeObservers();
-   }
+    @ReactMethod
+    public void addTrigger(String key, String value) {
+        OneSignal.getInAppMessages().addTrigger(key, value);
+    }
 
-   @Override
-   public void onHostPause() {
+    @ReactMethod
+    public void addTriggers(ReadableMap triggers) {
+        OneSignal.getInAppMessages().addTriggers(triggers.toHashMap());
+    }
 
-   }
+    @ReactMethod
+    public void removeTrigger(String key) {
+        OneSignal.getInAppMessages().removeTrigger(key);
+    }
 
-   @Override
-   public void onHostResume() {
-      initOneSignal();
-   }
+    @ReactMethod
+    public void removeTriggers(ReadableArray keys) {
+        OneSignal.getInAppMessages().removeTriggers(RNUtils.convertReableArrayIntoStringCollection(keys));
+    }
 
-   @Override
-   public void onCatalystInstanceDestroy() {
-      removeHandlers();
-      removeObservers();
-   }
+    @ReactMethod
+    public void clearTriggers() {
+        OneSignal.getInAppMessages().clearTriggers();
+    }
 
-   /**
-    * Added for NativeEventEmitter
-    */
 
-   @ReactMethod
-   public void addListener(String eventName) {
-      // Keep: Required for RN built in Event Emitter Calls.
-   }
+    // OneSignal.Location namespace methods
+    @ReactMethod
+    public void requestLocationPermission() {
+        OneSignal.getLocation().requestPermission(Continue.none());
+    }
 
-   @ReactMethod
-   public void removeListeners(int count) {
-      // Keep: Required for RN built in Event Emitter Calls.
-   }
+    @ReactMethod
+    public void isLocationShared(Promise promise) {
+        promise.resolve(OneSignal.getLocation().isShared());
+    }
+
+    @ReactMethod
+    public void setLocationShared(Boolean shared) {
+        OneSignal.getLocation().setShared(shared);
+    }
+
+
+    // OneSignal.Notifications namespace methods
+    @ReactMethod
+    public void setNotificationClickHandler() {
+        OneSignal.getNotifications().setNotificationClickHandler(new INotificationClickHandler() {
+            @Override
+            public void notificationClicked(INotificationClickResult result) {
+                try {
+                    sendEvent("OneSignal-notificationClicked", RNUtils.convertHashMapToWritableMap(RNUtils.convertNotificationClickResultToMap(result)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @ReactMethod
+    public void setNotificationWillShowInForegroundHandler() {
+        OneSignal.getNotifications().setNotificationWillShowInForegroundHandler(new INotificationWillShowInForegroundHandler() {
+            @Override
+            public void notificationWillShowInForeground(INotificationReceivedEvent notificationReceivedEvent) {
+                try {
+                    INotification notification = notificationReceivedEvent.getNotification();
+                    String notificationId = notification.getNotificationId();
+                    notificationReceivedEventCache.put(notificationId, notificationReceivedEvent);
+                    sendEvent("OneSignal-notificationWillShowInForeground",
+                            RNUtils.convertHashMapToWritableMap(
+                                    RNUtils.convertNotificationToMap(notification)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @ReactMethod
+    public void completeNotificationEvent(final String uuid, final boolean shouldDisplay) {
+        INotificationReceivedEvent receivedEvent = notificationReceivedEventCache.get(uuid);
+
+        if (receivedEvent == null) {
+            Log.e("OneSignal", "(java): could not find cached notification received event with id "+uuid);
+            return;
+        }
+
+        if (shouldDisplay) {
+            receivedEvent.complete(receivedEvent.getNotification());
+        } else {
+            receivedEvent.complete(null);
+        }
+
+        notificationReceivedEventCache.remove(uuid);
+    }
+
+    @ReactMethod
+    public void addPermissionChangedHandler() {
+        if (!hasSetPermissionObserver) {
+            OneSignal.getNotifications().addPermissionChangedHandler(this);
+            hasSetPermissionObserver = true;
+        }
+    }
+
+    @ReactMethod
+    public void removePermissionChangedHandler() {
+        if (hasSetPermissionObserver) {
+            OneSignal.getNotifications().removePermissionChangedHandler(this);
+            hasSetPermissionObserver = false;
+        }
+    }
+
+    @Override
+    public void onPermissionChanged(boolean permission) {
+        Log.i("OneSignal", "sending permission change event");
+        sendEvent("OneSignal-permissionChanged", permission);
+    }
+
+    @ReactMethod
+    public void requestNotificationPermission(final boolean fallbackToSettings, final Callback callback) {
+        OneSignal.getNotifications().requestPermission(fallbackToSettings, Continue.with(result -> {
+            callback.invoke(result.isSuccess());
+        }));
+    }
+
+    @ReactMethod
+    public void hasNotificationPermission(Promise promise) {
+        promise.resolve(OneSignal.getNotifications().getPermission());
+    }
+
+    @ReactMethod
+    public void canRequestNotificationPermission(Promise promise) {
+        promise.resolve(true);
+    }
+
+    @ReactMethod
+    public void clearAllNotifications() {
+        OneSignal.getNotifications().clearAllNotifications();
+    }
+
+    @ReactMethod
+    public void removeNotification(int id) {
+        OneSignal.getNotifications().removeNotification(id);
+    }
+
+    @ReactMethod
+    public void removeGroupedNotifications(String id) {
+        OneSignal.getNotifications().removeGroupedNotifications(id);
+    }
+
+
+    // OneSignal.User.PushSubscription namespace methods
+    @ReactMethod
+    public void getPushSubscriptionId(Promise promise) {
+        IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
+        promise.resolve(pushSubscription.getId());
+    }
+
+    @ReactMethod
+    public void getPushSubscriptionToken(Promise promise) {
+        IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
+        promise.resolve(pushSubscription.getToken());
+    }
+
+    @ReactMethod
+    public void getOptedIn(Promise promise) {
+        IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
+        promise.resolve(pushSubscription.getOptedIn());
+    }
+
+    @ReactMethod
+    public void optIn() {
+        IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
+        pushSubscription.optIn();
+    }
+
+    @ReactMethod
+    public void optOut() {
+        IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
+        pushSubscription.optOut();
+    }
+
+    @ReactMethod
+    public void addPushSubscriptionChangeHandler() {
+        if (!hasSetPushSubscriptionObserver) {
+            OneSignal.getUser().getPushSubscription().addChangeHandler(this);
+            hasSetPushSubscriptionObserver = true;
+        }
+    }
+
+    @ReactMethod
+    public void rmeovePushSubscriptionChangeHandler() {
+        if (hasSetPushSubscriptionObserver) {
+            OneSignal.getUser().getPushSubscription().removeChangeHandler(this);
+            hasSetPushSubscriptionObserver = false;
+        }
+    }
+
+    @Override
+    public void onSubscriptionChanged(ISubscription subscription) {
+        if (!(subscription instanceof IPushSubscription)) {
+            return;
+        }
+
+        try {
+            sendEvent("OneSignal-subscriptionChanged",
+                    RNUtils.convertHashMapToWritableMap(
+                            RNUtils.convertOnSubscriptionChangedToMap((IPushSubscription) subscription)));
+            Log.i("OneSignal", "sending subscription change event");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // OneSignal.Session namespace methods
+    @ReactMethod
+    public void addOutcome(String name) {
+        OneSignal.getSession().addOutcome(name);
+    }
+
+    @ReactMethod
+    public void addUniqueOutcome(String name) {
+        OneSignal.getSession().addUniqueOutcome(name);
+    }
+
+    @ReactMethod
+    public void addOutcomeWithValue(String name, float value) {
+        OneSignal.getSession().addOutcomeWithValue(name, value);
+    }
+
+    // OneSignal.User namespace methods
+    @ReactMethod
+    public void login(String externalUserId) {
+        OneSignal.login(externalUserId);
+    }
+
+    @ReactMethod
+    public void logout() {
+        OneSignal.logout();
+    }
+
+    @ReactMethod
+    public void setLanguage(String language) {
+        OneSignal.getUser().setLanguage(language);
+    }
+
+    @ReactMethod
+    public void addTag(String key, String value) {
+        OneSignal.getUser().addTag(key, value);
+    }
+
+    @ReactMethod
+    public void removeTag(String key) {
+        OneSignal.getUser().removeTag(key);
+    }
+
+    @ReactMethod
+    public void addTags(ReadableMap tags) {
+        OneSignal.getUser().addTags(RNUtils.convertReableMapIntoStringMap(tags));
+    }
+
+    @ReactMethod
+    public void removeTags(ReadableArray tagKeys) {
+        OneSignal.getUser().removeTags(RNUtils.convertReableArrayIntoStringCollection(tagKeys));
+    }
+
+    @ReactMethod
+    public void addEmail(String email, Promise promise) {
+        try {
+            OneSignal.getUser().addEmail(email);
+            promise.resolve(null);
+        } catch (Throwable t) {
+            promise.reject(t.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void removeEmail(String email, Promise promise) {
+        try {
+            OneSignal.getUser().removeEmail(email);
+            promise.resolve(null);
+        } catch (Throwable t) {
+            promise.reject(t.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void addSms(String smsNumber, Promise promise) {
+        try {
+            OneSignal.getUser().addSms(smsNumber);
+            promise.resolve(null);
+        } catch (Throwable t) {
+            promise.reject(t.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void removeSms(String smsNumber, Promise promise) {
+        try {
+            OneSignal.getUser().removeSms(smsNumber);
+            promise.resolve(null);
+        } catch (Throwable t) {
+            promise.reject(t.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void addAlias(String label, String id) {
+        OneSignal.getUser().addAlias(label, id);
+    }
+
+    @ReactMethod
+    public void removeAlias(String label) {
+        OneSignal.getUser().removeAlias(label);
+    }
+
+    @ReactMethod
+    public void addAliases(ReadableMap aliases) {
+        OneSignal.getUser().addAliases(RNUtils.convertReableMapIntoStringMap(aliases));
+    }
+
+    @ReactMethod
+    public void removeAliases(ReadableArray aliasLabels) {
+        OneSignal.getUser().removeAliases(RNUtils.convertReableArrayIntoStringCollection(aliasLabels));
+    }
+
+    /** Added for NativeEventEmitter */
+    @ReactMethod
+    public void addListener(String eventName) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    public void removeListeners(int count) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
 }
