@@ -26,9 +26,7 @@
 @interface RCTOneSignal ()
 @end
 
-@implementation RCTOneSignal {
-    BOOL didInitialize;
-}
+@implementation RCTOneSignal
 
 OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 
@@ -41,20 +39,12 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     return _sharedInstance;
 }
 
-- (void)initOneSignal:(NSDictionary *)launchOptions {
-
-    if (didInitialize)
-        return;
-
-    [OneSignal initWithLaunchOptions:launchOptions];
-    didInitialize = true;
-}
-
 - (void)handleRemoteNotificationOpened:(NSString *)result {
     NSDictionary *json = [self jsonObjectWithString:result];
 
-    if (json)
-        [self sendEvent:OSEventString(NotificationOpened) withBody:json];
+    if (json) {
+        [self sendEvent:OSEventString(NotificationClicked) withBody:json];
+    }
 }
 
 - (NSDictionary *)jsonObjectWithString:(NSString *)jsonString {
@@ -63,7 +53,6 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
 
     if (jsonError) {
-        [OneSignal onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"Unable to serialize JSON string into an object: %@", jsonError]];
         return nil;
     }
 
@@ -74,20 +63,12 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     [RCTOneSignalEventEmitter sendEventWithName:eventName withBody:body];
 }
 
-- (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges * _Nonnull)stateChanges {
-    [self sendEvent:OSEventString(SubscriptionChanged) withBody:stateChanges.toDictionary];
+- (void)onOSPushSubscriptionChangedWithStateChanges:(OSPushSubscriptionStateChanges * _Nonnull)stateChanges {
+    [self sendEvent:OSEventString(SubscriptionChanged) withBody:[stateChanges jsonRepresentation]];
 }
 
-- (void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges * _Nonnull)stateChanges {
-    [self sendEvent:OSEventString(EmailSubscriptionChanged) withBody:stateChanges.toDictionary];
-}
-
-- (void)onOSSMSSubscriptionChanged:(OSSMSSubscriptionStateChanges *)stateChanges {
-    [self sendEvent:OSEventString(SMSSubscriptionChanged) withBody:stateChanges.toDictionary];
-}
-
-- (void)onOSPermissionChanged:(OSPermissionStateChanges *)stateChanges {
-    [self sendEvent:OSEventString(PermissionChanged) withBody:stateChanges.toDictionary];
+- (void)onOSPermissionChanged:(OSPermissionState *)state {
+    [self sendEvent:OSEventString(PermissionChanged) withBody:[state jsonRepresentation]];
 }
 
 - (void)onWillDisplayInAppMessage:(OSInAppMessage * _Nonnull)message {

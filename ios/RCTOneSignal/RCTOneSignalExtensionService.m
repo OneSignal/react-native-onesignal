@@ -1,8 +1,5 @@
-#if __has_include(<OneSignal/OneSignal.h>)
-#import <OneSignal/OneSignal.h>
-#else
-#import "OneSignal.h"
-#endif
+#import <OneSignalFramework/OneSignalFramework.h>
+
 
 #import "RCTOneSignalExtensionService.h"
 
