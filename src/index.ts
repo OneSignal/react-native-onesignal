@@ -1,37 +1,38 @@
 'use strict';
 
-import { NativeModules, Platform } from 'react-native';
+import {
+  NativeModules, 
+  Platform
+} from 'react-native';
 import EventManager from './events/EventManager';
 import {
-  PERMISSION_CHANGED,
-  SUBSCRIPTION_CHANGED,
   IN_APP_MESSAGE_CLICKED,
-  NOTIFICATION_WILL_SHOW,
-  NOTIFICATION_OPENED,
-  EMAIL_SUBSCRIPTION_CHANGED,
-  SMS_SUBSCRIPTION_CHANGED,
-  IN_APP_MESSAGE_WILL_DISPLAY,
-  IN_APP_MESSAGE_WILL_DISMISS,
   IN_APP_MESSAGE_DID_DISMISS,
   IN_APP_MESSAGE_DID_DISPLAY,
+  IN_APP_MESSAGE_WILL_DISMISS,
+  IN_APP_MESSAGE_WILL_DISPLAY,
+  NOTIFICATION_CLICKED,
+  NOTIFICATION_WILL_SHOW,
+  PERMISSION_CHANGED,
+  SUBSCRIPTION_CHANGED,
 } from './events/events';
 import {
-  DeviceState,
-  ChangeEvent,
-  PermissionChange,
+  ChangeEvent, 
+  PermissionChange, 
   SubscriptionChange,
-  EmailSubscriptionChange,
-  SMSSubscriptionChange,
 } from './models/Subscription';
 import NotificationReceivedEvent from './events/NotificationReceivedEvent';
-import { OpenedEvent } from './models/NotificationEvents';
-import { OutcomeEvent } from './models/Outcomes';
+import {OpenedEvent} from './models/NotificationEvents';
+import {OutcomeEvent} from './models/Outcomes';
 import {
-  InAppMessage,
+  InAppMessage, 
   InAppMessageAction,
   InAppMessageLifecycleHandlerObject,
 } from './models/InAppMessage';
-import { isValidCallback, isNativeModuleLoaded } from './helpers';
+import {
+  isValidCallback, 
+  isNativeModuleLoaded
+} from './helpers';
 
 const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
@@ -39,306 +40,87 @@ const eventManager = new EventManager(RNOneSignal);
 // 0 = None, 1 = Fatal, 2 = Errors, 3 = Warnings, 4 = Info, 5 = Debug, 6 = Verbose
 export type LogLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
-export default class OneSignal {
-  /* I N I T I A L I Z A T I O N */
+export namespace OneSignal {
+  /** Initializes the OneSignal SDK. This should be called during startup of the application. */
+  export function initialize(appId: string) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-  /**
-   * Completes OneSignal initialization by setting the OneSignal Application ID.
-   * @param  {string} appId
-   * @returns void
-   */
-  static setAppId(appId: string): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    RNOneSignal.setAppId(appId);
-  }
-
-  /* O B S E R V E R S */
-
-  /**
-   * Add a callback that fires when the native push permission changes.
-   * @param  {(event:ChangeEvent<PermissionChange>) => void} observer
-   * @returns void
-   */
-  static addPermissionObserver(
-    observer: (event: ChangeEvent<PermissionChange>) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    isValidCallback(observer);
-    RNOneSignal.addPermissionObserver();
-    eventManager.addEventHandler<PermissionChange>(
-      PERMISSION_CHANGED,
-      observer,
-    );
+    RNOneSignal.initialize(appId);
   }
 
   /**
-   * Clears current permission observers.
-   * @returns void
+   * If your integration is user-centric, or you want the ability to identify the user beyond the current device, the
+   * login method should be called to identify the user.
    */
-  static clearPermissionObservers(): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    RNOneSignal.removePermissionObserver();
-    eventManager.clearEventHandler(PERMISSION_CHANGED);
+  export function login(externalId: string) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+    RNOneSignal.login(externalId);
   }
 
   /**
-   * Add a callback that fires when the OneSignal subscription state changes.
-   * @param  {(event:ChangeEvent<SubscriptionChange>) => void} observer
-   * @returns void
+   * Once (or if) the user is no longer identifiable in your app (i.e. they logged out), the logout method should be
+   * called.
    */
-  static addSubscriptionObserver(
-    observer: (event: ChangeEvent<SubscriptionChange>) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    isValidCallback(observer);
-    RNOneSignal.addSubscriptionObserver();
-    eventManager.addEventHandler<SubscriptionChange>(
-      SUBSCRIPTION_CHANGED,
-      observer,
-    );
+  export function logout() {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+    RNOneSignal.logout();
   }
 
-  /**
-   * Clears current subscription observers.
-   * @returns void
-   */
-  static clearSubscriptionObservers(): void {
+  /** True if the application requires user privacy consent, false otherwise. */
+  export function getRequiresPrivacyConsent(): Promise<boolean> {
     if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
+      return Promise.reject(new Error('OneSignal native module not loaded'));
     }
-    RNOneSignal.removeSubscriptionObserver();
-    eventManager.clearEventHandler(SUBSCRIPTION_CHANGED);
+
+    return RNOneSignal.getRequiresPrivacyConsent();
   }
 
-  /**
-   * Add a callback that fires when the OneSignal email subscription changes.
-   * @param  {(event:ChangeEvent<EmailSubscriptionChange>) => void} observer
-   * @returns void
-   */
-  static addEmailSubscriptionObserver(
-    observer: (event: ChangeEvent<EmailSubscriptionChange>) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    isValidCallback(observer);
-    RNOneSignal.addEmailSubscriptionObserver();
-    eventManager.addEventHandler<EmailSubscriptionChange>(
-      EMAIL_SUBSCRIPTION_CHANGED,
-      observer,
-    );
+  /** For GDPR users, your application should call this method before setting the App ID. */
+  export function setRequiresPrivacyConsent(required: boolean) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+    RNOneSignal.setRequiresPrivacyConsent(required);
   }
 
-  /**
-   * Clears current email subscription observers.
-   * @returns void
-   */
-  static clearEmailSubscriptionObservers(): void {
+  /** Indicates whether privacy consent has been granted. */
+   export function getPrivacyConsent(): Promise<boolean> {
     if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
+      return Promise.reject(new Error('OneSignal native module not loaded'));
     }
-    RNOneSignal.removeEmailSubscriptionObserver();
-    eventManager.clearEventHandler(EMAIL_SUBSCRIPTION_CHANGED);
+
+    return RNOneSignal.getPrivacyConsent();
+  }
+  
+  /**
+   * If your application is set to require the user's privacy consent, you can provide this consent using this method.
+   * Indicates whether privacy consent has been granted. This field is only relevant when the application has opted 
+   * into data privacy protections.
+   */
+  export function setPrivacyConsent(granted: boolean) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+    RNOneSignal.setPrivacyConsent(granted);
   }
 
-  /**
-   * Add a callback that fires when the OneSignal sms subscription changes.
-   * @param  {(event:ChangeEvent<SMSSubscriptionChange>) => void} observer
-   * @returns void
-   */
-  static addSMSSubscriptionObserver(
-    observer: (event: ChangeEvent<SMSSubscriptionChange>) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    isValidCallback(observer);
-    RNOneSignal.addSMSSubscriptionObserver();
-    eventManager.addEventHandler<SMSSubscriptionChange>(
-      SMS_SUBSCRIPTION_CHANGED,
-      observer,
-    );
-  }
-
-  /**
-   * Clears current SMS subscription observers.
-   * @returns void
-   */
-  static clearSMSSubscriptionObservers(): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    RNOneSignal.removeSMSSubscriptionObserver();
-    eventManager.clearEventHandler(SMS_SUBSCRIPTION_CHANGED);
-  }
-
-  /* H A N D L E R S */
-
-  /**
-   * Sets the handler that fires before the notification is displayed
-   * Callback parameter is a `NotificationReceivedEvent` with:
-   *  - notification data
-   *  - `complete` function that accepts the `NotificationReceivedEvent`
-   * @param  {(event:NotificationReceivedEvent) => void} handler
-   */
-  static setNotificationWillShowInForegroundHandler(
-    handler: (event: NotificationReceivedEvent) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    isValidCallback(handler);
-    RNOneSignal.setNotificationWillShowInForegroundHandler();
-    eventManager.setEventHandler<NotificationReceivedEvent>(
-      NOTIFICATION_WILL_SHOW,
-      handler,
-    );
-  }
-
-  /**
-   * Set the callback to run on notification open.
-   * @param  {(openedEvent:OpenedEvent) => void} handler
-   * @returns void
-   */
-  static setNotificationOpenedHandler(
-    handler: (openedEvent: OpenedEvent) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    isValidCallback(handler);
-
-    RNOneSignal.setNotificationOpenedHandler();
-    eventManager.setEventHandler<OpenedEvent>(NOTIFICATION_OPENED, handler);
-  }
-
-  /* R E G I S T R A T I O N  E T C */
-
-  /**
-   * Prompts the user for push notifications permission in iOS and Android 13+.
-   * Use the fallbackToSettings parameter to prompt to open the settings app if a user has already declined push permissions.
-   *
-   * Call with promptForPushNotificationsWithUserResponse(fallbackToSettings?, handler?)
-   *
-   * Recommended: Do not use and instead follow: https://documentation.onesignal.com/docs/ios-push-opt-in-prompt.
-   * @param  {boolean} fallbackToSettings
-   * @param  {(response:boolean) => void} handler
-   * @returns void
-   */
-  static promptForPushNotificationsWithUserResponse(
-    fallbackToSettingsOrHandler?: boolean | ((response: boolean) => void),
-    handler?: (response: boolean) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    let fallbackToSettings = false;
-
-    if (typeof fallbackToSettingsOrHandler === 'function') {
-      // Method was called like promptForPushNotificationsWithUserResponse(handler: function)
-      handler = fallbackToSettingsOrHandler;
-    } else if (typeof fallbackToSettingsOrHandler === 'boolean') {
-      // Method was called like promptForPushNotificationsWithUserResponse(fallbackToSettings: boolean, handler?: function)
-      fallbackToSettings = fallbackToSettingsOrHandler;
-    }
-    // Else method was called like promptForPushNotificationsWithUserResponse(), no need to modify
-
-    if (!handler && Platform.OS === 'ios') {
-      handler = function () {};
-    }
-
-    RNOneSignal.promptForPushNotificationsWithUserResponse(
-      fallbackToSettings,
-      handler,
-    );
-  }
-
-  /**
-   * Only applies to iOS (does nothing on Android as it always silently registers)
-   * Request for Direct-To-History push notification authorization
-   *
-   * For more information: https://documentation.onesignal.com/docs/ios-customizations#provisional-push-notifications
-   *
-   * @param  {(response:boolean) => void} handler
-   * @returns void
-   */
-  static registerForProvisionalAuthorization(
-    handler: (response: boolean) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
+  /** This method can be used to set if launch URLs should be opened in safari or within the application. */
+  export function setLaunchURLsInApp(isEnabled: boolean) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
 
     if (Platform.OS === 'ios') {
-      isValidCallback(handler);
-      RNOneSignal.registerForProvisionalAuthorization(handler);
+      RNOneSignal.setLaunchURLsInApp(isEnabled);
     } else {
-      console.log(
-        'registerForProvisionalAuthorization: this function is not supported on Android',
-      );
+      console.log('setLaunchURLsInApp: this function is not supported on Android');
     }
   }
 
-  /**
-   * Disable the push notification subscription to OneSignal.
-   * @param  {boolean} disable
-   * @returns void
-   */
-  static disablePush(disable: boolean): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    RNOneSignal.disablePush(disable);
-  }
-
-  /**
-   * Android Only. If notifications are disabled for your application, unsubscribe the user from OneSignal.
-   * @param  {boolean} unsubscribe
-   * @returns void
-   */
-  static unsubscribeWhenNotificationsAreDisabled(unsubscribe: boolean): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (Platform.OS === 'android') {
-      RNOneSignal.unsubscribeWhenNotificationsAreDisabled(unsubscribe);
-    } else {
-      console.log(
-        'unsubscribeWhenNotificationsAreDisabled: this function is not supported on iOS',
-      );
-    }
-  }
-  /* L I V E   A C T I V I T Y  */
-
-  /**
-   * Associates a temporary push token with an Activity ID on the OneSignal server.
-   * @param  {string} activityId
-   * @param  {string} token
-   * @param  {Function} handler
-   * @returns void
-   */
-  static enterLiveActivity(
-    activityId: string,
-    token: string,
-    handler?: Function,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
+  /** Associates a temporary push token with an Activity ID on the OneSignal server. */
+  export function enterLiveActivity(activityId: string, token: string, handler?: Function) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
 
     if (!handler) {
-      handler = function () {};
+      handler = () => {};
     }
 
     // Only Available on iOS
@@ -349,17 +131,12 @@ export default class OneSignal {
 
   /**
    * Deletes activityId associated temporary push token on the OneSignal server.
-   * @param  {string} activityId
-   * @param  {Function} handler
-   * @returns void
    */
-  static exitLiveActivity(activityId: string, handler?: Function): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
+  export function exitLiveActivity(activityId: string, handler?: Function) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
 
     if (!handler) {
-      handler = function () {};
+      handler = () => {};
     }
 
     // Only Available on iOS
@@ -368,766 +145,543 @@ export default class OneSignal {
     }
   }
 
-  /* L O C A T I O N */
+  /** Clears all handlers and observers. */
+  export function clearHandlers() {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-  /**
-   * True if the application has location share activated, false otherwise
-   * @returns Promise<boolean>
-   */
-  static isLocationShared(): Promise<boolean> {
-    // must return a promise
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return Promise.resolve(false);
-    }
-    return RNOneSignal.isLocationShared();
-  }
-
-  /**
-   * Disable or enable location collection (defaults to enabled if your app has location permission).
-   * @param  {boolean} shared
-   * @returns void
-   */
-  static setLocationShared(shared: boolean): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    RNOneSignal.setLocationShared(shared);
-  }
-
-  /**
-   * Prompts the user for location permissions to allow geotagging from the OneSignal dashboard.
-   * @returns void
-   */
-  static promptLocation(): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    //Supported in both iOS & Android
-    RNOneSignal.promptLocation();
-  }
-
-  /* D E V I C E  I N F O */
-
-  /**
-   * Gets the device state.
-   * This method returns a "snapshot" of the device state for when it was called.
-   * @returns Promise<DeviceState | null>
-   */
-  static async getDeviceState(): Promise<DeviceState | null> {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return Promise.resolve(null);
-    }
-    const deviceState = await RNOneSignal.getDeviceState();
-
-    if (Platform.OS === 'android') {
-      deviceState.hasNotificationPermission =
-        deviceState.areNotificationsEnabled;
-      delete deviceState.areNotificationsEnabled;
-    }
-
-    return deviceState;
-  }
-
-  /**
-   * Allows you to set the app defined language with the OneSignal SDK.
-   * @param  {string} language
-   * @param  {(success:object) => void} onSuccess
-   * @param  {(failure:object) => void} onFailure
-   * @returns void
-   */
-  static setLanguage(
-    language: string,
-    onSuccess?: (success: object) => void,
-    onFailure?: (failure: object) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (!onSuccess) {
-      onSuccess = function () {};
-    }
-
-    if (!onFailure) {
-      onFailure = function () {};
-    }
-    RNOneSignal.setLanguage(language, onSuccess, onFailure);
-  }
-
-  /* T A G S */
-
-  /**
-   * Tag a user based on an app event of your choosing so they can be targeted later via segments.
-   * @param  {string} key
-   * @param  {string} value
-   * @returns void
-   */
-  static sendTag(key: string, value: string): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (!key || (!value && value !== '')) {
-      console.error('OneSignal: sendTag: must include a key and a value');
-    }
-
-    RNOneSignal.sendTag(key, value);
-  }
-
-  /**
-   * Tag a user with multiple tags based on an app event of your choosing so they can be targeted later via segments.
-   * @param  {[key: string]: string} tags
-   * @returns void
-   */
-  static sendTags(tags: { [key: string]: string }): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    let keys = Object.keys(tags);
-
-    if (keys.length === 0) {
-      console.error(
-        "OneSignal: sendTags: argument must be of type object of the form { key : 'value' }",
-      );
-    }
-
-    RNOneSignal.sendTags(tags || {});
-  }
-
-  /**
-   * Retrieve a list of tags that have been set on the user from the OneSignal server.
-   * @param  {(tags: {[key: string]: string} | null) => void} handler
-   * @returns void
-   */
-  static getTags(
-    handler: (tags: { [key: string]: string } | null) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    RNOneSignal.getTags(handler);
-  }
-
-  /**
-   * Deletes a single tag that was previously set on a user.
-   * @param  {string} key
-   * @returns void
-   */
-  static deleteTag(key: string): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    if (typeof key !== 'string') {
-      console.error(
-        'OneSignal: deleteTag: key argument must be of type string',
-      );
-    }
-    RNOneSignal.deleteTags([key]);
-  }
-
-  /**
-   * Deletes multiple tags that were previously set on a user.
-   * @param  {string[]} keys
-   */
-  static deleteTags(keys: string[]): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (!Array.isArray(keys)) {
-      console.error('OneSignal: deleteTags: argument must be of array type');
-    }
-
-    RNOneSignal.deleteTags(keys);
-  }
-
-  /* E M A I L */
-
-  /**
-   * Allows you to set the user's email address with the OneSignal SDK.
-   * @param  {string} email
-   * @param  {string} emailAuthCode
-   * @param  {Function} handler
-   * @returns void
-   */
-  static setEmail(
-    email: string,
-    emailAuthCode?: string | null,
-    handler?: Function,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (emailAuthCode === undefined) {
-      emailAuthCode = null;
-    }
-
-    // Android workaround for the current issue of callback fired more than once
-    if (!handler && Platform.OS === 'ios') {
-      handler = function () {};
-    }
-
-    RNOneSignal.setEmail(email, emailAuthCode, handler);
-  }
-
-  /**
-   * If your app implements logout functionality, you can call logoutEmail to dissociate the email from the device.
-   * @param  {Function} handler
-   */
-  static logoutEmail(handler?: Function): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    // Android workaround for the current issue of callback fired more than once
-    if (!handler && Platform.OS === 'ios') {
-      handler = function () {};
-    }
-
-    RNOneSignal.logoutEmail(handler);
-  }
-
-  /* S M S */
-
-  /**
-   * Allows you to set the user's SMS number with the OneSignal SDK.
-   * @param  {string} smsNumber
-   * @param  {string} smsAuthCode
-   * @param  {Function} handler
-   * @returns void
-   */
-  static setSMSNumber(
-    smsNumber: string,
-    smsAuthCode?: string | null,
-    handler?: Function,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (smsAuthCode === undefined) {
-      smsAuthCode = null;
-    }
-
-    // Android workaround for the current issue of callback fired more than once
-    if (!handler && Platform.OS === 'ios') {
-      handler = function () {};
-    }
-
-    RNOneSignal.setSMSNumber(smsNumber, smsAuthCode, handler);
-  }
-
-  /**
-   * If your app implements logout functionality, you can call logoutSMSNumber to dissociate the SMS number from the device.
-   * @param  {Function} handler
-   */
-  static logoutSMSNumber(handler?: Function): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    // Android workaround for the current issue of callback fired more than once
-    if (!handler && Platform.OS === 'ios') {
-      handler = function () {};
-    }
-
-    RNOneSignal.logoutSMSNumber(handler);
-  }
-
-  /* N O T I F I C A T I O N S */
-
-  /**
-   * Send a notification
-   * @param  {string} notificationObjectString - JSON string payload (see REST API reference)
-   * @param  {(success:object) => void} onSuccess
-   * @param  {(failure:object) => void} onFailure
-   * @returns void
-   */
-  static postNotification(
-    notificationObjectString: string,
-    onSuccess?: (success: object) => void,
-    onFailure?: (failure: object) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (!onSuccess) {
-      onSuccess = function () {};
-    }
-
-    if (!onFailure) {
-      onFailure = function () {};
-    }
-
-    RNOneSignal.postNotification(
-      notificationObjectString,
-      onSuccess,
-      onFailure,
-    );
-  }
-
-  /**
-   * Android Only. iOS provides a standard way to clear notifications by clearing badge count.
-   * @returns void
-   */
-  static clearOneSignalNotifications(): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (Platform.OS === 'android') {
-      RNOneSignal.clearOneSignalNotifications();
-    } else {
-      console.log(
-        'clearOneSignalNotifications: this function is not supported on iOS',
-      );
-    }
-  }
-
-  /**
-   * Android Only.
-   * Removes a single OneSignal notification based on its Android notification integer id.
-   * @param  {number} id - notification id to cancel
-   * @returns void
-   */
-  static removeNotification(id: number): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (Platform.OS === 'android') {
-      RNOneSignal.removeNotification(id);
-    } else {
-      console.log('removeNotification: this function is not supported on iOS');
-    }
-  }
-
-  /**
-   * Android Only.
-   * Removes all OneSignal notifications based on its Android notification group Id.
-   * @param  {string} id - notification group id to cancel
-   * @returns void
-   */
-  static removeGroupedNotifications(id: string): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (Platform.OS === 'android') {
-      RNOneSignal.removeGroupedNotifications(id);
-    } else {
-      console.log(
-        'removeGroupedNotifications: this function is not supported on iOS',
-      );
-    }
-  }
-
-  /**
-   * This method can be used to set if launch URLs should be opened in safari or within the application.
-   * @param  {boolean} isEnabled
-   * @returns
-   */
-  static setLaunchURLsInApp(isEnabled: boolean): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (Platform.OS === 'ios') {
-      RNOneSignal.setLaunchURLsInApp(isEnabled);
-    } else {
-      console.log(
-        'setLaunchURLsInApp: this function is not supported on Android',
-      );
-    }
-  }
-
-  /* E X T E R N A L  U S E R  I D */
-
-  /**
-   * Allows you to use your own system's user ID's to send push notifications to your users.
-   * @param  {string} externalId
-   * @param  {string} externalIdAuthCode?
-   * @param  {(results:object) => void} handler?
-   * @returns void
-   */
-  static setExternalUserId(
-    externalId: string,
-    handlerOrAuth?: ((results: object) => void) | string,
-    handler?: (results: object) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (typeof handlerOrAuth === 'function') {
-      RNOneSignal.setExternalUserId(externalId, null, handlerOrAuth);
-      return;
-    }
-
-    if (!handler && Platform.OS === 'ios') {
-      handler = function () {};
-    }
-
-    RNOneSignal.setExternalUserId(externalId, handlerOrAuth, handler);
-  }
-
-  /**
-   * Removes whatever was set as the current user's external user ID.
-   * @param  {(results:object) => void} handler
-   * @returns void
-   */
-  static removeExternalUserId(handler?: (results: object) => void): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    // Android workaround for the current issue of callback fired more than once
-    if (handler === undefined && Platform.OS === 'ios') {
-      handler = function () {};
-    }
-
-    RNOneSignal.removeExternalUserId(handler);
-  }
-
-  /* I N  A P P  M E S S A G I N G */
-
-  /**
-   * Sets an In-App Message click event handler.
-   * @param  {(action:InAppMessageAction) => void} handler
-   * @returns void
-   */
-  static setInAppMessageClickHandler(
-    handler: (action: InAppMessageAction) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    isValidCallback(handler);
-    RNOneSignal.initInAppMessageClickHandlerParams();
-    RNOneSignal.setInAppMessageClickHandler();
-    eventManager.setEventHandler<InAppMessageAction>(
-      IN_APP_MESSAGE_CLICKED,
-      handler,
-    );
-  }
-
-  /**
-   * Sets the In-App Message lifecycle handler object to run on displaying and/or dismissing an In-App Message.
-   * @param  {InAppMessageLifecycleHandlerObject} handlerObject
-   * @returns void
-   */
-  static setInAppMessageLifecycleHandler(
-    handlerObject: InAppMessageLifecycleHandlerObject,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (handlerObject.onWillDisplayInAppMessage) {
-      isValidCallback(handlerObject.onWillDisplayInAppMessage);
-      eventManager.setEventHandler<InAppMessage>(
-        IN_APP_MESSAGE_WILL_DISPLAY,
-        handlerObject.onWillDisplayInAppMessage,
-      );
-    }
-    if (handlerObject.onDidDisplayInAppMessage) {
-      isValidCallback(handlerObject.onDidDisplayInAppMessage);
-      eventManager.setEventHandler<InAppMessage>(
-        IN_APP_MESSAGE_DID_DISPLAY,
-        handlerObject.onDidDisplayInAppMessage,
-      );
-    }
-    if (handlerObject.onWillDismissInAppMessage) {
-      isValidCallback(handlerObject.onWillDismissInAppMessage);
-      eventManager.setEventHandler<InAppMessage>(
-        IN_APP_MESSAGE_WILL_DISMISS,
-        handlerObject.onWillDismissInAppMessage,
-      );
-    }
-    if (handlerObject.onDidDismissInAppMessage) {
-      isValidCallback(handlerObject.onDidDismissInAppMessage);
-      eventManager.setEventHandler<InAppMessage>(
-        IN_APP_MESSAGE_DID_DISMISS,
-        handlerObject.onDidDismissInAppMessage,
-      );
-    }
-
-    RNOneSignal.setInAppMessageLifecycleHandler();
-  }
-
-  /**
-   * Add an In-App Message Trigger.
-   * @param  {string} key
-   * @param  {string | number | boolean} value
-   * @returns void
-   */
-  static addTrigger(key: string, value: string | number | boolean): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    // value can be assigned to `false` so we cannot just check `!value`
-    if (!key || value == null) {
-      console.error('OneSignal: addTrigger: must include a key and a value');
-    }
-
-    let trigger: { [key: string]: string | number | boolean } = {};
-    trigger[key] = value;
-    RNOneSignal.addTriggers(trigger);
-  }
-
-  /**
-   * Adds Multiple In-App Message Triggers.
-   * @param  {[key: string]: string | number | boolean} triggers
-   * @returns void
-   */
-  static addTriggers(triggers: {
-    [key: string]: string | number | boolean;
-  }): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    let keys = Object.keys(triggers);
-
-    if (keys.length === 0) {
-      console.error(
-        "OneSignal: addTriggers: argument must be an object of the form { key : 'value' }",
-      );
-    }
-
-    RNOneSignal.addTriggers(triggers);
-  }
-
-  /**
-   * Removes a list of triggers based on a collection of keys.
-   * @param  {string[]} keys
-   * @returns void
-   */
-  static removeTriggersForKeys(keys: string[]): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    RNOneSignal.removeTriggersForKeys(keys);
-  }
-
-  /**
-   * Removes a list of triggers based on a key.
-   * @param  {string} key
-   * @returns void
-   */
-  static removeTriggerForKey(key: string): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    RNOneSignal.removeTriggerForKey(key);
-  }
-
-  /**
-   * Gets a trigger value for a provided trigger key.
-   * @param  {string} key
-   * @returns Promise<string | number | boolean | null>
-   */
-  static getTriggerValueForKey(
-    key: string,
-  ): Promise<string | number | boolean | null> {
-    // must return a promise
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return Promise.resolve(null);
-    }
-    return RNOneSignal.getTriggerValueForKey(key);
-  }
-
-  /**
-   * Pause & unpause In-App Messages
-   * @param  {boolean} pause
-   * @returns void
-   */
-  static pauseInAppMessages(pause: boolean): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-    RNOneSignal.pauseInAppMessages(pause);
-  }
-
-  /* O U T C O M E S */
-
-  /**
-   * Increases the "Count" of this Outcome by 1 and will be counted each time sent.
-   * @param  {string} name
-   * @param  {(event:OutcomeEvent) => void} handler
-   * @returns void
-   */
-  static sendOutcome(
-    name: string,
-    handler?: (event: OutcomeEvent) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (!handler) {
-      handler = function () {};
-    }
-
-    RNOneSignal.sendOutcome(name, handler);
-  }
-
-  /**
-   * Increases "Count" by 1 only once. This can only be attributed to a single notification.
-   * @param  {string} name
-   * @param  {(event:OutcomeEvent) => void} handler
-   * @returns void
-   */
-  static sendUniqueOutcome(
-    name: string,
-    handler?: (event: OutcomeEvent) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (!handler) {
-      handler = function () {};
-    }
-
-    RNOneSignal.sendUniqueOutcome(name, handler);
-  }
-
-  /**
-   * Increases the "Count" of this Outcome by 1 and the "Sum" by the value. Will be counted each time sent.
-   * If the method is called outside of an attribution window, it will be unattributed until a new session occurs.
-   * @param  {string} name
-   * @param  {string|number} value
-   * @param  {(event:OutcomeEvent) => void} handler
-   * @returns void
-   */
-  static sendOutcomeWithValue(
-    name: string,
-    value: string | number,
-    handler?: (event: OutcomeEvent) => void,
-  ): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    if (!handler) {
-      handler = function () {};
-    }
-
-    RNOneSignal.sendOutcomeWithValue(name, Number(value), handler);
-  }
-
-  /* P R I V A C Y  C O N S E N T */
-
-  /**
-   * Did the user provide privacy consent for GDPR purposes.
-   * @returns Promise<boolean>
-   */
-  static userProvidedPrivacyConsent(): Promise<boolean> {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return Promise.resolve(false);
-    }
-
-    //returns a promise
-    return RNOneSignal.userProvidedPrivacyConsent();
-  }
-
-  /**
-   * True if the application requires user privacy consent, false otherwise
-   * @returns Promise<boolean>
-   */
-  static requiresUserPrivacyConsent(): Promise<boolean> {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return Promise.resolve(false);
-    }
-
-    //returns a promise
-    return RNOneSignal.requiresUserPrivacyConsent();
-  }
-
-  /**
-   * For GDPR users, your application should call this method before setting the App ID.
-   * @param  {boolean} required
-   * @returns void
-   */
-  static setRequiresUserPrivacyConsent(required: boolean): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    RNOneSignal.setRequiresUserPrivacyConsent(required);
-  }
-
-  /**
-   * If your application is set to require the user's privacy consent, you can provide this consent using this method.
-   * @param  {boolean} granted
-   * @returns void
-   */
-  static provideUserConsent(granted: boolean): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    RNOneSignal.provideUserConsent(granted);
-  }
-
-  /* O T H E R  F U N C T I O N S */
-
-  /**
-   * Enable logging to help debug if you run into an issue setting up OneSignal.
-   * @param  {LogLevel} nsLogLevel - Sets the logging level to print to the Android LogCat log or Xcode log.
-   * @param  {LogLevel} visualLogLevel - Sets the logging level to show as alert dialogs.
-   * @returns void
-   */
-  static setLogLevel(nsLogLevel: LogLevel, visualLogLevel: LogLevel): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
-
-    RNOneSignal.setLogLevel(nsLogLevel, visualLogLevel);
-  }
-
-  /**
-   * Clears all handlers and observers.
-   * @returns void
-   */
-  static clearHandlers(): void {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return;
-    }
     eventManager.clearHandlers();
+  }
+
+  export namespace Debug {
+    /**
+     * Enable logging to help debug if you run into an issue setting up OneSignal.
+     * @param {LogLevel} nsLogLevel - Sets the logging level to print to the Android LogCat log or Xcode log.
+     */
+    export function setLogLevel(nsLogLevel: LogLevel) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.setLogLevel(nsLogLevel);
+    }
+
+    /**
+     * Enable logging to help debug if you run into an issue setting up OneSignal.
+     * @param {LogLevel} visualLogLevel - Sets the logging level to show as alert dialogs.
+     */
+    export function setAlertLevel(visualLogLevel: LogLevel) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.setAlertLevel(visualLogLevel);
+    }
+  }
+
+  export namespace User {
+    export namespace PushSubscription {
+      /** Add a callback that fires when the OneSignal subscription state changes. */
+      export function addChangeHandler(observer: (event: ChangeEvent<SubscriptionChange>) => void) {
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+        isValidCallback(observer);
+        RNOneSignal.addPushSubscriptionChangeHandler();
+        eventManager.addEventHandler<SubscriptionChange>(SUBSCRIPTION_CHANGED, observer);
+      }
+
+      /** Clears current subscription observers. */
+      export function removeChangeHandler() {
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+        RNOneSignal.removePushSubscriptionChangeHandler();
+        eventManager.clearEventHandler(SUBSCRIPTION_CHANGED);
+      }
+
+      /** The readonly push subscription ID */
+      export function getPushSubscriptionId(): Promise<string> {
+        if (!isNativeModuleLoaded(RNOneSignal)) {
+          return Promise.reject(new Error('OneSignal native module not loaded'));
+        }
+
+        return RNOneSignal.getPushSubscriptionId();
+      }
+
+      /** The readonly push subscription token */
+      export function getPushSubscriptionToken(): Promise<string> {
+        if (!isNativeModuleLoaded(RNOneSignal)) {
+          return Promise.reject(new Error('OneSignal native module not loaded'));
+        }
+
+        return RNOneSignal.getPushSubscriptionToken();
+      }
+
+      /**
+       * Gets a boolean value indicating whether the current user is opted in to push notifications. 
+       * This returns true when the app has notifications permission and optOut is not called. 
+       * Note: Does not take into account the existence of the subscription ID and push token. 
+       * This boolean may return true but push notifications may still not be received by the user.
+       */
+      export function getOptedIn(): Promise<boolean> {
+        if (!isNativeModuleLoaded(RNOneSignal)) {
+          return Promise.reject(new Error('OneSignal native module not loaded'));
+        }
+
+        return RNOneSignal.getOptedIn();
+      }
+
+      /** Enable the push notification subscription to OneSignal. */
+      export function optOut() {
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+        RNOneSignal.optOut();
+      }
+
+      /** Disable the push notification subscription to OneSignal. */
+      export function optIn() {
+        if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+        RNOneSignal.optIn();
+      }
+    }
+
+    /** Explicitly set a 2-character language code for the user. */
+    export function setLanguage(language: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.setLanguage(language);
+    }
+
+    /** Set an alias for the current user. If this alias label already exists on this user, it will be overwritten with the new alias id. */
+    export function addAlias(label: string, id: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.addAlias(label, id);
+    }
+
+    /** Set aliases for the current user. If any alias already exists, it will be overwritten to the new values. */
+    export function addAliases(aliases: object) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.addAliases(aliases);
+    }
+
+    /** Remove an alias from the current user. */
+    export function removeAlias(label: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.removeAlias(label);
+    }
+
+    /** Remove aliases from the current user. */
+    export function removeAliases(labels: string[]) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.removeAliases(labels);
+    }
+
+    /** Add a new email subscription to the current user. */
+    export function addEmail(email: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.addEmail(email);
+    }
+
+    /**
+     * Remove an email subscription from the current user. Returns false if the specified email does not exist on the user within the SDK,
+     * and no request will be made.
+     */
+    export function removeEmail(email: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.removeEmail(email);
+    }
+
+    /** Add a new SMS subscription to the current user. */
+    export function addSms(smsNumber: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.addSms(smsNumber);
+    }
+
+    /**
+     * Remove an SMS subscription from the current user. Returns false if the specified SMS number does not exist on the user within the SDK, 
+     * and no request will be made.
+     */
+    export function removeSms(smsNumber: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.removeSms(smsNumber);
+    }
+
+    /**
+     * Add a tag for the current user. Tags are key:value pairs used as building blocks for targeting specific users and/or personalizing 
+     * messages. If the tag key already exists, it will be replaced with the value provided here.
+     */
+    export function addTag(key: string, value: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (!key || (!value && value !== '')) {
+        console.error('OneSignal: sendTag: must include a key and a value');
+        return;
+      }
+
+      RNOneSignal.addTag(key, value);
+    }
+
+    /**
+     * Add multiple tags for the current user. Tags are key:value pairs used as building blocks for targeting 
+     * specific users and/or personalizing messages. If the tag key already exists, it will be replaced with 
+     * the value provided here.
+     */
+    export function addTags(tags: object) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (!tags || Object.keys(tags).length === 0) {
+        console.error('OneSignal: addTags: argument must be of type object of the form { key : "value" }');
+        return;
+      }
+
+      RNOneSignal.addTags(tags);
+    }
+
+    /** Remove the data tag with the provided key from the current user. */
+    export function removeTag(key: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (typeof key !== 'string') {
+        console.error('OneSignal: removeTag: key argument must be of type string');
+        return;
+      }
+
+      RNOneSignal.removeTags([key]);
+    }
+
+    /** Remove multiple tags with the provided keys from the current user. */
+    export function removeTags(keys: string[]) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (!Array.isArray(keys)) {
+        console.error('OneSignal: removeTags: argument must be of array type');
+        return;
+      }
+
+      RNOneSignal.removeTags(keys);
+    }
+  }
+
+  export namespace Notifications {
+    /**
+     * Whether this app has push notification permission. Returns true if the user has accepted permissions, 
+     * or if the app has ephemeral or provisional permission.
+     */
+    export function hasPermission(): Promise<boolean> {
+      if (!isNativeModuleLoaded(RNOneSignal)) {
+        return Promise.reject(new Error('OneSignal native module not loaded'));
+      }
+
+      return RNOneSignal.hasNotificationPermission();
+    }
+
+    /**
+     * Prompt the user for permission to receive push notifications. This will display the native system prompt to request push 
+     * notification permission. Use the fallbackToSettings parameter to prompt to open the settings app if a user has already 
+     * declined push permissions.
+     */
+    export function requestPermission(fallbackToSettings: boolean, handler?: (response: boolean) => void) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.requestNotificationPermission(fallbackToSettings, handler);
+    }
+
+    /**
+     * Whether attempting to request notification permission will show a prompt. Returns true if the device has not been prompted for push 
+     * notification permission already.
+     */
+    export function canRequestPermission() {
+      if (!isNativeModuleLoaded(RNOneSignal)) {
+        return Promise.reject(new Error('OneSignal native module not loaded'));
+      }
+
+      return RNOneSignal.canRequestNotificationPermission();
+    }
+
+    /**
+     * Instead of having to prompt the user for permission to send them push notifications, your app can request provisional authorization.
+     * For more information: https://documentation.onesignal.com/docs/ios-customizations#provisional-push-notifications
+     * @param  {(response:{accepted:boolean})=>void} handler
+     */
+    export function registerForProvisionalAuthorization(handler: (response: boolean) => void) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (Platform.OS === 'ios') {
+        isValidCallback(handler);
+        RNOneSignal.registerForProvisionalAuthorization(handler);
+      } else {
+        console.log('registerForProvisionalAuthorization: this function is not supported on Android');
+      }
+    }
+
+    /** Add a callback that fires when the native push permission changes. */
+    export function addPermissionChangedHandler(observer: (event: ChangeEvent<PermissionChange>) => void) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      isValidCallback(observer);
+      RNOneSignal.addPermissionChangedHandler();
+      eventManager.addEventHandler<PermissionChange>(PERMISSION_CHANGED, observer);
+    }
+
+    /** Remove permission observer that have been previously added. */
+    export function removePermissionChangedHandler() {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.removePermissionChangedHandler();
+      eventManager.clearEventHandler(PERMISSION_CHANGED);
+    }
+
+    /** Sets a handler that will run whenever a notification is opened by the user. */
+    export function setNotificationClickHandler(handler: (openedEvent: OpenedEvent) => void) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      isValidCallback(handler);
+
+      RNOneSignal.setNotificationClickHandler();
+      eventManager.setEventHandler<OpenedEvent>(NOTIFICATION_CLICKED, handler);
+    }
+
+    /**
+     * Sets the handler to run before displaying a notification while the app is in focus. Use this handler to read notification 
+     * data and change it or decide if the notification should show or not.
+     * Note: this runs after the Notification Service Extension which can be used to modify the notification before showing it.
+     */
+    export function setNotificationWillShowInForegroundHandler(handler: (event: NotificationReceivedEvent) => void) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      isValidCallback(handler);
+
+      RNOneSignal.setNotificationWillShowInForegroundHandler();
+      eventManager.setEventHandler<NotificationReceivedEvent>(NOTIFICATION_WILL_SHOW, handler,);
+    }
+
+    /**
+     * Removes all OneSignal notifications.
+     * Android Only. iOS provides a standard way to clear notifications by clearing badge count.
+     */
+    export function clearAll() {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.clearAllNotifications();
+    }
+
+    /**
+     * Android Only.
+     * Removes a single OneSignal notification based on its Android notification integer id.
+     */
+    export function removeNotification(id: number) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+
+      if (Platform.OS === 'android') {
+        RNOneSignal.removeNotification(id);
+      } else {
+        console.log('removeNotification: this function is not supported on iOS');
+      }
+    }
+
+    /**
+     * Android Only.
+     * Removes all OneSignal notifications based on its Android notification group Id.
+     * @param {string} id - notification group id to cancel
+     */
+    export function removeGroupedNotifications(id: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (Platform.OS === 'android') {
+        RNOneSignal.removeGroupedNotifications(id);
+      } else {
+        console.log('removeGroupedNotifications: this function is not supported on iOS');
+      }
+    }
+  }
+
+  export namespace InAppMessages {
+    /** Set the in-app message click handler. */
+    export function setClickHandler(handler: (action: InAppMessageAction) => void) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      isValidCallback(handler);
+      RNOneSignal.setInAppMessageClickHandler();
+      eventManager.setEventHandler<InAppMessageAction>(IN_APP_MESSAGE_CLICKED, handler);
+    }
+
+    /** Set the in-app message lifecycle handler. */
+    export function setLifecycleHandler(handlerObject: InAppMessageLifecycleHandlerObject) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (handlerObject.onWillDisplayInAppMessage) {
+        isValidCallback(handlerObject.onWillDisplayInAppMessage);
+        eventManager.setEventHandler<InAppMessage>(IN_APP_MESSAGE_WILL_DISPLAY, handlerObject.onWillDisplayInAppMessage,);
+      }
+      if (handlerObject.onDidDisplayInAppMessage) {
+        isValidCallback(handlerObject.onDidDisplayInAppMessage);
+        eventManager.setEventHandler<InAppMessage>(IN_APP_MESSAGE_DID_DISPLAY, handlerObject.onDidDisplayInAppMessage,);
+      }
+      if (handlerObject.onWillDismissInAppMessage) {
+        isValidCallback(handlerObject.onWillDismissInAppMessage);
+        eventManager.setEventHandler<InAppMessage>(IN_APP_MESSAGE_WILL_DISMISS, handlerObject.onWillDismissInAppMessage,);
+      }
+      if (handlerObject.onDidDismissInAppMessage) {
+        isValidCallback(handlerObject.onDidDismissInAppMessage);
+        eventManager.setEventHandler<InAppMessage>(IN_APP_MESSAGE_DID_DISMISS, handlerObject.onDidDismissInAppMessage,);
+      }
+
+      RNOneSignal.setInAppMessagesLifecycleHandler();
+    }
+
+    /**
+     * Add a trigger for the current user. Triggers are currently explicitly used to determine whether a specific IAM should be 
+     * displayed to the user.
+     */
+    export function addTrigger(key: string, value: string | number | boolean) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      // value can be assigned to `false` so we cannot just check `!value`
+      if (!key || value == null) {
+        console.error('OneSignal: addTrigger: must include a key and a value');
+      }
+
+      let trigger: { [key: string]: string | number | boolean } = {};
+      trigger[key] = value;
+      RNOneSignal.addTriggers(trigger);
+    }
+
+    /**
+     * Add multiple triggers for the current user. Triggers are currently explicitly used to determine whether a specific IAM should
+     * be displayed to the user.
+     */
+    export function addTriggers(triggers: { [key: string]: string | number | boolean }) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      let keys = Object.keys(triggers);
+
+      if (keys.length === 0) {
+        console.error("OneSignal: addTriggers: argument must be an object of the form { key : 'value' }",);
+      }
+
+      RNOneSignal.addTriggers(triggers);
+    }
+
+    /** Remove the trigger with the provided key from the current user. */
+    export function removeTrigger(key: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.removeTrigger(key);
+    }
+
+    /** Remove multiple triggers from the current user. */
+    export function removeTriggers(keys: string[]) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.removeTriggers(keys);
+    }
+
+    /** Clear all triggers from the current user. */
+    export function clearTriggers() {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.clearTriggers();
+    }
+
+    /**
+     * Set whether in-app messaging is currently paused.
+     * When set to true no IAM will be presented to the user regardless of whether they qualify for them.
+     * When set to 'false` any IAMs the user qualifies for will be presented to the user at the appropriate time.
+     */
+    export function setPaused(pause: boolean) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.paused(pause);
+    }
+
+    /** Whether in-app messaging is currently paused. */
+    export function getPaused(): Promise<boolean> {
+      if (!isNativeModuleLoaded(RNOneSignal)) {
+        return Promise.reject(new Error('OneSignal native module not loaded'));
+      }
+
+      return RNOneSignal.getPaused();
+    }
+  }
+
+  export namespace Location {
+    /** Prompts the user for location permissions to allow geotagging from the OneSignal dashboard. */
+    export function requestPermission() {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.requestLocationPermission();
+    }
+
+    /** Disable or enable location collection (defaults to enabled if your app has location permission). */
+    export function setShared(shared: boolean) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.setLocationShared(shared);
+    }
+
+    /**
+     * Checks if location collection is enabled or disabled.
+     * @param {(value: boolean) => void} handler
+     */
+    export function isShared(): Promise<boolean> {
+      if (!isNativeModuleLoaded(RNOneSignal)) {
+        return Promise.reject(new Error('OneSignal native module not loaded'));
+      }
+
+      return RNOneSignal.isLocationShared();
+    }
+  }
+
+  export namespace Session {
+    /** Increases the "Count" of this Outcome by 1 and will be counted each time sent. */
+    export function addOutcome(name: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.addOutcome(name);
+    }
+
+    /** Increases "Count" by 1 only once. This can only be attributed to a single notification. */
+    export function addUniqueOutcome(name: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.addUniqueOutcome(name,);
+    }
+
+    /**
+     * Increases the "Count" of this Outcome by 1 and the "Sum" by the value. Will be counted each time sent.
+     * If the method is called outside of an attribution window, it will be unattributed until a new session occurs.
+     */
+    export function addOutcomeWithValue(name: string, value: string | number) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.addOutcomeWithValue(name, Number(value));
+    }
   }
 }
 
-/* Export all public models */
 
 export {
   ChangeEvent,
   PermissionChange,
   SubscriptionChange,
-  EmailSubscriptionChange,
-  SMSSubscriptionChange,
   NotificationReceivedEvent,
   OpenedEvent,
   InAppMessage,
   InAppMessageAction,
   InAppMessageLifecycleHandlerObject,
   OutcomeEvent,
-  DeviceState,
 };
 
-export { default as OSNotification } from './OSNotification';
+export {default as OSNotification} from './OSNotification';
 export {
-  OpenedEventAction,
+  OpenedEventAction, 
   OpenedEventActionType,
 } from './models/NotificationEvents';
 export {
-  IosPermissionStatus,
+  IosPermissionStatus, 
   ObserverChangeEvent,
 } from './models/Subscription';

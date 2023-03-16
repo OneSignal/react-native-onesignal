@@ -9,10 +9,8 @@ import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
   NOTIFICATION_WILL_SHOW,
-  NOTIFICATION_OPENED,
+  NOTIFICATION_CLICKED,
   IN_APP_MESSAGE_CLICKED,
-  EMAIL_SUBSCRIPTION_CHANGED,
-  SMS_SUBSCRIPTION_CHANGED,
   IN_APP_MESSAGE_WILL_DISPLAY,
   IN_APP_MESSAGE_WILL_DISMISS,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -25,10 +23,8 @@ const eventList = [
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
   NOTIFICATION_WILL_SHOW,
-  NOTIFICATION_OPENED,
+  NOTIFICATION_CLICKED,
   IN_APP_MESSAGE_CLICKED,
-  EMAIL_SUBSCRIPTION_CHANGED,
-  SMS_SUBSCRIPTION_CHANGED,
   IN_APP_MESSAGE_WILL_DISPLAY,
   IN_APP_MESSAGE_WILL_DISMISS,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -45,13 +41,13 @@ export default class EventManager {
   constructor(RNOneSignal: NativeModule) {
     this.RNOneSignal = RNOneSignal;
     this.oneSignalEventEmitter = new NativeEventEmitter(RNOneSignal);
-    this.eventHandlerMap = new Map(); // used for setters (single replacable callback)
+    this.eventHandlerMap = new Map(); // used for setters (single replaceable callback)
     this.eventHandlerArrayMap = new Map(); // used for adders (multiple callbacks possible)
     this.listeners = {};
     this.setupListeners();
   }
 
-  setupListeners(): void {
+  setupListeners() {
     // set up the event emitter and listeners
     if (this.RNOneSignal != null) {
       for (let i = 0; i < eventList.length; i++) {
@@ -62,7 +58,7 @@ export default class EventManager {
   }
 
   // clear handlers
-  clearHandlers(): void {
+  clearHandlers() {
     this.eventHandlerMap = new Map();
     this.eventHandlerArrayMap = new Map();
   }
@@ -74,7 +70,7 @@ export default class EventManager {
    * @param  {function} handler
    * @returns void
    */
-  setEventHandler<T>(eventName: string, handler: (event: T) => void): void {
+  setEventHandler<T>(eventName: string, handler: (event: T) => void) {
     this.eventHandlerMap.set(eventName, handler);
   }
 
@@ -84,10 +80,7 @@ export default class EventManager {
    * @param  {function} handler
    * @returns void
    */
-  addEventHandler<T>(
-    eventName: string,
-    handler: (event: ChangeEvent<T>) => void,
-  ): void {
+  addEventHandler<T>(eventName: string, handler: (event: ChangeEvent<T>) => void) {
     let handlerArray = this.eventHandlerArrayMap.get(eventName);
     handlerArray && handlerArray.length > 0
       ? handlerArray.push(handler)
@@ -99,7 +92,7 @@ export default class EventManager {
    * @param  {string} eventName
    * @returns void
    */
-  clearEventHandler(eventName: string): void {
+  clearEventHandler(eventName: string) {
     this.eventHandlerArrayMap.delete(eventName);
   }
 
