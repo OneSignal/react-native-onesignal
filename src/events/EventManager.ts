@@ -80,7 +80,10 @@ export default class EventManager {
    * @param  {function} handler
    * @returns void
    */
-  addEventHandler<T>(eventName: string, handler: (event: ChangeEvent<T>) => void) {
+  addEventHandler<T>(
+    eventName: string,
+    handler: (event: ChangeEvent<T>) => void,
+  ) {
     let handlerArray = this.eventHandlerArrayMap.get(eventName);
     handlerArray && handlerArray.length > 0
       ? handlerArray.push(handler)

@@ -1,9 +1,6 @@
 import invariant from 'invariant';
-import {NativeModule} from 'react-native';
-import {
-  PERMISSION_CHANGED,
-  SUBSCRIPTION_CHANGED,
-} from './events/events';
+import { NativeModule } from 'react-native';
+import { PERMISSION_CHANGED, SUBSCRIPTION_CHANGED } from './events/events';
 
 export function isValidCallback(handler: Function) {
   invariant(typeof handler === 'function', 'Must provide a valid callback');
@@ -11,7 +8,9 @@ export function isValidCallback(handler: Function) {
 
 export function isNativeModuleLoaded(module: NativeModule): boolean {
   if (module == null) {
-    console.error('Could not load RNOneSignal native module. Make sure native dependencies are properly linked.');
+    console.error(
+      'Could not load RNOneSignal native module. Make sure native dependencies are properly linked.',
+    );
 
     return false;
   }
