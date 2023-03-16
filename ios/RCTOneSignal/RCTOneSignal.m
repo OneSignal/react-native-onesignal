@@ -26,7 +26,9 @@
 @interface RCTOneSignal ()
 @end
 
-@implementation RCTOneSignal
+@implementation RCTOneSignal {
+    BOOL didInitialize;
+}
 
 OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 
@@ -37,6 +39,15 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
         _sharedInstance = [[RCTOneSignal alloc] init];
     });
     return _sharedInstance;
+}
+
+- (void)setLaunchOptions:(NSDictionary *)launchOptions {
+
+    if (didInitialize)
+        return;
+
+    [OneSignal setLaunchOptions:launchOptions];
+    didInitialize = true;
 }
 
 - (void)handleRemoteNotificationOpened:(NSString *)result {
