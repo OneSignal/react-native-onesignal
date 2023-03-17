@@ -178,15 +178,15 @@ export namespace OneSignal {
     export namespace PushSubscription {
       /** Add a callback that fires when the OneSignal subscription state changes. */
       export function addChangeHandler(
-        observer: (event: ChangeEvent<SubscriptionChange>) => void,
+        handler: (event: ChangeEvent<SubscriptionChange>) => void,
       ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-        isValidCallback(observer);
+        isValidCallback(handler);
         RNOneSignal.addPushSubscriptionChangeHandler();
         eventManager.addEventHandler<SubscriptionChange>(
           SUBSCRIPTION_CHANGED,
-          observer,
+          handler,
         );
       }
 
