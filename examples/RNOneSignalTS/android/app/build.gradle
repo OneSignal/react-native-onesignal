@@ -179,6 +179,7 @@ android {
         }
     }
 
+    // This is a workaround for problem with multiple occurrences of the same file `coroutines.pro`.
     packagingOptions {
         exclude 'META-INF/com.android.tools/proguard/coroutines.pro'
         exclude 'META-INF/kotlinx_coroutines_core.version'

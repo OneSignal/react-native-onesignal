@@ -101,10 +101,6 @@ RCT_EXPORT_METHOD(initialize:(NSString* _Nonnull)appId) {
     [OneSignal initialize:appId withLaunchOptions:NULL];
 }
 
-RCT_EXPORT_METHOD(setLaunchOptions:(NSDictionary *)launchOptions) {
-    [OneSignal setLaunchOptions:launchOptions];
-}
-
 RCT_EXPORT_METHOD(setLaunchURLsInApp:(BOOL)isEnabled) {
     [OneSignal setLaunchURLsInApp:isEnabled];
 }
@@ -239,9 +235,12 @@ RCT_REMAP_METHOD(canRequestNotificationPermission,
     resolve(@([OneSignal.Notifications canRequestPermission]));
 }
 
-RCT_EXPORT_METHOD(requestNotificationPermission:fallbackToSettings :(RCTResponseSenderBlock)callback) {
+RCT_REMAP_METHOD(requestNotificationPermission,
+                 withFallBackSettings:fallbackToSettings
+                 requestNotificationPermissionResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
     [OneSignal.Notifications requestPermission:^(BOOL accepted) {
-        callback(@[@(accepted)]);
+        resolve(@[@(accepted)]);
     } fallbackToSettings:fallbackToSettings];
 }
 

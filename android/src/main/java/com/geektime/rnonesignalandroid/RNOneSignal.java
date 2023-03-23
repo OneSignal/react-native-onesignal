@@ -73,9 +73,8 @@ import java.util.HashMap;
 public class RNOneSignal extends ReactContextBaseJavaModule implements
         ISubscriptionChangedHandler,
         IPermissionChangedHandler,
-        LifecycleEventListener {
-    public static final String HIDDEN_MESSAGE_KEY = "hidden";
-
+        LifecycleEventListener,
+        INotificationWillShowInForegroundHandler{
     private ReactApplicationContext mReactApplicationContext;
     private ReactContext mReactContext;
 
@@ -84,7 +83,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     private boolean hasSetPushSubscriptionObserver = false;
 
     private HashMap<String, INotificationReceivedEvent> notificationReceivedEventCache;
-
+    private boolean hasSetNotificationWillShowInForegroundHandler = false;
 
     private void removeObservers() {
         this.removePermissionChangedHandler();
@@ -100,6 +99,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     private void sendEvent(String eventName, Object params) {
         mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+    }
+
+    private void initNotificationWillShowInForegroundHandlerParams() {
+        this.hasSetNotificationWillShowInForegroundHandler = true;
     }
 
     public RNOneSignal(ReactApplicationContext reactContext) {
@@ -315,21 +318,42 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void setNotificationWillShowInForegroundHandler() {
-        OneSignal.getNotifications().setNotificationWillShowInForegroundHandler(new INotificationWillShowInForegroundHandler() {
-            @Override
-            public void notificationWillShowInForeground(INotificationReceivedEvent notificationReceivedEvent) {
-                try {
-                    INotification notification = notificationReceivedEvent.getNotification();
-                    String notificationId = notification.getNotificationId();
-                    notificationReceivedEventCache.put(notificationId, notificationReceivedEvent);
-                    sendEvent("OneSignal-notificationWillShowInForeground",
-                            RNUtils.convertHashMapToWritableMap(
-                                    RNUtils.convertNotificationToMap(notification)));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        if (this.hasSetNotificationWillShowInForegroundHandler) {
+            return;
+        }
+
+        OneSignal.getNotifications().setNotificationWillShowInForegroundHandler(this);
+        hasSetNotificationWillShowInForegroundHandler = true;
+    }
+
+    @Override
+    public void notificationWillShowInForeground(INotificationReceivedEvent notificationReceivedEvent) {
+        if (!this.hasSetNotificationWillShowInForegroundHandler) {
+            notificationReceivedEvent.complete(notificationReceivedEvent.getNotification());
+            return;
+        }
+
+        INotification notification = notificationReceivedEvent.getNotification();
+        String notificationId = notification.getNotificationId();
+        notificationReceivedEventCache.put(notificationId, notificationReceivedEvent);
+
+        try {
+            sendEvent("OneSignal-notificationWillShowInForeground",
+                    RNUtils.convertHashMapToWritableMap(
+                            RNUtils.convertNotificationToMap(notification)));
+
+            try {
+                synchronized (notificationReceivedEvent) {
+                    while (notificationReceivedEventCache.containsKey(notificationId)) {
+                        notificationReceivedEvent.wait();
+                    }
                 }
+            } catch(InterruptedException e){
+                Log.e("InterruptedException" + e.toString(), null);
             }
-        });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @ReactMethod
@@ -373,9 +397,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void requestNotificationPermission(final boolean fallbackToSettings, final Callback callback) {
+    public void requestNotificationPermission(final boolean fallbackToSettings, Promise promise) {
         OneSignal.getNotifications().requestPermission(fallbackToSettings, Continue.with(result -> {
-            callback.invoke(result.isSuccess());
+            promise.resolve(result.isSuccess());
         }));
     }
 

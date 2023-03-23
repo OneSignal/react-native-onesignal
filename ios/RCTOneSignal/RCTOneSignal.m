@@ -75,7 +75,7 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
 }
 
 - (void)onOSPushSubscriptionChangedWithStateChanges:(OSPushSubscriptionStateChanges * _Nonnull)stateChanges {
-    [self sendEvent:OSEventString(SubscriptionChanged) withBody:[stateChanges jsonRepresentation]];
+    [self sendEvent:OSEventString(SubscriptionChanged) withBody:[stateChanges.to jsonRepresentation]];
 }
 
 - (void)onOSPermissionChanged:(OSPermissionState *)state {

@@ -34,12 +34,43 @@ const eventManager = new EventManager(RNOneSignal);
 // 0 = None, 1 = Fatal, 2 = Errors, 3 = Warnings, 4 = Info, 5 = Debug, 6 = Verbose
 export type LogLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
+// Internal wrapper notification permission state that is being updated by the permission change handler.
+let notificationPermission = false;
+
+// Internal wrapper push subscription state that is being updated by the subscription change handler.
+let pushSubscription = {
+  id: '',
+  token: '',
+  optedIn: false,
+};
+
+async function setNotificationPermissionChangeHandler() {
+  OneSignal.Notifications.addPermissionChangedHandler(({ permission }) => {
+    notificationPermission = permission;
+  });
+
+  notificationPermission = await RNOneSignal.hasNotificationPermission();
+}
+
+async function setPushSubscriptionChangeHandler() {
+  OneSignal.User.PushSubscription.addChangeHandler((subscriptionChange) => {
+    pushSubscription = subscriptionChange;
+  });
+
+  pushSubscription.id = await RNOneSignal.getPushSubscriptionId();
+  pushSubscription.token = await RNOneSignal.getPushSubscriptionToken();
+  pushSubscription.optedIn = await RNOneSignal.getOptedIn();
+}
+
 export namespace OneSignal {
   /** Initializes the OneSignal SDK. This should be called during startup of the application. */
   export function initialize(appId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
 
     RNOneSignal.initialize(appId);
+
+    setNotificationPermissionChangeHandler();
+    setPushSubscriptionChangeHandler();
   }
 
   /**
@@ -199,25 +230,21 @@ export namespace OneSignal {
       }
 
       /** The readonly push subscription ID */
-      export function getPushSubscriptionId(): Promise<string> {
+      export function getPushSubscriptionId(): string {
         if (!isNativeModuleLoaded(RNOneSignal)) {
-          return Promise.reject(
-            new Error('OneSignal native module not loaded'),
-          );
+          return '';
         }
 
-        return RNOneSignal.getPushSubscriptionId();
+        return pushSubscription.id;
       }
 
       /** The readonly push subscription token */
-      export function getPushSubscriptionToken(): Promise<string> {
+      export function getPushSubscriptionToken(): string {
         if (!isNativeModuleLoaded(RNOneSignal)) {
-          return Promise.reject(
-            new Error('OneSignal native module not loaded'),
-          );
+          return '';
         }
 
-        return RNOneSignal.getPushSubscriptionToken();
+        return pushSubscription.token;
       }
 
       /**
@@ -226,14 +253,12 @@ export namespace OneSignal {
        * Note: Does not take into account the existence of the subscription ID and push token.
        * This boolean may return true but push notifications may still not be received by the user.
        */
-      export function getOptedIn(): Promise<boolean> {
+      export function getOptedIn(): boolean {
         if (!isNativeModuleLoaded(RNOneSignal)) {
-          return Promise.reject(
-            new Error('OneSignal native module not loaded'),
-          );
+          return false;
         }
 
-        return RNOneSignal.getOptedIn();
+        return pushSubscription.optedIn;
       }
 
       /** Enable the push notification subscription to OneSignal. */
@@ -385,12 +410,8 @@ export namespace OneSignal {
      * Whether this app has push notification permission. Returns true if the user has accepted permissions,
      * or if the app has ephemeral or provisional permission.
      */
-    export function hasPermission(): Promise<boolean> {
-      if (!isNativeModuleLoaded(RNOneSignal)) {
-        return Promise.reject(new Error('OneSignal native module not loaded'));
-      }
-
-      return RNOneSignal.hasNotificationPermission();
+    export function hasPermission(): boolean {
+      return notificationPermission;
     }
 
     /**
@@ -400,18 +421,19 @@ export namespace OneSignal {
      */
     export function requestPermission(
       fallbackToSettings: boolean,
-      handler?: (response: boolean) => void,
-    ) {
-      if (!isNativeModuleLoaded(RNOneSignal)) return;
+    ): Promise<boolean> {
+      if (!isNativeModuleLoaded(RNOneSignal)) {
+        return Promise.reject(new Error('OneSignal native module not loaded'));
+      }
 
-      RNOneSignal.requestNotificationPermission(fallbackToSettings, handler);
+      return RNOneSignal.requestNotificationPermission(fallbackToSettings);
     }
 
     /**
      * Whether attempting to request notification permission will show a prompt. Returns true if the device has not been prompted for push
      * notification permission already.
      */
-    export function canRequestPermission() {
+    export function canRequestPermission(): Promise<boolean> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
       }

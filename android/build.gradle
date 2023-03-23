@@ -35,13 +35,3 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 }
-
-//buildscript {
-//    repositories {
-//        google()
-//        jcenter()
-//    }
-//    dependencies {
-//        classpath 'com.android.tools.build:gradle:7.0.2'
-//    }
-//}

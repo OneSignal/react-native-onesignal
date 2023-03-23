@@ -196,15 +196,15 @@ The User namespace is accessible via `OneSignal.User` and provides access to use
 The Push Subscription namespace is accessible via `OneSignal.User.pushSubscription` and provides access to push subscription-scoped functionality.
 
 
-|                                                                                                                                 | **Description**                                                                                                                                                                                                                                                                                                                                                                                    |
-|---------------------------------------------------------------------------------------------------------------------------------------------| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `await OneSignal.User.PushSubscription.getId()`                                                                                             | *The readonly push subscription ID.*                                                                                                                                                                                                                                                                                                                                                               |
-| `await OneSignal.User.PushSubscription.getToken()`                                                                                          | *The readonly push token.*                                                                                                                                                                                                                                                                                                                                                                         |
-| `await OneSignal.User.PushSubscription.getOptedIn()`                                                                                        | *Gets a boolean value indicating whether the current user is opted in to push notifications. This returns `true` when the app has notifications permission and `optedOut` is called. ***Note:*** Does not take into account the existence of the subscription ID and push token. This boolean may return `true` but push notifications may still not be received by the user.* |
-| `OneSignal.User.PushSubscription.optIn()`                                                                                                   | *Call this method to receive push notifications on the device or to resume receiving of push notifications after calling `optOut`. If needed, this method will prompt the user for push notifications permission.*                                                                                                                                                                     |
-| `OneSignal.User.PushSubscription.optOut()`                                                                                                  | *If at any point you want the user to stop receiving push notifications on the current device (regardless of system-level permission status), you can call this method to opt out.*                                                                                                                                                                                                              |
+|                                                                                                                                                | **Description**                                                                                                                                                                                                                                                                                                                                                                                    |
+|------------------------------------------------------------------------------------------------------------------------------------------------| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `await OneSignal.User.PushSubscription.getId()`                                                                                                | *The readonly push subscription ID.*                                                                                                                                                                                                                                                                                                                                                               |
+| `await OneSignal.User.PushSubscription.getToken()`                                                                                             | *The readonly push token.*                                                                                                                                                                                                                                                                                                                                                                         |
+| `await OneSignal.User.PushSubscription.getOptedIn()`                                                                                           | *Gets a boolean value indicating whether the current user is opted in to push notifications. This returns `true` when the app has notifications permission and `optedOut` is called. ***Note:*** Does not take into account the existence of the subscription ID and push token. This boolean may return `true` but push notifications may still not be received by the user.* |
+| `OneSignal.User.PushSubscription.optIn()`                                                                                                      | *Call this method to receive push notifications on the device or to resume receiving of push notifications after calling `optOut`. If needed, this method will prompt the user for push notifications permission.*                                                                                                                                                                     |
+| `OneSignal.User.PushSubscription.optOut()`                                                                                                     | *If at any point you want the user to stop receiving push notifications on the current device (regardless of system-level permission status), you can call this method to opt out.*                                                                                                                                                                                                              |
 | `OneSignal.User.PushSubscription.addChangeHandler(handler: (event: ChangeEvent<SubscriptionChange>) => void)`<br><br>***See below for usage*** | *The `OSPushSubscriptionObserver.onOSPushSubscriptionChanged` method will be fired on the passed-in object when the push subscription changes. This method returns the current `OSPushSubscriptionState` at the time of adding this observer.*                                                                                                                                 |
-| `OneSignal.User.PushSubscription.removeObserver()`<br><br>***See below for usage***                                                         | *Remove a push subscription observer that has been previously added.*                                                                                                                                                                                                                                                                                                                      |
+| `OneSignal.User.PushSubscription.removeChangeHandler()`<br><br>***See below for usage***                                                       | *Remove a push subscription observer that has been previously added.*                                                                                                                                                                                                                                                                                                                      |
 
 ### Push Subscription Observer
 
@@ -212,13 +212,13 @@ Any object implementing the `OSPushSubscriptionObserver` protocol can be added a
 
 
 ```typescript
-    // Create an observer
-    OneSignal.User.PushSubscription.addChangeHandler(subscription => {
-      console.log('OneSignal: subscription changed: ', subscription);
-    });
-    
-    // Removes the previously added observer
-    OneSignal.User.PushSubscription.removeChangeHandler();
+// Create an observer
+OneSignal.User.PushSubscription.addChangeHandler(subscription => {
+  console.log('OneSignal: subscription changed: ', subscription);
+});
+
+// Removes the previously added observer
+OneSignal.User.PushSubscription.removeChangeHandler();
 ```
 
 ## Session Namespace
@@ -325,7 +325,7 @@ console.log("IAM paused: ", paused);
 ### In-App Message Click Handler
 ```typescript
 OneSignal.InAppMessages.setClickHandler(result => {
-  const iamClickAction = JSON.stringify(jsonData);
+  const iamClickAction = JSON.stringify(result);
   console.log('iamClickCallback: ' + iamClickAction);
 });
 ```

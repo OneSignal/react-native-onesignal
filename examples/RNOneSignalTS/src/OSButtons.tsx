@@ -143,8 +143,8 @@ class OSButtons extends React.Component<Props> {
 
         const hasPermissionButton = renderButtonView(
             'Has Notification Permission',
-            async () => {
-                const granted = await OneSignal.Notifications.hasPermission();
+            () => {
+                const granted = OneSignal.Notifications.hasPermission();
                 loggingFunction(`Has Notification Permission: ${granted}`);
             }
         );
@@ -380,7 +380,7 @@ class OSButtons extends React.Component<Props> {
             'Get Push Subscription Token',
             async () => {
                 const token = await OneSignal.User.PushSubscription.getPushSubscriptionToken();
-                loggingFunction('Push Subscription Id: ', token);
+                loggingFunction('Push Subscription Token: ', token);
             }
         );
 
