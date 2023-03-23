@@ -16,7 +16,6 @@ import {
   IN_APP_MESSAGE_DID_DISMISS,
   IN_APP_MESSAGE_DID_DISPLAY,
 } from './events';
-import { ChangeEvent } from '../models/Subscription';
 import OSNotification from '../OSNotification';
 
 const eventList = [
@@ -80,10 +79,7 @@ export default class EventManager {
    * @param  {function} handler
    * @returns void
    */
-  addEventHandler<T>(
-    eventName: string,
-    handler: (event: ChangeEvent<T>) => void,
-  ) {
+  addEventHandler<T>(eventName: string, handler: (event: T) => void) {
     let handlerArray = this.eventHandlerArrayMap.get(eventName);
     handlerArray && handlerArray.length > 0
       ? handlerArray.push(handler)

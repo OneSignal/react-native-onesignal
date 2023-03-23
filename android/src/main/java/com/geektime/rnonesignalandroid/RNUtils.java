@@ -198,6 +198,14 @@ public class RNUtils {
         return stringMap;
     }
 
+    public static HashMap<String, Object> convertPermissionToMap(boolean granted) {
+        HashMap<String, Object> hash = new HashMap<>();
+
+        hash.put("permission", granted);
+
+        return hash;
+    }
+
     private static HashMap<String, Object> convertNotificationActionToMap(INotificationAction action) {
         HashMap<String, Object> hash = new HashMap<>();
 

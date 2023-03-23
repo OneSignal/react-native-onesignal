@@ -392,8 +392,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @Override
     public void onPermissionChanged(boolean permission) {
-        Log.i("OneSignal", "sending permission change event");
-        sendEvent("OneSignal-permissionChanged", permission);
+        try {
+            sendEvent("OneSignal-permissionChanged", RNUtils.convertHashMapToWritableMap(RNUtils.convertPermissionToMap(permission)));
+            Log.i("OneSignal", "sending permission change event");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @ReactMethod

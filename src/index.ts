@@ -13,11 +13,7 @@ import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
 } from './events/events';
-import {
-  ChangeEvent,
-  PermissionChange,
-  SubscriptionChange,
-} from './models/Subscription';
+import { PushSubscription } from './models/Subscription';
 import NotificationReceivedEvent from './events/NotificationReceivedEvent';
 import { OpenedEvent } from './models/NotificationEvents';
 import { OutcomeEvent } from './models/Outcomes';
@@ -38,15 +34,15 @@ export type LogLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 let notificationPermission = false;
 
 // Internal wrapper push subscription state that is being updated by the subscription change handler.
-let pushSubscription = {
+let pushSubscription: PushSubscription = {
   id: '',
   token: '',
   optedIn: false,
 };
 
 async function setNotificationPermissionChangeHandler() {
-  OneSignal.Notifications.addPermissionChangedHandler(({ permission }) => {
-    notificationPermission = permission;
+  OneSignal.Notifications.addPermissionChangedHandler((granted) => {
+    notificationPermission = granted.permission;
   });
 
   notificationPermission = await RNOneSignal.hasNotificationPermission();
@@ -209,13 +205,13 @@ export namespace OneSignal {
     export namespace PushSubscription {
       /** Add a callback that fires when the OneSignal subscription state changes. */
       export function addChangeHandler(
-        handler: (event: ChangeEvent<SubscriptionChange>) => void,
+        handler: (event: PushSubscription) => void,
       ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         isValidCallback(handler);
         RNOneSignal.addPushSubscriptionChangeHandler();
-        eventManager.addEventHandler<SubscriptionChange>(
+        eventManager.addEventHandler<PushSubscription>(
           SUBSCRIPTION_CHANGED,
           handler,
         );
@@ -463,13 +459,13 @@ export namespace OneSignal {
 
     /** Add a callback that fires when the native push permission changes. */
     export function addPermissionChangedHandler(
-      observer: (event: ChangeEvent<PermissionChange>) => void,
+      observer: (event: { permission: boolean }) => void,
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       isValidCallback(observer);
       RNOneSignal.addPermissionChangedHandler();
-      eventManager.addEventHandler<PermissionChange>(
+      eventManager.addEventHandler<{ permission: boolean }>(
         PERMISSION_CHANGED,
         observer,
       );
@@ -746,9 +742,6 @@ export namespace OneSignal {
 }
 
 export {
-  ChangeEvent,
-  PermissionChange,
-  SubscriptionChange,
   NotificationReceivedEvent,
   OpenedEvent,
   InAppMessage,
@@ -762,7 +755,4 @@ export {
   OpenedEventAction,
   OpenedEventActionType,
 } from './models/NotificationEvents';
-export {
-  IosPermissionStatus,
-  ObserverChangeEvent,
-} from './models/Subscription';
+export { IosPermissionStatus } from './models/Subscription';
