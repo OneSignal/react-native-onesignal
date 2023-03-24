@@ -1,0 +1,32 @@
+name: Set Response Time
+on: 
+  issue_comment:
+   types: 
+    - created
+  issues:
+    types:
+    - closed
+jobs:
+  calculate:
+    name: set reponse time for the issue
+    if: github.event.issue.pull_request == null
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: npm install @octokit/action
+      - uses: actions/github-script@v6
+        id: set-time 
+        with:
+          result-encoding: string
+          script: |
+            const os_probot_metadata = require('./.github/os_probot_metadata.js')
+            const set_response_time = require('./.github/set_response_times.js')
+            return await set_response_time(context, os_probot_metadata)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get result
+        run: echo "${{steps.set-time.outputs.result}}" >> $GITHUB_STEP_SUMMARY
