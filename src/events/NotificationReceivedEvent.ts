@@ -9,7 +9,7 @@ export default class NotificationReceivedEvent {
     this.notification = new OSNotification(receivedEvent);
   }
 
-  complete(notification?: OSNotification): void {
+  complete(notification?: OSNotification) {
     if (!notification) {
       // if the notificationReceivedEvent is null, we want to call the native-side
       // complete/completion with null to silence the notification

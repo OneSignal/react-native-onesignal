@@ -9,21 +9,12 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Arrays;
 
-/**
- * Created by Avishay on 1/31/16.
- */
 public class ReactNativeOneSignalPackage implements ReactPackage {
-
-    RNOneSignal mRNPushNotification;
-
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        List<NativeModule> modules = new ArrayList<>();
-        mRNPushNotification = new RNOneSignal(reactContext);
-
-        modules.add(mRNPushNotification);
-        return modules;
+        return Arrays.asList(new RNOneSignal(reactContext));
     }
 
     // Deprecated RN 0.47

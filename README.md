@@ -22,6 +22,3 @@ For account issues and support please contact OneSignal support from the [OneSig
 #### Demo Project
 To make things easier, we have published demo projects in the `/examples` folder of this repository.
 
-#### Supports: 
-* Tested from iOS 7 to iOS 13
-* Tested from Android 4.0.3 (API level 15) to Android 9 (28)
