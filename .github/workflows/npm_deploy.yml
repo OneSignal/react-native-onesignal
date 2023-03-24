@@ -12,10 +12,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Install Node types
-        run: npm install @types/node
-      - name: Run build
-        run: npm run build
       - name: Publish package
         uses: JS-DevTools/npm-publish@v1
         with:
