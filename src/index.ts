@@ -89,29 +89,11 @@ export namespace OneSignal {
     RNOneSignal.logout();
   }
 
-  /** True if the application requires user privacy consent, false otherwise. */
-  export function getRequiresPrivacyConsent(): Promise<boolean> {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return Promise.reject(new Error('OneSignal native module not loaded'));
-    }
-
-    return RNOneSignal.getRequiresPrivacyConsent();
-  }
-
   /** For GDPR users, your application should call this method before setting the App ID. */
-  export function setRequiresPrivacyConsent(required: boolean) {
+  export function setConsentRequired(required: boolean) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-    RNOneSignal.setRequiresPrivacyConsent(required);
-  }
-
-  /** Indicates whether privacy consent has been granted. */
-  export function getPrivacyConsent(): Promise<boolean> {
-    if (!isNativeModuleLoaded(RNOneSignal)) {
-      return Promise.reject(new Error('OneSignal native module not loaded'));
-    }
-
-    return RNOneSignal.getPrivacyConsent();
+    RNOneSignal.setPrivacyConsentRequired(required);
   }
 
   /**
@@ -119,10 +101,10 @@ export namespace OneSignal {
    * Indicates whether privacy consent has been granted. This field is only relevant when the application has opted
    * into data privacy protections.
    */
-  export function setPrivacyConsent(granted: boolean) {
+  export function setConsentGiven(granted: boolean) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-    RNOneSignal.setPrivacyConsent(granted);
+    RNOneSignal.setPrivacyConsentGiven(granted);
   }
 
   /** This method can be used to set if launch URLs should be opened in safari or within the application. */

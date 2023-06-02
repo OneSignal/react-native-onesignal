@@ -160,23 +160,13 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void setPrivacyConsent(Boolean value) {
-        OneSignal.setPrivacyConsent(value);
+    public void setPrivacyConsentGiven(Boolean value) {
+        OneSignal.setConsentGiven(value);
     }
 
     @ReactMethod
-    public void getPrivacyConsent(Promise promise) {
-        promise.resolve(OneSignal.getPrivacyConsent());
-    }
-
-    @ReactMethod
-    public void setRequiresPrivacyConsent(Boolean required) {
-        OneSignal.setRequiresPrivacyConsent(required);
-    }
-
-    @ReactMethod
-    public void getRequiresPrivacyConsent(Promise promise) {
-        promise.resolve(OneSignal.getRequiresPrivacyConsent());
+    public void setPrivacyConsentRequired(Boolean required) {
+        OneSignal.setConsentRequired(required);
     }
 
 

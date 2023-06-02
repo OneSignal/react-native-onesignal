@@ -132,26 +132,14 @@ RCT_EXPORT_METHOD(exitLiveActivity:(NSString *)activityId
     }];
 }
 
-RCT_REMAP_METHOD(getPrivacyConsent, 
-                 getPrivacyConsentResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(@(OneSignal.getPrivacyConsent));
-}
-
-RCT_EXPORT_METHOD(setPrivacyConsent:(BOOL)granted) {
+RCT_EXPORT_METHOD(setPrivacyConsentGiven:(BOOL)granted) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [OneSignal setPrivacyConsent:granted];
+        [OneSignal setConsentGiven:granted];
     });
 }
 
-RCT_REMAP_METHOD(getRequiresPrivacyConsent, 
-                 getRequiresPrivacyConsentResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(@([OneSignal requiresPrivacyConsent]));
-}
-
-RCT_EXPORT_METHOD(setRequiresPrivacyConsent:(BOOL)required) {
-    [OneSignal setRequiresPrivacyConsent:required];
+RCT_EXPORT_METHOD(setPrivacyConsentRequired:(BOOL)required) {
+    [OneSignal setConsentRequired:required];
 }
 
 // OneSignal.Debug namespace methods
