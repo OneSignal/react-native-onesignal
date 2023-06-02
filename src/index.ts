@@ -138,40 +138,6 @@ export namespace OneSignal {
     }
   }
 
-  /** Associates a temporary push token with an Activity ID on the OneSignal server. */
-  export function enterLiveActivity(
-    activityId: string,
-    token: string,
-    handler?: Function,
-  ) {
-    if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-    if (!handler) {
-      handler = () => {};
-    }
-
-    // Only Available on iOS
-    if (Platform.OS === 'ios') {
-      RNOneSignal.enterLiveActivity(activityId, token, handler);
-    }
-  }
-
-  /**
-   * Deletes activityId associated temporary push token on the OneSignal server.
-   */
-  export function exitLiveActivity(activityId: string, handler?: Function) {
-    if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-    if (!handler) {
-      handler = () => {};
-    }
-
-    // Only Available on iOS
-    if (Platform.OS === 'ios') {
-      RNOneSignal.exitLiveActivity(activityId, handler);
-    }
-  }
-
   /** Clears all handlers and observers. */
   export function clearHandlers() {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
@@ -198,6 +164,44 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       RNOneSignal.setAlertLevel(visualLogLevel);
+    }
+  }
+
+  export namespace LiveActivities {
+    /** 
+     * Associates a temporary push token with an Activity ID on the OneSignal server. 
+    */
+    export function enter(
+      activityId: string,
+      token: string,
+      handler?: Function,
+    ) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (!handler) {
+        handler = () => {};
+      }
+
+      // Only Available on iOS
+      if (Platform.OS === 'ios') {
+        RNOneSignal.enterLiveActivity(activityId, token, handler);
+      }
+    }
+
+    /**
+     * Deletes activityId associated temporary push token on the OneSignal server.
+     */
+    export function exit(activityId: string, handler?: Function) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (!handler) {
+        handler = () => {};
+      }
+
+      // Only Available on iOS
+      if (Platform.OS === 'ios') {
+        RNOneSignal.exitLiveActivity(activityId, handler);
+      }
     }
   }
 

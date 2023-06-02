@@ -116,7 +116,7 @@ RCT_EXPORT_METHOD(logout) {
 RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId 
                   withToken:(NSString *)token
                   withResponse:(RCTResponseSenderBlock)callback) {
-    [OneSignal enterLiveActivity:activityId withToken:token withSuccess:^(NSDictionary *result) {
+    [OneSignal.LiveActivities enter:activityId withToken:token withSuccess:^(NSDictionary *result) {
         callback(@[result]);
     } withFailure:^(NSError *error) {
         callback([self processNSError:error]);
@@ -125,7 +125,7 @@ RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId
 
 RCT_EXPORT_METHOD(exitLiveActivity:(NSString *)activityId
                   withResponse:(RCTResponseSenderBlock)callback) {
-    [OneSignal exitLiveActivity:activityId withSuccess:^(NSDictionary *result) {
+    [OneSignal.LiveActivities exit:activityId withSuccess:^(NSDictionary *result) {
         callback(@[result]);
     } withFailure:^(NSError *error) {
         callback([self processNSError:error]);
