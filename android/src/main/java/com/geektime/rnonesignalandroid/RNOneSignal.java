@@ -265,7 +265,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void addTriggers(ReadableMap triggers) {
-        OneSignal.getInAppMessages().addTriggers(RNUtils.convertReableMapIntoStringMap(triggers));
+        OneSignal.getInAppMessages().addTriggers(RNUtils.convertReadableMapIntoStringMap(triggers));
     }
 
     @ReactMethod
@@ -275,7 +275,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void removeTriggers(ReadableArray keys) {
-        OneSignal.getInAppMessages().removeTriggers(RNUtils.convertReableArrayIntoStringCollection(keys));
+        OneSignal.getInAppMessages().removeTriggers(RNUtils.convertReadableArrayIntoStringCollection(keys));
     }
 
     @ReactMethod
@@ -541,12 +541,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void addTags(ReadableMap tags) {
-        OneSignal.getUser().addTags(RNUtils.convertReableMapIntoStringMap(tags));
+        OneSignal.getUser().addTags(RNUtils.convertReadableMapIntoStringMap(tags));
     }
 
     @ReactMethod
     public void removeTags(ReadableArray tagKeys) {
-        OneSignal.getUser().removeTags(RNUtils.convertReableArrayIntoStringCollection(tagKeys));
+        OneSignal.getUser().removeTags(RNUtils.convertReadableArrayIntoStringCollection(tagKeys));
     }
 
     @ReactMethod
@@ -601,12 +601,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void addAliases(ReadableMap aliases) {
-        OneSignal.getUser().addAliases(RNUtils.convertReableMapIntoStringMap(aliases));
+        OneSignal.getUser().addAliases(RNUtils.convertReadableMapIntoStringMap(aliases));
     }
 
     @ReactMethod
     public void removeAliases(ReadableArray aliasLabels) {
-        OneSignal.getUser().removeAliases(RNUtils.convertReableArrayIntoStringCollection(aliasLabels));
+        OneSignal.getUser().removeAliases(RNUtils.convertReadableArrayIntoStringCollection(aliasLabels));
     }
 
     /** Added for NativeEventEmitter */

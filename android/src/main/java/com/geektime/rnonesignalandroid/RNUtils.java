@@ -179,7 +179,7 @@ public class RNUtils {
         return hash;
     }
 
-    public static Collection<String> convertReableArrayIntoStringCollection(ReadableArray readableArray) {
+    public static Collection<String> convertReadableArrayIntoStringCollection(ReadableArray readableArray) {
         ArrayList<String> strings = new ArrayList<>();
         for (Object object : readableArray.toArrayList()) {
             if (object instanceof String)
@@ -188,7 +188,7 @@ public class RNUtils {
         return strings;
     }
 
-    public static HashMap<String, String> convertReableMapIntoStringMap(ReadableMap readableMap) {
+    public static HashMap<String, String> convertReadableMapIntoStringMap(ReadableMap readableMap) {
         HashMap<String, String> stringMap = new HashMap<>();
         ReadableMapKeySetIterator iter = readableMap.keySetIterator();
 
