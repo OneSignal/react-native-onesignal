@@ -19,8 +19,13 @@ import { OpenedEvent } from './models/NotificationEvents';
 import { OutcomeEvent } from './models/Outcomes';
 import {
   InAppMessage,
-  InAppMessageAction,
-  InAppMessageLifecycleHandlerObject,
+  InAppMessageEventTypeMap,
+  InAppMessageEventName,
+  InAppMessageClickEvent,
+  InAppMessageWillDisplayEvent, 
+  InAppMessageDidDisplayEvent, 
+  InAppMessageWillDismissEvent, 
+  InAppMessageDidDismissEvent,
 } from './models/InAppMessage';
 import { isValidCallback, isNativeModuleLoaded } from './helpers';
 
@@ -541,56 +546,56 @@ export namespace OneSignal {
   }
 
   export namespace InAppMessages {
-    /** Set the in-app message click handler. */
-    export function setClickHandler(
-      handler: (action: InAppMessageAction) => void,
-    ) {
-      if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      isValidCallback(handler);
-      RNOneSignal.setInAppMessageClickHandler();
-      eventManager.setEventHandler<InAppMessageAction>(
-        IN_APP_MESSAGE_CLICKED,
-        handler,
-      );
-    }
-
-    /** Set the in-app message lifecycle handler. */
-    export function setLifecycleHandler(
-      handlerObject: InAppMessageLifecycleHandlerObject,
-    ) {
-      if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      if (handlerObject.onWillDisplayInAppMessage) {
-        isValidCallback(handlerObject.onWillDisplayInAppMessage);
-        eventManager.setEventHandler<InAppMessage>(
-          IN_APP_MESSAGE_WILL_DISPLAY,
-          handlerObject.onWillDisplayInAppMessage,
-        );
-      }
-      if (handlerObject.onDidDisplayInAppMessage) {
-        isValidCallback(handlerObject.onDidDisplayInAppMessage);
-        eventManager.setEventHandler<InAppMessage>(
-          IN_APP_MESSAGE_DID_DISPLAY,
-          handlerObject.onDidDisplayInAppMessage,
-        );
-      }
-      if (handlerObject.onWillDismissInAppMessage) {
-        isValidCallback(handlerObject.onWillDismissInAppMessage);
-        eventManager.setEventHandler<InAppMessage>(
-          IN_APP_MESSAGE_WILL_DISMISS,
-          handlerObject.onWillDismissInAppMessage,
-        );
-      }
-      if (handlerObject.onDidDismissInAppMessage) {
-        isValidCallback(handlerObject.onDidDismissInAppMessage);
-        eventManager.setEventHandler<InAppMessage>(
-          IN_APP_MESSAGE_DID_DISMISS,
-          handlerObject.onDidDismissInAppMessage,
-        );
+    /**
+     * Add listeners for notification click and/or lifecycle events.
+     */
+    export function addEventListener<K extends InAppMessageEventName>(event: K, listener: (event: InAppMessageEventTypeMap[K]) => void): void {
+      if (!isNativeModuleLoaded(RNOneSignal)) {
+        return;
       }
 
-      RNOneSignal.setInAppMessagesLifecycleHandler();
+      if (event === "click") {
+        isValidCallback(listener);
+        RNOneSignal.addInAppMessageClickListener();
+        eventManager.setEventHandler<InAppMessageClickEvent>(
+          IN_APP_MESSAGE_CLICKED,
+          listener as (event: InAppMessageClickEvent) => void
+        );
+      }
+      else{
+        if (event === "willDisplay") {
+          isValidCallback(listener);
+          eventManager.setEventHandler<InAppMessageWillDisplayEvent>(
+            IN_APP_MESSAGE_WILL_DISPLAY,
+            listener as (event: InAppMessageWillDisplayEvent) => void
+          );
+        }
+        else if (event === "didDisplay") {
+          isValidCallback(listener);
+          eventManager.setEventHandler<InAppMessageDidDisplayEvent>(
+            IN_APP_MESSAGE_DID_DISPLAY,
+            listener as (event: InAppMessageDidDisplayEvent) => void
+          );
+        }
+        else if (event === "willDismiss"){
+          isValidCallback(listener);
+          eventManager.setEventHandler<InAppMessageWillDismissEvent>(
+            IN_APP_MESSAGE_WILL_DISMISS,
+            listener as (event: InAppMessageWillDismissEvent) => void
+          );
+        }
+        else if (event === "didDismiss"){
+          isValidCallback(listener);
+          eventManager.setEventHandler<InAppMessageDidDismissEvent>(
+            IN_APP_MESSAGE_DID_DISMISS,
+            listener as (event: InAppMessageDidDismissEvent) => void
+          );
+        }
+        else {
+          return;
+        }
+        RNOneSignal.addInAppMessagesLifecycleListener();
+      }
     }
 
     /**
@@ -731,8 +736,11 @@ export {
   NotificationReceivedEvent,
   OpenedEvent,
   InAppMessage,
-  InAppMessageAction,
-  InAppMessageLifecycleHandlerObject,
+  InAppMessageClickEvent,
+  InAppMessageWillDisplayEvent, 
+  InAppMessageDidDisplayEvent, 
+  InAppMessageWillDismissEvent, 
+  InAppMessageDidDismissEvent,
   OutcomeEvent,
 };
 
