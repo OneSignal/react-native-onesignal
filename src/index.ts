@@ -649,7 +649,7 @@ export namespace OneSignal {
      * Add a trigger for the current user. Triggers are currently explicitly used to determine whether a specific IAM should be
      * displayed to the user.
      */
-    export function addTrigger(key: string, value: string | number | boolean) {
+    export function addTrigger(key: string, value: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       // value can be assigned to `false` so we cannot just check `!value`
@@ -657,7 +657,7 @@ export namespace OneSignal {
         console.error('OneSignal: addTrigger: must include a key and a value');
       }
 
-      let trigger: { [key: string]: string | number | boolean } = {};
+      let trigger: { [key: string]: string } = {};
       trigger[key] = value;
       RNOneSignal.addTriggers(trigger);
     }
@@ -667,7 +667,7 @@ export namespace OneSignal {
      * be displayed to the user.
      */
     export function addTriggers(triggers: {
-      [key: string]: string | number | boolean;
+      [key: string]: string;
     }) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 

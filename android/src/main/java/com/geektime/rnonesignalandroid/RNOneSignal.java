@@ -265,7 +265,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void addTriggers(ReadableMap triggers) {
-        OneSignal.getInAppMessages().addTriggers(triggers.toHashMap());
+        OneSignal.getInAppMessages().addTriggers(RNUtils.convertReableMapIntoStringMap(triggers));
     }
 
     @ReactMethod
