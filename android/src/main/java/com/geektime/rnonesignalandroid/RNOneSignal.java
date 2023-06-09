@@ -53,9 +53,14 @@ import com.onesignal.Continue;
 import com.onesignal.OneSignal;
 import com.onesignal.debug.LogLevel;
 import com.onesignal.inAppMessages.IInAppMessage;
-import com.onesignal.inAppMessages.IInAppMessageClickHandler;
+import com.onesignal.inAppMessages.IInAppMessageClickListener;
+import com.onesignal.inAppMessages.IInAppMessageClickEvent;
 import com.onesignal.inAppMessages.IInAppMessageClickResult;
-import com.onesignal.inAppMessages.IInAppMessageLifecycleHandler;
+import com.onesignal.inAppMessages.IInAppMessageLifecycleListener;
+import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
+import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
+import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
+import com.onesignal.inAppMessages.IInAppMessageDidDismissEvent;
 import com.onesignal.notifications.INotification;
 import com.onesignal.notifications.INotificationClickHandler;
 import com.onesignal.notifications.INotificationClickResult;
@@ -84,6 +89,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     private HashMap<String, INotificationReceivedEvent> notificationReceivedEventCache;
     private boolean hasSetNotificationWillShowInForegroundHandler = false;
+    private boolean hasAddedInAppMessageLifecycleListener = false;
 
     private void removeObservers() {
         this.removePermissionChangedHandler();
@@ -184,12 +190,13 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     // OneSignal.InAppMessages namespace methods
     @ReactMethod
-    public void setInAppMessageClickHandler() {
-        OneSignal.getInAppMessages().setInAppMessageClickHandler(new IInAppMessageClickHandler() {
+    public void addInAppMessageClickListener() {
+        OneSignal.getInAppMessages().addClickListener(new IInAppMessageClickListener() {
             @Override
-            public void inAppMessageClicked(IInAppMessageClickResult result) {
+            public void onClick(IInAppMessageClickEvent event) {
                 try {
-                    sendEvent("OneSignal-inAppMessageClicked", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageClickedActionToMap(result)));
+                    IInAppMessageClickResult result = event.getResult();
+                    sendEvent("OneSignal-inAppMessageClicked", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageClickResultToMap(result)));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -198,44 +205,47 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void setInAppMessagesLifecycleHandler() {
-        OneSignal.getInAppMessages().setInAppMessageLifecycleHandler(new IInAppMessageLifecycleHandler() {
-            @Override
-            public void onWillDisplayInAppMessage(IInAppMessage message) {
-                try {
-                    sendEvent("OneSignal-inAppMessageWillDisplay", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(message)));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+    public void addInAppMessagesLifecycleListener() {
+        if (!hasAddedInAppMessageLifecycleListener) {
+            OneSignal.getInAppMessages().addLifecycleListener(new IInAppMessageLifecycleListener() {
+                @Override
+                public void onWillDisplay(IInAppMessageWillDisplayEvent event) {
+                    try {
+                        sendEvent("OneSignal-inAppMessageWillDisplay", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(event.getMessage())));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void onDidDisplayInAppMessage(IInAppMessage message) {
-                try {
-                    sendEvent("OneSignal-inAppMessageDidDisplay", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(message)));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                @Override
+                public void onDidDisplay(IInAppMessageDidDisplayEvent event) {
+                    try {
+                        sendEvent("OneSignal-inAppMessageDidDisplay", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(event.getMessage())));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void onWillDismissInAppMessage(IInAppMessage message) {
-                try {
-                    sendEvent("OneSignal-inAppMessageWillDismiss", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(message)));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                @Override
+                public void onWillDismiss(IInAppMessageWillDismissEvent event) {
+                    try {
+                        sendEvent("OneSignal-inAppMessageWillDismiss", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(event.getMessage())));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void onDidDismissInAppMessage(IInAppMessage message) {
-                try {
-                    sendEvent("OneSignal-inAppMessageDidDismiss", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(message)));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                @Override
+                public void onDidDismiss(IInAppMessageDidDismissEvent event) {
+                    try {
+                        sendEvent("OneSignal-inAppMessageDidDismiss", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageToMap(event.getMessage())));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+            hasAddedInAppMessageLifecycleListener = true;
+        }
     }
 
     @ReactMethod

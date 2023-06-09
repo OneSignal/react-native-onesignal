@@ -15,8 +15,12 @@ import com.facebook.react.bridge.WritableNativeMap;
 // import com.onesignal.OSInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessageClickResult;
+import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
+import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
+import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
+import com.onesignal.inAppMessages.IInAppMessageDidDismissEvent;
 import com.onesignal.notifications.INotification;
-import com.onesignal.notifications.INotificationAction;
+// import com.onesignal.notifications.INotificationAction;
 import com.onesignal.notifications.INotificationClickResult;
 import com.onesignal.notifications.INotificationReceivedEvent;
 import com.onesignal.user.subscriptions.IPushSubscription;
@@ -126,13 +130,13 @@ public class RNUtils {
         return hash;
     }
 
-    public static HashMap<String, Object> convertInAppMessageClickedActionToMap(IInAppMessageClickResult result) {
+    public static HashMap<String, Object> convertInAppMessageClickResultToMap(IInAppMessageClickResult result) {
         HashMap<String, Object> hash = new HashMap<>();
 
-        hash.put("clickName", result.getAction().getClickName());
-        hash.put("clickUrl", result.getAction().getClickUrl());
-        hash.put("firstClick", result.getAction().isFirstClick());
-        hash.put("closesMessage", result.getAction().getClosesMessage());
+        hash.put("actionId", result.getActionId());
+        hash.put("urlTarget", result.getUrlTarget());
+        hash.put("url", result.getUrl());
+        hash.put("closingMessage", result.getClosingMessage());
 
         return hash;
     }
