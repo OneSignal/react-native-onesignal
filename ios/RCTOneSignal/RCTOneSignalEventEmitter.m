@@ -11,7 +11,7 @@
     BOOL _hasSetPermissionObserver;
     BOOL _hasSetEmailSubscriptionObserver;
     BOOL _hasSetSMSSubscriptionObserver;
-    BOOL _hasSetInAppMessageLifecycleHandler;
+    BOOL _hasAddedInAppMessageLifecycleListener;
     NSMutableDictionary* _notificationCompletionCache;
     NSMutableDictionary* _receivedNotificationCache;
 }
@@ -182,16 +182,18 @@ RCT_EXPORT_METHOD(clearTriggers) {
     [OneSignal.InAppMessages clearTriggers];
 }
 
-RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
-    [OneSignal.InAppMessages setClickHandler:^(OSInAppMessageAction *action) {
-        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:[action jsonRepresentation]];
-    }];
+RCT_EXPORT_METHOD(addInAppMessageClickListener) {
+    [OneSignal.InAppMessages addClickListener:self];
 }
 
-RCT_EXPORT_METHOD(setInAppMessagesLifecycleHandler) {
-    if (!_hasSetInAppMessageLifecycleHandler) {
-       [OneSignal.InAppMessages setLifecycleHandler:[RCTOneSignal sharedInstance]];
-        _hasSetInAppMessageLifecycleHandler = true;
+RCT_EXPORT_METHOD(onClickInAppMessage:(OSInAppMessageClickEvent * _Nonnull)event {
+    [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:[event jsonRepresentation]];
+})
+
+RCT_EXPORT_METHOD(addInAppMessagesLifecycleListener) {
+    if (!_hasAddedInAppMessageLifecycleListener) {
+       [OneSignal.InAppMessages addLifecycleListener:[RCTOneSignal sharedInstance]];
+        _hasAddedInAppMessageLifecycleListener = true;
     }
 }
 

@@ -5,7 +5,7 @@
 #import "../OneSignalFramework.h"
 #endif
 
-@interface RCTOneSignal : NSObject <OSPushSubscriptionObserver, OSPermissionObserver, OSInAppMessageLifecycleHandler>
+@interface RCTOneSignal : NSObject <OSPushSubscriptionObserver, OSPermissionObserver, OSInAppMessageLifecycleListener, OSInAppMessageClickListener>
 
 + (RCTOneSignal *) sharedInstance;
 

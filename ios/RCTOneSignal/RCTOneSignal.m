@@ -82,20 +82,20 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     [self sendEvent:OSEventString(PermissionChanged) withBody:[state jsonRepresentation]];
 }
 
-- (void)onWillDisplayInAppMessage:(OSInAppMessage * _Nonnull)message {
-    [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:[message jsonRepresentation]];
+- (void)onWillDisplayInAppMessage:(OSInAppMessageWillDisplayEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:[event.message jsonRepresentation]];
 }
 
-- (void)onDidDisplayInAppMessage:(OSInAppMessage * _Nonnull)message {
-    [self sendEvent:OSEventString(InAppMessageDidDisplay) withBody:[message jsonRepresentation]];
+- (void)onDidDisplayInAppMessage:(OSInAppMessageDidDisplayEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(InAppMessageDidDisplay) withBody:[event.message jsonRepresentation]];
 }
 
-- (void)onWillDismissInAppMessage:(OSInAppMessage * _Nonnull)message {
-    [self sendEvent:OSEventString(InAppMessageWillDismiss) withBody:[message jsonRepresentation]];
+- (void)onWillDismissInAppMessage:(OSInAppMessageWillDismissEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(InAppMessageWillDismiss) withBody:[event.message jsonRepresentation]];
 }
 
-- (void)onDidDismissInAppMessage:(OSInAppMessage * _Nonnull)message {
-    [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:[message jsonRepresentation]];
+- (void)onDidDismissInAppMessage:(OSInAppMessageDidDismissEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:[event.message jsonRepresentation]];
 }
 
 - (void)dealloc {
