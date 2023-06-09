@@ -546,6 +546,12 @@ export namespace OneSignal {
   }
 
   export namespace InAppMessages {
+    export const _inAppMessageClickListeners: ((action: InAppMessageClickEvent) => void)[] = [];
+    export const _willDisplayInAppMessageListeners: ((event: InAppMessageWillDisplayEvent) => void) [] = [];
+    export const _didDisplayInAppMessageListeners: ((event: InAppMessageDidDisplayEvent) => void) [] = [];
+    export const _willDismissInAppMessageListeners: ((event: InAppMessageWillDismissEvent) => void) [] = [];
+    export const _didDismissInAppMessageListeners: ((event: InAppMessageDidDismissEvent) => void) [] = [];
+
     /**
      * Add listeners for notification click and/or lifecycle events.
      */
@@ -556,6 +562,7 @@ export namespace OneSignal {
 
       if (event === "click") {
         isValidCallback(listener);
+        _inAppMessageClickListeners.push(listener as (event: InAppMessageClickEvent) => void);
         RNOneSignal.addInAppMessageClickListener();
         eventManager.setEventHandler<InAppMessageClickEvent>(
           IN_APP_MESSAGE_CLICKED,
@@ -565,6 +572,7 @@ export namespace OneSignal {
       else{
         if (event === "willDisplay") {
           isValidCallback(listener);
+          _willDisplayInAppMessageListeners.push(listener as (event: InAppMessageWillDisplayEvent) => void);
           eventManager.setEventHandler<InAppMessageWillDisplayEvent>(
             IN_APP_MESSAGE_WILL_DISPLAY,
             listener as (event: InAppMessageWillDisplayEvent) => void
@@ -572,6 +580,7 @@ export namespace OneSignal {
         }
         else if (event === "didDisplay") {
           isValidCallback(listener);
+          _didDisplayInAppMessageListeners.push(listener as (event: InAppMessageDidDisplayEvent) => void);
           eventManager.setEventHandler<InAppMessageDidDisplayEvent>(
             IN_APP_MESSAGE_DID_DISPLAY,
             listener as (event: InAppMessageDidDisplayEvent) => void
@@ -579,6 +588,7 @@ export namespace OneSignal {
         }
         else if (event === "willDismiss"){
           isValidCallback(listener);
+          _willDismissInAppMessageListeners.push(listener as (event: InAppMessageWillDismissEvent) => void);
           eventManager.setEventHandler<InAppMessageWillDismissEvent>(
             IN_APP_MESSAGE_WILL_DISMISS,
             listener as (event: InAppMessageWillDismissEvent) => void
@@ -586,6 +596,7 @@ export namespace OneSignal {
         }
         else if (event === "didDismiss"){
           isValidCallback(listener);
+          _didDismissInAppMessageListeners.push(listener as (event: InAppMessageDidDismissEvent) => void);
           eventManager.setEventHandler<InAppMessageDidDismissEvent>(
             IN_APP_MESSAGE_DID_DISMISS,
             listener as (event: InAppMessageDidDismissEvent) => void
@@ -595,6 +606,42 @@ export namespace OneSignal {
           return;
         }
         RNOneSignal.addInAppMessagesLifecycleListener();
+      }
+    }
+
+    /**
+     * Remove listeners for In-App Message click and/or lifecycle events.
+     */
+    export function removeEventListener<K extends InAppMessageEventName>(event: K, listener: (obj: InAppMessageEventTypeMap[K]) => void): void {
+      if (event === "click") {
+        const index = _inAppMessageClickListeners.indexOf(listener);
+        if (index !== -1) {
+            _inAppMessageClickListeners.splice(index, 1);
+        }
+      } else {        
+          if (event === "willDisplay") {
+              let index = _willDisplayInAppMessageListeners.indexOf(listener as (event: InAppMessageWillDisplayEvent) => void);
+              if (index !== -1) {
+                  _willDisplayInAppMessageListeners.splice(index, 1);
+              }
+          } else if (event === "didDisplay") {
+              let index = _didDisplayInAppMessageListeners.indexOf(listener as (event: InAppMessageDidDisplayEvent) => void);
+              if (index !== -1) {
+                  _willDisplayInAppMessageListeners.splice(index, 1);
+              }
+          } else if (event === "willDismiss") {
+              let index = _willDismissInAppMessageListeners.indexOf(listener as (event: InAppMessageWillDismissEvent) => void);
+              if (index !== -1) {
+                  _willDismissInAppMessageListeners.splice(index, 1);
+              }
+          } else if (event === "didDismiss") {
+              let index = _didDismissInAppMessageListeners.indexOf(listener as (event: InAppMessageDidDismissEvent) => void);
+              if (index !== -1) {
+                  _didDismissInAppMessageListeners.splice(index, 1);
+              }
+          } else {
+              return;
+          }
       }
     }
 
