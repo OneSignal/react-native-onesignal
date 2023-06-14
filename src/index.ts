@@ -55,8 +55,8 @@ async function setNotificationPermissionChangeHandler() {
   notificationPermission = await RNOneSignal.hasNotificationPermission();
 }
 
-async function setPushSubscriptionChangeHandler() {
-  OneSignal.User.PushSubscription.addChangeHandler((subscriptionChange) => {
+async function addPushSubscriptionObserver() {
+  OneSignal.User.PushSubscription.addObserver((subscriptionChange) => {
     pushSubscription = subscriptionChange;
   });
 
@@ -73,7 +73,7 @@ export namespace OneSignal {
     RNOneSignal.initialize(appId);
 
     setNotificationPermissionChangeHandler();
-    setPushSubscriptionChangeHandler();
+    addPushSubscriptionObserver();
   }
 
   /**
@@ -197,13 +197,13 @@ export namespace OneSignal {
   export namespace User {
     export namespace PushSubscription {
       /** Add a callback that fires when the OneSignal subscription state changes. */
-      export function addChangeHandler(
+      export function addObserver(
         handler: (event: PushSubscription) => void,
       ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         isValidCallback(handler);
-        RNOneSignal.addPushSubscriptionChangeHandler();
+        RNOneSignal.addPushSubscriptionObserver();
         eventManager.addEventHandler<PushSubscription>(
           SUBSCRIPTION_CHANGED,
           handler,
@@ -211,10 +211,10 @@ export namespace OneSignal {
       }
 
       /** Clears current subscription observers. */
-      export function removeChangeHandler() {
+      export function removeObserver() {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-        RNOneSignal.removePushSubscriptionChangeHandler();
+        RNOneSignal.removePushSubscriptionObserver();
         eventManager.clearEventHandler(SUBSCRIPTION_CHANGED);
       }
 
