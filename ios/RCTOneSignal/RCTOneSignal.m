@@ -78,8 +78,9 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
     [self sendEvent:OSEventString(SubscriptionChanged) withBody:[state.current jsonRepresentation]];
 }
 
-- (void)onOSPermissionChanged:(OSPermissionState *)state {
-    [self sendEvent:OSEventString(PermissionChanged) withBody:[state jsonRepresentation]];
+- (void)onNotificationPermissionDidChange:(BOOL)permission {
+    NSString *permissionString = permission ? @"true" : @"false";
+    [self sendEvent:OSEventString(PermissionChanged) withBody:@{@"permission": permissionString}];
 }
 
 - (void)onWillDisplayInAppMessage:(OSInAppMessageWillDisplayEvent * _Nonnull)event {

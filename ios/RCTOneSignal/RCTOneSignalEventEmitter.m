@@ -240,14 +240,14 @@ RCT_EXPORT_METHOD(registerForProvisionalAuthorization:(RCTResponseSenderBlock)ca
     }];
 }
 
-RCT_EXPORT_METHOD(addPermissionChangedHandler) {
+RCT_EXPORT_METHOD(addPermissionObserver) {
     if (!_hasSetPermissionObserver) {
         [OneSignal.Notifications addPermissionObserver:[RCTOneSignal sharedInstance]];
         _hasSetPermissionObserver = true;
     }
 }
 
-RCT_EXPORT_METHOD(removePermissionChangedHandler) {
+RCT_EXPORT_METHOD(removePermissionObserver) {
     if (_hasSetPermissionObserver) {
         [OneSignal.Notifications removePermissionObserver:[RCTOneSignal sharedInstance]];
         _hasSetPermissionObserver = false;
