@@ -30,7 +30,7 @@
     BOOL didInitialize;
 }
 
-OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
+OSNotificationClickResult* coldStartOSNotificationClickResult;
 
 + (RCTOneSignal *) sharedInstance {
     static dispatch_once_t token = 0;

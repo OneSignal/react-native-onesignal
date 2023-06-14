@@ -12,8 +12,8 @@
     BOOL _hasSetEmailSubscriptionObserver;
     BOOL _hasSetSMSSubscriptionObserver;
     BOOL _hasAddedInAppMessageLifecycleListener;
-    NSMutableDictionary* _notificationCompletionCache;
-    NSMutableDictionary* _receivedNotificationCache;
+    NSMutableDictionary* _preventDefaultCache;
+    NSMutableDictionary* _notificationWillDisplayCache;
 }
 
 static BOOL _didStartObserving = false;
@@ -38,8 +38,8 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 - (instancetype)init {
     if (self = [super init]) {
-        _notificationCompletionCache = [NSMutableDictionary new];
-        _receivedNotificationCache = [NSMutableDictionary new];
+        _preventDefaultCache = [NSMutableDictionary new];
+        _notificationWillDisplayCache = [NSMutableDictionary new];
 
         for (NSString *eventName in [self supportedEvents])
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(emitEvent:) name:eventName object:nil];
@@ -254,26 +254,42 @@ RCT_EXPORT_METHOD(removePermissionChangedHandler) {
     }
 }
 
-RCT_EXPORT_METHOD(setNotificationClickHandler) {
-    [OneSignal.Notifications setNotificationOpenedHandler:^(OSNotificationOpenedResult *result) {
-        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationClicked" withBody:[result jsonRepresentation]];
-    }];
+RCT_EXPORT_METHOD(addNotificationClickListener) {
+    [OneSignal.Notifications addClickListener:self];
+}
+
+RCT_EXPORT_METHOD(onClickNotification:(OSNotificationClickEvent * _Nonnull)event) {
+    [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationClicked" withBody:[event jsonRepresentation]];
 }
 
 RCT_EXPORT_METHOD(clearAllNotifications) {
     [OneSignal.Notifications clearAll];
 }
 
-RCT_EXPORT_METHOD(setNotificationWillShowInForegroundHandler) {
-    __weak RCTOneSignalEventEmitter *weakSelf = self;
-    [OneSignal.Notifications setNotificationWillShowInForegroundHandler:^(OSNotification *notif, OSNotificationDisplayResponse completion) {
-        RCTOneSignalEventEmitter *strongSelf = weakSelf;
-        if (!strongSelf) return;
+RCT_EXPORT_METHOD(addNotificationForegroundLifecycleListener) {
+    [OneSignal.Notifications addForegroundLifecycleListener:self];
+}
 
-        strongSelf->_receivedNotificationCache[notif.notificationId] = notif;
-        strongSelf->_notificationCompletionCache[notif.notificationId] = completion;
-        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationWillShowInForeground" withBody:[notif jsonRepresentation]];
-    }];
+RCT_EXPORT_METHOD(onWillDisplayNotification:(OSNotificationWillDisplayEvent *)event){
+    __weak RCTOneSignalEventEmitter *weakSelf = self;
+    RCTOneSignalEventEmitter *strongSelf = weakSelf;
+    if (!strongSelf) return;
+
+    strongSelf->_notificationWillDisplayCache[event.notification.notificationId] = event;
+    [event preventDefault];
+    [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationWillDisplayInForeground" withBody:[event.notification jsonRepresentation]];
+}
+
+RCT_EXPORT_METHOD(preventDefault:(NSString *)notificationId){
+    __weak RCTOneSignalEventEmitter *weakSelf = self;
+    RCTOneSignalEventEmitter *strongSelf = weakSelf;
+    OSNotificationWillDisplayEvent *event = _notificationWillDisplayCache[notificationId];
+    if (!event) {
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"OneSignal (objc): could not find notification will display event for notification with id: %@", notificationId]];
+        return;
+    }
+    strongSelf->_preventDefaultCache[event.notification.notificationId] = event;
+    [event preventDefault];
 }
 
 // OneSignal.Session namespace methods
@@ -398,21 +414,18 @@ RCT_EXPORT_METHOD(optOut) {
     [OneSignal.User.pushSubscription optOut];
 }
 
-RCT_EXPORT_METHOD(completeNotificationEvent:(NSString*)notificationId displayOption:(BOOL)shouldDisplay) {
-    OSNotificationDisplayResponse completion = _notificationCompletionCache[notificationId];
-    if (!completion) return;
-
-    if (shouldDisplay) {
-        OSNotification *notif = _receivedNotificationCache[notificationId];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completion(notif);
-        });
-    } else {
-        completion(nil);
+RCT_EXPORT_METHOD(displayNotification:(NSString*)notificationId) {
+    OSNotificationWillDisplayEvent *event = _notificationWillDisplayCache[notificationId];
+    if (!event) {
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"OneSignal (objc): could not find notification will display event for notification with id: %@", notificationId]];
+        return;
     }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [event.notification display];
+    });
 
-    [_notificationCompletionCache removeObjectForKey:notificationId];
-    [_receivedNotificationCache removeObjectForKey:notificationId];
+    [_preventDefaultCache removeObjectForKey:notificationId];
+    [_notificationWillDisplayCache removeObjectForKey:notificationId];
 }
 
 RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
