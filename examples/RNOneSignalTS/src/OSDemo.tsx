@@ -87,7 +87,7 @@ class OSDemo extends React.Component<Props, State> {
       this.OSLog('OneSignal: subscription changed:', subscription);
     });
 
-    OneSignal.Notifications.addPermissionChangedHandler((granted) => {
+    OneSignal.Notifications.addPermissionObserver((granted) => {
       this.OSLog('OneSignal: permission changed:', granted.permission);
     });
   }
