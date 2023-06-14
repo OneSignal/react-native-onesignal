@@ -306,14 +306,14 @@ RCT_EXPORT_METHOD(addOutcomeWithValue:(NSString *)name :(NSNumber * _Nonnull)val
 }
 
 // OneSignal.User namespace methods
-RCT_EXPORT_METHOD(addPushSubscriptionChangeHandler) {
+RCT_EXPORT_METHOD(addPushSubscriptionObserver) {
     if (!_hasSetSubscriptionObserver) {
         [OneSignal.User.pushSubscription addObserver:[RCTOneSignal sharedInstance]];
         _hasSetSubscriptionObserver = true;
     }
 }
 
-RCT_EXPORT_METHOD(removePushSubscriptionChangeHandler) {
+RCT_EXPORT_METHOD(removePushSubscriptionObserver) {
     if (_hasSetSubscriptionObserver) {
         [OneSignal.User.pushSubscription removeObserver:[RCTOneSignal sharedInstance]];
         _hasSetSubscriptionObserver = false;

@@ -74,8 +74,8 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
     [RCTOneSignalEventEmitter sendEventWithName:eventName withBody:body];
 }
 
-- (void)onOSPushSubscriptionChangedWithStateChanges:(OSPushSubscriptionStateChanges * _Nonnull)stateChanges {
-    [self sendEvent:OSEventString(SubscriptionChanged) withBody:[stateChanges.to jsonRepresentation]];
+- (void)onPushSubscriptionDidChangeWithState:(OSPushSubscriptionChangedState * _Nonnull)state {
+    [self sendEvent:OSEventString(SubscriptionChanged) withBody:[state.current jsonRepresentation]];
 }
 
 - (void)onOSPermissionChanged:(OSPermissionState *)state {
