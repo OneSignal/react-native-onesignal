@@ -22,7 +22,7 @@ import com.onesignal.notifications.INotification;
 import com.onesignal.notifications.INotificationClickResult;
 import com.onesignal.notifications.INotificationReceivedEvent;
 import com.onesignal.user.subscriptions.IPushSubscription;
-import com.onesignal.user.subscriptions.ISubscription;
+import com.onesignal.user.subscriptions.PushSubscriptionState;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -130,7 +130,7 @@ public class RNUtils {
         return hash;
     }
 
-    public static HashMap<String, Object> convertOnSubscriptionChangedToMap(IPushSubscription state) {
+    public static HashMap<String, Object> convertOnSubscriptionChangedToMap(PushSubscriptionState state) {
         HashMap<String, Object> hash = new HashMap<>();
 
         hash.put("token", state.getToken());

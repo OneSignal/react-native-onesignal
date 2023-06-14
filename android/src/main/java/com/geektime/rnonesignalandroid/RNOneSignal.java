@@ -68,15 +68,16 @@ import com.onesignal.notifications.INotificationLifecycleListener;
 import com.onesignal.notifications.INotificationWillDisplayEvent;
 import com.onesignal.notifications.IPermissionChangedHandler;
 import com.onesignal.user.subscriptions.IPushSubscription;
-import com.onesignal.user.subscriptions.ISubscription;
-import com.onesignal.user.subscriptions.ISubscriptionChangedHandler;
+import com.onesignal.user.subscriptions.IPushSubscriptionObserver;
+import com.onesignal.user.subscriptions.PushSubscriptionState;
+import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
 public class RNOneSignal extends ReactContextBaseJavaModule implements
-        ISubscriptionChangedHandler,
+        IPushSubscriptionObserver,
         IPermissionChangedHandler,
         LifecycleEventListener,
         INotificationLifecycleListener{
@@ -156,7 +157,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     private void removeObservers() {
         this.removePermissionChangedHandler();
-        this.rmeovePushSubscriptionChangeHandler();
+        this.removePushSubscriptionObserver();
     }
 
     private void removeHandlers() {
@@ -477,37 +478,37 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void addPushSubscriptionChangeHandler() {
+    public void addPushSubscriptionObserver() {
         if (!hasSetPushSubscriptionObserver) {
-            OneSignal.getUser().getPushSubscription().addChangeHandler(this);
+            OneSignal.getUser().getPushSubscription().addObserver(this);
             hasSetPushSubscriptionObserver = true;
         }
     }
 
-    @ReactMethod
-    public void rmeovePushSubscriptionChangeHandler() {
-        if (hasSetPushSubscriptionObserver) {
-            OneSignal.getUser().getPushSubscription().removeChangeHandler(this);
-            hasSetPushSubscriptionObserver = false;
-        }
-    }
-
     @Override
-    public void onSubscriptionChanged(ISubscription subscription) {
-        if (!(subscription instanceof IPushSubscription)) {
+    public void onPushSubscriptionChange(PushSubscriptionChangedState pushSubscriptionChangedState) {
+        PushSubscriptionState pushSubscription = pushSubscriptionChangedState.getCurrent();
+        if (!(pushSubscription instanceof PushSubscriptionState)){
             return;
         }
 
         try {
             sendEvent("OneSignal-subscriptionChanged",
                     RNUtils.convertHashMapToWritableMap(
-                            RNUtils.convertOnSubscriptionChangedToMap((IPushSubscription) subscription)));
+                            RNUtils.convertOnSubscriptionChangedToMap(pushSubscription)));
             Log.i("OneSignal", "sending subscription change event");
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        } 
     }
 
+    @ReactMethod
+    public void removePushSubscriptionObserver() {
+        if (hasSetPushSubscriptionObserver) {
+            OneSignal.getUser().getPushSubscription().removeObserver(this);
+            hasSetPushSubscriptionObserver = false;
+        }
+    }
 
     // OneSignal.Session namespace methods
     @ReactMethod
