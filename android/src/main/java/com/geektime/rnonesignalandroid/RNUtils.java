@@ -12,7 +12,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 
-// import com.onesignal.OSInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessageClickResult;
 import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
@@ -20,7 +19,6 @@ import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
 import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
 import com.onesignal.inAppMessages.IInAppMessageDidDismissEvent;
 import com.onesignal.notifications.INotification;
-// import com.onesignal.notifications.INotificationAction;
 import com.onesignal.notifications.INotificationClickResult;
 import com.onesignal.notifications.INotificationReceivedEvent;
 import com.onesignal.user.subscriptions.IPushSubscription;
@@ -113,15 +111,6 @@ public class RNUtils {
         return hash;
     }
 
-    public static HashMap<String, Object> convertNotificationClickResultToMap(INotificationClickResult openResult) throws JSONException {
-        HashMap<String, Object> hash = new HashMap<>();
-
-        hash.put("notification", convertNotificationToMap(openResult.getNotification()));
-        hash.put("action", convertNotificationActionToMap(openResult.getAction()));
-
-        return hash;
-    }
-
     public static HashMap<String, Object> convertInAppMessageToMap(IInAppMessage message) {
         HashMap<String, Object> hash = new HashMap<>();
 
@@ -206,22 +195,6 @@ public class RNUtils {
         HashMap<String, Object> hash = new HashMap<>();
 
         hash.put("permission", granted);
-
-        return hash;
-    }
-
-    private static HashMap<String, Object> convertNotificationActionToMap(INotificationAction action) {
-        HashMap<String, Object> hash = new HashMap<>();
-
-        hash.put("id", action.getActionId());
-
-        switch (action.getType()) {
-            case Opened:
-                hash.put("type", 0);
-                break;
-            case ActionTaken:
-                hash.put("type", 1);
-        }
 
         return hash;
     }
