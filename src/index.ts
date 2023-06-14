@@ -395,6 +395,9 @@ export namespace OneSignal {
   }
 
   export namespace Notifications {
+    export const _notificationClickedListeners: ((action: NotificationClickedEvent) => void)[] = [];
+    export const _notificationWillDisplayListeners: ((notification: NotificationWillDisplayEvent) => void)[] = [];
+    
     /**
      * Whether this app has push notification permission. Returns true if the user has accepted permissions,
      * or if the app has ephemeral or provisional permission.
@@ -481,19 +484,43 @@ export namespace OneSignal {
     export function addEventListener<K extends NotificationEventName>(event: K, listener: (event: NotificationEventTypeMap[K]) => void): void {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
       isValidCallback(listener);
-      
+
       if (event === "click") {
+        _notificationClickedListeners.push(listener as (event: NotificationClickedEvent) => void);
         RNOneSignal.addNotificationClickListener();
         eventManager.setEventHandler<NotificationClickedEvent>(
-          NOTIFICATION_CLICKED, 
+          NOTIFICATION_CLICKED,
           listener as (event: NotificationClickedEvent) => void
         );
       } else if (event === "foregroundWillDisplay") {
+        _notificationWillDisplayListeners.push(listener as (event: NotificationWillDisplayEvent) => void);
         RNOneSignal.addNotificationForegroundLifecycleListener();
         eventManager.setEventHandler<NotificationWillDisplayEvent>(
           NOTIFICATION_WILL_DISPLAY,
           listener as (event: NotificationWillDisplayEvent) => void
         );
+      }
+    }
+
+    /**
+     * Remove listeners for notification click and/or lifecycle events.
+     * @param event 
+     * @param listener 
+     * @returns 
+     */
+    export function removeEventListener<K extends NotificationEventName>(event: K, listener: (obj: NotificationEventTypeMap[K]) => void): void {
+      if (event === "click") {
+        let index = _notificationClickedListeners.indexOf(listener as (event: NotificationClickedEvent) => void);
+        if (index !== -1) {
+          _notificationClickedListeners.splice(index, 1);
+        }
+      } else if (event === "foregroundWillDisplay") {
+        let index = _notificationWillDisplayListeners.indexOf(listener as (event: NotificationWillDisplayEvent) => void);
+        if (index !== -1) {
+          _notificationWillDisplayListeners.splice(index, 1);
+        }
+      } else {
+        return;
       }
     }
 
