@@ -47,8 +47,8 @@ let pushSubscription: PushSubscription = {
   optedIn: false,
 };
 
-async function setNotificationPermissionChangeHandler() {
-  OneSignal.Notifications.addPermissionChangedHandler((granted) => {
+async function addPermissionObserver() {
+  OneSignal.Notifications.addPermissionObserver((granted) => {
     notificationPermission = granted.permission;
   });
 
@@ -72,7 +72,7 @@ export namespace OneSignal {
 
     RNOneSignal.initialize(appId);
 
-    setNotificationPermissionChangeHandler();
+    addPermissionObserver();
     addPushSubscriptionObserver();
   }
 
@@ -454,13 +454,13 @@ export namespace OneSignal {
     }
 
     /** Add a callback that fires when the native push permission changes. */
-    export function addPermissionChangedHandler(
+    export function addPermissionObserver(
       observer: (event: { permission: boolean }) => void,
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       isValidCallback(observer);
-      RNOneSignal.addPermissionChangedHandler();
+      RNOneSignal.addPermissionObserver();
       eventManager.addEventHandler<{ permission: boolean }>(
         PERMISSION_CHANGED,
         observer,
@@ -468,10 +468,10 @@ export namespace OneSignal {
     }
 
     /** Remove permission observer that have been previously added. */
-    export function removePermissionChangedHandler() {
+    export function removePermissionObserver() {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      RNOneSignal.removePermissionChangedHandler();
+      RNOneSignal.removePermissionObserver();
       eventManager.clearEventHandler(PERMISSION_CHANGED);
     }
 
