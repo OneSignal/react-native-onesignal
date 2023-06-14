@@ -33,34 +33,34 @@ class OSDemo extends React.Component<Props, State> {
     OneSignal.initialize(APP_ID);
     OneSignal.Debug.setLogLevel(6);
 
-    OneSignal.Notifications.setNotificationWillShowInForegroundHandler(
-      (notifReceivedEvent) => {
-        this.OSLog('OneSignal: notification will show in foreground:', notifReceivedEvent);
-        const notification = notifReceivedEvent.getNotification();
+    OneSignal.Notifications.addEventListener('foregroundWillDisplay',
+      (event) => {
+        this.OSLog('OneSignal: notification will show in foreground:', event);
+        let notif = event.getNotification();
 
         const cancelButton = {
           text: 'Cancel',
           onPress: () => {
-            notifReceivedEvent.complete();
+            event.preventDefault();
           },
           style: 'cancel',
         };
 
         const completeButton = {
-          text: 'Complete',
+          text: 'Display',
           onPress: () => {
-            notifReceivedEvent.complete(notification);
+            event.getNotification().display();
           },
         };
 
-        Alert.alert('Complete notification?', notification.title, [cancelButton, completeButton], {
+        Alert.alert('Display notification?', notif.title, [cancelButton, completeButton], {
           cancelable: true,
         });
       },
     );
 
-    OneSignal.Notifications.setNotificationClickHandler((notification) => {
-      this.OSLog('OneSignal: notification opened:', notification);
+    OneSignal.Notifications.addEventListener('click', (event) => {
+      this.OSLog('OneSignal: notification clicked:', event);
     });
 
     OneSignal.InAppMessages.addEventListener('click', (event) =>{
