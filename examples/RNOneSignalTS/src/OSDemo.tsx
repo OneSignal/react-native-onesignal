@@ -63,24 +63,24 @@ class OSDemo extends React.Component<Props, State> {
       this.OSLog('OneSignal: notification opened:', notification);
     });
 
-    OneSignal.InAppMessages.addEventListener('click', function(event){
-      console.log('OneSignal IAM clicked:', event);
+    OneSignal.InAppMessages.addEventListener('click', (event) =>{
+      this.OSLog('OneSignal IAM clicked:', event);
     });
 
-    OneSignal.InAppMessages.addEventListener('willDisplay', function(event){
-      console.log('OneSignal: will display IAM: ', event);
+    OneSignal.InAppMessages.addEventListener('willDisplay', (event) =>{
+      this.OSLog('OneSignal: will display IAM: ', event);
     });
 
-    OneSignal.InAppMessages.addEventListener('didDisplay', function(event){
-      console.log('OneSignal: did display IAM: ', event);
+    OneSignal.InAppMessages.addEventListener('didDisplay', (event) =>{
+      this.OSLog('OneSignal: did display IAM: ', event);
     });
 
-    OneSignal.InAppMessages.addEventListener('willDismiss', function(event){
-      console.log('OneSignal: will dismiss IAM: ', event);
+    OneSignal.InAppMessages.addEventListener('willDismiss', (event) =>{
+      this.OSLog('OneSignal: will dismiss IAM: ', event);
     });
 
-    OneSignal.InAppMessages.addEventListener('didDismiss', function(event){
-      console.log('OneSignal: did dismiss IAM: ', event);
+    OneSignal.InAppMessages.addEventListener('didDismiss', (event) =>{
+      this.OSLog('OneSignal: did dismiss IAM: ', event);
     });
 
     OneSignal.User.PushSubscription.addChangeHandler((subscription) => {
