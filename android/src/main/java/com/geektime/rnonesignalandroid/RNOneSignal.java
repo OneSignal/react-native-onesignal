@@ -66,7 +66,7 @@ import com.onesignal.notifications.INotificationClickListener;
 import com.onesignal.notifications.INotificationClickEvent;
 import com.onesignal.notifications.INotificationLifecycleListener;
 import com.onesignal.notifications.INotificationWillDisplayEvent;
-import com.onesignal.notifications.IPermissionChangedHandler;
+import com.onesignal.notifications.IPermissionObserver;
 import com.onesignal.user.subscriptions.IPushSubscription;
 import com.onesignal.user.subscriptions.IPushSubscriptionObserver;
 import com.onesignal.user.subscriptions.PushSubscriptionState;
@@ -78,7 +78,7 @@ import java.util.HashMap;
 
 public class RNOneSignal extends ReactContextBaseJavaModule implements
         IPushSubscriptionObserver,
-        IPermissionChangedHandler,
+        IPermissionObserver,
         LifecycleEventListener,
         INotificationLifecycleListener{
     private ReactApplicationContext mReactApplicationContext;
@@ -156,7 +156,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     };
 
     private void removeObservers() {
-        this.removePermissionChangedHandler();
+        this.removePermissionObserver();
         this.removePushSubscriptionObserver();
     }
 
@@ -388,23 +388,23 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void addPermissionChangedHandler() {
+    public void addPermissionObserver() {
         if (!hasSetPermissionObserver) {
-            OneSignal.getNotifications().addPermissionChangedHandler(this);
+            OneSignal.getNotifications().addPermissionObserver(this);
             hasSetPermissionObserver = true;
         }
     }
 
     @ReactMethod
-    public void removePermissionChangedHandler() {
+    public void removePermissionObserver() {
         if (hasSetPermissionObserver) {
-            OneSignal.getNotifications().removePermissionChangedHandler(this);
+            OneSignal.getNotifications().removePermissionObserver(this);
             hasSetPermissionObserver = false;
         }
     }
 
     @Override
-    public void onPermissionChanged(boolean permission) {
+    public void onNotificationPermissionChange(boolean permission) {
         try {
             sendEvent("OneSignal-permissionChanged", RNUtils.convertHashMapToWritableMap(RNUtils.convertPermissionToMap(permission)));
             Log.i("OneSignal", "sending permission change event");
