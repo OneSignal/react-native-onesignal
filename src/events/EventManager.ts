@@ -3,12 +3,12 @@ import {
   NativeEventEmitter,
   NativeModule,
 } from 'react-native';
-import NotificationReceivedEvent from './NotificationReceivedEvent';
+import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
 import { isMultipleInstancesPossible } from '../helpers';
 import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
-  NOTIFICATION_WILL_SHOW,
+  NOTIFICATION_WILL_DISPLAY,
   NOTIFICATION_CLICKED,
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_WILL_DISPLAY,
@@ -21,7 +21,7 @@ import OSNotification from '../OSNotification';
 const eventList = [
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
-  NOTIFICATION_WILL_SHOW,
+  NOTIFICATION_WILL_DISPLAY,
   NOTIFICATION_CLICKED,
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_WILL_DISPLAY,
@@ -126,8 +126,8 @@ export default class EventManager {
 
   getFinalPayload(eventName: string, payload: Object): Object {
     switch (eventName) {
-      case NOTIFICATION_WILL_SHOW:
-        return new NotificationReceivedEvent(payload as OSNotification);
+      case NOTIFICATION_WILL_DISPLAY:
+        return new NotificationWillDisplayEvent(payload as OSNotification);
       default:
         return payload;
     }

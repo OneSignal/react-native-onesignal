@@ -9,13 +9,15 @@ import {
   IN_APP_MESSAGE_WILL_DISMISS,
   IN_APP_MESSAGE_WILL_DISPLAY,
   NOTIFICATION_CLICKED,
-  NOTIFICATION_WILL_SHOW,
+  NOTIFICATION_WILL_DISPLAY,
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
 } from './events/events';
+import { NotificationEventName,
+  NotificationEventTypeMap,
+  NotificationClickedEvent} from './models/NotificationEvents';
 import { PushSubscription } from './models/Subscription';
-import NotificationReceivedEvent from './events/NotificationReceivedEvent';
-import { OpenedEvent } from './models/NotificationEvents';
+import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import { OutcomeEvent } from './models/Outcomes';
 import {
   InAppMessage,
@@ -470,35 +472,29 @@ export namespace OneSignal {
       eventManager.clearEventHandler(PERMISSION_CHANGED);
     }
 
-    /** Sets a handler that will run whenever a notification is opened by the user. */
-    export function setNotificationClickHandler(
-      handler: (openedEvent: OpenedEvent) => void,
-    ) {
-      if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      isValidCallback(handler);
-
-      RNOneSignal.setNotificationClickHandler();
-      eventManager.setEventHandler<OpenedEvent>(NOTIFICATION_CLICKED, handler);
-    }
-
     /**
-     * Sets the handler to run before displaying a notification while the app is in focus. Use this handler to read notification
-     * data and change it or decide if the notification should show or not.
-     * Note: this runs after the Notification Service Extension which can be used to modify the notification before showing it.
+     * Add listeners for notification click and/or lifecycle events.
+     * @param event 
+     * @param listener 
+     * @returns 
      */
-    export function setNotificationWillShowInForegroundHandler(
-      handler: (event: NotificationReceivedEvent) => void,
-    ) {
+    export function addEventListener<K extends NotificationEventName>(event: K, listener: (event: NotificationEventTypeMap[K]) => void): void {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      isValidCallback(handler);
-
-      RNOneSignal.setNotificationWillShowInForegroundHandler();
-      eventManager.setEventHandler<NotificationReceivedEvent>(
-        NOTIFICATION_WILL_SHOW,
-        handler,
-      );
+      isValidCallback(listener);
+      
+      if (event === "click") {
+        RNOneSignal.addNotificationClickListener();
+        eventManager.setEventHandler<NotificationClickedEvent>(
+          NOTIFICATION_CLICKED, 
+          listener as (event: NotificationClickedEvent) => void
+        );
+      } else if (event === "foregroundWillDisplay") {
+        RNOneSignal.addNotificationForegroundLifecycleListener();
+        eventManager.setEventHandler<NotificationWillDisplayEvent>(
+          NOTIFICATION_WILL_DISPLAY,
+          listener as (event: NotificationWillDisplayEvent) => void
+        );
+      }
     }
 
     /**
@@ -780,8 +776,8 @@ export namespace OneSignal {
 }
 
 export {
-  NotificationReceivedEvent,
-  OpenedEvent,
+  NotificationWillDisplayEvent,
+  NotificationClickedEvent,
   InAppMessage,
   InAppMessageClickEvent,
   InAppMessageWillDisplayEvent, 
@@ -793,7 +789,7 @@ export {
 
 export { default as OSNotification } from './OSNotification';
 export {
-  OpenedEventAction,
-  OpenedEventActionType,
+  ClickedEventAction,
+  ClickedEventActionType,
 } from './models/NotificationEvents';
 export { IosPermissionStatus } from './models/Subscription';
