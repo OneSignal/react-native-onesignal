@@ -254,6 +254,12 @@ RCT_EXPORT_METHOD(removePermissionObserver) {
     }
 }
 
+RCT_REMAP_METHOD(permissionNative,
+            getPermissionNativeResolver:(RCTPromiseResolveBlock)resolve
+            rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(@([OneSignal.Notifications permissionNative]));
+}
+
 RCT_EXPORT_METHOD(addNotificationClickListener) {
     [OneSignal.Notifications addClickListener:self];
 }

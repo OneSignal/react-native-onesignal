@@ -16,7 +16,8 @@ import {
 import { NotificationEventName,
   NotificationEventTypeMap,
   NotificationClickedEvent} from './models/NotificationEvents';
-import { PushSubscription } from './models/Subscription';
+import { PushSubscription, 
+  OSNotificationPermission } from './models/Subscription';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import { OutcomeEvent } from './models/Outcomes';
 import {
@@ -475,12 +476,26 @@ export namespace OneSignal {
       eventManager.clearEventHandler(PERMISSION_CHANGED);
     }
 
+    /** iOS Only.
+     * Returns the enum for the native permission of the device. It will be one of:
+     * OSNotificationPermissionNotDetermined, 
+     * OSNotificationPermissionDenied, 
+     * OSNotificationPermissionAuthorized, 
+     * OSNotificationPermissionProvisional - only available in iOS 12, 
+     * OSNotificationPermissionEphemeral - only available in iOS 14
+     * */
+    export function permissionNative() {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (Platform.OS === 'ios') {
+        return RNOneSignal.permissionNative();
+      } else {
+        return notificationPermission ? OSNotificationPermission.Authorized : OSNotificationPermission.Denied;
+      }
+    }
+
     /**
-     * Add listeners for notification click and/or lifecycle events.
-     * @param event 
-     * @param listener 
-     * @returns 
-     */
+     * Add listeners for notification click and/or lifecycle events. */
     export function addEventListener<K extends NotificationEventName>(event: K, listener: (event: NotificationEventTypeMap[K]) => void): void {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
       isValidCallback(listener);
@@ -503,11 +518,7 @@ export namespace OneSignal {
     }
 
     /**
-     * Remove listeners for notification click and/or lifecycle events.
-     * @param event 
-     * @param listener 
-     * @returns 
-     */
+     * Remove listeners for notification click and/or lifecycle events. */
     export function removeEventListener<K extends NotificationEventName>(event: K, listener: (obj: NotificationEventTypeMap[K]) => void): void {
       if (event === "click") {
         let index = _notificationClickedListeners.indexOf(listener as (event: NotificationClickedEvent) => void);
@@ -819,4 +830,4 @@ export {
   ClickedEventAction,
   ClickedEventActionType,
 } from './models/NotificationEvents';
-export { IosPermissionStatus } from './models/Subscription';
+export { OSNotificationPermission } from './models/Subscription';
