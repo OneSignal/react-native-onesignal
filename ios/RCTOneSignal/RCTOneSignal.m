@@ -79,8 +79,7 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
 }
 
 - (void)onNotificationPermissionDidChange:(BOOL)permission {
-    NSString *permissionString = permission ? @"true" : @"false";
-    [self sendEvent:OSEventString(PermissionChanged) withBody:@{@"permission": permissionString}];
+    [self sendEvent:OSEventString(PermissionChanged) withBody:@{@"permission": @(permission)}];
 }
 
 - (void)onWillDisplayInAppMessage:(OSInAppMessageWillDisplayEvent * _Nonnull)event {
