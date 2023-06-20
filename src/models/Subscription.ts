@@ -3,7 +3,7 @@ export enum OSNotificationPermission {
   Denied,
   Authorized,
   Provisional, // only available in iOS 12
-  Ephemeral // only available in iOS 14
+  Ephemeral, // only available in iOS 14
 }
 
 export interface PushSubscription {

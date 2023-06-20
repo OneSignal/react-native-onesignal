@@ -1,7 +1,7 @@
 name: 🙋‍♂️ Ask a question
 description: Tell us what's on your mind
-title: "[question]: "
-labels: ["question"]
+title: '[question]: '
+labels: ['question']
 # assignees:
 #   - OneSignal/ios-sdk
 body:

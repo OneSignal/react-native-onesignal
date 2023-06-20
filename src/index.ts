@@ -13,11 +13,15 @@ import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
 } from './events/events';
-import { NotificationEventName,
+import {
+  NotificationEventName,
   NotificationEventTypeMap,
-  NotificationClickedEvent} from './models/NotificationEvents';
-import { PushSubscription, 
-  OSNotificationPermission } from './models/Subscription';
+  NotificationClickedEvent,
+} from './models/NotificationEvents';
+import {
+  PushSubscription,
+  OSNotificationPermission,
+} from './models/Subscription';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import { OutcomeEvent } from './models/Outcomes';
 import {
@@ -25,9 +29,9 @@ import {
   InAppMessageEventTypeMap,
   InAppMessageEventName,
   InAppMessageClickEvent,
-  InAppMessageWillDisplayEvent, 
-  InAppMessageDidDisplayEvent, 
-  InAppMessageWillDismissEvent, 
+  InAppMessageWillDisplayEvent,
+  InAppMessageDidDisplayEvent,
+  InAppMessageWillDismissEvent,
   InAppMessageDidDismissEvent,
 } from './models/InAppMessage';
 import { isValidCallback, isNativeModuleLoaded } from './helpers';
@@ -158,9 +162,9 @@ export namespace OneSignal {
   }
 
   export namespace LiveActivities {
-    /** 
-     * Associates a temporary push token with an Activity ID on the OneSignal server. 
-    */
+    /**
+     * Associates a temporary push token with an Activity ID on the OneSignal server.
+     */
     export function enter(
       activityId: string,
       token: string,
@@ -198,9 +202,7 @@ export namespace OneSignal {
   export namespace User {
     export namespace PushSubscription {
       /** Add a callback that fires when the OneSignal subscription state changes. */
-      export function addObserver(
-        handler: (event: PushSubscription) => void,
-      ) {
+      export function addObserver(handler: (event: PushSubscription) => void) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         isValidCallback(handler);
@@ -396,9 +398,13 @@ export namespace OneSignal {
   }
 
   export namespace Notifications {
-    export const _notificationClickedListeners: ((action: NotificationClickedEvent) => void)[] = [];
-    export const _notificationWillDisplayListeners: ((notification: NotificationWillDisplayEvent) => void)[] = [];
-    
+    export const _notificationClickedListeners: ((
+      action: NotificationClickedEvent,
+    ) => void)[] = [];
+    export const _notificationWillDisplayListeners: ((
+      notification: NotificationWillDisplayEvent,
+    ) => void)[] = [];
+
     /**
      * Whether this app has push notification permission. Returns true if the user has accepted permissions,
      * or if the app has ephemeral or provisional permission.
@@ -478,10 +484,10 @@ export namespace OneSignal {
 
     /** iOS Only.
      * Returns the enum for the native permission of the device. It will be one of:
-     * OSNotificationPermissionNotDetermined, 
-     * OSNotificationPermissionDenied, 
-     * OSNotificationPermissionAuthorized, 
-     * OSNotificationPermissionProvisional - only available in iOS 12, 
+     * OSNotificationPermissionNotDetermined,
+     * OSNotificationPermissionDenied,
+     * OSNotificationPermissionAuthorized,
+     * OSNotificationPermissionProvisional - only available in iOS 12,
      * OSNotificationPermissionEphemeral - only available in iOS 14
      * */
     export function permissionNative() {
@@ -490,43 +496,59 @@ export namespace OneSignal {
       if (Platform.OS === 'ios') {
         return RNOneSignal.permissionNative();
       } else {
-        return notificationPermission ? OSNotificationPermission.Authorized : OSNotificationPermission.Denied;
+        return notificationPermission
+          ? OSNotificationPermission.Authorized
+          : OSNotificationPermission.Denied;
       }
     }
 
     /**
      * Add listeners for notification click and/or lifecycle events. */
-    export function addEventListener<K extends NotificationEventName>(event: K, listener: (event: NotificationEventTypeMap[K]) => void): void {
+    export function addEventListener<K extends NotificationEventName>(
+      event: K,
+      listener: (event: NotificationEventTypeMap[K]) => void,
+    ): void {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
       isValidCallback(listener);
 
-      if (event === "click") {
-        _notificationClickedListeners.push(listener as (event: NotificationClickedEvent) => void);
+      if (event === 'click') {
+        _notificationClickedListeners.push(
+          listener as (event: NotificationClickedEvent) => void,
+        );
         RNOneSignal.addNotificationClickListener();
         eventManager.setEventHandler<NotificationClickedEvent>(
           NOTIFICATION_CLICKED,
-          listener as (event: NotificationClickedEvent) => void
+          listener as (event: NotificationClickedEvent) => void,
         );
-      } else if (event === "foregroundWillDisplay") {
-        _notificationWillDisplayListeners.push(listener as (event: NotificationWillDisplayEvent) => void);
+      } else if (event === 'foregroundWillDisplay') {
+        _notificationWillDisplayListeners.push(
+          listener as (event: NotificationWillDisplayEvent) => void,
+        );
         RNOneSignal.addNotificationForegroundLifecycleListener();
         eventManager.setEventHandler<NotificationWillDisplayEvent>(
           NOTIFICATION_WILL_DISPLAY,
-          listener as (event: NotificationWillDisplayEvent) => void
+          listener as (event: NotificationWillDisplayEvent) => void,
         );
       }
     }
 
     /**
      * Remove listeners for notification click and/or lifecycle events. */
-    export function removeEventListener<K extends NotificationEventName>(event: K, listener: (obj: NotificationEventTypeMap[K]) => void): void {
-      if (event === "click") {
-        let index = _notificationClickedListeners.indexOf(listener as (event: NotificationClickedEvent) => void);
+    export function removeEventListener<K extends NotificationEventName>(
+      event: K,
+      listener: (obj: NotificationEventTypeMap[K]) => void,
+    ): void {
+      if (event === 'click') {
+        let index = _notificationClickedListeners.indexOf(
+          listener as (event: NotificationClickedEvent) => void,
+        );
         if (index !== -1) {
           _notificationClickedListeners.splice(index, 1);
         }
-      } else if (event === "foregroundWillDisplay") {
-        let index = _notificationWillDisplayListeners.indexOf(listener as (event: NotificationWillDisplayEvent) => void);
+      } else if (event === 'foregroundWillDisplay') {
+        let index = _notificationWillDisplayListeners.indexOf(
+          listener as (event: NotificationWillDisplayEvent) => void,
+        );
         if (index !== -1) {
           _notificationWillDisplayListeners.splice(index, 1);
         }
@@ -580,63 +602,81 @@ export namespace OneSignal {
   }
 
   export namespace InAppMessages {
-    export const _inAppMessageClickListeners: ((action: InAppMessageClickEvent) => void)[] = [];
-    export const _willDisplayInAppMessageListeners: ((event: InAppMessageWillDisplayEvent) => void) [] = [];
-    export const _didDisplayInAppMessageListeners: ((event: InAppMessageDidDisplayEvent) => void) [] = [];
-    export const _willDismissInAppMessageListeners: ((event: InAppMessageWillDismissEvent) => void) [] = [];
-    export const _didDismissInAppMessageListeners: ((event: InAppMessageDidDismissEvent) => void) [] = [];
+    export const _inAppMessageClickListeners: ((
+      action: InAppMessageClickEvent,
+    ) => void)[] = [];
+    export const _willDisplayInAppMessageListeners: ((
+      event: InAppMessageWillDisplayEvent,
+    ) => void)[] = [];
+    export const _didDisplayInAppMessageListeners: ((
+      event: InAppMessageDidDisplayEvent,
+    ) => void)[] = [];
+    export const _willDismissInAppMessageListeners: ((
+      event: InAppMessageWillDismissEvent,
+    ) => void)[] = [];
+    export const _didDismissInAppMessageListeners: ((
+      event: InAppMessageDidDismissEvent,
+    ) => void)[] = [];
 
     /**
      * Add listeners for notification click and/or lifecycle events.
      */
-    export function addEventListener<K extends InAppMessageEventName>(event: K, listener: (event: InAppMessageEventTypeMap[K]) => void): void {
+    export function addEventListener<K extends InAppMessageEventName>(
+      event: K,
+      listener: (event: InAppMessageEventTypeMap[K]) => void,
+    ): void {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return;
       }
 
-      if (event === "click") {
+      if (event === 'click') {
         isValidCallback(listener);
-        _inAppMessageClickListeners.push(listener as (event: InAppMessageClickEvent) => void);
+        _inAppMessageClickListeners.push(
+          listener as (event: InAppMessageClickEvent) => void,
+        );
         RNOneSignal.addInAppMessageClickListener();
         eventManager.setEventHandler<InAppMessageClickEvent>(
           IN_APP_MESSAGE_CLICKED,
-          listener as (event: InAppMessageClickEvent) => void
+          listener as (event: InAppMessageClickEvent) => void,
         );
-      }
-      else{
-        if (event === "willDisplay") {
+      } else {
+        if (event === 'willDisplay') {
           isValidCallback(listener);
-          _willDisplayInAppMessageListeners.push(listener as (event: InAppMessageWillDisplayEvent) => void);
+          _willDisplayInAppMessageListeners.push(
+            listener as (event: InAppMessageWillDisplayEvent) => void,
+          );
           eventManager.setEventHandler<InAppMessageWillDisplayEvent>(
             IN_APP_MESSAGE_WILL_DISPLAY,
-            listener as (event: InAppMessageWillDisplayEvent) => void
+            listener as (event: InAppMessageWillDisplayEvent) => void,
           );
-        }
-        else if (event === "didDisplay") {
+        } else if (event === 'didDisplay') {
           isValidCallback(listener);
-          _didDisplayInAppMessageListeners.push(listener as (event: InAppMessageDidDisplayEvent) => void);
+          _didDisplayInAppMessageListeners.push(
+            listener as (event: InAppMessageDidDisplayEvent) => void,
+          );
           eventManager.setEventHandler<InAppMessageDidDisplayEvent>(
             IN_APP_MESSAGE_DID_DISPLAY,
-            listener as (event: InAppMessageDidDisplayEvent) => void
+            listener as (event: InAppMessageDidDisplayEvent) => void,
           );
-        }
-        else if (event === "willDismiss"){
+        } else if (event === 'willDismiss') {
           isValidCallback(listener);
-          _willDismissInAppMessageListeners.push(listener as (event: InAppMessageWillDismissEvent) => void);
+          _willDismissInAppMessageListeners.push(
+            listener as (event: InAppMessageWillDismissEvent) => void,
+          );
           eventManager.setEventHandler<InAppMessageWillDismissEvent>(
             IN_APP_MESSAGE_WILL_DISMISS,
-            listener as (event: InAppMessageWillDismissEvent) => void
+            listener as (event: InAppMessageWillDismissEvent) => void,
           );
-        }
-        else if (event === "didDismiss"){
+        } else if (event === 'didDismiss') {
           isValidCallback(listener);
-          _didDismissInAppMessageListeners.push(listener as (event: InAppMessageDidDismissEvent) => void);
+          _didDismissInAppMessageListeners.push(
+            listener as (event: InAppMessageDidDismissEvent) => void,
+          );
           eventManager.setEventHandler<InAppMessageDidDismissEvent>(
             IN_APP_MESSAGE_DID_DISMISS,
-            listener as (event: InAppMessageDidDismissEvent) => void
+            listener as (event: InAppMessageDidDismissEvent) => void,
           );
-        }
-        else {
+        } else {
           return;
         }
         RNOneSignal.addInAppMessagesLifecycleListener();
@@ -646,36 +686,47 @@ export namespace OneSignal {
     /**
      * Remove listeners for In-App Message click and/or lifecycle events.
      */
-    export function removeEventListener<K extends InAppMessageEventName>(event: K, listener: (obj: InAppMessageEventTypeMap[K]) => void): void {
-      if (event === "click") {
+    export function removeEventListener<K extends InAppMessageEventName>(
+      event: K,
+      listener: (obj: InAppMessageEventTypeMap[K]) => void,
+    ): void {
+      if (event === 'click') {
         const index = _inAppMessageClickListeners.indexOf(listener);
         if (index !== -1) {
-            _inAppMessageClickListeners.splice(index, 1);
+          _inAppMessageClickListeners.splice(index, 1);
         }
-      } else {        
-          if (event === "willDisplay") {
-              let index = _willDisplayInAppMessageListeners.indexOf(listener as (event: InAppMessageWillDisplayEvent) => void);
-              if (index !== -1) {
-                  _willDisplayInAppMessageListeners.splice(index, 1);
-              }
-          } else if (event === "didDisplay") {
-              let index = _didDisplayInAppMessageListeners.indexOf(listener as (event: InAppMessageDidDisplayEvent) => void);
-              if (index !== -1) {
-                  _willDisplayInAppMessageListeners.splice(index, 1);
-              }
-          } else if (event === "willDismiss") {
-              let index = _willDismissInAppMessageListeners.indexOf(listener as (event: InAppMessageWillDismissEvent) => void);
-              if (index !== -1) {
-                  _willDismissInAppMessageListeners.splice(index, 1);
-              }
-          } else if (event === "didDismiss") {
-              let index = _didDismissInAppMessageListeners.indexOf(listener as (event: InAppMessageDidDismissEvent) => void);
-              if (index !== -1) {
-                  _didDismissInAppMessageListeners.splice(index, 1);
-              }
-          } else {
-              return;
+      } else {
+        if (event === 'willDisplay') {
+          let index = _willDisplayInAppMessageListeners.indexOf(
+            listener as (event: InAppMessageWillDisplayEvent) => void,
+          );
+          if (index !== -1) {
+            _willDisplayInAppMessageListeners.splice(index, 1);
           }
+        } else if (event === 'didDisplay') {
+          let index = _didDisplayInAppMessageListeners.indexOf(
+            listener as (event: InAppMessageDidDisplayEvent) => void,
+          );
+          if (index !== -1) {
+            _willDisplayInAppMessageListeners.splice(index, 1);
+          }
+        } else if (event === 'willDismiss') {
+          let index = _willDismissInAppMessageListeners.indexOf(
+            listener as (event: InAppMessageWillDismissEvent) => void,
+          );
+          if (index !== -1) {
+            _willDismissInAppMessageListeners.splice(index, 1);
+          }
+        } else if (event === 'didDismiss') {
+          let index = _didDismissInAppMessageListeners.indexOf(
+            listener as (event: InAppMessageDidDismissEvent) => void,
+          );
+          if (index !== -1) {
+            _didDismissInAppMessageListeners.splice(index, 1);
+          }
+        } else {
+          return;
+        }
       }
     }
 
@@ -700,9 +751,7 @@ export namespace OneSignal {
      * Add multiple triggers for the current user. Triggers are currently explicitly used to determine whether a specific IAM should
      * be displayed to the user.
      */
-    export function addTriggers(triggers: {
-      [key: string]: string;
-    }) {
+    export function addTriggers(triggers: { [key: string]: string }) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       let keys = Object.keys(triggers);
@@ -818,9 +867,9 @@ export {
   NotificationClickedEvent,
   InAppMessage,
   InAppMessageClickEvent,
-  InAppMessageWillDisplayEvent, 
-  InAppMessageDidDisplayEvent, 
-  InAppMessageWillDismissEvent, 
+  InAppMessageWillDisplayEvent,
+  InAppMessageDidDisplayEvent,
+  InAppMessageWillDismissEvent,
   InAppMessageDidDismissEvent,
   OutcomeEvent,
 };
