@@ -17,6 +17,7 @@ import {
   NotificationEventName,
   NotificationEventTypeMap,
   NotificationClickedEvent,
+  PermissionChangedEvent
 } from './models/NotificationEvents';
 import {
   PushSubscription,
@@ -53,7 +54,7 @@ let pushSubscription: PushSubscription = {
 };
 
 async function addPermissionObserver() {
-  OneSignal.Notifications.addPermissionObserver((granted) => {
+  OneSignal.Notifications.addEventListener('permissionChange', (granted) => {
     notificationPermission = granted.permission;
   });
 
@@ -61,7 +62,7 @@ async function addPermissionObserver() {
 }
 
 async function addPushSubscriptionObserver() {
-  OneSignal.User.PushSubscription.addObserver((subscriptionChange) => {
+  OneSignal.User.PushSubscription.addEventListener('change', (subscriptionChange) => {
     pushSubscription = subscriptionChange;
   });
 
@@ -202,23 +203,23 @@ export namespace OneSignal {
   export namespace User {
     export namespace PushSubscription {
       /** Add a callback that fires when the OneSignal subscription state changes. */
-      export function addObserver(handler: (event: PushSubscription) => void) {
+      export function addEventListener(event: 'change', listener: (event: PushSubscription) => void) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-        isValidCallback(handler);
+        isValidCallback(listener);
         RNOneSignal.addPushSubscriptionObserver();
         eventManager.addEventHandler<PushSubscription>(
           SUBSCRIPTION_CHANGED,
-          handler,
+          listener,
         );
       }
 
       /** Clears current subscription observers. */
-      export function removeObserver() {
+      export function removeEventListener(event: 'change', listener: (event: PushSubscription) => void) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.removePushSubscriptionObserver();
-        eventManager.clearEventHandler(SUBSCRIPTION_CHANGED);
+        eventManager.clearEventHandler(SUBSCRIPTION_CHANGED, listener);
       }
 
       /** The readonly push subscription ID */
@@ -460,28 +461,6 @@ export namespace OneSignal {
       }
     }
 
-    /** Add a callback that fires when the native push permission changes. */
-    export function addPermissionObserver(
-      observer: (event: { permission: boolean }) => void,
-    ) {
-      if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      isValidCallback(observer);
-      RNOneSignal.addPermissionObserver();
-      eventManager.addEventHandler<{ permission: boolean }>(
-        PERMISSION_CHANGED,
-        observer,
-      );
-    }
-
-    /** Remove permission observer that have been previously added. */
-    export function removePermissionObserver() {
-      if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      RNOneSignal.removePermissionObserver();
-      eventManager.clearEventHandler(PERMISSION_CHANGED);
-    }
-
     /** iOS Only.
      * Returns the enum for the native permission of the device. It will be one of:
      * OSNotificationPermissionNotDetermined,
@@ -529,6 +508,13 @@ export namespace OneSignal {
           NOTIFICATION_WILL_DISPLAY,
           listener as (event: NotificationWillDisplayEvent) => void,
         );
+      } else if (event === "permissionChange") {
+        isValidCallback(listener);
+        RNOneSignal.addPermissionObserver();
+        eventManager.addEventHandler<{ permission: boolean }>(
+          PERMISSION_CHANGED,
+          listener as (event: PermissionChangedEvent) => void,
+        );
       }
     }
 
@@ -552,6 +538,9 @@ export namespace OneSignal {
         if (index !== -1) {
           _notificationWillDisplayListeners.splice(index, 1);
         }
+      } else if (event === "permissionChange") {
+        RNOneSignal.removePermissionObserver();
+        eventManager.clearEventHandler(PERMISSION_CHANGED, listener);
       } else {
         return;
       }
@@ -619,7 +608,7 @@ export namespace OneSignal {
     ) => void)[] = [];
 
     /**
-     * Add listeners for notification click and/or lifecycle events.
+     * Add listeners for In-App Message click and/or lifecycle events.
      */
     export function addEventListener<K extends InAppMessageEventName>(
       event: K,
