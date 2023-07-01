@@ -17,7 +17,7 @@ import {
   NotificationEventName,
   NotificationEventTypeMap,
   NotificationClickedEvent,
-  PermissionChangedEvent
+  PermissionChangedEvent,
 } from './models/NotificationEvents';
 import {
   PushSubscription,
@@ -62,9 +62,12 @@ async function addPermissionObserver() {
 }
 
 async function addPushSubscriptionObserver() {
-  OneSignal.User.PushSubscription.addEventListener('change', (subscriptionChange) => {
-    pushSubscription = subscriptionChange;
-  });
+  OneSignal.User.PushSubscription.addEventListener(
+    'change',
+    (subscriptionChange) => {
+      pushSubscription = subscriptionChange;
+    },
+  );
 
   pushSubscription.id = await RNOneSignal.getPushSubscriptionId();
   pushSubscription.token = await RNOneSignal.getPushSubscriptionToken();
@@ -203,7 +206,10 @@ export namespace OneSignal {
   export namespace User {
     export namespace PushSubscription {
       /** Add a callback that fires when the OneSignal subscription state changes. */
-      export function addEventListener(event: 'change', listener: (event: PushSubscription) => void) {
+      export function addEventListener(
+        event: 'change',
+        listener: (event: PushSubscription) => void,
+      ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         isValidCallback(listener);
@@ -215,7 +221,10 @@ export namespace OneSignal {
       }
 
       /** Clears current subscription observers. */
-      export function removeEventListener(event: 'change', listener: (event: PushSubscription) => void) {
+      export function removeEventListener(
+        event: 'change',
+        listener: (event: PushSubscription) => void,
+      ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.removePushSubscriptionObserver();
@@ -508,7 +517,7 @@ export namespace OneSignal {
           NOTIFICATION_WILL_DISPLAY,
           listener as (event: NotificationWillDisplayEvent) => void,
         );
-      } else if (event === "permissionChange") {
+      } else if (event === 'permissionChange') {
         isValidCallback(listener);
         RNOneSignal.addPermissionObserver();
         eventManager.addEventHandler<{ permission: boolean }>(
@@ -538,7 +547,7 @@ export namespace OneSignal {
         if (index !== -1) {
           _notificationWillDisplayListeners.splice(index, 1);
         }
-      } else if (event === "permissionChange") {
+      } else if (event === 'permissionChange') {
         RNOneSignal.removePermissionObserver();
         eventManager.clearEventHandler(PERMISSION_CHANGED, listener);
       } else {

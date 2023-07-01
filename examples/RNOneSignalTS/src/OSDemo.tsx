@@ -89,11 +89,14 @@ class OSDemo extends React.Component<Props, State> {
       this.OSLog('OneSignal: did dismiss IAM: ', event);
     });
 
-    OneSignal.User.PushSubscription.addEventListener('change', (subscription) => {
-      this.OSLog('OneSignal: subscription changed:', subscription);
-    });
+    OneSignal.User.PushSubscription.addEventListener(
+      'change',
+      (subscription) => {
+        this.OSLog('OneSignal: subscription changed:', subscription);
+      },
+    );
 
-    OneSignal.Notifications.addEventListener('permissionChange', (granted) =>{
+    OneSignal.Notifications.addEventListener('permissionChange', (granted) => {
       this.OSLog('OneSignal: permission changed:', granted.permission);
     });
   }
