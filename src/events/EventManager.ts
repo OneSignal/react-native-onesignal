@@ -93,18 +93,19 @@ export default class EventManager {
    * @returns void
    */
   clearEventHandler(eventName: string, handler: any) {
-    let handlerArray = this.eventHandlerArrayMap.get(eventName);
-    if (handlerArray) {
-      const index = handlerArray.indexOf(handler);
-      if (index !== -1) {
-        handlerArray.splice(index, 1);
-        if (handlerArray.length === 0) {
-          this.eventHandlerArrayMap.delete(eventName);
-        }
-      }
+    const handlerArray = this.eventHandlerArrayMap.get(eventName);
+    if (!handlerArray) {
+      return;
+    }
+    const index = handlerArray.indexOf(handler);
+    if (index !== -1) {
+      handlerArray.splice(index, 1);
+    }
+    if (handlerArray.length === 0) {
+      this.eventHandlerArrayMap.delete(eventName);
     }
   }
-
+  
   // returns an event listener with the js to native mapping
   generateEventListener(eventName: string): EmitterSubscription {
     const addListenerCallback = (payload: Object) => {
