@@ -105,7 +105,7 @@ export default class EventManager {
       this.eventHandlerArrayMap.delete(eventName);
     }
   }
-  
+
   // returns an event listener with the js to native mapping
   generateEventListener(eventName: string): EmitterSubscription {
     const addListenerCallback = (payload: Object) => {
