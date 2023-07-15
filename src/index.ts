@@ -21,7 +21,7 @@ import {
 import {
   PushSubscriptionState,
   OSNotificationPermission,
-  PushSubscriptionChangedState
+  PushSubscriptionChangedState,
 } from './models/Subscription';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import { OutcomeEvent } from './models/Outcomes';
@@ -472,7 +472,7 @@ export namespace OneSignal {
      * */
     export function permissionNative(): Promise<OSNotificationPermission> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
-        return Promise.reject(new Error('OneSignal native module not loaded'));;
+        return Promise.reject(new Error('OneSignal native module not loaded'));
       }
 
       if (Platform.OS === 'ios') {
@@ -796,7 +796,5 @@ export {
 };
 
 export { default as OSNotification } from './OSNotification';
-export {
-  NotificationClickResult,
-} from './models/NotificationEvents';
+export { NotificationClickResult } from './models/NotificationEvents';
 export { OSNotificationPermission } from './models/Subscription';

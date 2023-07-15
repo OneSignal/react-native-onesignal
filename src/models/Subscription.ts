@@ -13,6 +13,6 @@ export interface PushSubscriptionState {
 }
 
 export interface PushSubscriptionChangedState {
-  previous: PushSubscriptionState
-  current: PushSubscriptionState
+  previous: PushSubscriptionState;
+  current: PushSubscriptionState;
 }

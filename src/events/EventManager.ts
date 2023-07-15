@@ -99,7 +99,9 @@ export default class EventManager {
       if (handlerArray) {
         if (eventName === NOTIFICATION_WILL_DISPLAY) {
           handlerArray.forEach((handler) => {
-            handler(new NotificationWillDisplayEvent(payload as OSNotification));
+            handler(
+              new NotificationWillDisplayEvent(payload as OSNotification),
+            );
           });
         } else {
           handlerArray.forEach((handler) => {
@@ -110,7 +112,7 @@ export default class EventManager {
     };
 
     return this.oneSignalEventEmitter.addListener(
-      eventName, 
+      eventName,
       addListenerCallback,
     );
   }
