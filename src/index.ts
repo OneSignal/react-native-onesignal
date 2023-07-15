@@ -16,8 +16,7 @@ import {
 import {
   NotificationEventName,
   NotificationEventTypeMap,
-  NotificationClickedEvent,
-  PermissionChangedEvent,
+  NotificationClickEvent,
 } from './models/NotificationEvents';
 import {
   PushSubscriptionState,
@@ -54,9 +53,9 @@ let pushSubscription: PushSubscriptionState = {
   optedIn: false,
 };
 
-async function addPermissionObserver() {
+async function _addPermissionObserver() {
   OneSignal.Notifications.addEventListener('permissionChange', (granted) => {
-    notificationPermission = granted.permission;
+    notificationPermission = granted;
   });
 
   notificationPermission = await RNOneSignal.hasNotificationPermission();
@@ -82,7 +81,7 @@ export namespace OneSignal {
 
     RNOneSignal.initialize(appId);
 
-    addPermissionObserver();
+    _addPermissionObserver();
     _addPushSubscriptionObserver();
   }
 
@@ -408,13 +407,6 @@ export namespace OneSignal {
   }
 
   export namespace Notifications {
-    export const _notificationClickedListeners: ((
-      action: NotificationClickedEvent,
-    ) => void)[] = [];
-    export const _notificationWillDisplayListeners: ((
-      notification: NotificationWillDisplayEvent,
-    ) => void)[] = [];
-
     /**
      * Whether this app has push notification permission. Returns true if the user has accepted permissions,
      * or if the app has ephemeral or provisional permission.
@@ -478,15 +470,17 @@ export namespace OneSignal {
      * OSNotificationPermissionProvisional - only available in iOS 12,
      * OSNotificationPermissionEphemeral - only available in iOS 14
      * */
-    export function permissionNative() {
-      if (!isNativeModuleLoaded(RNOneSignal)) return;
+    export function permissionNative(): Promise<OSNotificationPermission> {
+      if (!isNativeModuleLoaded(RNOneSignal)) {
+        return Promise.reject(new Error('OneSignal native module not loaded'));;
+      }
 
       if (Platform.OS === 'ios') {
         return RNOneSignal.permissionNative();
       } else {
         return notificationPermission
-          ? OSNotificationPermission.Authorized
-          : OSNotificationPermission.Denied;
+          ? Promise.resolve(OSNotificationPermission.Authorized)
+          : Promise.resolve(OSNotificationPermission.Denied);
       }
     }
 
@@ -500,29 +494,23 @@ export namespace OneSignal {
       isValidCallback(listener);
 
       if (event === 'click') {
-        _notificationClickedListeners.push(
-          listener as (event: NotificationClickedEvent) => void,
-        );
         RNOneSignal.addNotificationClickListener();
-        eventManager.setEventHandler<NotificationClickedEvent>(
+        eventManager.addEventHandler<NotificationClickEvent>(
           NOTIFICATION_CLICKED,
-          listener as (event: NotificationClickedEvent) => void,
+          listener as (event: NotificationClickEvent) => void,
         );
       } else if (event === 'foregroundWillDisplay') {
-        _notificationWillDisplayListeners.push(
-          listener as (event: NotificationWillDisplayEvent) => void,
-        );
         RNOneSignal.addNotificationForegroundLifecycleListener();
-        eventManager.setEventHandler<NotificationWillDisplayEvent>(
+        eventManager.addEventHandler<NotificationWillDisplayEvent>(
           NOTIFICATION_WILL_DISPLAY,
           listener as (event: NotificationWillDisplayEvent) => void,
         );
       } else if (event === 'permissionChange') {
         isValidCallback(listener);
         RNOneSignal.addPermissionObserver();
-        eventManager.addEventHandler<{ permission: boolean }>(
+        eventManager.addEventHandler<boolean>(
           PERMISSION_CHANGED,
-          listener as (event: PermissionChangedEvent) => void,
+          listener as (event: boolean) => void,
         );
       }
     }
@@ -531,24 +519,13 @@ export namespace OneSignal {
      * Remove listeners for notification click and/or lifecycle events. */
     export function removeEventListener<K extends NotificationEventName>(
       event: K,
-      listener: (obj: NotificationEventTypeMap[K]) => void,
+      listener: (event: NotificationEventTypeMap[K]) => void,
     ): void {
       if (event === 'click') {
-        let index = _notificationClickedListeners.indexOf(
-          listener as (event: NotificationClickedEvent) => void,
-        );
-        if (index !== -1) {
-          _notificationClickedListeners.splice(index, 1);
-        }
+        eventManager.clearEventHandler(NOTIFICATION_CLICKED, listener);
       } else if (event === 'foregroundWillDisplay') {
-        let index = _notificationWillDisplayListeners.indexOf(
-          listener as (event: NotificationWillDisplayEvent) => void,
-        );
-        if (index !== -1) {
-          _notificationWillDisplayListeners.splice(index, 1);
-        }
+        eventManager.clearEventHandler(NOTIFICATION_WILL_DISPLAY, listener);
       } else if (event === 'permissionChange') {
-        RNOneSignal.removePermissionObserver();
         eventManager.clearEventHandler(PERMISSION_CHANGED, listener);
       } else {
         return;
@@ -808,7 +785,7 @@ export namespace OneSignal {
 
 export {
   NotificationWillDisplayEvent,
-  NotificationClickedEvent,
+  NotificationClickEvent,
   InAppMessage,
   InAppMessageClickEvent,
   InAppMessageWillDisplayEvent,
@@ -820,7 +797,6 @@ export {
 
 export { default as OSNotification } from './OSNotification';
 export {
-  ClickedEventAction,
-  ClickedEventActionType,
+  NotificationClickResult,
 } from './models/NotificationEvents';
 export { OSNotificationPermission } from './models/Subscription';

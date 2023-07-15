@@ -7,24 +7,17 @@ export type NotificationEventName =
   | 'permissionChange';
 
 export type NotificationEventTypeMap = {
-  click: NotificationClickedEvent;
+  click: NotificationClickEvent;
   foregroundWillDisplay: NotificationWillDisplayEvent;
-  permissionChange: PermissionChangedEvent;
+  permissionChange: boolean;
 };
 
-// 0 = NotificationClicked, 1 = ButtonClicked
-export type ClickedEventActionType = 0 | 1;
-
-export interface NotificationClickedEvent {
-  action: ClickedEventAction;
+export interface NotificationClickEvent {
+  result: NotificationClickResult;
   notification: OSNotification;
 }
 
-export interface ClickedEventAction {
+export interface NotificationClickResult {
   actionId?: string;
-  type: ClickedEventActionType;
-}
-
-export interface PermissionChangedEvent {
-  permission: boolean;
+  url?: string;
 }

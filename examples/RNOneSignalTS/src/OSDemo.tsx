@@ -97,7 +97,7 @@ class OSDemo extends React.Component<Props, State> {
     );
 
     OneSignal.Notifications.addEventListener('permissionChange', (granted) => {
-      this.OSLog('OneSignal: permission changed:', granted.permission);
+      this.OSLog('OneSignal: permission changed:', granted);
     });
   }
 
