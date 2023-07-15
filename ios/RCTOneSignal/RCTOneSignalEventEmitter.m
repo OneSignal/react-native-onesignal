@@ -9,8 +9,6 @@
     BOOL _hasListeners;
     BOOL _hasSetSubscriptionObserver;
     BOOL _hasSetPermissionObserver;
-    BOOL _hasSetEmailSubscriptionObserver;
-    BOOL _hasSetSMSSubscriptionObserver;
     BOOL _hasAddedNotificationClickListener;
     BOOL _hasAddedNotificationLifecycleListener;
     BOOL _hasAddedInAppMessageClickListener;
@@ -320,20 +318,6 @@ RCT_EXPORT_METHOD(removePushSubscriptionObserver) {
     if (_hasSetSubscriptionObserver) {
         [OneSignal.User.pushSubscription removeObserver:[RCTOneSignal sharedInstance]];
         _hasSetSubscriptionObserver = false;
-    }
-}
-
-RCT_EXPORT_METHOD(addEmail) {
-    if (!_hasSetEmailSubscriptionObserver) {
-        [OneSignal.User addEmail:[RCTOneSignal sharedInstance]];
-        _hasSetEmailSubscriptionObserver = true;
-    }
-}
-
-RCT_EXPORT_METHOD(removeEmail) {
-    if (_hasSetEmailSubscriptionObserver) {
-        [OneSignal.User removeEmail:[RCTOneSignal sharedInstance]];
-        _hasSetEmailSubscriptionObserver = false;
     }
 }
 
