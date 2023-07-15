@@ -265,7 +265,7 @@ Add an observer when permission status changes. You can call `removeEventListene
 ```typescript
 // Add an observer
 OneSignal.Notifications.addEventListener('permissionChange', (granted) =>{
-  console.log('OneSignal: permission changed:', granted.permission);
+  console.log('OneSignal: permission changed:', granted);
 });
 
 // Remove previously added observer
@@ -375,15 +375,12 @@ The Debug namespace is accessible via `OneSignal.Debug` and provide access to de
 
 # Limitations
 
-**General**
-
-- Recommend using only in development and staging environments for Alpha releases
-- Aliases will be available in a future release
-- Outcomes will be available in a future release
-- Users are deleted when the last Subscription (push, email, or sms) is removed
+- This is a Beta release so please test thorougly prior to production use.
+- Changing app IDs is not supported.
 - Any `User` namespace calls must be invoked **after** initialization. Example: `OneSignal.User.addTag("tag", "2")`
+- In the iOS SDK, the user state is only refreshed from the server when a new session is started (cold start or backgrounded for over 30 seconds) or when the user is logged in. This is by design.
 
 # Known issues
 
 - Identity Verification
-  - We will be introducing JWT in a follow-up Beta release
+  - We will be introducing JWT in a follow-up Alpha or Beta release.
