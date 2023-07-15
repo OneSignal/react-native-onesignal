@@ -228,7 +228,6 @@ export namespace OneSignal {
       ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-        RNOneSignal.removePushSubscriptionObserver();
         eventManager.clearEventHandler(SUBSCRIPTION_CHANGED, listener);
       }
 
