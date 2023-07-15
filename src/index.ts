@@ -600,22 +600,6 @@ export namespace OneSignal {
   }
 
   export namespace InAppMessages {
-    export const _inAppMessageClickListeners: ((
-      action: InAppMessageClickEvent,
-    ) => void)[] = [];
-    export const _willDisplayInAppMessageListeners: ((
-      event: InAppMessageWillDisplayEvent,
-    ) => void)[] = [];
-    export const _didDisplayInAppMessageListeners: ((
-      event: InAppMessageDidDisplayEvent,
-    ) => void)[] = [];
-    export const _willDismissInAppMessageListeners: ((
-      event: InAppMessageWillDismissEvent,
-    ) => void)[] = [];
-    export const _didDismissInAppMessageListeners: ((
-      event: InAppMessageDidDismissEvent,
-    ) => void)[] = [];
-
     /**
      * Add listeners for In-App Message click and/or lifecycle events.
      */
@@ -629,48 +613,33 @@ export namespace OneSignal {
 
       if (event === 'click') {
         isValidCallback(listener);
-        _inAppMessageClickListeners.push(
-          listener as (event: InAppMessageClickEvent) => void,
-        );
         RNOneSignal.addInAppMessageClickListener();
-        eventManager.setEventHandler<InAppMessageClickEvent>(
+        eventManager.addEventHandler<InAppMessageClickEvent>(
           IN_APP_MESSAGE_CLICKED,
           listener as (event: InAppMessageClickEvent) => void,
         );
       } else {
         if (event === 'willDisplay') {
           isValidCallback(listener);
-          _willDisplayInAppMessageListeners.push(
-            listener as (event: InAppMessageWillDisplayEvent) => void,
-          );
-          eventManager.setEventHandler<InAppMessageWillDisplayEvent>(
+          eventManager.addEventHandler<InAppMessageWillDisplayEvent>(
             IN_APP_MESSAGE_WILL_DISPLAY,
             listener as (event: InAppMessageWillDisplayEvent) => void,
           );
         } else if (event === 'didDisplay') {
           isValidCallback(listener);
-          _didDisplayInAppMessageListeners.push(
-            listener as (event: InAppMessageDidDisplayEvent) => void,
-          );
-          eventManager.setEventHandler<InAppMessageDidDisplayEvent>(
+          eventManager.addEventHandler<InAppMessageDidDisplayEvent>(
             IN_APP_MESSAGE_DID_DISPLAY,
             listener as (event: InAppMessageDidDisplayEvent) => void,
           );
         } else if (event === 'willDismiss') {
           isValidCallback(listener);
-          _willDismissInAppMessageListeners.push(
-            listener as (event: InAppMessageWillDismissEvent) => void,
-          );
-          eventManager.setEventHandler<InAppMessageWillDismissEvent>(
+          eventManager.addEventHandler<InAppMessageWillDismissEvent>(
             IN_APP_MESSAGE_WILL_DISMISS,
             listener as (event: InAppMessageWillDismissEvent) => void,
           );
         } else if (event === 'didDismiss') {
           isValidCallback(listener);
-          _didDismissInAppMessageListeners.push(
-            listener as (event: InAppMessageDidDismissEvent) => void,
-          );
-          eventManager.setEventHandler<InAppMessageDidDismissEvent>(
+          eventManager.addEventHandler<InAppMessageDidDismissEvent>(
             IN_APP_MESSAGE_DID_DISMISS,
             listener as (event: InAppMessageDidDismissEvent) => void,
           );
@@ -689,39 +658,16 @@ export namespace OneSignal {
       listener: (obj: InAppMessageEventTypeMap[K]) => void,
     ): void {
       if (event === 'click') {
-        const index = _inAppMessageClickListeners.indexOf(listener);
-        if (index !== -1) {
-          _inAppMessageClickListeners.splice(index, 1);
-        }
+        eventManager.clearEventHandler(IN_APP_MESSAGE_CLICKED, listener);
       } else {
         if (event === 'willDisplay') {
-          let index = _willDisplayInAppMessageListeners.indexOf(
-            listener as (event: InAppMessageWillDisplayEvent) => void,
-          );
-          if (index !== -1) {
-            _willDisplayInAppMessageListeners.splice(index, 1);
-          }
+          eventManager.clearEventHandler(IN_APP_MESSAGE_WILL_DISPLAY, listener);
         } else if (event === 'didDisplay') {
-          let index = _didDisplayInAppMessageListeners.indexOf(
-            listener as (event: InAppMessageDidDisplayEvent) => void,
-          );
-          if (index !== -1) {
-            _willDisplayInAppMessageListeners.splice(index, 1);
-          }
+          eventManager.clearEventHandler(IN_APP_MESSAGE_DID_DISPLAY, listener);
         } else if (event === 'willDismiss') {
-          let index = _willDismissInAppMessageListeners.indexOf(
-            listener as (event: InAppMessageWillDismissEvent) => void,
-          );
-          if (index !== -1) {
-            _willDismissInAppMessageListeners.splice(index, 1);
-          }
+          eventManager.clearEventHandler(IN_APP_MESSAGE_WILL_DISMISS, listener);
         } else if (event === 'didDismiss') {
-          let index = _didDismissInAppMessageListeners.indexOf(
-            listener as (event: InAppMessageDidDismissEvent) => void,
-          );
-          if (index !== -1) {
-            _didDismissInAppMessageListeners.splice(index, 1);
-          }
+          eventManager.clearEventHandler(IN_APP_MESSAGE_DID_DISMISS, listener);
         } else {
           return;
         }
