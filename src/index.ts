@@ -20,8 +20,9 @@ import {
   PermissionChangedEvent,
 } from './models/NotificationEvents';
 import {
-  PushSubscription,
+  PushSubscriptionState,
   OSNotificationPermission,
+  PushSubscriptionChangedState
 } from './models/Subscription';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import { OutcomeEvent } from './models/Outcomes';
@@ -47,7 +48,7 @@ export type LogLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 let notificationPermission = false;
 
 // Internal wrapper push subscription state that is being updated by the subscription change handler.
-let pushSubscription: PushSubscription = {
+let pushSubscription: PushSubscriptionState = {
   id: '',
   token: '',
   optedIn: false,
@@ -61,11 +62,11 @@ async function addPermissionObserver() {
   notificationPermission = await RNOneSignal.hasNotificationPermission();
 }
 
-async function addPushSubscriptionObserver() {
+async function _addPushSubscriptionObserver() {
   OneSignal.User.PushSubscription.addEventListener(
     'change',
     (subscriptionChange) => {
-      pushSubscription = subscriptionChange;
+      pushSubscription = subscriptionChange.current;
     },
   );
 
@@ -82,7 +83,7 @@ export namespace OneSignal {
     RNOneSignal.initialize(appId);
 
     addPermissionObserver();
-    addPushSubscriptionObserver();
+    _addPushSubscriptionObserver();
   }
 
   /**
@@ -208,13 +209,13 @@ export namespace OneSignal {
       /** Add a callback that fires when the OneSignal subscription state changes. */
       export function addEventListener(
         event: 'change',
-        listener: (event: PushSubscription) => void,
+        listener: (event: PushSubscriptionChangedState) => void,
       ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         isValidCallback(listener);
         RNOneSignal.addPushSubscriptionObserver();
-        eventManager.addEventHandler<PushSubscription>(
+        eventManager.addEventHandler<PushSubscriptionChangedState>(
           SUBSCRIPTION_CHANGED,
           listener,
         );
@@ -223,7 +224,7 @@ export namespace OneSignal {
       /** Clears current subscription observers. */
       export function removeEventListener(
         event: 'change',
-        listener: (event: PushSubscription) => void,
+        listener: (event: PushSubscriptionChangedState) => void,
       ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
