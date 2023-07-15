@@ -82,6 +82,14 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
     [self sendEvent:OSEventString(PermissionChanged) withBody:@{@"permission": @(permission)}];
 }
 
+- (void)onClickNotification:(OSNotificationClickEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(NotificationClicked) withBody:[event jsonRepresentation]];
+}
+
+- (void)onClickInAppMessage:(OSInAppMessageClickEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(InAppMessageClicked) withBody:[event jsonRepresentation]];
+}
+
 - (void)onWillDisplayInAppMessage:(OSInAppMessageWillDisplayEvent * _Nonnull)event {
     [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:[event.message jsonRepresentation]];
 }
