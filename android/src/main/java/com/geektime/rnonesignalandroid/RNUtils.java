@@ -13,12 +13,15 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 
 import com.onesignal.inAppMessages.IInAppMessage;
+import com.onesignal.inAppMessages.IInAppMessageClickEvent;
 import com.onesignal.inAppMessages.IInAppMessageClickResult;
 import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
 import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
 import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
 import com.onesignal.inAppMessages.IInAppMessageDidDismissEvent;
 import com.onesignal.notifications.INotification;
+import com.onesignal.notifications.INotificationWillDisplayEvent;
+import com.onesignal.notifications.INotificationClickEvent;
 import com.onesignal.notifications.INotificationClickResult;
 import com.onesignal.notifications.INotificationReceivedEvent;
 import com.onesignal.user.subscriptions.IPushSubscription;
@@ -61,71 +64,123 @@ public class RNUtils {
         return writableMap;
     }
 
-    public static HashMap<String, Object> convertNotificationToMap(INotification notification) throws JSONException {
+    public static  HashMap<String, Object> convertNotificationWillDisplayEventToMap(INotificationWillDisplayEvent event) throws JSONException {
+        HashMap<String, Object> notificationHash = convertNotificationEventToMap(event.getNotification());
+        
+        return notificationHash;
+    }
+
+    public static HashMap<String, Object> convertNotificationClickEventToMap(INotificationClickEvent event) throws JSONException {
+        HashMap<String, Object> clickResultHash = new HashMap<>();
         HashMap<String, Object> hash = new HashMap<>();
+        HashMap<String, Object> notificationHash = convertNotificationEventToMap(event.getNotification());
+        INotificationClickResult clickResult =  event.getResult();
 
-        hash.put("androidNotificationId", notification.getAndroidNotificationId());
+        clickResultHash.put("actionId", clickResult.getActionId());
+        clickResultHash.put("url", clickResult.getUrl());
 
-        if (notification.getGroupedNotifications() != null) {
-            hash.put("groupKey", notification.getGroupKey());
-            hash.put("groupMessage", notification.getGroupMessage());
-            hash.put("groupedNotifications", notification.getGroupedNotifications());
-        }
-
-        hash.put("notificationId", notification.getNotificationId());
-        hash.put("title", notification.getTitle());
-
-        if (notification.getBody() != null)
-            hash.put("body", notification.getBody());
-        if (notification.getSmallIcon() != null)
-            hash.put("smallIcon", notification.getSmallIcon());
-        if (notification.getLargeIcon() != null)
-            hash.put("largeIcon", notification.getLargeIcon());
-        if (notification.getBigPicture() != null)
-            hash.put("bigPicture", notification.getBigPicture());
-        if (notification.getSmallIconAccentColor() != null)
-            hash.put("smallIconAccentColor", notification.getSmallIconAccentColor());
-        if (notification.getLaunchURL() != null)
-            hash.put("launchUrl", notification.getLaunchURL());
-        if (notification.getSound() != null)
-            hash.put("sound", notification.getSound());
-        if (notification.getLedColor() != null)
-            hash.put("ledColor", notification.getLedColor());
-        hash.put("lockScreenVisibility", notification.getLockScreenVisibility());
-        if (notification.getGroupKey() != null)
-            hash.put("groupKey", notification.getGroupKey());
-        if (notification.getGroupMessage() != null)
-            hash.put("groupMessage", notification.getGroupMessage());
-        if (notification.getFromProjectNumber() != null)
-            hash.put("fromProjectNumber", notification.getFromProjectNumber());
-        if (notification.getCollapseId() != null)
-            hash.put("collapseId", notification.getCollapseId());
-        hash.put("priority", notification.getPriority());
-        if (notification.getAdditionalData() != null && notification.getAdditionalData().length() > 0)
-            hash.put("additionalData", convertJSONObjectToHashMap(notification.getAdditionalData()));
-        if (notification.getActionButtons() != null) {
-            hash.put("actionButtons", notification.getActionButtons());
-        }
-        hash.put("rawPayload", notification.getRawPayload());
+        hash.put("notification", notificationHash);
+        hash.put("result", clickResultHash);
 
         return hash;
     }
 
-    public static HashMap<String, Object> convertInAppMessageToMap(IInAppMessage message) {
-        HashMap<String, Object> hash = new HashMap<>();
+    private static HashMap<String, Object> convertNotificationEventToMap(INotification notification) throws JSONException {
+        HashMap<String, Object> notificationHash = new HashMap<>();
+        notificationHash.put("androidNotificationId", notification.getAndroidNotificationId());
 
+        if (notification.getGroupedNotifications() != null) {
+            notificationHash.put("groupKey", notification.getGroupKey());
+            notificationHash.put("groupMessage", notification.getGroupMessage());
+            notificationHash.put("groupedNotifications", notification.getGroupedNotifications());
+        }
+
+        notificationHash.put("notificationId", notification.getNotificationId());
+        notificationHash.put("title", notification.getTitle());
+
+        if (notification.getBody() != null)
+            notificationHash.put("body", notification.getBody());
+        if (notification.getSmallIcon() != null)
+            notificationHash.put("smallIcon", notification.getSmallIcon());
+        if (notification.getLargeIcon() != null)
+            notificationHash.put("largeIcon", notification.getLargeIcon());
+        if (notification.getBigPicture() != null)
+            notificationHash.put("bigPicture", notification.getBigPicture());
+        if (notification.getSmallIconAccentColor() != null)
+            notificationHash.put("smallIconAccentColor", notification.getSmallIconAccentColor());
+        if (notification.getLaunchURL() != null)
+            notificationHash.put("launchUrl", notification.getLaunchURL());
+        if (notification.getSound() != null)
+            notificationHash.put("sound", notification.getSound());
+        if (notification.getLedColor() != null)
+            notificationHash.put("ledColor", notification.getLedColor());
+        notificationHash.put("lockScreenVisibility", notification.getLockScreenVisibility());
+        if (notification.getGroupKey() != null)
+            notificationHash.put("groupKey", notification.getGroupKey());
+        if (notification.getGroupMessage() != null)
+            notificationHash.put("groupMessage", notification.getGroupMessage());
+        if (notification.getFromProjectNumber() != null)
+            notificationHash.put("fromProjectNumber", notification.getFromProjectNumber());
+        if (notification.getCollapseId() != null)
+            notificationHash.put("collapseId", notification.getCollapseId());
+        notificationHash.put("priority", notification.getPriority());
+        if (notification.getAdditionalData() != null && notification.getAdditionalData().length() > 0)
+            notificationHash.put("additionalData", convertJSONObjectToHashMap(notification.getAdditionalData()));
+        if (notification.getActionButtons() != null) {
+            notificationHash.put("actionButtons", notification.getActionButtons());
+        }
+        notificationHash.put("rawPayload", notification.getRawPayload());
+
+        return notificationHash;
+    }
+
+    private static HashMap<String, Object> convertInAppMessageToMap(IInAppMessage message) {
+        HashMap<String, Object> hash = new HashMap<>();
         hash.put("messageId", message.getMessageId());
 
         return hash;
     }
 
-    public static HashMap<String, Object> convertInAppMessageClickResultToMap(IInAppMessageClickResult result) {
+    public static HashMap<String, Object> convertInAppMessageWillDisplayEventToMap(IInAppMessageWillDisplayEvent event) {
         HashMap<String, Object> hash = new HashMap<>();
+        hash.put("message", convertInAppMessageToMap(event.getMessage()));
 
-        hash.put("actionId", result.getActionId());
-        hash.put("urlTarget", result.getUrlTarget());
-        hash.put("url", result.getUrl());
-        hash.put("closingMessage", result.getClosingMessage());
+        return hash;
+    }
+
+    public static HashMap<String, Object> convertInAppMessageDidDisplayEventToMap(IInAppMessageDidDisplayEvent event) {
+        HashMap<String, Object> hash = new HashMap<>();
+        hash.put("message", convertInAppMessageToMap(event.getMessage()));
+
+        return hash;
+    }
+
+    public static HashMap<String, Object> convertInAppMessageWillDismissEventToMap(IInAppMessageWillDismissEvent event) {
+        HashMap<String, Object> hash = new HashMap<>();
+        hash.put("message", convertInAppMessageToMap(event.getMessage()));
+
+        return hash;
+    }
+
+    public static HashMap<String, Object> convertInAppMessageDidDismissEventToMap(IInAppMessageDidDismissEvent event) {
+        HashMap<String, Object> hash = new HashMap<>();
+        hash.put("message", convertInAppMessageToMap(event.getMessage()));
+
+        return hash;
+    }
+
+    public static HashMap<String, Object> convertInAppMessageClickEventToMap(IInAppMessageClickEvent event) {
+        HashMap<String, Object> resultHash = new HashMap<>();
+        HashMap<String, Object> hash = new HashMap<>();
+        IInAppMessageClickResult result = event.getResult();
+
+        resultHash.put("actionId", result.getActionId());
+        resultHash.put("urlTarget", result.getUrlTarget());
+        resultHash.put("url", result.getUrl());
+        resultHash.put("closingMessage", result.getClosingMessage());
+
+        hash.put("result", resultHash);
+        hash.put("message", convertInAppMessageToMap(event.getMessage()));
 
         return hash;
     }
