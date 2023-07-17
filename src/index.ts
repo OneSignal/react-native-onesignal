@@ -136,13 +136,6 @@ export namespace OneSignal {
     }
   }
 
-  /** Clears all handlers and observers. */
-  export function clearHandlers() {
-    if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-    eventManager.clearHandlers();
-  }
-
   export namespace Debug {
     /**
      * Enable logging to help debug if you run into an issue setting up OneSignal.

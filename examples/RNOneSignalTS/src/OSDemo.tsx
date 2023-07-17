@@ -101,10 +101,6 @@ class OSDemo extends React.Component<Props, State> {
     });
   }
 
-  componentWillUnmount() {
-    OneSignal.clearHandlers();
-  }
-
   OSLog = (message: string, optionalArg: any = null) => {
     if (optionalArg !== null) {
       message = message + JSON.stringify(optionalArg);

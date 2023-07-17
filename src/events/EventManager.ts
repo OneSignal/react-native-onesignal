@@ -4,7 +4,6 @@ import {
   NativeModule,
 } from 'react-native';
 import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
-// import { isMultipleInstancesPossible } from '../helpers';
 import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
@@ -52,11 +51,6 @@ export default class EventManager {
         this.listeners[eventName] = this.generateEventListener(eventName);
       }
     }
-  }
-
-  // clear handlers
-  clearHandlers() {
-    this.eventHandlerArrayMap = new Map();
   }
 
   /**
