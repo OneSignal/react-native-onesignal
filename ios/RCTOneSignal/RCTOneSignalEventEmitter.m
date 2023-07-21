@@ -102,10 +102,6 @@ RCT_EXPORT_METHOD(initialize:(NSString* _Nonnull)appId) {
     [OneSignal initialize:appId withLaunchOptions:NULL];
 }
 
-RCT_EXPORT_METHOD(setLaunchURLsInApp:(BOOL)isEnabled) {
-    [OneSignal setLaunchURLsInApp:isEnabled];
-}
-
 RCT_EXPORT_METHOD(login:(NSString *)externalId) {
     [OneSignal login:externalId];
 }

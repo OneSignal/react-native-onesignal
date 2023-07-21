@@ -123,19 +123,6 @@ export namespace OneSignal {
     RNOneSignal.setPrivacyConsentGiven(granted);
   }
 
-  /** This method can be used to set if launch URLs should be opened in safari or within the application. */
-  export function setLaunchURLsInApp(isEnabled: boolean) {
-    if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-    if (Platform.OS === 'ios') {
-      RNOneSignal.setLaunchURLsInApp(isEnabled);
-    } else {
-      console.log(
-        'setLaunchURLsInApp: this function is not supported on Android',
-      );
-    }
-  }
-
   export namespace Debug {
     /**
      * Enable logging to help debug if you run into an issue setting up OneSignal.
