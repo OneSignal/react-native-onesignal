@@ -625,13 +625,25 @@ export namespace OneSignal {
         eventManager.removeEventListener(IN_APP_MESSAGE_CLICKED, listener);
       } else {
         if (event === 'willDisplay') {
-          eventManager.removeEventListener(IN_APP_MESSAGE_WILL_DISPLAY, listener);
+          eventManager.removeEventListener(
+            IN_APP_MESSAGE_WILL_DISPLAY,
+            listener,
+          );
         } else if (event === 'didDisplay') {
-          eventManager.removeEventListener(IN_APP_MESSAGE_DID_DISPLAY, listener);
+          eventManager.removeEventListener(
+            IN_APP_MESSAGE_DID_DISPLAY,
+            listener,
+          );
         } else if (event === 'willDismiss') {
-          eventManager.removeEventListener(IN_APP_MESSAGE_WILL_DISMISS, listener);
+          eventManager.removeEventListener(
+            IN_APP_MESSAGE_WILL_DISMISS,
+            listener,
+          );
         } else if (event === 'didDismiss') {
-          eventManager.removeEventListener(IN_APP_MESSAGE_DID_DISMISS, listener);
+          eventManager.removeEventListener(
+            IN_APP_MESSAGE_DID_DISMISS,
+            listener,
+          );
         } else {
           return;
         }
