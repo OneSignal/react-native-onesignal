@@ -1,4 +1,4 @@
-import {OneSignal} from 'react-native-onesignal';
+import {LogLevel, OneSignal} from 'react-native-onesignal';
 import * as React from 'react';
 import {Alert, StyleSheet, View, ScrollView, SafeAreaView} from 'react-native';
 import OSButtons from './OSButtons';
@@ -31,7 +31,7 @@ class OSDemo extends React.Component<Props, State> {
 
   async componentDidMount() {
     OneSignal.initialize(APP_ID);
-    OneSignal.Debug.setLogLevel(6);
+    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
 
     OneSignal.Notifications.addEventListener(
       'foregroundWillDisplay',

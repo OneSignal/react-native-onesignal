@@ -40,8 +40,16 @@ import { isValidCallback, isNativeModuleLoaded } from './helpers';
 const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
 
-// 0 = None, 1 = Fatal, 2 = Errors, 3 = Warnings, 4 = Info, 5 = Debug, 6 = Verbose
-export type LogLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+/// An enum that declares different types of log levels you can use with the OneSignal SDK, going from the least verbose (none) to verbose (print all comments).
+export enum LogLevel {
+  None,
+  Fatal,
+  Error,
+  Warn,
+  Info,
+  Debug,
+  Verbose,
+}
 
 // Internal wrapper notification permission state that is being updated by the permission change handler.
 let notificationPermission = false;
