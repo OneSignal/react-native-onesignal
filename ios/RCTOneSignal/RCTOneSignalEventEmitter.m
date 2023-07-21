@@ -289,6 +289,10 @@ RCT_EXPORT_METHOD(preventDefault:(NSString *)notificationId){
     [event preventDefault];
 }
 
+RCT_EXPORT_METHOD(clearAllNotifications) {
+    [OneSignal.Notifications clearAll];
+}
+
 // OneSignal.Session namespace methods
 RCT_EXPORT_METHOD(addOutcome:(NSString *)name) {
     [OneSignal.Session addOutcome:name];
