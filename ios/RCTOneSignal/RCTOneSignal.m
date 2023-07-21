@@ -91,19 +91,19 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
 }
 
 - (void)onWillDisplayInAppMessage:(OSInAppMessageWillDisplayEvent * _Nonnull)event {
-    [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:@{@"message": [event.message jsonRepresentation]}];
+    [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:[event jsonRepresentation]];
 }
 
 - (void)onDidDisplayInAppMessage:(OSInAppMessageDidDisplayEvent * _Nonnull)event {
-    [self sendEvent:OSEventString(InAppMessageDidDisplay) withBody:@{@"message": [event.message jsonRepresentation]}];
+    [self sendEvent:OSEventString(InAppMessageDidDisplay) withBody:[event jsonRepresentation]];
 }
 
 - (void)onWillDismissInAppMessage:(OSInAppMessageWillDismissEvent * _Nonnull)event {
-    [self sendEvent:OSEventString(InAppMessageWillDismiss) withBody:@{@"message": [event.message jsonRepresentation]}];
+    [self sendEvent:OSEventString(InAppMessageWillDismiss) withBody:[event jsonRepresentation]];
 }
 
 - (void)onDidDismissInAppMessage:(OSInAppMessageDidDismissEvent * _Nonnull)event {
-    [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:@{@"message": [event.message jsonRepresentation]}];
+    [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:[event jsonRepresentation]];
 }
 
 - (void)dealloc {
