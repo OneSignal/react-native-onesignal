@@ -26,6 +26,7 @@ import com.onesignal.notifications.INotificationClickResult;
 import com.onesignal.notifications.INotificationReceivedEvent;
 import com.onesignal.user.subscriptions.IPushSubscription;
 import com.onesignal.user.subscriptions.PushSubscriptionState;
+import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,7 +68,7 @@ public class RNUtils {
     public static HashMap<String, Object> convertNotificationClickEventToMap(INotificationClickEvent event) throws JSONException {
         HashMap<String, Object> clickResultHash = new HashMap<>();
         HashMap<String, Object> hash = new HashMap<>();
-        HashMap<String, Object> notificationHash = convertNotificationEventToMap(event.getNotification());
+        HashMap<String, Object> notificationHash = convertNotificationToMap(event.getNotification());
         INotificationClickResult clickResult =  event.getResult();
 
         clickResultHash.put("actionId", clickResult.getActionId());
@@ -79,7 +80,7 @@ public class RNUtils {
         return hash;
     }
 
-    private static HashMap<String, Object> convertNotificationToMap(INotification notification) throws JSONException {
+    public static HashMap<String, Object> convertNotificationToMap(INotification notification) throws JSONException {
         HashMap<String, Object> notificationHash = new HashMap<>();
         notificationHash.put("androidNotificationId", notification.getAndroidNotificationId());
 
