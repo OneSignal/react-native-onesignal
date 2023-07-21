@@ -64,12 +64,6 @@ public class RNUtils {
         return writableMap;
     }
 
-    public static  HashMap<String, Object> convertNotificationWillDisplayEventToMap(INotificationWillDisplayEvent event) throws JSONException {
-        HashMap<String, Object> notificationHash = convertNotificationEventToMap(event.getNotification());
-        
-        return notificationHash;
-    }
-
     public static HashMap<String, Object> convertNotificationClickEventToMap(INotificationClickEvent event) throws JSONException {
         HashMap<String, Object> clickResultHash = new HashMap<>();
         HashMap<String, Object> hash = new HashMap<>();
@@ -85,7 +79,7 @@ public class RNUtils {
         return hash;
     }
 
-    private static HashMap<String, Object> convertNotificationEventToMap(INotification notification) throws JSONException {
+    private static HashMap<String, Object> convertNotificationToMap(INotification notification) throws JSONException {
         HashMap<String, Object> notificationHash = new HashMap<>();
         notificationHash.put("androidNotificationId", notification.getAndroidNotificationId());
 
@@ -185,12 +179,20 @@ public class RNUtils {
         return hash;
     }
 
-    public static HashMap<String, Object> convertOnSubscriptionChangedToMap(PushSubscriptionState state) {
+    public static HashMap<String, Object> convertPushSubscriptionStateToMap(PushSubscriptionState state) {
         HashMap<String, Object> hash = new HashMap<>();
 
         hash.put("token", state.getToken());
         hash.put("id", state.getId());
         hash.put("optedIn", state.getOptedIn());
+
+        return hash;
+    }
+
+    public static HashMap<String, Object> convertPushSubscriptionChangedStateToMap(PushSubscriptionChangedState state) {
+        HashMap<String, Object> hash = new HashMap<>();
+        hash.put("current", convertPushSubscriptionStateToMap(state.getCurrent()));
+        hash.put("previous", convertPushSubscriptionStateToMap(state.getPrevious()));
 
         return hash;
     }

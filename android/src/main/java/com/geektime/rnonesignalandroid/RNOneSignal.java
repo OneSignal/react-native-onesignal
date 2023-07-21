@@ -351,14 +351,15 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
             event.getNotification().display();
         }
 
-        String notificationId = event.getNotification().getNotificationId();
+        INotification notification = event.getNotification();
+        String notificationId = notification.getNotificationId();
         notificationWillDisplayCache.put(notificationId, (INotificationWillDisplayEvent) event);
         event.preventDefault();
 
         try {
             sendEvent("OneSignal-notificationWillDisplayInForeground",
                     RNUtils.convertHashMapToWritableMap(
-                        RNUtils.convertNotificationEventToMap(event)));
+                        RNUtils.convertNotificationToMap(notification)));
 
             try {
                 synchronized (event) {
@@ -495,15 +496,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @Override
     public void onPushSubscriptionChange(PushSubscriptionChangedState pushSubscriptionChangedState) {
-        PushSubscriptionState pushSubscription = pushSubscriptionChangedState.getCurrent();
-        if (!(pushSubscription instanceof PushSubscriptionState)){
-            return;
-        }
-
         try {
             sendEvent("OneSignal-subscriptionChanged",
                     RNUtils.convertHashMapToWritableMap(
-                            RNUtils.convertOnSubscriptionChangedToMap(pushSubscription)));
+                            RNUtils.convertPushSubscriptionChangedStateToMap(pushSubscriptionChangedState)));
             Log.i("OneSignal", "sending subscription change event");
         } catch (JSONException e) {
             e.printStackTrace();
