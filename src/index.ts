@@ -207,7 +207,7 @@ export namespace OneSignal {
 
         isValidCallback(listener);
         RNOneSignal.addPushSubscriptionObserver();
-        eventManager.addEventHandler<PushSubscriptionChangedState>(
+        eventManager.addEventListener<PushSubscriptionChangedState>(
           SUBSCRIPTION_CHANGED,
           listener,
         );
@@ -220,7 +220,7 @@ export namespace OneSignal {
       ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-        eventManager.clearEventHandler(SUBSCRIPTION_CHANGED, listener);
+        eventManager.removeEventListener(SUBSCRIPTION_CHANGED, listener);
       }
 
       /** The readonly push subscription ID */
@@ -488,20 +488,20 @@ export namespace OneSignal {
 
       if (event === 'click') {
         RNOneSignal.addNotificationClickListener();
-        eventManager.addEventHandler<NotificationClickEvent>(
+        eventManager.addEventListener<NotificationClickEvent>(
           NOTIFICATION_CLICKED,
           listener as (event: NotificationClickEvent) => void,
         );
       } else if (event === 'foregroundWillDisplay') {
         RNOneSignal.addNotificationForegroundLifecycleListener();
-        eventManager.addEventHandler<NotificationWillDisplayEvent>(
+        eventManager.addEventListener<NotificationWillDisplayEvent>(
           NOTIFICATION_WILL_DISPLAY,
           listener as (event: NotificationWillDisplayEvent) => void,
         );
       } else if (event === 'permissionChange') {
         isValidCallback(listener);
         RNOneSignal.addPermissionObserver();
-        eventManager.addEventHandler<boolean>(
+        eventManager.addEventListener<boolean>(
           PERMISSION_CHANGED,
           listener as (event: boolean) => void,
         );
@@ -515,11 +515,11 @@ export namespace OneSignal {
       listener: (event: NotificationEventTypeMap[K]) => void,
     ): void {
       if (event === 'click') {
-        eventManager.clearEventHandler(NOTIFICATION_CLICKED, listener);
+        eventManager.removeEventListener(NOTIFICATION_CLICKED, listener);
       } else if (event === 'foregroundWillDisplay') {
-        eventManager.clearEventHandler(NOTIFICATION_WILL_DISPLAY, listener);
+        eventManager.removeEventListener(NOTIFICATION_WILL_DISPLAY, listener);
       } else if (event === 'permissionChange') {
-        eventManager.clearEventHandler(PERMISSION_CHANGED, listener);
+        eventManager.removeEventListener(PERMISSION_CHANGED, listener);
       } else {
         return;
       }
@@ -527,7 +527,6 @@ export namespace OneSignal {
 
     /**
      * Removes all OneSignal notifications.
-     * Android Only. iOS provides a standard way to clear notifications by clearing badge count.
      */
     export function clearAll() {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
@@ -584,32 +583,32 @@ export namespace OneSignal {
       if (event === 'click') {
         isValidCallback(listener);
         RNOneSignal.addInAppMessageClickListener();
-        eventManager.addEventHandler<InAppMessageClickEvent>(
+        eventManager.addEventListener<InAppMessageClickEvent>(
           IN_APP_MESSAGE_CLICKED,
           listener as (event: InAppMessageClickEvent) => void,
         );
       } else {
         if (event === 'willDisplay') {
           isValidCallback(listener);
-          eventManager.addEventHandler<InAppMessageWillDisplayEvent>(
+          eventManager.addEventListener<InAppMessageWillDisplayEvent>(
             IN_APP_MESSAGE_WILL_DISPLAY,
             listener as (event: InAppMessageWillDisplayEvent) => void,
           );
         } else if (event === 'didDisplay') {
           isValidCallback(listener);
-          eventManager.addEventHandler<InAppMessageDidDisplayEvent>(
+          eventManager.addEventListener<InAppMessageDidDisplayEvent>(
             IN_APP_MESSAGE_DID_DISPLAY,
             listener as (event: InAppMessageDidDisplayEvent) => void,
           );
         } else if (event === 'willDismiss') {
           isValidCallback(listener);
-          eventManager.addEventHandler<InAppMessageWillDismissEvent>(
+          eventManager.addEventListener<InAppMessageWillDismissEvent>(
             IN_APP_MESSAGE_WILL_DISMISS,
             listener as (event: InAppMessageWillDismissEvent) => void,
           );
         } else if (event === 'didDismiss') {
           isValidCallback(listener);
-          eventManager.addEventHandler<InAppMessageDidDismissEvent>(
+          eventManager.addEventListener<InAppMessageDidDismissEvent>(
             IN_APP_MESSAGE_DID_DISMISS,
             listener as (event: InAppMessageDidDismissEvent) => void,
           );
@@ -628,16 +627,16 @@ export namespace OneSignal {
       listener: (obj: InAppMessageEventTypeMap[K]) => void,
     ): void {
       if (event === 'click') {
-        eventManager.clearEventHandler(IN_APP_MESSAGE_CLICKED, listener);
+        eventManager.removeEventListener(IN_APP_MESSAGE_CLICKED, listener);
       } else {
         if (event === 'willDisplay') {
-          eventManager.clearEventHandler(IN_APP_MESSAGE_WILL_DISPLAY, listener);
+          eventManager.removeEventListener(IN_APP_MESSAGE_WILL_DISPLAY, listener);
         } else if (event === 'didDisplay') {
-          eventManager.clearEventHandler(IN_APP_MESSAGE_DID_DISPLAY, listener);
+          eventManager.removeEventListener(IN_APP_MESSAGE_DID_DISPLAY, listener);
         } else if (event === 'willDismiss') {
-          eventManager.clearEventHandler(IN_APP_MESSAGE_WILL_DISMISS, listener);
+          eventManager.removeEventListener(IN_APP_MESSAGE_WILL_DISMISS, listener);
         } else if (event === 'didDismiss') {
-          eventManager.clearEventHandler(IN_APP_MESSAGE_DID_DISMISS, listener);
+          eventManager.removeEventListener(IN_APP_MESSAGE_DID_DISMISS, listener);
         } else {
           return;
         }

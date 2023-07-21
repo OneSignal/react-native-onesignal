@@ -32,13 +32,13 @@ const eventList = [
 export default class EventManager {
   private RNOneSignal: NativeModule;
   private oneSignalEventEmitter: NativeEventEmitter;
-  private eventHandlerArrayMap: Map<string, Array<(event: any) => void>>;
+  private eventListenerArrayMap: Map<string, Array<(event: any) => void>>;
   private listeners: { [key: string]: EmitterSubscription };
 
   constructor(RNOneSignal: NativeModule) {
     this.RNOneSignal = RNOneSignal;
     this.oneSignalEventEmitter = new NativeEventEmitter(RNOneSignal);
-    this.eventHandlerArrayMap = new Map(); // used for adders (multiple callbacks possible)
+    this.eventListenerArrayMap = new Map(); // used for adders (multiple callbacks possible)
     this.listeners = {};
     this.setupListeners();
   }
@@ -59,11 +59,11 @@ export default class EventManager {
    * @param  {function} handler
    * @returns void
    */
-  addEventHandler<T>(eventName: string, handler: (event: T) => void) {
-    let handlerArray = this.eventHandlerArrayMap.get(eventName);
+  addEventListener<T>(eventName: string, handler: (event: T) => void) {
+    let handlerArray = this.eventListenerArrayMap.get(eventName);
     handlerArray && handlerArray.length > 0
       ? handlerArray.push(handler)
-      : this.eventHandlerArrayMap.set(eventName, [handler]);
+      : this.eventListenerArrayMap.set(eventName, [handler]);
   }
 
   /**
@@ -72,8 +72,8 @@ export default class EventManager {
    * @param  {function} handler
    * @returns void
    */
-  clearEventHandler(eventName: string, handler: any) {
-    const handlerArray = this.eventHandlerArrayMap.get(eventName);
+  removeEventListener(eventName: string, handler: any) {
+    const handlerArray = this.eventListenerArrayMap.get(eventName);
     if (!handlerArray) {
       return;
     }
@@ -82,14 +82,14 @@ export default class EventManager {
       handlerArray.splice(index, 1);
     }
     if (handlerArray.length === 0) {
-      this.eventHandlerArrayMap.delete(eventName);
+      this.eventListenerArrayMap.delete(eventName);
     }
   }
 
   // returns an event listener with the js to native mapping
   generateEventListener(eventName: string): EmitterSubscription {
     const addListenerCallback = (payload: Object) => {
-      let handlerArray = this.eventHandlerArrayMap.get(eventName);
+      let handlerArray = this.eventListenerArrayMap.get(eventName);
       if (handlerArray) {
         if (eventName === NOTIFICATION_WILL_DISPLAY) {
           handlerArray.forEach((handler) => {
