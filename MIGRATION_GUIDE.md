@@ -377,7 +377,6 @@ The Debug namespace is accessible via `OneSignal.Debug` and provide access to de
 - This is a Beta release so please test thorougly prior to production use.
 - Changing app IDs is not supported.
 - Any `User` namespace calls must be invoked **after** initialization. Example: `OneSignal.User.addTag("tag", "2")`
-- In the iOS SDK, the user state is only refreshed from the server when a new session is started (cold start or backgrounded for over 30 seconds) or when the user is logged in. This is by design.
 
 # Known issues
 
