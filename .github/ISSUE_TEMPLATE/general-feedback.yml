@@ -1,7 +1,7 @@
 name: 📣 General feedback
 description: Tell us what's on your mind
-title: "[Feedback]: "
-labels: ["triage"]
+title: '[Feedback]: '
+labels: ['triage']
 # assignees:
 #   - OneSignal/ios-sdk
 body:

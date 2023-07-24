@@ -1,4 +1,9 @@
-export type InAppMessageEventName = "click" | "willDisplay" | "didDisplay" | "willDismiss" | "didDismiss";
+export type InAppMessageEventName =
+  | 'click'
+  | 'willDisplay'
+  | 'didDisplay'
+  | 'willDismiss'
+  | 'didDismiss';
 
 export type InAppMessageEventTypeMap = {
   click: InAppMessageClickEvent;
@@ -13,8 +18,8 @@ export interface InAppMessage {
 }
 
 export interface InAppMessageClickEvent {
-  message             : InAppMessage
-  result              : InAppMessageClickResult
+  message: InAppMessage;
+  result: InAppMessageClickResult;
 }
 
 export interface InAppMessageClickResult {
@@ -25,17 +30,17 @@ export interface InAppMessageClickResult {
 }
 
 export interface InAppMessageWillDisplayEvent {
-  message : InAppMessage
+  message: InAppMessage;
 }
 
 export interface InAppMessageDidDisplayEvent {
-  message : InAppMessage
+  message: InAppMessage;
 }
 
 export interface InAppMessageWillDismissEvent {
-  message : InAppMessage
+  message: InAppMessage;
 }
 
 export interface InAppMessageDidDismissEvent {
-  message : InAppMessage
+  message: InAppMessage;
 }

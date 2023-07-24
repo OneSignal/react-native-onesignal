@@ -2,20 +2,20 @@ name: Test
 
 on:
   pull_request:
-    branches: "**"
+    branches: '**'
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      - name: "[Setup] Node"
+      - name: '[Setup] Node'
         uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: "[Setup] Dependencies"
+      - name: '[Setup] Dependencies'
         run: yarn
-      - name: "[Test] Linting"
+      - name: '[Test] Linting'
         run: yarn lint
 
       - name: Unit tests results

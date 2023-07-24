@@ -9,8 +9,9 @@
     BOOL _hasListeners;
     BOOL _hasSetSubscriptionObserver;
     BOOL _hasSetPermissionObserver;
-    BOOL _hasSetEmailSubscriptionObserver;
-    BOOL _hasSetSMSSubscriptionObserver;
+    BOOL _hasAddedNotificationClickListener;
+    BOOL _hasAddedNotificationLifecycleListener;
+    BOOL _hasAddedInAppMessageClickListener;
     BOOL _hasAddedInAppMessageLifecycleListener;
     NSMutableDictionary* _preventDefaultCache;
     NSMutableDictionary* _notificationWillDisplayCache;
@@ -101,10 +102,6 @@ RCT_EXPORT_METHOD(initialize:(NSString* _Nonnull)appId) {
     [OneSignal initialize:appId withLaunchOptions:NULL];
 }
 
-RCT_EXPORT_METHOD(setLaunchURLsInApp:(BOOL)isEnabled) {
-    [OneSignal setLaunchURLsInApp:isEnabled];
-}
-
 RCT_EXPORT_METHOD(login:(NSString *)externalId) {
     [OneSignal login:externalId];
 }
@@ -183,12 +180,11 @@ RCT_EXPORT_METHOD(clearTriggers) {
 }
 
 RCT_EXPORT_METHOD(addInAppMessageClickListener) {
-    [OneSignal.InAppMessages addClickListener:self];
+    if (!_hasAddedInAppMessageClickListener) {
+        [OneSignal.InAppMessages addClickListener: [RCTOneSignal sharedInstance]];
+        _hasAddedInAppMessageClickListener = true;
+    }
 }
-
-RCT_EXPORT_METHOD(onClickInAppMessage:(OSInAppMessageClickEvent * _Nonnull)event {
-    [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:[event jsonRepresentation]];
-})
 
 RCT_EXPORT_METHOD(addInAppMessagesLifecycleListener) {
     if (!_hasAddedInAppMessageLifecycleListener) {
@@ -261,15 +257,10 @@ RCT_REMAP_METHOD(permissionNative,
 }
 
 RCT_EXPORT_METHOD(addNotificationClickListener) {
-    [OneSignal.Notifications addClickListener:self];
-}
-
-RCT_EXPORT_METHOD(onClickNotification:(OSNotificationClickEvent * _Nonnull)event) {
-    [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationClicked" withBody:[event jsonRepresentation]];
-}
-
-RCT_EXPORT_METHOD(clearAllNotifications) {
-    [OneSignal.Notifications clearAll];
+    if (!_hasAddedNotificationClickListener) {
+        [OneSignal.Notifications addClickListener:[RCTOneSignal sharedInstance]];
+        _hasAddedNotificationClickListener = true;
+    }
 }
 
 RCT_EXPORT_METHOD(addNotificationForegroundLifecycleListener) {
@@ -298,6 +289,10 @@ RCT_EXPORT_METHOD(preventDefault:(NSString *)notificationId){
     [event preventDefault];
 }
 
+RCT_EXPORT_METHOD(clearAllNotifications) {
+    [OneSignal.Notifications clearAll];
+}
+
 // OneSignal.Session namespace methods
 RCT_EXPORT_METHOD(addOutcome:(NSString *)name) {
     [OneSignal.Session addOutcome:name];
@@ -323,20 +318,6 @@ RCT_EXPORT_METHOD(removePushSubscriptionObserver) {
     if (_hasSetSubscriptionObserver) {
         [OneSignal.User.pushSubscription removeObserver:[RCTOneSignal sharedInstance]];
         _hasSetSubscriptionObserver = false;
-    }
-}
-
-RCT_EXPORT_METHOD(addEmail) {
-    if (!_hasSetEmailSubscriptionObserver) {
-        [OneSignal.User addEmail:[RCTOneSignal sharedInstance]];
-        _hasSetEmailSubscriptionObserver = true;
-    }
-}
-
-RCT_EXPORT_METHOD(removeEmail) {
-    if (_hasSetEmailSubscriptionObserver) {
-        [OneSignal.User removeEmail:[RCTOneSignal sharedInstance]];
-        _hasSetEmailSubscriptionObserver = false;
     }
 }
 

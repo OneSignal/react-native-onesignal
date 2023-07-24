@@ -75,27 +75,35 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
 }
 
 - (void)onPushSubscriptionDidChangeWithState:(OSPushSubscriptionChangedState * _Nonnull)state {
-    [self sendEvent:OSEventString(SubscriptionChanged) withBody:[state.current jsonRepresentation]];
+    [self sendEvent:OSEventString(SubscriptionChanged) withBody:[state jsonRepresentation]];
 }
 
 - (void)onNotificationPermissionDidChange:(BOOL)permission {
     [self sendEvent:OSEventString(PermissionChanged) withBody:@{@"permission": @(permission)}];
 }
 
+- (void)onClickNotification:(OSNotificationClickEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(NotificationClicked) withBody:[event jsonRepresentation]];
+}
+
+- (void)onClickInAppMessage:(OSInAppMessageClickEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(InAppMessageClicked) withBody:[event jsonRepresentation]];
+}
+
 - (void)onWillDisplayInAppMessage:(OSInAppMessageWillDisplayEvent * _Nonnull)event {
-    [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:[event.message jsonRepresentation]];
+    [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:[event jsonRepresentation]];
 }
 
 - (void)onDidDisplayInAppMessage:(OSInAppMessageDidDisplayEvent * _Nonnull)event {
-    [self sendEvent:OSEventString(InAppMessageDidDisplay) withBody:[event.message jsonRepresentation]];
+    [self sendEvent:OSEventString(InAppMessageDidDisplay) withBody:[event jsonRepresentation]];
 }
 
 - (void)onWillDismissInAppMessage:(OSInAppMessageWillDismissEvent * _Nonnull)event {
-    [self sendEvent:OSEventString(InAppMessageWillDismiss) withBody:[event.message jsonRepresentation]];
+    [self sendEvent:OSEventString(InAppMessageWillDismiss) withBody:[event jsonRepresentation]];
 }
 
 - (void)onDidDismissInAppMessage:(OSInAppMessageDidDismissEvent * _Nonnull)event {
-    [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:[event.message jsonRepresentation]];
+    [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:[event jsonRepresentation]];
 }
 
 - (void)dealloc {
