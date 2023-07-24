@@ -27,7 +27,7 @@ const App = () => {
     <>
       <StatusBar barStyle="dark-content" />
       <View style={styles.body}>
-        <OSDemo name="OneSignal"/>
+        <OSDemo name="OneSignal" />
       </View>
     </>
   );
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
     padding: 10,
-  }
+  },
 });
 
 export default App;

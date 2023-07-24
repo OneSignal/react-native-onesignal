@@ -4,7 +4,7 @@ import {Alert, StyleSheet, View, ScrollView, SafeAreaView} from 'react-native';
 import OSButtons from './OSButtons';
 import OSConsole from './OSConsole';
 import {renderButtonView} from './Helpers';
-import {TextInput, Text} from "@react-native-material/core";
+import {TextInput, Text} from '@react-native-material/core';
 
 const APP_ID = '77e32082-ea27-42e3-a898-c72e141824ef';
 
@@ -33,7 +33,8 @@ class OSDemo extends React.Component<Props, State> {
     OneSignal.initialize(APP_ID);
     OneSignal.Debug.setLogLevel(6);
 
-    OneSignal.Notifications.addEventListener('foregroundWillDisplay',
+    OneSignal.Notifications.addEventListener(
+      'foregroundWillDisplay',
       (event) => {
         this.OSLog('OneSignal: notification will show in foreground:', event);
         let notif = event.getNotification();
@@ -53,9 +54,14 @@ class OSDemo extends React.Component<Props, State> {
           },
         };
 
-        Alert.alert('Display notification?', notif.title, [cancelButton, completeButton], {
-          cancelable: true,
-        });
+        Alert.alert(
+          'Display notification?',
+          notif.title,
+          [cancelButton, completeButton],
+          {
+            cancelable: true,
+          },
+        );
       },
     );
 
@@ -63,23 +69,23 @@ class OSDemo extends React.Component<Props, State> {
       this.OSLog('OneSignal: notification clicked:', event);
     });
 
-    OneSignal.InAppMessages.addEventListener('click', (event) =>{
+    OneSignal.InAppMessages.addEventListener('click', (event) => {
       this.OSLog('OneSignal IAM clicked:', event);
     });
 
-    OneSignal.InAppMessages.addEventListener('willDisplay', (event) =>{
+    OneSignal.InAppMessages.addEventListener('willDisplay', (event) => {
       this.OSLog('OneSignal: will display IAM: ', event);
     });
 
-    OneSignal.InAppMessages.addEventListener('didDisplay', (event) =>{
+    OneSignal.InAppMessages.addEventListener('didDisplay', (event) => {
       this.OSLog('OneSignal: did display IAM: ', event);
     });
 
-    OneSignal.InAppMessages.addEventListener('willDismiss', (event) =>{
+    OneSignal.InAppMessages.addEventListener('willDismiss', (event) => {
       this.OSLog('OneSignal: will dismiss IAM: ', event);
     });
 
-    OneSignal.InAppMessages.addEventListener('didDismiss', (event) =>{
+    OneSignal.InAppMessages.addEventListener('didDismiss', (event) => {
       this.OSLog('OneSignal: did dismiss IAM: ', event);
     });
 
@@ -135,7 +141,7 @@ class OSDemo extends React.Component<Props, State> {
           />
         </View>
         <ScrollView style={styles.scrollView}>
-          <OSButtons 
+          <OSButtons
             loggingFunction={this.OSLog}
             inputFieldValue={this.state.inputValue}
           />
@@ -155,10 +161,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    flex: .5,
+    flex: 0.5,
   },
   scrollView: {
-    flex: .5,
+    flex: 0.5,
   },
   title: {
     fontSize: 40,
