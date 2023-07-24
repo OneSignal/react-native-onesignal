@@ -420,61 +420,43 @@ class OSButtons extends React.Component<Props> {
     privacyConsentFields() {
         const {loggingFunction} = this.props;
 
-        const getPrivacyConsentButton = renderButtonView(
-            'Get Privacy Consent',
-            async () => {
-                const granted = await OneSignal.getPrivacyConsent();
-                loggingFunction('Privacy consent granted: ', granted);
-            }
-        );
-
-        const setPrivacyConsentTrueButton = renderButtonView(
+        const setPrivacyConsentGivenTrueButton = renderButtonView(
             'Set Privacy Consent to true',
             async () => {
-                await OneSignal.setPrivacyConsent(true);
+                await OneSignal.setConsentGiven(true);
                 loggingFunction('Privacy Consent set to true');
             }
         );
 
-        const setPrivacyConsentFalseButton = renderButtonView(
+        const setPrivacyConsentGivenFalseButton = renderButtonView(
             'Set Privacy Consent to false',
             async () => {
-                await OneSignal.setPrivacyConsent(false);
+                await OneSignal.setConsentGiven(false);
                 loggingFunction('Privacy Consent set to false');
             }
         );
 
-        const getRequiresPrivacyConsentButton = renderButtonView(
-            'Get Requires Privacy Consent',
-            async () => {
-                const granted = await OneSignal.getRequiresPrivacyConsent();
-                loggingFunction('Requires Privacy Consent: ', granted);
-            }
-        );
-
-        const setRequiresPrivacyConsentTrueButton = renderButtonView(
+        const setPrivacyConsentRequiredTrueButton = renderButtonView(
             'Set Requiers Privacy Consent to true',
             async () => {
-                await OneSignal.setRequiresPrivacyConsent(true);
+                await OneSignal.setConsentRequired(true);
                 loggingFunction('Requires Privacy Consent set to true');
             }
         );
         
-        const setRequiresPrivacyConsentFalseButton = renderButtonView(
+        const setPrivacyConsentRequiredFalseButton = renderButtonView(
             'Set Requiers Privacy Consent to false',
             async () => {
-                await OneSignal.setRequiresPrivacyConsent(false);
+                await OneSignal.setConsentRequired(false);
                 loggingFunction('Requires Privacy Consent set to false');
             }
         );
         
         return [
-            getPrivacyConsentButton,
-            setPrivacyConsentTrueButton,
-            setPrivacyConsentFalseButton,
-            getRequiresPrivacyConsentButton,
-            setRequiresPrivacyConsentTrueButton,
-            setRequiresPrivacyConsentFalseButton,
+            setPrivacyConsentGivenTrueButton,
+            setPrivacyConsentGivenFalseButton,
+            setPrivacyConsentRequiredTrueButton,
+            setPrivacyConsentRequiredFalseButton,
         ];
     }
 

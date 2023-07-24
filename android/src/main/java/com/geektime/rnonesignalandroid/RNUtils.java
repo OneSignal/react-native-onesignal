@@ -12,15 +12,17 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 
-// import com.onesignal.OSInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessageClickResult;
+import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
+import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
+import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
+import com.onesignal.inAppMessages.IInAppMessageDidDismissEvent;
 import com.onesignal.notifications.INotification;
-import com.onesignal.notifications.INotificationAction;
 import com.onesignal.notifications.INotificationClickResult;
 import com.onesignal.notifications.INotificationReceivedEvent;
 import com.onesignal.user.subscriptions.IPushSubscription;
-import com.onesignal.user.subscriptions.ISubscription;
+import com.onesignal.user.subscriptions.PushSubscriptionState;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -109,15 +111,6 @@ public class RNUtils {
         return hash;
     }
 
-    public static HashMap<String, Object> convertNotificationClickResultToMap(INotificationClickResult openResult) throws JSONException {
-        HashMap<String, Object> hash = new HashMap<>();
-
-        hash.put("notification", convertNotificationToMap(openResult.getNotification()));
-        hash.put("action", convertNotificationActionToMap(openResult.getAction()));
-
-        return hash;
-    }
-
     public static HashMap<String, Object> convertInAppMessageToMap(IInAppMessage message) {
         HashMap<String, Object> hash = new HashMap<>();
 
@@ -126,18 +119,18 @@ public class RNUtils {
         return hash;
     }
 
-    public static HashMap<String, Object> convertInAppMessageClickedActionToMap(IInAppMessageClickResult result) {
+    public static HashMap<String, Object> convertInAppMessageClickResultToMap(IInAppMessageClickResult result) {
         HashMap<String, Object> hash = new HashMap<>();
 
-        hash.put("clickName", result.getAction().getClickName());
-        hash.put("clickUrl", result.getAction().getClickUrl());
-        hash.put("firstClick", result.getAction().isFirstClick());
-        hash.put("closesMessage", result.getAction().getClosesMessage());
+        hash.put("actionId", result.getActionId());
+        hash.put("urlTarget", result.getUrlTarget());
+        hash.put("url", result.getUrl());
+        hash.put("closingMessage", result.getClosingMessage());
 
         return hash;
     }
 
-    public static HashMap<String, Object> convertOnSubscriptionChangedToMap(IPushSubscription state) {
+    public static HashMap<String, Object> convertOnSubscriptionChangedToMap(PushSubscriptionState state) {
         HashMap<String, Object> hash = new HashMap<>();
 
         hash.put("token", state.getToken());
@@ -175,7 +168,7 @@ public class RNUtils {
         return hash;
     }
 
-    public static Collection<String> convertReableArrayIntoStringCollection(ReadableArray readableArray) {
+    public static Collection<String> convertReadableArrayIntoStringCollection(ReadableArray readableArray) {
         ArrayList<String> strings = new ArrayList<>();
         for (Object object : readableArray.toArrayList()) {
             if (object instanceof String)
@@ -184,7 +177,7 @@ public class RNUtils {
         return strings;
     }
 
-    public static HashMap<String, String> convertReableMapIntoStringMap(ReadableMap readableMap) {
+    public static HashMap<String, String> convertReadableMapIntoStringMap(ReadableMap readableMap) {
         HashMap<String, String> stringMap = new HashMap<>();
         ReadableMapKeySetIterator iter = readableMap.keySetIterator();
 
@@ -202,22 +195,6 @@ public class RNUtils {
         HashMap<String, Object> hash = new HashMap<>();
 
         hash.put("permission", granted);
-
-        return hash;
-    }
-
-    private static HashMap<String, Object> convertNotificationActionToMap(INotificationAction action) {
-        HashMap<String, Object> hash = new HashMap<>();
-
-        hash.put("id", action.getActionId());
-
-        switch (action.getType()) {
-            case Opened:
-                hash.put("type", 0);
-                break;
-            case ActionTaken:
-                hash.put("type", 1);
-        }
 
         return hash;
     }

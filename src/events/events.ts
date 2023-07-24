@@ -1,5 +1,5 @@
-export const NOTIFICATION_WILL_SHOW =
-  'OneSignal-notificationWillShowInForeground';
+export const NOTIFICATION_WILL_DISPLAY =
+  'OneSignal-notificationWillDisplayInForeground';
 export const NOTIFICATION_CLICKED = 'OneSignal-notificationClicked';
 export const IN_APP_MESSAGE_CLICKED = 'OneSignal-inAppMessageClicked';
 export const IN_APP_MESSAGE_WILL_DISPLAY = 'OneSignal-inAppMessageWillDisplay';

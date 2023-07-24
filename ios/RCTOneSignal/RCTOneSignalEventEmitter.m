@@ -11,9 +11,9 @@
     BOOL _hasSetPermissionObserver;
     BOOL _hasSetEmailSubscriptionObserver;
     BOOL _hasSetSMSSubscriptionObserver;
-    BOOL _hasSetInAppMessageLifecycleHandler;
-    NSMutableDictionary* _notificationCompletionCache;
-    NSMutableDictionary* _receivedNotificationCache;
+    BOOL _hasAddedInAppMessageLifecycleListener;
+    NSMutableDictionary* _preventDefaultCache;
+    NSMutableDictionary* _notificationWillDisplayCache;
 }
 
 static BOOL _didStartObserving = false;
@@ -38,8 +38,8 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 - (instancetype)init {
     if (self = [super init]) {
-        _notificationCompletionCache = [NSMutableDictionary new];
-        _receivedNotificationCache = [NSMutableDictionary new];
+        _preventDefaultCache = [NSMutableDictionary new];
+        _notificationWillDisplayCache = [NSMutableDictionary new];
 
         for (NSString *eventName in [self supportedEvents])
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(emitEvent:) name:eventName object:nil];
@@ -116,7 +116,7 @@ RCT_EXPORT_METHOD(logout) {
 RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId 
                   withToken:(NSString *)token
                   withResponse:(RCTResponseSenderBlock)callback) {
-    [OneSignal enterLiveActivity:activityId withToken:token withSuccess:^(NSDictionary *result) {
+    [OneSignal.LiveActivities enter:activityId withToken:token withSuccess:^(NSDictionary *result) {
         callback(@[result]);
     } withFailure:^(NSError *error) {
         callback([self processNSError:error]);
@@ -125,33 +125,21 @@ RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId
 
 RCT_EXPORT_METHOD(exitLiveActivity:(NSString *)activityId
                   withResponse:(RCTResponseSenderBlock)callback) {
-    [OneSignal exitLiveActivity:activityId withSuccess:^(NSDictionary *result) {
+    [OneSignal.LiveActivities exit:activityId withSuccess:^(NSDictionary *result) {
         callback(@[result]);
     } withFailure:^(NSError *error) {
         callback([self processNSError:error]);
     }];
 }
 
-RCT_REMAP_METHOD(getPrivacyConsent, 
-                 getPrivacyConsentResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(@(OneSignal.getPrivacyConsent));
-}
-
-RCT_EXPORT_METHOD(setPrivacyConsent:(BOOL)granted) {
+RCT_EXPORT_METHOD(setPrivacyConsentGiven:(BOOL)granted) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [OneSignal setPrivacyConsent:granted];
+        [OneSignal setConsentGiven:granted];
     });
 }
 
-RCT_REMAP_METHOD(getRequiresPrivacyConsent, 
-                 getRequiresPrivacyConsentResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(@([OneSignal requiresPrivacyConsent]));
-}
-
-RCT_EXPORT_METHOD(setRequiresPrivacyConsent:(BOOL)required) {
-    [OneSignal setRequiresPrivacyConsent:required];
+RCT_EXPORT_METHOD(setPrivacyConsentRequired:(BOOL)required) {
+    [OneSignal setConsentRequired:required];
 }
 
 // OneSignal.Debug namespace methods
@@ -194,16 +182,18 @@ RCT_EXPORT_METHOD(clearTriggers) {
     [OneSignal.InAppMessages clearTriggers];
 }
 
-RCT_EXPORT_METHOD(setInAppMessageClickHandler) {
-    [OneSignal.InAppMessages setClickHandler:^(OSInAppMessageAction *action) {
-        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:[action jsonRepresentation]];
-    }];
+RCT_EXPORT_METHOD(addInAppMessageClickListener) {
+    [OneSignal.InAppMessages addClickListener:self];
 }
 
-RCT_EXPORT_METHOD(setInAppMessagesLifecycleHandler) {
-    if (!_hasSetInAppMessageLifecycleHandler) {
-       [OneSignal.InAppMessages setLifecycleHandler:[RCTOneSignal sharedInstance]];
-        _hasSetInAppMessageLifecycleHandler = true;
+RCT_EXPORT_METHOD(onClickInAppMessage:(OSInAppMessageClickEvent * _Nonnull)event {
+    [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-inAppMessageClicked" withBody:[event jsonRepresentation]];
+})
+
+RCT_EXPORT_METHOD(addInAppMessagesLifecycleListener) {
+    if (!_hasAddedInAppMessageLifecycleListener) {
+       [OneSignal.InAppMessages addLifecycleListener:[RCTOneSignal sharedInstance]];
+        _hasAddedInAppMessageLifecycleListener = true;
     }
 }
 
@@ -250,40 +240,62 @@ RCT_EXPORT_METHOD(registerForProvisionalAuthorization:(RCTResponseSenderBlock)ca
     }];
 }
 
-RCT_EXPORT_METHOD(addPermissionChangedHandler) {
+RCT_EXPORT_METHOD(addPermissionObserver) {
     if (!_hasSetPermissionObserver) {
         [OneSignal.Notifications addPermissionObserver:[RCTOneSignal sharedInstance]];
         _hasSetPermissionObserver = true;
     }
 }
 
-RCT_EXPORT_METHOD(removePermissionChangedHandler) {
+RCT_EXPORT_METHOD(removePermissionObserver) {
     if (_hasSetPermissionObserver) {
         [OneSignal.Notifications removePermissionObserver:[RCTOneSignal sharedInstance]];
         _hasSetPermissionObserver = false;
     }
 }
 
-RCT_EXPORT_METHOD(setNotificationClickHandler) {
-    [OneSignal.Notifications setNotificationOpenedHandler:^(OSNotificationOpenedResult *result) {
-        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationClicked" withBody:[result jsonRepresentation]];
-    }];
+RCT_REMAP_METHOD(permissionNative,
+            getPermissionNativeResolver:(RCTPromiseResolveBlock)resolve
+            rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(@([OneSignal.Notifications permissionNative]));
+}
+
+RCT_EXPORT_METHOD(addNotificationClickListener) {
+    [OneSignal.Notifications addClickListener:self];
+}
+
+RCT_EXPORT_METHOD(onClickNotification:(OSNotificationClickEvent * _Nonnull)event) {
+    [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationClicked" withBody:[event jsonRepresentation]];
 }
 
 RCT_EXPORT_METHOD(clearAllNotifications) {
     [OneSignal.Notifications clearAll];
 }
 
-RCT_EXPORT_METHOD(setNotificationWillShowInForegroundHandler) {
-    __weak RCTOneSignalEventEmitter *weakSelf = self;
-    [OneSignal.Notifications setNotificationWillShowInForegroundHandler:^(OSNotification *notif, OSNotificationDisplayResponse completion) {
-        RCTOneSignalEventEmitter *strongSelf = weakSelf;
-        if (!strongSelf) return;
+RCT_EXPORT_METHOD(addNotificationForegroundLifecycleListener) {
+    [OneSignal.Notifications addForegroundLifecycleListener:self];
+}
 
-        strongSelf->_receivedNotificationCache[notif.notificationId] = notif;
-        strongSelf->_notificationCompletionCache[notif.notificationId] = completion;
-        [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationWillShowInForeground" withBody:[notif jsonRepresentation]];
-    }];
+RCT_EXPORT_METHOD(onWillDisplayNotification:(OSNotificationWillDisplayEvent *)event){
+    __weak RCTOneSignalEventEmitter *weakSelf = self;
+    RCTOneSignalEventEmitter *strongSelf = weakSelf;
+    if (!strongSelf) return;
+
+    strongSelf->_notificationWillDisplayCache[event.notification.notificationId] = event;
+    [event preventDefault];
+    [RCTOneSignalEventEmitter sendEventWithName:@"OneSignal-notificationWillDisplayInForeground" withBody:[event.notification jsonRepresentation]];
+}
+
+RCT_EXPORT_METHOD(preventDefault:(NSString *)notificationId){
+    __weak RCTOneSignalEventEmitter *weakSelf = self;
+    RCTOneSignalEventEmitter *strongSelf = weakSelf;
+    OSNotificationWillDisplayEvent *event = _notificationWillDisplayCache[notificationId];
+    if (!event) {
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"OneSignal (objc): could not find notification will display event for notification with id: %@", notificationId]];
+        return;
+    }
+    strongSelf->_preventDefaultCache[event.notification.notificationId] = event;
+    [event preventDefault];
 }
 
 // OneSignal.Session namespace methods
@@ -300,14 +312,14 @@ RCT_EXPORT_METHOD(addOutcomeWithValue:(NSString *)name :(NSNumber * _Nonnull)val
 }
 
 // OneSignal.User namespace methods
-RCT_EXPORT_METHOD(addPushSubscriptionChangeHandler) {
+RCT_EXPORT_METHOD(addPushSubscriptionObserver) {
     if (!_hasSetSubscriptionObserver) {
         [OneSignal.User.pushSubscription addObserver:[RCTOneSignal sharedInstance]];
         _hasSetSubscriptionObserver = true;
     }
 }
 
-RCT_EXPORT_METHOD(removePushSubscriptionChangeHandler) {
+RCT_EXPORT_METHOD(removePushSubscriptionObserver) {
     if (_hasSetSubscriptionObserver) {
         [OneSignal.User.pushSubscription removeObserver:[RCTOneSignal sharedInstance]];
         _hasSetSubscriptionObserver = false;
@@ -408,21 +420,18 @@ RCT_EXPORT_METHOD(optOut) {
     [OneSignal.User.pushSubscription optOut];
 }
 
-RCT_EXPORT_METHOD(completeNotificationEvent:(NSString*)notificationId displayOption:(BOOL)shouldDisplay) {
-    OSNotificationDisplayResponse completion = _notificationCompletionCache[notificationId];
-    if (!completion) return;
-
-    if (shouldDisplay) {
-        OSNotification *notif = _receivedNotificationCache[notificationId];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completion(notif);
-        });
-    } else {
-        completion(nil);
+RCT_EXPORT_METHOD(displayNotification:(NSString*)notificationId) {
+    OSNotificationWillDisplayEvent *event = _notificationWillDisplayCache[notificationId];
+    if (!event) {
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"OneSignal (objc): could not find notification will display event for notification with id: %@", notificationId]];
+        return;
     }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [event.notification display];
+    });
 
-    [_notificationCompletionCache removeObjectForKey:notificationId];
-    [_receivedNotificationCache removeObjectForKey:notificationId];
+    [_preventDefaultCache removeObjectForKey:notificationId];
+    [_notificationWillDisplayCache removeObjectForKey:notificationId];
 }
 
 RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {

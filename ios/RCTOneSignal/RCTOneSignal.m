@@ -30,7 +30,7 @@
     BOOL didInitialize;
 }
 
-OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
+OSNotificationClickResult* coldStartOSNotificationClickResult;
 
 + (RCTOneSignal *) sharedInstance {
     static dispatch_once_t token = 0;
@@ -74,28 +74,28 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     [RCTOneSignalEventEmitter sendEventWithName:eventName withBody:body];
 }
 
-- (void)onOSPushSubscriptionChangedWithStateChanges:(OSPushSubscriptionStateChanges * _Nonnull)stateChanges {
-    [self sendEvent:OSEventString(SubscriptionChanged) withBody:[stateChanges.to jsonRepresentation]];
+- (void)onPushSubscriptionDidChangeWithState:(OSPushSubscriptionChangedState * _Nonnull)state {
+    [self sendEvent:OSEventString(SubscriptionChanged) withBody:[state.current jsonRepresentation]];
 }
 
-- (void)onOSPermissionChanged:(OSPermissionState *)state {
-    [self sendEvent:OSEventString(PermissionChanged) withBody:[state jsonRepresentation]];
+- (void)onNotificationPermissionDidChange:(BOOL)permission {
+    [self sendEvent:OSEventString(PermissionChanged) withBody:@{@"permission": @(permission)}];
 }
 
-- (void)onWillDisplayInAppMessage:(OSInAppMessage * _Nonnull)message {
-    [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:[message jsonRepresentation]];
+- (void)onWillDisplayInAppMessage:(OSInAppMessageWillDisplayEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(InAppMessageWillDisplay) withBody:[event.message jsonRepresentation]];
 }
 
-- (void)onDidDisplayInAppMessage:(OSInAppMessage * _Nonnull)message {
-    [self sendEvent:OSEventString(InAppMessageDidDisplay) withBody:[message jsonRepresentation]];
+- (void)onDidDisplayInAppMessage:(OSInAppMessageDidDisplayEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(InAppMessageDidDisplay) withBody:[event.message jsonRepresentation]];
 }
 
-- (void)onWillDismissInAppMessage:(OSInAppMessage * _Nonnull)message {
-    [self sendEvent:OSEventString(InAppMessageWillDismiss) withBody:[message jsonRepresentation]];
+- (void)onWillDismissInAppMessage:(OSInAppMessageWillDismissEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(InAppMessageWillDismiss) withBody:[event.message jsonRepresentation]];
 }
 
-- (void)onDidDismissInAppMessage:(OSInAppMessage * _Nonnull)message {
-    [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:[message jsonRepresentation]];
+- (void)onDidDismissInAppMessage:(OSInAppMessageDidDismissEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:[event.message jsonRepresentation]];
 }
 
 - (void)dealloc {

@@ -1,13 +1,22 @@
 import OSNotification from '../OSNotification';
+import NotificationWillDisplayEvent from '../events/NotificationWillDisplayEvent';
+
+export type NotificationEventName = "click" | "foregroundWillDisplay";
+
+export type NotificationEventTypeMap = {
+  click: NotificationClickedEvent;
+  foregroundWillDisplay: NotificationWillDisplayEvent;
+};
 
 // 0 = NotificationClicked, 1 = ButtonClicked
-export type OpenedEventActionType = 0 | 1;
+export type ClickedEventActionType = 0 | 1;
 
-export interface OpenedEvent {
-  action: OpenedEventAction;
+export interface NotificationClickedEvent {
+  action: ClickedEventAction;
   notification: OSNotification;
 }
 
-export interface OpenedEventAction {
-  type: OpenedEventActionType;
+export interface ClickedEventAction {
+  actionId ?: string;
+  type: ClickedEventActionType;
 }

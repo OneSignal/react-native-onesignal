@@ -33,60 +33,61 @@ class OSDemo extends React.Component<Props, State> {
     OneSignal.initialize(APP_ID);
     OneSignal.Debug.setLogLevel(6);
 
-    OneSignal.Notifications.setNotificationWillShowInForegroundHandler(
-      (notifReceivedEvent) => {
-        this.OSLog('OneSignal: notification will show in foreground:', notifReceivedEvent);
-        const notification = notifReceivedEvent.getNotification();
+    OneSignal.Notifications.addEventListener('foregroundWillDisplay',
+      (event) => {
+        this.OSLog('OneSignal: notification will show in foreground:', event);
+        let notif = event.getNotification();
 
         const cancelButton = {
           text: 'Cancel',
           onPress: () => {
-            notifReceivedEvent.complete();
+            event.preventDefault();
           },
           style: 'cancel',
         };
 
         const completeButton = {
-          text: 'Complete',
+          text: 'Display',
           onPress: () => {
-            notifReceivedEvent.complete(notification);
+            event.getNotification().display();
           },
         };
 
-        Alert.alert('Complete notification?', notification.title, [cancelButton, completeButton], {
+        Alert.alert('Display notification?', notif.title, [cancelButton, completeButton], {
           cancelable: true,
         });
       },
     );
 
-    OneSignal.Notifications.setNotificationClickHandler((notification) => {
-      this.OSLog('OneSignal: notification opened:', notification);
+    OneSignal.Notifications.addEventListener('click', (event) => {
+      this.OSLog('OneSignal: notification clicked:', event);
     });
 
-    OneSignal.InAppMessages.setClickHandler((event) => {
+    OneSignal.InAppMessages.addEventListener('click', (event) =>{
       this.OSLog('OneSignal IAM clicked:', event);
     });
 
-    OneSignal.InAppMessages.setLifecycleHandler({
-      onWillDisplayInAppMessage: (message) => {
-        this.OSLog('OneSignal: will display IAM: ', message.messageId);
-      },
-      onDidDisplayInAppMessage: (message) => {
-        this.OSLog('OneSignal: did display IAM: ', message.messageId);
-      },
-      onWillDismissInAppMessage: (message) => {
-        this.OSLog('OneSignal: will dismiss IAM: ', message.messageId);
-      },
-      onDidDismissInAppMessage: (message) => {
-        this.OSLog('OneSignal: did dismiss IAM: ', message.messageId);
-      },
+    OneSignal.InAppMessages.addEventListener('willDisplay', (event) =>{
+      this.OSLog('OneSignal: will display IAM: ', event);
     });
 
-    OneSignal.User.PushSubscription.addChangeHandler((subscription) => {
+    OneSignal.InAppMessages.addEventListener('didDisplay', (event) =>{
+      this.OSLog('OneSignal: did display IAM: ', event);
+    });
+
+    OneSignal.InAppMessages.addEventListener('willDismiss', (event) =>{
+      this.OSLog('OneSignal: will dismiss IAM: ', event);
+    });
+
+    OneSignal.InAppMessages.addEventListener('didDismiss', (event) =>{
+      this.OSLog('OneSignal: did dismiss IAM: ', event);
+    });
+
+    OneSignal.User.PushSubscription.addObserver((subscription) => {
       this.OSLog('OneSignal: subscription changed:', subscription);
     });
 
-    OneSignal.Notifications.addPermissionChangedHandler((granted) => {
+    OneSignal.Notifications.addPermissionObserver((granted) => {
       this.OSLog('OneSignal: permission changed:', granted.permission);
     });
   }
