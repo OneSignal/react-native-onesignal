@@ -55,7 +55,7 @@ export enum LogLevel {
 let notificationPermission = false;
 
 // Internal wrapper push subscription state that is being updated by the subscription change handler.
-let pushSubscription: PushSubscriptionState = {
+let pushSub: PushSubscriptionState = {
   id: '',
   token: '',
   optedIn: false,
@@ -70,16 +70,16 @@ async function _addPermissionObserver() {
 }
 
 async function _addPushSubscriptionObserver() {
-  OneSignal.User.PushSubscription.addEventListener(
+  OneSignal.User.pushSubscription.addEventListener(
     'change',
     (subscriptionChange) => {
-      pushSubscription = subscriptionChange.current;
+      pushSub = subscriptionChange.current;
     },
   );
 
-  pushSubscription.id = await RNOneSignal.getPushSubscriptionId();
-  pushSubscription.token = await RNOneSignal.getPushSubscriptionToken();
-  pushSubscription.optedIn = await RNOneSignal.getOptedIn();
+  pushSub.id = await RNOneSignal.getPushSubscriptionId();
+  pushSub.token = await RNOneSignal.getPushSubscriptionToken();
+  pushSub.optedIn = await RNOneSignal.getOptedIn();
 }
 
 export namespace OneSignal {
@@ -192,7 +192,7 @@ export namespace OneSignal {
   }
 
   export namespace User {
-    export namespace PushSubscription {
+    export namespace pushSubscription {
       /** Add a callback that fires when the OneSignal subscription state changes. */
       export function addEventListener(
         event: 'change',
@@ -224,7 +224,7 @@ export namespace OneSignal {
           return '';
         }
 
-        return pushSubscription.id;
+        return pushSub.id;
       }
 
       /** The readonly push subscription token */
@@ -233,7 +233,7 @@ export namespace OneSignal {
           return '';
         }
 
-        return pushSubscription.token;
+        return pushSub.token;
       }
 
       /**
@@ -247,7 +247,7 @@ export namespace OneSignal {
           return false;
         }
 
-        return pushSubscription.optedIn;
+        return pushSub.optedIn;
       }
 
       /** Enable the push notification subscription to OneSignal. */

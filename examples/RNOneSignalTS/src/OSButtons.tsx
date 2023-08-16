@@ -355,7 +355,7 @@ class OSButtons extends React.Component<Props> {
       'Get Push Subscription Id',
       async () => {
         const id =
-          await OneSignal.User.PushSubscription.getPushSubscriptionId();
+          await OneSignal.User.pushSubscription.getPushSubscriptionId();
         loggingFunction('Push Subscription Id: ', id);
       },
     );
@@ -364,24 +364,24 @@ class OSButtons extends React.Component<Props> {
       'Get Push Subscription Token',
       async () => {
         const token =
-          await OneSignal.User.PushSubscription.getPushSubscriptionToken();
+          await OneSignal.User.pushSubscription.getPushSubscriptionToken();
         loggingFunction('Push Subscription Token: ', token);
       },
     );
 
     const getOptedInButton = renderButtonView('Is Opted In', async () => {
-      const optedIn = await OneSignal.User.PushSubscription.getOptedIn();
+      const optedIn = await OneSignal.User.pushSubscription.getOptedIn();
       loggingFunction('Subscribed for the push notifications: ', optedIn);
     });
 
     const optInButton = renderButtonView('Opt In', () => {
       loggingFunction('Subscribing for the push notifications');
-      OneSignal.User.PushSubscription.optIn();
+      OneSignal.User.pushSubscription.optIn();
     });
 
     const optOutButton = renderButtonView('Opt Out', () => {
       loggingFunction('Unsubscribing from the push notifications');
-      OneSignal.User.PushSubscription.optOut();
+      OneSignal.User.pushSubscription.optOut();
     });
 
     return [

@@ -455,7 +455,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
 
-    // OneSignal.User.PushSubscription namespace methods
+    // OneSignal.User.pushSubscription namespace methods
     @ReactMethod
     public void getPushSubscriptionId(Promise promise) {
         IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
