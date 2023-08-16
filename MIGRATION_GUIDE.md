@@ -365,8 +365,8 @@ The Debug namespace is accessible via `OneSignal.Debug` and provide access to de
 
 | **React Native**                   | **Description**                                                            |
 | ---------------------------------- | -------------------------------------------------------------------------- |
-| `OneSignal.Debug.setLogLevel(6)`   | _Sets the log level the OneSignal SDK should be writing to the Xcode log._ |
-| `OneSignal.Debug.setAlertLevel(0)` | _Sets the logging level to show as alert dialogs._                         |
+| `OneSignal.Debug.setLogLevel(LogLevel.Verbose)`   | _Sets the log level the OneSignal SDK should be writing to the Xcode log._ |
+| `OneSignal.Debug.setAlertLevel(LogLevel.Verbose)` | _Sets the logging level to show as alert dialogs._                         |
 
 # Glossary
 
