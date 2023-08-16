@@ -64,6 +64,8 @@ To the match the new initialization:
 OneSignal.initialize('YOUR_ONESIGNAL_APP_ID');
 ```
 
+**for iOS:** Remove any usages of `setLaunchURLsInApp` as the method and functionality has been removed.
+
 If your integration is **not** user-centric, there is no additional startup code required. A device-scoped user _(please see definition of “**device-scoped user**” below in Glossary)_ is automatically created as part of the push subscription creation, both of which are only accessible from the current device or through the OneSignal dashboard.
 
 If your integration is user-centric, or you want the ability to identify the user beyond the current device, the `login` method should be called to identify the user:
