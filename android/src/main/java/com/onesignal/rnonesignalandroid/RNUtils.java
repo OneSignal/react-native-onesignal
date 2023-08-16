@@ -1,4 +1,4 @@
-package com.geektime.rnonesignalandroid;
+package com.onesignal.rnonesignalandroid;
 
 import java.util.ArrayList;
 import java.util.Collection;

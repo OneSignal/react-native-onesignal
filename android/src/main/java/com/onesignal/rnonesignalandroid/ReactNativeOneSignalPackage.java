@@ -1,4 +1,4 @@
-package com.geektime.rnonesignalandroid;
+package com.onesignal.rnonesignalandroid;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
