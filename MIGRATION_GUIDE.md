@@ -1,4 +1,4 @@
-# React Native v5.0.0-beta-02 Migration Guide
+# React Native v5.0.0 Migration Guide
 
 # Intro
 
@@ -136,7 +136,7 @@ OneSignal.User.removeSms('+15558675309');
 
 # API Reference
 
-Below is a comprehensive reference to the `5.0.0-beta-02` OneSignal React Native SDK.
+Below is a comprehensive reference to the `5.0.0` OneSignal React Native SDK.
 
 ## OneSignal
 
@@ -246,8 +246,8 @@ The Notifications namespace is accessible via `OneSignal.Notifications` and prov
 | `OneSignal.Notifications.removeGroupedNotifications("GROUP_KEY")`                                                    | _(Android only) Cancels a group of OneSignal notifications with the provided group key. Grouping notifications is a OneSignal concept, there is no [android.app.NotificationManager] equivalent._                                                                                                                                                                                                                   |
 | `OneSignal.Notifications.requestPermission()`<br><br>**_See below for usage_**                                       | _Prompt the user for permission to receive push notifications. This will display the native system prompt to request push notification permission._                                                                                                                                                                                                                                                                 |
 | `OneSignal.Notifications.registerForProvisionalAuthorization()`                                                      | _(iOS only) Instead of having to prompt the user for permission to send them push notifications, your app can request provisional authorization._                                                                                                                                                                                                                                                                   |
-| `OneSignal.Notifications.addEventListener("permissionChange", (observer) => {};)`<br><br>**_See below for usage_**                           | _This method will fire when a notification permission setting changes. This happens when the user enables or disables notifications for your app from the system settings outside of your app._                                                                                                                                                                                                                     |
-| `OneSignal.Notifications.removeEventListener("permissionChange", (observer) => {};)`<br><br>**_See below for usage_**                        | _Remove a push permission observer that has been previously added._                                                                                                                                                                                                                                                                                                                                                 |
+| `OneSignal.Notifications.addEventListener("permissionChange", (observer) => {});`<br><br>**_See below for usage_**                           | _This method will fire when a notification permission setting changes. This happens when the user enables or disables notifications for your app from the system settings outside of your app._                                                                                                                                                                                                                     |
+| `OneSignal.Notifications.removeEventListener("permissionChange", (observer) => {});`<br><br>**_See below for usage_**                        | _Remove a push permission observer that has been previously added._                                                                                                                                                                                                                                                                                                                                                 |
 | `OneSignal.Notifications.addEventListener("foregroundWillDisplay", (event) => {};)`<br><br>**_See below for usage_** | _Sets the handler to run before displaying a notification while the app is in focus. Use this handler to read notification data and change it or decide if the notification **_should_** show or not.<br><br>**_Note:_** this runs **_after_** the [Notification Service Extension](https://documentation.onesignal.com/docs/service-extensions) which can be used to modify the notification before showing it._ |
 | `OneSignal.Notifications.addEventListener("click", (event) => {};)`<br><br>**_See below for usage_**                 | _Sets a handler that will run whenever a notification is opened by the user._                                                                                                                                                                                                                                                                                                                                       |
 
@@ -376,11 +376,10 @@ The Debug namespace is accessible via `OneSignal.Debug` and provide access to de
 
 # Limitations
 
-- This is a Beta release so please test thorougly prior to production use.
 - Changing app IDs is not supported.
 - Any `User` namespace calls must be invoked **after** initialization. Example: `OneSignal.User.addTag("tag", "2")`
 
 # Known issues
 
 - Identity Verification
-  - We will be introducing JWT in a follow-up Alpha or Beta release.
+  - We will be introducing JWT in a follow-up release.
