@@ -1,4 +1,4 @@
-# React Native v5.0.0-beta-02 Migration Guide
+# React Native v5.0.0 Migration Guide
 
 # Intro
 
@@ -64,6 +64,8 @@ To the match the new initialization:
 OneSignal.initialize('YOUR_ONESIGNAL_APP_ID');
 ```
 
+**for iOS:** Remove any usages of `setLaunchURLsInApp` as the method and functionality has been removed.
+
 If your integration is **not** user-centric, there is no additional startup code required. A device-scoped user _(please see definition of “**device-scoped user**” below in Glossary)_ is automatically created as part of the push subscription creation, both of which are only accessible from the current device or through the OneSignal dashboard.
 
 If your integration is user-centric, or you want the ability to identify the user beyond the current device, the `login` method should be called to identify the user:
@@ -92,10 +94,10 @@ The current device’s push subscription can be retrieved via:
 
 ```typescript
 const id: string =
-  await OneSignal.User.PushSubscription.getPushSubscriptionId();
+  await OneSignal.User.pushSubscription.getPushSubscriptionId();
 const token: string =
-  await OneSignal.User.PushSubscription.getPushSubscriptionToken();
-const optedIn: boolean = await OneSignal.User.PushSubscription.getOptedIn();
+  await OneSignal.User.pushSubscription.getPushSubscriptionToken();
+const optedIn: boolean = await OneSignal.User.pushSubscription.getOptedIn();
 ```
 
 ### **Opting In and Out of Push Notifications**
@@ -105,13 +107,13 @@ To receive push notifications on the device, call the push subscription’s `opt
 Note: For greater control over prompting for push notification permission, you may use the `OneSignal.Notifications.requestPermission` method detailed below in the API Reference.
 
 ```typescript
-OneSignal.User.PushSubscription.optIn();
+OneSignal.User.pushSubscription.optIn();
 ```
 
 If at any point you want the user to stop receiving push notifications on the current device (regardless of system-level permission status), you can use the push subscription to opt out:
 
 ```typescript
-OneSignal.User.PushSubscription.optOut();
+OneSignal.User.pushSubscription.optOut();
 ```
 
 To resume receiving of push notifications (driving the native permission prompt if permissions are not available), you can opt back in with the `optIn` method from above.
@@ -134,7 +136,7 @@ OneSignal.User.removeSms('+15558675309');
 
 # API Reference
 
-Below is a comprehensive reference to the `5.0.0-beta-02` OneSignal React Native SDK.
+Below is a comprehensive reference to the `5.0.0` OneSignal React Native SDK.
 
 ## OneSignal
 
@@ -199,13 +201,13 @@ The Push Subscription namespace is accessible via `OneSignal.User.pushSubscripti
 
 | **React Native**                                                                                          | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `await OneSignal.User.PushSubscription.getId()`                                                           | _The readonly push subscription ID._                                                                                                                                                                                                                                                                                                                                             |
-| `await OneSignal.User.PushSubscription.getToken()`                                                        | _The readonly push token._                                                                                                                                                                                                                                                                                                                                                       |
-| `await OneSignal.User.PushSubscription.getOptedIn()`                                                      | _Gets a boolean value indicating whether the current user is opted in to push notifications. This returns `true` when the app has notifications permission and `optedOut` is called. **_Note:_** Does not take into account the existence of the subscription ID and push token. This boolean may return `true` but push notifications may still not be received by the user._ |
-| `OneSignal.User.PushSubscription.optIn()`                                                                 | _Call this method to receive push notifications on the device or to resume receiving of push notifications after calling `optOut`. If needed, this method will prompt the user for push notifications permission._                                                                                                                                                               |
-| `OneSignal.User.PushSubscription.optOut()`                                                                | _If at any point you want the user to stop receiving push notifications on the current device (regardless of system-level permission status), you can call this method to opt out._                                                                                                                                                                                              |
-| `OneSignal.User.PushSubscription.addEventListener('change', listener: (event) => void)`<br><br>**_See below for usage_** | _The `OSPushSubscriptionObserver.onPushSubscriptionDidChange` method will be fired on the passed-in object when the push subscription changes._                                                                                                                                   |
-| `OneSignal.User.PushSubscription.removeEventListener('change', listener)`<br><br>**_See below for usage_**               | _Remove a push subscription observer that has been previously added._                                                                                                                                                                                                                                                                                                            |
+| `await OneSignal.User.pushSubscription.getId()`                                                           | _The readonly push subscription ID._                                                                                                                                                                                                                                                                                                                                             |
+| `await OneSignal.User.pushSubscription.getToken()`                                                        | _The readonly push token._                                                                                                                                                                                                                                                                                                                                                       |
+| `await OneSignal.User.pushSubscription.getOptedIn()`                                                      | _Gets a boolean value indicating whether the current user is opted in to push notifications. This returns `true` when the app has notifications permission and `optedOut` is called. **_Note:_** Does not take into account the existence of the subscription ID and push token. This boolean may return `true` but push notifications may still not be received by the user._ |
+| `OneSignal.User.pushSubscription.optIn()`                                                                 | _Call this method to receive push notifications on the device or to resume receiving of push notifications after calling `optOut`. If needed, this method will prompt the user for push notifications permission._                                                                                                                                                               |
+| `OneSignal.User.pushSubscription.optOut()`                                                                | _If at any point you want the user to stop receiving push notifications on the current device (regardless of system-level permission status), you can call this method to opt out._                                                                                                                                                                                              |
+| `OneSignal.User.pushSubscription.addEventListener('change', listener: (event) => void)`<br><br>**_See below for usage_** | _The `OSPushSubscriptionObserver.onPushSubscriptionDidChange` method will be fired on the passed-in object when the push subscription changes._                                                                                                                                   |
+| `OneSignal.User.pushSubscription.removeEventListener('change', listener)`<br><br>**_See below for usage_**               | _Remove a push subscription observer that has been previously added._                                                                                                                                                                                                                                                                                                            |
 
 ### Push Subscription Observer
 
@@ -213,12 +215,12 @@ Any object implementing the `OSPushSubscriptionObserver` protocol can be added a
 
 ```typescript
 // Create an observer
-OneSignal.User.PushSubscription.addEventListener('change', (subscription) => {
+OneSignal.User.pushSubscription.addEventListener('change', (subscription) => {
   console.log('OneSignal: subscription changed:', subscription);
 });
 
 // Removes the previously added observer
-OneSignal.User.PushSubscription.removeEventListener('change', subscription);
+OneSignal.User.pushSubscription.removeEventListener('change', subscription);
 ```
 
 ## Session Namespace
@@ -244,8 +246,8 @@ The Notifications namespace is accessible via `OneSignal.Notifications` and prov
 | `OneSignal.Notifications.removeGroupedNotifications("GROUP_KEY")`                                                    | _(Android only) Cancels a group of OneSignal notifications with the provided group key. Grouping notifications is a OneSignal concept, there is no [android.app.NotificationManager] equivalent._                                                                                                                                                                                                                   |
 | `OneSignal.Notifications.requestPermission()`<br><br>**_See below for usage_**                                       | _Prompt the user for permission to receive push notifications. This will display the native system prompt to request push notification permission._                                                                                                                                                                                                                                                                 |
 | `OneSignal.Notifications.registerForProvisionalAuthorization()`                                                      | _(iOS only) Instead of having to prompt the user for permission to send them push notifications, your app can request provisional authorization._                                                                                                                                                                                                                                                                   |
-| `OneSignal.Notifications.addEventListener("permissionChange", (observer) => {};)`<br><br>**_See below for usage_**                           | _This method will fire when a notification permission setting changes. This happens when the user enables or disables notifications for your app from the system settings outside of your app._                                                                                                                                                                                                                     |
-| `OneSignal.Notifications.removeEventListener("permissionChange", (observer) => {};)`<br><br>**_See below for usage_**                        | _Remove a push permission observer that has been previously added._                                                                                                                                                                                                                                                                                                                                                 |
+| `OneSignal.Notifications.addEventListener("permissionChange", (observer) => {});`<br><br>**_See below for usage_**                           | _This method will fire when a notification permission setting changes. This happens when the user enables or disables notifications for your app from the system settings outside of your app._                                                                                                                                                                                                                     |
+| `OneSignal.Notifications.removeEventListener("permissionChange", (observer) => {});`<br><br>**_See below for usage_**                        | _Remove a push permission observer that has been previously added._                                                                                                                                                                                                                                                                                                                                                 |
 | `OneSignal.Notifications.addEventListener("foregroundWillDisplay", (event) => {};)`<br><br>**_See below for usage_** | _Sets the handler to run before displaying a notification while the app is in focus. Use this handler to read notification data and change it or decide if the notification **_should_** show or not.<br><br>**_Note:_** this runs **_after_** the [Notification Service Extension](https://documentation.onesignal.com/docs/service-extensions) which can be used to modify the notification before showing it._ |
 | `OneSignal.Notifications.addEventListener("click", (event) => {};)`<br><br>**_See below for usage_**                 | _Sets a handler that will run whenever a notification is opened by the user._                                                                                                                                                                                                                                                                                                                                       |
 
@@ -363,8 +365,8 @@ The Debug namespace is accessible via `OneSignal.Debug` and provide access to de
 
 | **React Native**                   | **Description**                                                            |
 | ---------------------------------- | -------------------------------------------------------------------------- |
-| `OneSignal.Debug.setLogLevel(6)`   | _Sets the log level the OneSignal SDK should be writing to the Xcode log._ |
-| `OneSignal.Debug.setAlertLevel(0)` | _Sets the logging level to show as alert dialogs._                         |
+| `OneSignal.Debug.setLogLevel(LogLevel.Verbose)`   | _Sets the log level the OneSignal SDK should be writing to the Xcode log._ |
+| `OneSignal.Debug.setAlertLevel(LogLevel.Verbose)` | _Sets the logging level to show as alert dialogs._                         |
 
 # Glossary
 
@@ -374,11 +376,11 @@ The Debug namespace is accessible via `OneSignal.Debug` and provide access to de
 
 # Limitations
 
-- This is a Beta release so please test thorougly prior to production use.
 - Changing app IDs is not supported.
 - Any `User` namespace calls must be invoked **after** initialization. Example: `OneSignal.User.addTag("tag", "2")`
+- In the SDK, the user state is only refreshed from the server when a new session is started (cold start or backgrounded for over 30 seconds) or when the user is logged in. This is by design.
 
 # Known issues
 
 - Identity Verification
-  - We will be introducing JWT in a follow-up Alpha or Beta release.
+  - We will be introducing Identity Verification using JWT in a follow up release
