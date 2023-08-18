@@ -33,7 +33,7 @@ Authors:
  - Ruslan Kesheshian
 */
 
-package com.geektime.rnonesignalandroid;
+package com.onesignal.rnonesignalandroid;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
