@@ -1,4 +1,4 @@
-import {OneSignal, OutcomeEvent} from 'react-native-onesignal';
+import {OneSignal} from 'react-native-onesignal';
 import * as React from 'react';
 import {StyleSheet, View, Platform} from 'react-native';
 import {renderButtonView} from './Helpers';
