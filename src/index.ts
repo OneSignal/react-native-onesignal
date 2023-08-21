@@ -790,8 +790,11 @@ export {
   InAppMessageDidDisplayEvent,
   InAppMessageWillDismissEvent,
   InAppMessageDidDismissEvent,
+  PushSubscriptionState,
+  PushSubscriptionChangedState,
+  OSNotificationPermission,
 };
 
 export { default as OSNotification } from './OSNotification';
 export { NotificationClickResult } from './models/NotificationEvents';
-export { OSNotificationPermission } from './models/Subscription';
+export { InAppMessageClickResult } from './models/InAppMessage';
