@@ -28,7 +28,7 @@ OneSignal uses a built-in **alias label** called `external_id` which supports ex
 
 # Migration Guide (v3 to v5)
 
-The React Native SDK accesses the OneSignal native iOS and Android SDKs. For this update, all SDK versions are aligning across OneSignal’s suite of client SDKs. As such, the React Native SDK is making the jump from `v3` to `v5`.
+The React Native SDK accesses the OneSignal native iOS and Android SDKs. For this update, all SDK versions are aligning across OneSignal’s suite of client SDKs. As such, the React Native SDK is making the jump from `v3` to `v5`. See existing install instructions [here](https://documentation.onesignal.com/docs/react-native-sdk-setup) for more information.
 
 ## iOS
 ### Notification Service Extension Changes
@@ -47,9 +47,9 @@ In your Project Root > ios > Podfile, update the notification service extension:
     end
 ```
 
-Close Xcode. While still in the ios directory, run `pod install`` again.
+Close Xcode. While still in the ios directory, run `pod install` again.
 
-Re-Open the . xcworkspace file in Xcode. In the OneSignalNotificationServiceExtension directory > NotificationService.m or NotificationService.swift file, replace the whole file contents with the code below:
+Re-Open the `. xcworkspace` file in Xcode. In the OneSignalNotificationServiceExtension directory > `NotificationService.m` or `NotificationService.swift` file, replace the whole file contents with the code below:
 
 **Objective-C**
 ```objc
