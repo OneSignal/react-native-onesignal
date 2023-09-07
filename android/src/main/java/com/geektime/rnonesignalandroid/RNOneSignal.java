@@ -154,21 +154,14 @@ public class RNOneSignal extends ReactContextBaseJavaModule
    }
 
    // Initialize OneSignal only once when an Activity is available.
-   // React creates an instance of this class to late for OneSignal to get the current Activity
+   // React creates an instance of this class too late for OneSignal to get the current Activity
    // based on registerActivityLifecycleCallbacks it uses to listen for the first Activity.
    // However it seems it is also to soon to call getCurrentActivity() from the reactContext as well.
    // This will normally succeed when onHostResume fires instead.
    private void initOneSignal() {
+      oneSignalInitDone = true;
       OneSignal.sdkType = "react";
       Context context = mReactApplicationContext.getCurrentActivity();
-
-      if (oneSignalInitDone) {
-         Log.e("OneSignal", "Already initialized the OneSignal React-Native SDK");
-         return;
-      }
-
-      oneSignalInitDone = true;
-
 
       if (context == null) {
          // in some cases, especially when react-native-navigation is installed,
@@ -844,7 +837,14 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @Override
    public void onHostResume() {
-      initOneSignal();
+      // Initialize OneSignal only once when an Activity is available.
+      // React creates an instance of this class too late for OneSignal to get the current Activity
+      // based on registerActivityLifecycleCallbacks it uses to listen for the first Activity.
+      // However it seems it is also to soon to call getCurrentActivity() from the reactContext as well.
+      // This will normally succeed when onHostResume fires instead.
+      if (!oneSignalInitDone) {
+        initOneSignal();
+      }
    }
 
    @Override
