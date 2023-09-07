@@ -75,6 +75,9 @@ import com.onesignal.OneSignal.OutcomeCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 public class RNOneSignal extends ReactContextBaseJavaModule
@@ -143,6 +146,32 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    private JSONObject jsonFromErrorMessageString(String errorMessage) throws JSONException {
       return new JSONObject().put("error", errorMessage);
+   }
+
+   private void sendLogToReactNative(String log) {
+      ReactContext reactContext = getReactApplicationContextIfActiveOrWarn();
+      WritableMap params = Arguments.createMap();
+      params.putString("log", log);
+
+      reactContext
+              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+              .emit("OneSignal-log", params);
+   }
+
+   private void setupLogPipe() {
+      try {
+        Process process = Runtime.getRuntime().exec("logcat");
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            if (line.contains("OneSignal")) {
+                sendLogToReactNative(line);
+            }
+        }
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
    }
 
    public RNOneSignal(ReactApplicationContext reactContext) {
@@ -481,6 +510,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
    @ReactMethod
    public void setLogLevel(int logLevel, int visualLogLevel) {
+      setupLogPipe();
       OneSignal.setLogLevel(logLevel, visualLogLevel);
    }
 
