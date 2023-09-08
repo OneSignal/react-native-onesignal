@@ -48,7 +48,10 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+
 import com.onesignal.Continue;
 import com.onesignal.OneSignal;
 import com.onesignal.debug.LogLevel;
@@ -74,6 +77,9 @@ import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 public class RNOneSignal extends ReactContextBaseJavaModule implements
@@ -176,6 +182,29 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
     }
 
+    private void sendLogToReactNative(String log) {
+      WritableMap params = Arguments.createMap();
+      params.putString("log", log);
+      sendEvent("OneSignal-log", params);
+    }
+
+    private void setupLogPipe() {
+      try {
+        Log.i("OneSignal", "Setting up log pipe");
+        Process process = Runtime.getRuntime().exec("logcat");
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            if (line.contains("OneSignal")) {
+                sendLogToReactNative(line);
+            }
+        }
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
+    }
+
     public RNOneSignal(ReactApplicationContext reactContext) {
         super(reactContext);
         mReactApplicationContext = reactContext;
@@ -213,12 +242,17 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     // OneSignal namespace methods
     @ReactMethod
     public void initialize(String appId) {
+        Log.i("OneSignal", "Initializing the OneSignal React-Native SDK");
         Context context = mReactApplicationContext.getCurrentActivity();
 
         if (oneSignalInitDone) {
             Log.e("OneSignal", "Already initialized the OneSignal React-Native SDK");
             return;
         }
+
+        Log.i("OneSignal", "Setting up log pipe");
+        setupLogPipe();
+        Log.i("OneSignal", "Finished settin up log pipe");
 
         oneSignalInitDone = true;
 

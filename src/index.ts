@@ -139,6 +139,10 @@ export namespace OneSignal {
     export function setLogLevel(nsLogLevel: LogLevel) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
+      eventManager.addEventListener('OneSignal-log', (data) => {
+        console.log(data);
+      });
+
       RNOneSignal.setLogLevel(nsLogLevel);
     }
 
