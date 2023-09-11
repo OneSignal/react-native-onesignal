@@ -12,6 +12,7 @@ import {
   NOTIFICATION_WILL_DISPLAY,
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
+  LOG_PIPE,
 } from './events/events';
 import {
   NotificationEventName,
@@ -132,6 +133,10 @@ export namespace OneSignal {
   }
 
   export namespace Debug {
+    interface LogPipeEvent {
+      log: string;
+    }
+
     /**
      * Enable logging to help debug if you run into an issue setting up OneSignal.
      * @param {LogLevel} nsLogLevel - Sets the logging level to print to the Android LogCat log or Xcode log.
@@ -139,8 +144,8 @@ export namespace OneSignal {
     export function setLogLevel(nsLogLevel: LogLevel) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      eventManager.addEventListener('OneSignal-log', (data) => {
-        console.log(data);
+      eventManager.addEventListener<LogPipeEvent>(LOG_PIPE, (data) => {
+        console.log(data.log);
       });
 
       RNOneSignal.setLogLevel(nsLogLevel);
