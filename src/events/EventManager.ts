@@ -98,7 +98,7 @@ export default class EventManager {
             );
           });
         } else if (eventName === PERMISSION_CHANGED) {
-          const typedPayload = payload as {permission: boolean}
+          const typedPayload = payload as { permission: boolean };
           handlerArray.forEach((handler) => {
             handler(typedPayload.permission);
           });
