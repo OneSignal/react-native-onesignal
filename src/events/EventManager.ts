@@ -97,6 +97,11 @@ export default class EventManager {
               new NotificationWillDisplayEvent(payload as OSNotification),
             );
           });
+        } else if (eventName === PERMISSION_CHANGED) {
+          const typedPayload = payload as {permission: boolean}
+          handlerArray.forEach((handler) => {
+            handler(typedPayload.permission);
+          });
         } else {
           handlerArray.forEach((handler) => {
             handler(payload);
