@@ -46,6 +46,8 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
     if (didInitialize)
         return;
 
+    OneSignalWrapper.sdkType = @"reactnative";
+    OneSignalWrapper.sdkVersion = @"050000";
     [OneSignal setLaunchOptions:launchOptions];
     didInitialize = true;
 }
