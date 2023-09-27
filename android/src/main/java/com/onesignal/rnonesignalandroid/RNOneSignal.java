@@ -439,7 +439,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void canRequestNotificationPermission(Promise promise) {
-        promise.resolve(true);
+        promise.resolve(OneSignal.getNotifications().getCanRequestPermission());
     }
 
     @ReactMethod
