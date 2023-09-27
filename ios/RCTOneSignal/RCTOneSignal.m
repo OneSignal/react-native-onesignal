@@ -41,14 +41,15 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
     return _sharedInstance;
 }
 
-- (void)setLaunchOptions:(NSDictionary *)launchOptions {
+- (void)initOneSignal:(NSDictionary *)launchOptions {
 
     if (didInitialize)
         return;
 
     OneSignalWrapper.sdkType = @"reactnative";
     OneSignalWrapper.sdkVersion = @"050000";
-    [OneSignal setLaunchOptions:launchOptions];
+    // initialize the SDK with a nil app ID so cold start click listeners can be triggered
+    [OneSignal initialize:nil withLaunchOptions:launchOptions];
     didInitialize = true;
 }
 
