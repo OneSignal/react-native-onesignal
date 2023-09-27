@@ -52,6 +52,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.onesignal.Continue;
 import com.onesignal.OneSignal;
 import com.onesignal.debug.LogLevel;
+import com.onesignal.common.OneSignalWrapper;
 import com.onesignal.inAppMessages.IInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessageClickListener;
 import com.onesignal.inAppMessages.IInAppMessageClickEvent;
@@ -214,6 +215,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void initialize(String appId) {
         Context context = mReactApplicationContext.getCurrentActivity();
+        OneSignalWrapper.setSdkType("reactnative");
+        OneSignalWrapper.setSdkVersion("050000");
 
         if (oneSignalInitDone) {
             Log.e("OneSignal", "Already initialized the OneSignal React-Native SDK");

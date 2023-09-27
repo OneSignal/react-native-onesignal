@@ -24,7 +24,6 @@ import {
   PushSubscriptionChangedState,
 } from './models/Subscription';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
-import { OutcomeEvent } from './models/Outcomes';
 import {
   InAppMessage,
   InAppMessageEventTypeMap,
@@ -791,9 +790,11 @@ export {
   InAppMessageDidDisplayEvent,
   InAppMessageWillDismissEvent,
   InAppMessageDidDismissEvent,
-  OutcomeEvent,
+  PushSubscriptionState,
+  PushSubscriptionChangedState,
+  OSNotificationPermission,
 };
 
 export { default as OSNotification } from './OSNotification';
 export { NotificationClickResult } from './models/NotificationEvents';
-export { OSNotificationPermission } from './models/Subscription';
+export { InAppMessageClickResult } from './models/InAppMessage';
