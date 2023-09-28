@@ -60,7 +60,7 @@ Replace the following:
 To the match the new initialization:
 
 ```typescript
-    OneSignal.init("YOUR_ONESIGNAL_APP_ID");
+    OneSignal.initialize("YOUR_ONESIGNAL_APP_ID");
 ```
 
 If your integration is **not** user-centric, there is no additional startup code required. A device-scoped user *(please see definition of “**device-scoped user**” below in Glossary)* is automatically created as part of the push subscription creation, both of which are only accessible from the current device or through the OneSignal dashboard.
