@@ -8,6 +8,12 @@ android {
     compileSdkVersion safeExtGet('compileSdkVersion', 28)
     buildToolsVersion safeExtGet('buildToolsVersion', '28.0.3')
 
+    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+    
+    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+      namespace "com.geektime.rnonesignalandroid"
+    }
+
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 16)
     }
