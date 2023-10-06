@@ -216,7 +216,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     public void initialize(String appId) {
         Context context = mReactApplicationContext.getCurrentActivity();
         OneSignalWrapper.setSdkType("reactnative");
-        OneSignalWrapper.setSdkVersion("050001");
+        OneSignalWrapper.setSdkVersion("050002");
 
         if (oneSignalInitDone) {
             Log.e("OneSignal", "Already initialized the OneSignal React-Native SDK");
