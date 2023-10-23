@@ -139,6 +139,14 @@ class OSButtons extends React.Component<Props> {
       },
     );
 
+    const permissionNativeButton = renderButtonView(
+      'Permission Native',
+      async () => {
+        const granted = await OneSignal.Notifications.permissionNative();
+        loggingFunction(`Permission Native: ${granted}`);
+      },
+    );
+
     const canRequestPermissionButton = renderButtonView(
       'Can Request Permission',
       async () => {
@@ -151,9 +159,8 @@ class OSButtons extends React.Component<Props> {
       'Request Permission',
       async () => {
         loggingFunction('Requesting notification permission');
-        OneSignal.Notifications.requestPermission(false, (granted) => {
-          loggingFunction(`Notification permission granted ${granted}`);
-        });
+        const granted = await OneSignal.Notifications.requestPermission(false);
+        loggingFunction(`Notification permission granted ${granted}`);
       },
     );
 
@@ -167,6 +174,7 @@ class OSButtons extends React.Component<Props> {
 
     return [
       hasPermissionButton,
+      permissionNativeButton,
       canRequestPermissionButton,
       requestPermissionButton,
       clearOneSignalNotificationsButton,
