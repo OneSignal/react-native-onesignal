@@ -428,7 +428,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void requestNotificationPermission(final boolean fallbackToSettings, Promise promise) {
         OneSignal.getNotifications().requestPermission(fallbackToSettings, Continue.with(result -> {
-            promise.resolve(result.isSuccess());
+            if (result.isSuccess()) {
+                promise.resolve(result.getData());
+            } else {
+                promise.reject(result.getThrowable().getMessage());
+            }
         }));
     }
 
