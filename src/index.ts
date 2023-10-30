@@ -249,14 +249,14 @@ export namespace OneSignal {
         return pushSub.optedIn;
       }
 
-      /** Enable the push notification subscription to OneSignal. */
+      /** Disable the push notification subscription to OneSignal. */
       export function optOut() {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.optOut();
       }
 
-      /** Disable the push notification subscription to OneSignal. */
+      /** Enable the push notification subscription to OneSignal. */
       export function optIn() {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
