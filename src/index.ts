@@ -413,6 +413,10 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
       }
+      // if permission already exists, return early as the native call will not resolve
+      if (hasPermission()) {
+        return Promise.resolve(true);
+      }
 
       return RNOneSignal.requestNotificationPermission(fallbackToSettings);
     }
