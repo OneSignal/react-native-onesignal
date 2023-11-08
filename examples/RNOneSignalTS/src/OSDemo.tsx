@@ -35,7 +35,7 @@ class OSDemo extends React.Component<Props, State> {
 
     async componentDidMount() {
         /* O N E S I G N A L   S E T U P */
-        OneSignal.setAppId("ce8572ae-ff57-4e77-a265-5c91f00ecc4c");
+        OneSignal.setAppId("c8866b51-bc0a-4e5e-a0d4-8f0518964082");
         OneSignal.setLogLevel(6, 0);
         OneSignal.setRequiresUserPrivacyConsent(this.state.requiresPrivacyConsent);
 
