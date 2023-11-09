@@ -249,14 +249,14 @@ export namespace OneSignal {
         return pushSub.optedIn;
       }
 
-      /** Enable the push notification subscription to OneSignal. */
+      /** Disable the push notification subscription to OneSignal. */
       export function optOut() {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
         RNOneSignal.optOut();
       }
 
-      /** Disable the push notification subscription to OneSignal. */
+      /** Enable the push notification subscription to OneSignal. */
       export function optIn() {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
 
@@ -412,6 +412,10 @@ export namespace OneSignal {
     ): Promise<boolean> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
+      }
+      // if permission already exists, return early as the native call will not resolve
+      if (hasPermission()) {
+        return Promise.resolve(true);
       }
 
       return RNOneSignal.requestNotificationPermission(fallbackToSettings);
