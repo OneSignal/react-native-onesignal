@@ -264,7 +264,10 @@ RCT_EXPORT_METHOD(addNotificationClickListener) {
 }
 
 RCT_EXPORT_METHOD(addNotificationForegroundLifecycleListener) {
-    [OneSignal.Notifications addForegroundLifecycleListener:self];
+    if (!_hasAddedNotificationLifecycleListener) {
+        [OneSignal.Notifications addForegroundLifecycleListener:self];
+        _hasAddedNotificationLifecycleListener = true;
+    }
 }
 
 RCT_EXPORT_METHOD(onWillDisplayNotification:(OSNotificationWillDisplayEvent *)event){
