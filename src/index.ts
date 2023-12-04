@@ -391,6 +391,15 @@ export namespace OneSignal {
 
       RNOneSignal.removeTags(keys);
     }
+
+    /** Returns the local tags for the current user. */
+    export function getTags(): Promise<{ [key: string]: string }> {
+      if (!isNativeModuleLoaded(RNOneSignal)) {
+        return Promise.reject(new Error('OneSignal native module not loaded'));
+      }
+
+      return RNOneSignal.getTags();
+    }
   }
 
   export namespace Notifications {

@@ -357,6 +357,11 @@ RCT_EXPORT_METHOD(removeTags:(NSArray *)keys) {
     [OneSignal.User removeTags:keys];
 }
 
+RCT_EXPORT_METHOD(getTags:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    NSDictionary<NSString *, NSString *> *tags = [OneSignal.User getTags];
+    resolve(tags);
+}
+
 RCT_EXPORT_METHOD(addAlias:(NSString *)label :(NSString *)id) {
     [OneSignal.User addAliasWithLabel:label id:id];
 }
