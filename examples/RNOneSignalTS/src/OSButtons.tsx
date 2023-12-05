@@ -276,6 +276,11 @@ class OSButtons extends React.Component<Props> {
       OneSignal.User.removeTags(['my_tag1', 'my_tag2']);
     });
 
+    const getTagsButton = renderButtonView('Get tags', async () => {
+        const tags = await OneSignal.User.getTags();
+        loggingFunction('Tags:', tags);
+    });
+
     const setLanguageButton = renderButtonView('Set Language', () => {
       loggingFunction(
         'Attempting to set language: ',
@@ -346,6 +351,7 @@ class OSButtons extends React.Component<Props> {
       deleteTagWithKeyButton,
       addTagsButton,
       removeTagsButton,
+      getTagsButton,
       setLanguageButton,
       addSmsButton,
       removeSmsButton,

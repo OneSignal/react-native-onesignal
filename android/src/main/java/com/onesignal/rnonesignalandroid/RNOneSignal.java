@@ -49,6 +49,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
 import com.onesignal.Continue;
 import com.onesignal.OneSignal;
 import com.onesignal.debug.LogLevel;
@@ -73,9 +75,9 @@ import com.onesignal.user.subscriptions.IPushSubscriptionObserver;
 import com.onesignal.user.subscriptions.PushSubscriptionState;
 import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class RNOneSignal extends ReactContextBaseJavaModule implements
         IPushSubscriptionObserver,
@@ -571,6 +573,16 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void removeTags(ReadableArray tagKeys) {
         OneSignal.getUser().removeTags(RNUtils.convertReadableArrayIntoStringCollection(tagKeys));
+    }
+
+    @ReactMethod
+    public void getTags(Promise promise) {
+        Map<String, String> tags = OneSignal.getUser().getTags();
+        WritableMap writableTags = Arguments.createMap();
+        for (Map.Entry<String, String> entry : tags.entrySet()) {
+            writableTags.putString(entry.getKey(), entry.getValue());
+        }
+        promise.resolve(writableTags); 
     }
 
     @ReactMethod

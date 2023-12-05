@@ -211,7 +211,7 @@ The User namespace is accessible via `OneSignal.User` and provides access to use
 | `OneSignal.User.addTags({"KEY_01": "VALUE_01", "KEY_02": "VALUE_02"})`                      | _Add multiple tags for the current user. Tags are key:value pairs used as building blocks for targeting specific users and/or personalizing messages. If the tag key already exists, it will be replaced with the value provided here._ |
 | `OneSignal.User.removeTag("KEY")`                                                           | _Remove the data tag with the provided key from the current user._                                                                                                                                                                      |
 | `OneSignal.User.removeTags(["KEY_01", "KEY_02"])`                                           | _Remove multiple tags with the provided keys from the current user._                                                                                                                                                                    |
-
+| `OneSignal.User.getTags()`                                                                  | _Returns the local tags for the current user._|
 ## Push Subscription Namespace
 
 The Push Subscription namespace is accessible via `OneSignal.User.pushSubscription` and provides access to push subscription-scoped functionality.
