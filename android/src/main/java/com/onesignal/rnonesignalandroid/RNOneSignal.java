@@ -577,16 +577,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void getTags(Promise promise) {
-        try {
-            Map<String, String> tags = OneSignal.getUser().getTags();
-            WritableMap writableTags = Arguments.createMap();
-            for (Map.Entry<String, String> entry : tags.entrySet()) {
-                writableTags.putString(entry.getKey(), entry.getValue());
-            }
-            promise.resolve(writableTags);
-        } catch (Throwable t) {
-            promise.reject(t.getMessage());
+        Map<String, String> tags = OneSignal.getUser().getTags();
+        WritableMap writableTags = Arguments.createMap();
+        for (Map.Entry<String, String> entry : tags.entrySet()) {
+            writableTags.putString(entry.getKey(), entry.getValue());
         }
+        promise.resolve(writableTags); 
     }
 
     @ReactMethod
