@@ -10,7 +10,7 @@
     BOOL _hasSetSubscriptionObserver;
     BOOL _hasSetPermissionObserver;
     BOOL _hasAddedNotificationClickListener;
-    BOOL _hasAddedNotificationLifecycleListener;
+    BOOL _hasAddedNotificationForegroundLifecycleListener;
     BOOL _hasAddedInAppMessageClickListener;
     BOOL _hasAddedInAppMessageLifecycleListener;
     NSMutableDictionary* _preventDefaultCache;
@@ -264,7 +264,10 @@ RCT_EXPORT_METHOD(addNotificationClickListener) {
 }
 
 RCT_EXPORT_METHOD(addNotificationForegroundLifecycleListener) {
-    [OneSignal.Notifications addForegroundLifecycleListener:self];
+    if (!_hasAddedNotificationForegroundLifecycleListener) {
+        [OneSignal.Notifications addForegroundLifecycleListener:self];
+        _hasAddedNotificationForegroundLifecycleListener = true;
+    }
 }
 
 RCT_EXPORT_METHOD(onWillDisplayNotification:(OSNotificationWillDisplayEvent *)event){
