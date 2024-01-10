@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - run: npm install @octokit/action
+      - run: npm install @octokit/action@6.0.6
       - uses: actions/github-script@v6
         id: set-time 
         with:
