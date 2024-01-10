@@ -27,6 +27,8 @@ import com.onesignal.notifications.INotificationReceivedEvent;
 import com.onesignal.user.subscriptions.IPushSubscription;
 import com.onesignal.user.subscriptions.PushSubscriptionState;
 import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
+import com.onesignal.user.state.UserState;
+import com.onesignal.user.state.UserChangedState;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -190,10 +192,30 @@ public class RNUtils {
         return hash;
     }
 
+    public static HashMap<String, Object> convertUserStateToMap(UserState user) {
+        HashMap<String, Object> hash = new HashMap<>();
+
+        if (!user.getExternalId().isEmpty()) {
+            hash.put("externalId", user.getExternalId());
+        }
+        if (!user.getOnesignalId().isEmpty()) {
+            hash.put("onesignalId", user.getOnesignalId());
+        }
+
+        return hash;
+    }
+
     public static HashMap<String, Object> convertPushSubscriptionChangedStateToMap(PushSubscriptionChangedState state) {
         HashMap<String, Object> hash = new HashMap<>();
         hash.put("current", convertPushSubscriptionStateToMap(state.getCurrent()));
         hash.put("previous", convertPushSubscriptionStateToMap(state.getPrevious()));
+
+        return hash;
+    }
+
+    public static HashMap<String, Object> convertUserChangedStateToMap(UserChangedState state) {
+        HashMap<String, Object> hash = new HashMap<>();
+        hash.put("current", convertUserStateToMap(state.getCurrent()));
 
         return hash;
     }
