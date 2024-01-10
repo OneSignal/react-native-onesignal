@@ -9,6 +9,7 @@
     BOOL _hasListeners;
     BOOL _hasSetSubscriptionObserver;
     BOOL _hasSetPermissionObserver;
+    BOOL _hasSetUserStateObserver;
     BOOL _hasAddedNotificationClickListener;
     BOOL _hasAddedNotificationForegroundLifecycleListener;
     BOOL _hasAddedInAppMessageClickListener;
@@ -310,6 +311,20 @@ RCT_EXPORT_METHOD(addOutcomeWithValue:(NSString *)name :(NSNumber * _Nonnull)val
 }
 
 // OneSignal.User namespace methods
+RCT_EXPORT_METHOD(addUserStateObserver) {
+    if (!_hasSetUserStateObserver) {
+        [OneSignal.User addObserver:[RCTOneSignal sharedInstance]];
+        _hasSetUserStateObserver = true;
+    }
+}
+
+RCT_EXPORT_METHOD(removeUserStateObserver) {
+    if (_hasSetUserStateObserver) {
+        [OneSignal.User removeObserver:[RCTOneSignal sharedInstance]];
+        _hasSetUserStateObserver = false;
+    }
+}
+
 RCT_EXPORT_METHOD(addPushSubscriptionObserver) {
     if (!_hasSetSubscriptionObserver) {
         [OneSignal.User.pushSubscription addObserver:[RCTOneSignal sharedInstance]];
@@ -363,6 +378,18 @@ RCT_EXPORT_METHOD(removeTags:(NSArray *)keys) {
 RCT_EXPORT_METHOD(getTags:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSDictionary<NSString *, NSString *> *tags = [OneSignal.User getTags];
     resolve(tags);
+}
+
+RCT_REMAP_METHOD(getOnesignalId,
+                 getOnesignalIdResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(OneSignal.User.onesignalId);
+}
+
+RCT_REMAP_METHOD(getExternalId,
+                 getExternalIdResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(OneSignal.User.externalId);
 }
 
 RCT_EXPORT_METHOD(addAlias:(NSString *)label :(NSString *)id) {
