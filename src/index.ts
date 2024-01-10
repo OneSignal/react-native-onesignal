@@ -24,10 +24,7 @@ import {
   OSNotificationPermission,
   PushSubscriptionChangedState,
 } from './models/Subscription';
-import {
-  UserState,
-  UserChangedState,
-} from './models/User';
+import { UserState, UserChangedState } from './models/User';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import {
   InAppMessage,
