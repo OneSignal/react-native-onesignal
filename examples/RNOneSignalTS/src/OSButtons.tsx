@@ -277,8 +277,8 @@ class OSButtons extends React.Component<Props> {
     });
 
     const getTagsButton = renderButtonView('Get tags', async () => {
-        const tags = await OneSignal.User.getTags();
-        loggingFunction('Tags:', tags);
+      const tags = await OneSignal.User.getTags();
+      loggingFunction('Tags:', tags);
     });
 
     const setLanguageButton = renderButtonView('Set Language', () => {
@@ -357,7 +357,7 @@ class OSButtons extends React.Component<Props> {
         loggingFunction('External Id:', externalId);
       },
     );
-    
+
     return [
       loginButton,
       logoutButton,
@@ -376,7 +376,7 @@ class OSButtons extends React.Component<Props> {
       addAliasesButton,
       removeAliasesButton,
       getOnesignalIdButton,
-      getExternalIdButton
+      getExternalIdButton,
     ];
   }
 
