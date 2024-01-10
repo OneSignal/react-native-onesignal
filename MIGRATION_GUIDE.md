@@ -212,6 +212,22 @@ The User namespace is accessible via `OneSignal.User` and provides access to use
 | `OneSignal.User.removeTag("KEY")`                                                           | _Remove the data tag with the provided key from the current user._                                                                                                                                                                      |
 | `OneSignal.User.removeTags(["KEY_01", "KEY_02"])`                                           | _Remove multiple tags with the provided keys from the current user._                                                                                                                                                                    |
 | `OneSignal.User.getTags()`                                                                  | _Returns the local tags for the current user._|
+| `OneSignal.User.addEventListener("change", (event: UserChangedState) => void)`<br><br>**_See below for usage_**                                                                  | _Add a User State callback which contains the nullable onesignalId and externalId. The listener will be fired when these values change._|
+| `await OneSignal.User.getOnesignalId()`                                                                  | _Returns the nullable OneSignal ID for the current user._|
+| `await OneSignal.User.getExternalId()`                                                                  | _Returns the nullable external ID for the current user._|
+
+### User State Listener
+
+```typescript
+    const listener = (event: UserChangedState) => {
+        console.log("User changed: " + (event));
+    };
+
+    OneSignal.User.addEventListener("change", listener);
+    // Remove the listener
+    OneSignal.User.removeEventListener("change", listener);
+```
+
 ## Push Subscription Namespace
 
 The Push Subscription namespace is accessible via `OneSignal.User.pushSubscription` and provides access to push subscription-scoped functionality.
