@@ -431,18 +431,18 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     public void requestNotificationPermission(final boolean fallbackToSettings, Promise promise) {
         OneSignal.getNotifications().requestPermission(fallbackToSettings, Continue.with(result -> {
             if (result.isSuccess()) {
-                if (Boolean.TRUE.equals(result.getData())) {
-                    // `requestPermission` completed successfully and the user has accepted permission
+                if (result.getData() != null && result.getData()) {
+                    // `requestPermission` completed successfully and the user has accepted permission.
                     promise.resolve(true);
                 }
                 else {
-                    // `requestPermission` completed successfully but the user has rejected permission
-                    promise.reject("PERMISSION_REJECTED");
+                    // `requestPermission` completed successfully but the user has rejected permission.
+                    promise.resolve(false);
                 }
                 
             } else {
-                // `requestPermission` completed unsuccessfully
-                promise.reject(result.getThrowable() != null ? result.getThrowable().getMessage() : "PERMISSION_ERR");
+                // `requestPermission` completed unsuccessfully.
+                promise.reject(result.getThrowable() != null ? result.getThrowable().getMessage() : "Permission request failed");
             }
         }));
     }
