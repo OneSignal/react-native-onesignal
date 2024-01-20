@@ -2288,9 +2288,9 @@ decamelize@^1.2.0:
   integrity sha512-z2S+W9X73hAUUki+N+9Za2lBlun89zigOyGrsax+KUQ6wKW4ZoWpEYBkGhQjwAjjDCkWxhY0VKEhk8wzY7F5cA==
 
 decode-uri-component@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
-  integrity sha512-hjf+xovcEn31w/EUYdTXQh/8smFL/dzYjohQGEIgjyNavaJfBY2p5F527Bo1VPATxv0VYTUC2bOcXvqFwk78Og==
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.2.tgz#e69dbe25d37941171dd540e024c444cd5188e1e9"
+  integrity sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==
 
 deep-is@~0.1.3:
   version "0.1.4"
@@ -5505,10 +5505,10 @@ react-native-codegen@^0.0.6:
     jscodeshift "^0.11.0"
     nullthrows "^1.1.1"
 
-react-native-onesignal@^4.4.1:
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-4.4.1.tgz#c79c94ea8622012adcd3d1e36ba91be6fa126453"
-  integrity sha512-vbS0E2TO5KljT0l1nAce04aOZF6FLv9oUaliffhFQR92oTHAbwNmwwMpxZF6CIcNANDDKkYtKPw5h7baUxmQdw==
+react-native-onesignal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-4.5.0.tgz#a5fef4348d429903bf3691e480d95a3ddf7bf5c1"
+  integrity sha512-9rocNYJXrAFUk1yG50vu0D7aYEeX8imEA3qDeBT+iwyFpy6E1xXNy3z9OPazzeuGi9/YaseEAiswpKBlaoJV3A==
   dependencies:
     invariant "^2.2.2"
 
