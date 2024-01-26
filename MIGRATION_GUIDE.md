@@ -213,8 +213,8 @@ The User namespace is accessible via `OneSignal.User` and provides access to use
 | `OneSignal.User.removeTags(["KEY_01", "KEY_02"])`                                           | _Remove multiple tags with the provided keys from the current user._                                                                                                                                                                    |
 | `OneSignal.User.getTags()`                                                                  | _Returns the local tags for the current user._|
 | `OneSignal.User.addEventListener("change", (event: UserChangedState) => void)`<br><br>**_See below for usage_**                                                                  | _Add a User State callback which contains the nullable onesignalId and externalId. The listener will be fired when these values change._|
-| `await OneSignal.User.getOnesignalId()`                                                                  | _Returns the nullable OneSignal ID for the current user._|
-| `await OneSignal.User.getExternalId()`                                                                  | _Returns the nullable external ID for the current user._|
+| `await OneSignal.User.getOnesignalId()`                                                                  | _Returns the OneSignal ID for the current user, which can be the empty string if it is not yet available._|
+| `await OneSignal.User.getExternalId()`                                                                  | _Returns the External ID for the current user, which can be the empty string if not set._|
 
 ### User State Listener
 
