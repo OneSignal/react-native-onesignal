@@ -292,21 +292,21 @@ export namespace OneSignal {
     }
 
     /** Get the OneSignal Id associated with the user. */
-    export function getOnesignalId(): Promise<string | null> {
+    export async function getOnesignalId(): Promise<string | null> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
       }
 
-      return RNOneSignal.getOnesignalId();
+      return await RNOneSignal.getOnesignalId();
     }
 
     /** Get the External Id associated with the user. */
-    export function getExternalId(): Promise<string | null> {
+    export async function getExternalId(): Promise<string | null> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
       }
 
-      return RNOneSignal.getExternalId();
+      return await RNOneSignal.getExternalId();
     }
 
     /** Explicitly set a 2-character language code for the user. */
