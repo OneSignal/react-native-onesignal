@@ -1,6 +1,6 @@
 export interface UserState {
-  externalId: string;
-  onesignalId: string;
+  externalId?: string;
+  onesignalId?: string;
 }
 
 export interface UserChangedState {
