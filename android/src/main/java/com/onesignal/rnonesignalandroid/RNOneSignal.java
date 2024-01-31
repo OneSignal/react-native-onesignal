@@ -165,6 +165,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     private void removeHandlers() {
+        if(!oneSignalInitDone) {
+            Log.i("OneSignal", "OneSignal React-Native SDK not initialized yet. Could not remove handlers.");
+            return;
+        }
+
         OneSignal.getInAppMessages().removeClickListener(rnInAppClickListener);
         hasAddedInAppMessageClickListener = false;
         OneSignal.getInAppMessages().removeLifecycleListener(rnInAppLifecycleListener);
