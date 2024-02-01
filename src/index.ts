@@ -266,10 +266,10 @@ export namespace OneSignal {
       }
     }
 
-    /** 
-     * Add a callback that fires when the OneSignal user state changes. 
+    /**
+     * Add a callback that fires when the OneSignal user state changes.
      * Important: When using the observer to retrieve the onesignalId, check the externalId as well to confirm the values are associated with the expected user.
-    */
+     */
     export function addEventListener(
       event: 'change',
       listener: (event: UserChangedState) => void,
