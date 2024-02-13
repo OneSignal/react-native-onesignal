@@ -225,6 +225,9 @@ export namespace OneSignal {
         if (!isNativeModuleLoaded(RNOneSignal)) {
           return '';
         }
+        console.warn(
+          'OneSignal: This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
+        );
 
         return pushSub.id;
       }
@@ -247,6 +250,9 @@ export namespace OneSignal {
         if (!isNativeModuleLoaded(RNOneSignal)) {
           return '';
         }
+        console.warn(
+          'OneSignal: This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
+        );
 
         return pushSub.token;
       }
@@ -270,6 +276,9 @@ export namespace OneSignal {
         if (!isNativeModuleLoaded(RNOneSignal)) {
           return false;
         }
+        console.warn(
+          'OneSignal: This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
+        );
 
         return pushSub.optedIn;
       }
@@ -448,6 +457,10 @@ export namespace OneSignal {
      * {@link getPermissionAsync}
      */
     export function hasPermission(): boolean {
+      console.warn(
+        'OneSignal: This method has been deprecated. Use getPermissionAsync instead for getting notification permission status.',
+      );
+
       return notificationPermission;
     }
 
