@@ -383,13 +383,25 @@ RCT_EXPORT_METHOD(getTags:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRe
 RCT_REMAP_METHOD(getOnesignalId,
                  getOnesignalIdResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(OneSignal.User.onesignalId);
+    NSString *onesignalId = OneSignal.User.onesignalId;
+    
+    if (onesignalId == nil || [onesignalId length] == 0) {
+        resolve([NSNull null]); // Resolve with null if nil or empty
+    } else {
+        resolve(onesignalId);
+    }
 }
 
 RCT_REMAP_METHOD(getExternalId,
                  getExternalIdResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(OneSignal.User.externalId);
+    NSString *externalId = OneSignal.User.externalId;
+    
+    if (externalId == nil || [externalId length] == 0) {
+        resolve([NSNull null]); // Resolve with null if nil or empty
+    } else {
+        resolve(externalId);
+    }
 }
 
 RCT_EXPORT_METHOD(addAlias:(NSString *)label :(NSString *)id) {
