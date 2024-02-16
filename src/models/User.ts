@@ -4,6 +4,5 @@ export interface UserState {
 }
 
 export interface UserChangedState {
-  previous: UserState;
   current: UserState;
 }

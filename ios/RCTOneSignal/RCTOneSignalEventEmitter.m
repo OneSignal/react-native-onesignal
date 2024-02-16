@@ -318,13 +318,6 @@ RCT_EXPORT_METHOD(addUserStateObserver) {
     }
 }
 
-RCT_EXPORT_METHOD(removeUserStateObserver) {
-    if (_hasSetUserStateObserver) {
-        [OneSignal.User removeObserver:[RCTOneSignal sharedInstance]];
-        _hasSetUserStateObserver = false;
-    }
-}
-
 RCT_EXPORT_METHOD(addPushSubscriptionObserver) {
     if (!_hasSetSubscriptionObserver) {
         [OneSignal.User.pushSubscription addObserver:[RCTOneSignal sharedInstance]];
