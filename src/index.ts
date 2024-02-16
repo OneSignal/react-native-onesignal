@@ -294,22 +294,20 @@ export namespace OneSignal {
       eventManager.removeEventListener(USER_STATE_CHANGED, listener);
     }
 
-    /** Get the OneSignal Id associated with the user. */
+    /** Get the nullable OneSignal Id associated with the user. */
     export async function getOnesignalId(): Promise<string | null> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
       }
-
-      return await RNOneSignal.getOnesignalId();
+      return RNOneSignal.getOnesignalId();
     }
 
-    /** Get the External Id associated with the user. */
+    /** Get the nullable External Id associated with the user. */
     export async function getExternalId(): Promise<string | null> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
       }
-
-      return await RNOneSignal.getExternalId();
+      return RNOneSignal.getExternalId();
     }
 
     /** Explicitly set a 2-character language code for the user. */

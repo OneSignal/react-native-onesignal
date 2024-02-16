@@ -659,12 +659,19 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void getOnesignalId(Promise promise) {
         String onesignalId = OneSignal.getUser().getOnesignalId();
+        if (onesignalId.isEmpty()) {
+            onesignalId = null;
+        }
         promise.resolve(onesignalId);
+
     }
 
     @ReactMethod
     public void getExternalId(Promise promise) {
         String externalId = OneSignal.getUser().getExternalId();
+        if (externalId.isEmpty()) {
+            externalId = null;
+        }
         promise.resolve(externalId);
     }
 
@@ -677,11 +684,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     @Override
-    public void onUserStateChange(UserChangedState UserChangedState) {
+    public void onUserStateChange(UserChangedState state) {
         try {
             sendEvent("OneSignal-userStateChanged",
                     RNUtils.convertHashMapToWritableMap(
-                            RNUtils.convertUserChangedStateToMap(UserChangedState)));
+                            RNUtils.convertUserChangedStateToMap(state)));
             Log.i("OneSignal", "sending user state change event");
         } catch (JSONException e) {
             e.printStackTrace();
