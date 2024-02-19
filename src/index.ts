@@ -218,8 +218,7 @@ export namespace OneSignal {
       }
 
       /**
-       * @deprecated
-       * use {@link getIdAsync}
+       * @deprecated This method is deprecated. It has been replaced by {@link getIdAsync}.
        */
       export function getPushSubscriptionId(): string {
         if (!isNativeModuleLoaded(RNOneSignal)) {
@@ -243,8 +242,7 @@ export namespace OneSignal {
       }
 
       /**
-       * @deprecated
-       * use {@link getTokenAsync}
+       * @deprecated This method is deprecated. It has been replaced by {@link getTokenAsync}.
        */
       export function getPushSubscriptionToken(): string {
         if (!isNativeModuleLoaded(RNOneSignal)) {
@@ -269,8 +267,7 @@ export namespace OneSignal {
       }
 
       /**
-       * @deprecated
-       * use {@link getOptedInAsync}
+       * @deprecated This method is deprecated. It has been replaced by {@link getOptedInAsync}.
        */
       export function getOptedIn(): boolean {
         if (!isNativeModuleLoaded(RNOneSignal)) {
@@ -453,8 +450,7 @@ export namespace OneSignal {
 
   export namespace Notifications {
     /**
-     * @deprecated
-     * {@link getPermissionAsync}
+     * @deprecated This method is deprecated. It has been replaced by {@link getPermissionAsync}.
      */
     export function hasPermission(): boolean {
       console.warn(
