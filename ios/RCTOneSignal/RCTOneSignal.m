@@ -86,9 +86,15 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
     if (onesignalId.length > 0) {
         [currentDictionary setObject:onesignalId forKey:@"onesignalId"];
     }
+    else {
+        [currentDictionary setObject:[NSNull null] forKey:@"onesignalId"];
+    }
 
     if (externalId.length > 0) {
         [currentDictionary setObject:externalId forKey:@"externalId"];
+    }
+    else {
+        [currentDictionary setObject:[NSNull null] forKey:@"externalId"];
     }
 
     NSDictionary *result = @{@"current": currentDictionary};

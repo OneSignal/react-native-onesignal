@@ -195,11 +195,17 @@ public class RNUtils {
     public static HashMap<String, Object> convertUserStateToMap(UserState user) {
         HashMap<String, Object> hash = new HashMap<>();
 
-        if (!user.getExternalId().isEmpty()) {
+        if (user.getExternalId() != null && !user.getExternalId().isEmpty()) {
             hash.put("externalId", user.getExternalId());
         }
-        if (!user.getOnesignalId().isEmpty()) {
+        else {
+            hash.put("externalId", JSONObject.NULL);
+        }
+        if (user.getOnesignalId() != null && !user.getOnesignalId().isEmpty()) {
             hash.put("onesignalId", user.getOnesignalId());
+        }
+        else {
+            hash.put("onesignalId", JSONObject.NULL);
         }
 
         return hash;
