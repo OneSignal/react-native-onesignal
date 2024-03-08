@@ -228,7 +228,7 @@ export namespace OneSignal {
           'OneSignal: This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
         );
 
-        return pushSub.id;
+        return pushSub.id ? pushSub.id : '';
       }
 
       export async function getIdAsync(): Promise<string | null> {
@@ -252,7 +252,7 @@ export namespace OneSignal {
           'OneSignal: This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
         );
 
-        return pushSub.token;
+        return pushSub.token ? pushSub.token : '';
       }
 
       /** The readonly push subscription token */
