@@ -184,9 +184,16 @@ public class RNUtils {
 
     public static HashMap<String, Object> convertPushSubscriptionStateToMap(PushSubscriptionState state) {
         HashMap<String, Object> hash = new HashMap<>();
-
-        hash.put("token", state.getToken());
-        hash.put("id", state.getId());
+        if (state.getToken() != null && !state.getToken().isEmpty()) {
+            hash.put("token", state.getToken());
+        } else {
+            hash.put("token", JSONObject.NULL);
+        }
+        if (state.getId() != null && !state.getId().isEmpty()) {
+            hash.put("id", state.getId());
+        } else {
+            hash.put("id", JSONObject.NULL); 
+        }
         hash.put("optedIn", state.getOptedIn());
 
         return hash;

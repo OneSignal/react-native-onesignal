@@ -7,8 +7,8 @@ export enum OSNotificationPermission {
 }
 
 export interface PushSubscriptionState {
-  id: string;
-  token: string;
+  id?: string;
+  token?: string;
   optedIn: boolean;
 }
 
