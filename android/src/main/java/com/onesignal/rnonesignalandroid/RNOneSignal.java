@@ -74,6 +74,9 @@ import com.onesignal.user.subscriptions.IPushSubscription;
 import com.onesignal.user.subscriptions.IPushSubscriptionObserver;
 import com.onesignal.user.subscriptions.PushSubscriptionState;
 import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
+import com.onesignal.user.state.UserState;
+import com.onesignal.user.state.UserChangedState;
+import com.onesignal.user.state.IUserStateObserver;
 import org.json.JSONException;
 
 import java.util.HashMap;
@@ -82,6 +85,7 @@ import java.util.Map;
 public class RNOneSignal extends ReactContextBaseJavaModule implements
         IPushSubscriptionObserver,
         IPermissionObserver,
+        IUserStateObserver,
         LifecycleEventListener,
         INotificationLifecycleListener{
     private ReactApplicationContext mReactApplicationContext;
@@ -90,6 +94,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     private boolean oneSignalInitDone;
     private boolean hasSetPermissionObserver = false;
     private boolean hasSetPushSubscriptionObserver = false;
+    private boolean hasSetUserStateObserver = false;
 
     private HashMap<String, INotificationWillDisplayEvent> notificationWillDisplayCache;
     private HashMap<String, INotificationWillDisplayEvent> preventDefaultCache;
@@ -162,6 +167,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     private void removeObservers() {
         this.removePermissionObserver();
         this.removePushSubscriptionObserver();
+        this.removeUserStateObserver();
     }
 
     private void removeHandlers() {
@@ -674,6 +680,53 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void removeAliases(ReadableArray aliasLabels) {
         OneSignal.getUser().removeAliases(RNUtils.convertReadableArrayIntoStringCollection(aliasLabels));
+    }
+
+    @ReactMethod
+    public void getOnesignalId(Promise promise) {
+        String onesignalId = OneSignal.getUser().getOnesignalId();
+        if (onesignalId.isEmpty()) {
+            onesignalId = null;
+        }
+        promise.resolve(onesignalId);
+
+    }
+
+    @ReactMethod
+    public void getExternalId(Promise promise) {
+        String externalId = OneSignal.getUser().getExternalId();
+        if (externalId.isEmpty()) {
+            externalId = null;
+        }
+        promise.resolve(externalId);
+    }
+
+    @ReactMethod
+    public void addUserStateObserver() {
+        if (!hasSetUserStateObserver) {
+            OneSignal.getUser().addObserver(this);
+            hasSetUserStateObserver = true;
+        }
+    }
+
+    @Override
+    public void onUserStateChange(UserChangedState state) {
+        try {
+            sendEvent("OneSignal-userStateChanged",
+                    RNUtils.convertHashMapToWritableMap(
+                            RNUtils.convertUserChangedStateToMap(state)));
+            Log.i("OneSignal", "sending user state change event");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } 
+    }
+
+    @ReactMethod
+    public void removeUserStateObserver() {
+        if (hasSetUserStateObserver) {
+            OneSignal.getUser().removeObserver(this);
+            hasSetUserStateObserver = false;
+        }
     }
 
     /** Added for NativeEventEmitter */

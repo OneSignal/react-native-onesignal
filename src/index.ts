@@ -12,6 +12,7 @@ import {
   NOTIFICATION_WILL_DISPLAY,
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
+  USER_STATE_CHANGED,
 } from './events/events';
 import {
   NotificationEventName,
@@ -23,6 +24,7 @@ import {
   OSNotificationPermission,
   PushSubscriptionChangedState,
 } from './models/Subscription';
+import { UserState, UserChangedState } from './models/User';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import {
   InAppMessage,
@@ -310,6 +312,51 @@ export namespace OneSignal {
         RNOneSignal.optIn();
       }
     }
+
+    /**
+     * Add a callback that fires when the OneSignal user state changes.
+     * Important: When using the observer to retrieve the onesignalId, check the externalId as well to confirm the values are associated with the expected user.
+     */
+    export function addEventListener(
+      event: 'change',
+      listener: (event: UserChangedState) => void,
+    ) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      isValidCallback(listener);
+      RNOneSignal.addUserStateObserver();
+      eventManager.addEventListener<UserChangedState>(
+        USER_STATE_CHANGED,
+        listener,
+      );
+    }
+
+    /** Clears current user state observers. */
+    export function removeEventListener(
+      event: 'change',
+      listener: (event: UserChangedState) => void,
+    ) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      eventManager.removeEventListener(USER_STATE_CHANGED, listener);
+    }
+
+    /** Get the nullable OneSignal Id associated with the user. */
+    export async function getOnesignalId(): Promise<string | null> {
+      if (!isNativeModuleLoaded(RNOneSignal)) {
+        return Promise.reject(new Error('OneSignal native module not loaded'));
+      }
+      return RNOneSignal.getOnesignalId();
+    }
+
+    /** Get the nullable External Id associated with the user. */
+    export async function getExternalId(): Promise<string | null> {
+      if (!isNativeModuleLoaded(RNOneSignal)) {
+        return Promise.reject(new Error('OneSignal native module not loaded'));
+      }
+      return RNOneSignal.getExternalId();
+    }
+
     /** Explicitly set a 2-character language code for the user. */
     export function setLanguage(language: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
@@ -852,6 +899,8 @@ export {
   InAppMessageDidDismissEvent,
   PushSubscriptionState,
   PushSubscriptionChangedState,
+  UserState,
+  UserChangedState,
   OSNotificationPermission,
 };
 

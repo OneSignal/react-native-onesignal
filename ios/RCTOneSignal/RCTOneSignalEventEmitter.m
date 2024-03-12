@@ -9,6 +9,7 @@
     BOOL _hasListeners;
     BOOL _hasSetSubscriptionObserver;
     BOOL _hasSetPermissionObserver;
+    BOOL _hasSetUserStateObserver;
     BOOL _hasAddedNotificationClickListener;
     BOOL _hasAddedNotificationForegroundLifecycleListener;
     BOOL _hasAddedInAppMessageClickListener;
@@ -310,6 +311,13 @@ RCT_EXPORT_METHOD(addOutcomeWithValue:(NSString *)name :(NSNumber * _Nonnull)val
 }
 
 // OneSignal.User namespace methods
+RCT_EXPORT_METHOD(addUserStateObserver) {
+    if (!_hasSetUserStateObserver) {
+        [OneSignal.User addObserver:[RCTOneSignal sharedInstance]];
+        _hasSetUserStateObserver = true;
+    }
+}
+
 RCT_EXPORT_METHOD(addPushSubscriptionObserver) {
     if (!_hasSetSubscriptionObserver) {
         [OneSignal.User.pushSubscription addObserver:[RCTOneSignal sharedInstance]];
@@ -363,6 +371,30 @@ RCT_EXPORT_METHOD(removeTags:(NSArray *)keys) {
 RCT_EXPORT_METHOD(getTags:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSDictionary<NSString *, NSString *> *tags = [OneSignal.User getTags];
     resolve(tags);
+}
+
+RCT_REMAP_METHOD(getOnesignalId,
+                 getOnesignalIdResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    NSString *onesignalId = OneSignal.User.onesignalId;
+    
+    if (onesignalId == nil || [onesignalId length] == 0) {
+        resolve([NSNull null]); // Resolve with null if nil or empty
+    } else {
+        resolve(onesignalId);
+    }
+}
+
+RCT_REMAP_METHOD(getExternalId,
+                 getExternalIdResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    NSString *externalId = OneSignal.User.externalId;
+    
+    if (externalId == nil || [externalId length] == 0) {
+        resolve([NSNull null]); // Resolve with null if nil or empty
+    } else {
+        resolve(externalId);
+    }
 }
 
 RCT_EXPORT_METHOD(addAlias:(NSString *)label :(NSString *)id) {

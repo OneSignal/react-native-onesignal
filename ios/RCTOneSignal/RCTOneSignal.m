@@ -77,6 +77,31 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
     [RCTOneSignalEventEmitter sendEventWithName:eventName withBody:body];
 }
 
+- (void)onUserStateDidChangeWithState:(OSUserChangedState * _Nonnull)state {
+    NSString *onesignalId = state.current.onesignalId;
+    NSString *externalId = state.current.externalId;
+
+    NSMutableDictionary *currentDictionary = [NSMutableDictionary dictionary];
+
+    if (onesignalId.length > 0) {
+        [currentDictionary setObject:onesignalId forKey:@"onesignalId"];
+    }
+    else {
+        [currentDictionary setObject:[NSNull null] forKey:@"onesignalId"];
+    }
+
+    if (externalId.length > 0) {
+        [currentDictionary setObject:externalId forKey:@"externalId"];
+    }
+    else {
+        [currentDictionary setObject:[NSNull null] forKey:@"externalId"];
+    }
+
+    NSDictionary *result = @{@"current": currentDictionary};
+
+    [self sendEvent:OSEventString(UserStateChanged) withBody:result];
+}
+
 - (void)onPushSubscriptionDidChangeWithState:(OSPushSubscriptionChangedState * _Nonnull)state {
     NSMutableDictionary *result = [NSMutableDictionary new];
     
