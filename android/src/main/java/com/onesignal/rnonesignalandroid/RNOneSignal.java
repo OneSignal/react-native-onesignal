@@ -434,6 +434,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void requestNotificationPermission(final boolean fallbackToSettings, Promise promise) {
+        // if permission already exists, return early as the method call will not resolve
+        if (OneSignal.getNotifications().getPermission()) {
+            promise.resolve(true);
+            return;
+        }
+
         OneSignal.getNotifications().requestPermission(fallbackToSettings, Continue.with(result -> {
             if (result.isSuccess()) {
                 promise.resolve(result.getData());
@@ -446,6 +452,16 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void hasNotificationPermission(Promise promise) {
         promise.resolve(OneSignal.getNotifications().getPermission());
+    }
+
+    @ReactMethod
+    public void permissionNative(Promise promise) {
+        if (OneSignal.getNotifications().getPermission()) {
+            promise.resolve(2);
+        }
+        else {
+            promise.resolve(1);
+        }
     }
 
     @ReactMethod
@@ -473,13 +489,23 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void getPushSubscriptionId(Promise promise) {
         IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
-        promise.resolve(pushSubscription.getId());
+        String pushId = pushSubscription.getId();
+        if (pushId != null && !pushId.isEmpty()){
+            promise.resolve(pushId);
+        } else {
+            promise.resolve(null);
+        }
     }
 
     @ReactMethod
     public void getPushSubscriptionToken(Promise promise) {
         IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
-        promise.resolve(pushSubscription.getToken());
+        String pushToken = pushSubscription.getToken();
+        if (pushToken != null && !pushToken.isEmpty()) {
+            promise.resolve(pushToken);
+        } else {
+            promise.resolve(null);
+        }
     }
 
     @ReactMethod

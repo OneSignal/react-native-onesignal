@@ -392,13 +392,23 @@ RCT_REMAP_METHOD(getOptedIn,
 RCT_REMAP_METHOD(getPushSubscriptionId, 
                  getPushSubscriptionIdResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(OneSignal.User.pushSubscription.id);
+    NSString *pushId = OneSignal.User.pushSubscription.id;
+    if (pushId && ![pushId isEqualToString:@""]) {
+        resolve(pushId);
+    } else {
+        resolve([NSNull null]);
+    }
 }
 
 RCT_REMAP_METHOD(getPushSubscriptionToken, 
                  getPushSubscriptionTokenResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(OneSignal.User.pushSubscription.token);
+    NSString *token = OneSignal.User.pushSubscription.token;
+    if (token && ![token isEqualToString:@""]) {
+        resolve(token);
+    } else {
+        resolve([NSNull null]);
+    }
 }
 
 RCT_EXPORT_METHOD(optIn) {
