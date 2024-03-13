@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.homepage       = "https://github.com/OneSignal/react-native-onesignal"
   s.license        = package_json["license"]
   s.author         = { package_json["author"] => package_json["author"] }
-  s.platform       = :ios, "9.0"
+  s.platform       = :ios, "11.0"
   s.source         = { :git => "#{package_json["repository"]["url"]}.git", :tag => "#{s.version}" }
   s.source_files   = 'ios/RCTOneSignal/*.{h,m}'
   s.static_framework = true
@@ -22,5 +22,5 @@ Pod::Spec.new do |s|
   # pod 'React', :path => '../node_modules/react-native/'
 
   # The Native OneSignal-iOS-SDK XCFramework from cocoapods.
-  s.dependency 'OneSignalXCFramework', '3.12.6'
+  s.dependency 'OneSignalXCFramework', '5.1.3'
 end

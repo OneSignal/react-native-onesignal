@@ -1,0 +1,15 @@
+#!/bin/bash
+
+
+(cd ../../ && rm -rf dist/ && yarn)
+
+if [[ "$1" == "--fast" ]]; then
+    NODE_MODULES_FOLDER=./node_modules/react-native-onesignal
+    cp -rv ../../dist $NODE_MODULES_FOLDER
+    cp -rv ../../src $NODE_MODULES_FOLDER
+    cp -rv ../../ios $NODE_MODULES_FOLDER
+    cp -rv ../../android $NODE_MODULES_FOLDER
+else
+    yarn remove react-native-onesignal
+    yarn add file:../../
+fi

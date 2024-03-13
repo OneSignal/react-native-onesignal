@@ -18,41 +18,48 @@ import {
   Platform,
 } from 'react-native';
 
-import {
-  Colors
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 export interface Props {
-    value: string;
+  value: string;
 }
 
-export interface State {
-}
+export interface State {}
 
 class OSConsole extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-    }
+  constructor(props: Props) {
+    super(props);
+  }
 
-    scrollToEnd = () => {
-      this.scrollView.scrollToEnd
-    }
+  scrollToEnd = () => {
+    this.scrollView.scrollToEnd({animated: true});
+  };
 
-    render() {
-        return (
-            <SafeAreaView style={styles.body}>
-                <ScrollView nestedScrollEnabled={true}
-                  style={styles.scrollView}
-                  ref={(scrollView) => { this.scrollView = scrollView }}
-                  onContentSizeChange={() => this.scrollView.scrollToEnd({animated: true})}>
-                  <View style={styles.console}>
-                      <Text style={Platform.OS === "android" ? styles.textAndroid : styles.textIOS}>{this.props.value}</Text>
-                  </View>
-                </ScrollView>
-            </SafeAreaView>
-        );
-    }
-};
+  render() {
+    return (
+      <SafeAreaView style={styles.body}>
+        <ScrollView
+          nestedScrollEnabled={true}
+          style={styles.scrollView}
+          ref={(scrollView) => {
+            this.scrollView = scrollView;
+          }}
+          onContentSizeChange={() => this.scrollToEnd()}
+        >
+          <View style={styles.console}>
+            <Text
+              style={
+                Platform.OS === 'android' ? styles.textAndroid : styles.textIOS
+              }
+            >
+              {this.props.value}
+            </Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -60,27 +67,26 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: 'grey',
-    height: 200,
     flex: 1,
     flexGrow: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   console: {
     flexWrap: 'wrap',
     padding: 10,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   textIOS: {
-      fontFamily: 'Courier',
-      flex: 1,
-      flexWrap: 'wrap',
-      fontSize: 10,
+    fontFamily: 'Courier',
+    flex: 1,
+    flexWrap: 'wrap',
+    fontSize: 10,
   },
   textAndroid: {
-      flex: 1,
-      flexWrap: 'wrap',
-      fontSize: 20,
-  }
+    flex: 1,
+    flexWrap: 'wrap',
+    fontSize: 10,
+  },
 });
 
 export default OSConsole;

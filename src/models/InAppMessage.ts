@@ -1,19 +1,46 @@
+export type InAppMessageEventName =
+  | 'click'
+  | 'willDisplay'
+  | 'didDisplay'
+  | 'willDismiss'
+  | 'didDismiss';
+
+export type InAppMessageEventTypeMap = {
+  click: InAppMessageClickEvent;
+  willDisplay: InAppMessageWillDisplayEvent;
+  didDisplay: InAppMessageDidDisplayEvent;
+  willDismiss: InAppMessageWillDismissEvent;
+  didDismiss: InAppMessageDidDismissEvent;
+};
+
 export interface InAppMessage {
   messageId: string;
 }
 
-export interface InAppMessageAction {
-  closes_message: boolean;
-  first_click: boolean;
-  click_name?: string;
-  click_url?: string;
-  outcomes?: object[];
-  tags?: object;
+export interface InAppMessageClickEvent {
+  message: InAppMessage;
+  result: InAppMessageClickResult;
 }
 
-export interface InAppMessageLifecycleHandlerObject {
-  onWillDisplayInAppMessage?: (message: InAppMessage) => void;
-  onDidDisplayInAppMessage?: (message: InAppMessage) => void;
-  onWillDismissInAppMessage?: (message: InAppMessage) => void;
-  onDidDismissInAppMessage?: (message: InAppMessage) => void;
+export interface InAppMessageClickResult {
+  closingMessage: boolean;
+  actionId?: string;
+  url?: string;
+  urlTarget?: string;
+}
+
+export interface InAppMessageWillDisplayEvent {
+  message: InAppMessage;
+}
+
+export interface InAppMessageDidDisplayEvent {
+  message: InAppMessage;
+}
+
+export interface InAppMessageWillDismissEvent {
+  message: InAppMessage;
+}
+
+export interface InAppMessageDidDismissEvent {
+  message: InAppMessage;
 }

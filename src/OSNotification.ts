@@ -1,4 +1,5 @@
-import { Platform } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
+const RNOneSignal = NativeModules.OneSignal;
 
 export default class OSNotification {
   body: string;
@@ -75,5 +76,10 @@ export default class OSNotification {
       this.relevanceScore = receivedEvent.relevanceScore;
       this.interruptionLevel = receivedEvent.interruptionLevel;
     }
+  }
+
+  display(): void {
+    RNOneSignal.displayNotification(this.notificationId);
+    return;
   }
 }

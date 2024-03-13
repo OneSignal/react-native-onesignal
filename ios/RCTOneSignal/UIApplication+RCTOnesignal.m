@@ -3,7 +3,8 @@
 
 @interface RCTOneSignal
 + (RCTOneSignal *) sharedInstance;
-- (void)initOneSignal:(NSDictionary *)launchOptions;
+- (void)initialize:(nonnull NSString*)newAppId withLaunchOptions:(nullable NSDictionary*)launchOptions;
+- (void)initOneSignal:(NSDictionary*)launchOptions;
 @end
 
 @implementation UIApplication(OneSignalReactNative)
@@ -19,7 +20,7 @@
     this method gets called, it initializes the OneSignal SDK with a nil app ID.
 */
 
-//helper method to swizzle instance methods
+// helper method to swizzle instance methods
 static void injectSelector(Class newClass, SEL newSel, Class addToClass, SEL makeLikeSel) {
     Method newMeth = class_getInstanceMethod(newClass, newSel);
     IMP imp = method_getImplementation(newMeth);
@@ -36,14 +37,12 @@ static void injectSelector(Class newClass, SEL newSel, Class addToClass, SEL mak
     }
 }
 
-//gets called by the ObjC runtime early in the app lifecycle
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         method_exchangeImplementations(class_getInstanceMethod(self, @selector(setDelegate:)), class_getInstanceMethod(self, @selector(setOneSignalReactNativeDelegate:)));
     });
 }
-
 
 - (void) setOneSignalReactNativeDelegate:(id<UIApplicationDelegate>)delegate {
     static dispatch_once_t onceToken;
