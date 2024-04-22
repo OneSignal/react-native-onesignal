@@ -430,7 +430,7 @@ export namespace OneSignal {
      * Add a tag for the current user. Tags are key:value pairs used as building blocks for targeting specific users and/or personalizing
      * messages. If the tag key already exists, it will be replaced with the value provided here.
      */
-    export function addTag(key: string, value: string) {
+    export function addTag(key: string, value: string | number | boolean) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (!key || (!value && value !== '')) {
@@ -438,7 +438,7 @@ export namespace OneSignal {
         return;
       }
 
-      RNOneSignal.addTag(key, value);
+      RNOneSignal.addTag(key, value.toString());
     }
 
     /**
