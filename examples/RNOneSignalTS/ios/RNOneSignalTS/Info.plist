@@ -45,6 +45,8 @@
 	<string>Your message goes here</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your message goes here</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

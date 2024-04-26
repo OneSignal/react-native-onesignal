@@ -1,5 +1,6 @@
 #import "RCTOneSignalEventEmitter.h"
 #import <OneSignalFramework/OneSignalFramework.h>
+#import "OneSignalLiveActivities/OneSignalLiveActivities-Swift.h"
 #import "RCTOneSignal.h"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -128,6 +129,46 @@ RCT_EXPORT_METHOD(exitLiveActivity:(NSString *)activityId
     } withFailure:^(NSError *error) {
         callback([self processNSError:error]);
     }];
+}
+
+RCT_EXPORT_METHOD(setPushToStartToken:(NSString *)activityType 
+                  withToken:(NSString *)token) {
+    @autoreleasepool {
+        NSError* err=nil;
+        [OneSignalLiveActivitiesManagerImpl setPushToStartToken:activityType withToken:token error:&err];
+        if (err) {
+            [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"activityType must be the name of your ActivityAttributes struct"]];
+        }
+    }
+}
+
+RCT_EXPORT_METHOD(removePushToStartToken:(NSString *)activityType) {
+    @autoreleasepool {
+        NSError* err=nil;
+        [OneSignalLiveActivitiesManagerImpl removePushToStartToken:activityType error:&err];
+        if (err) {
+            [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"activityType must be the name of your ActivityAttributes struct"]];
+        }
+    }
+}
+
+RCT_EXPORT_METHOD(setupDefaultLiveActivity:(NSDictionary * _Nullable)options) {
+    LiveActivitySetupOptions *laOptions = nil;
+
+    if (options != nil) {
+        laOptions = [LiveActivitySetupOptions alloc];
+        [laOptions setEnablePushToStart:[options[@"enablePushToStart"] boolValue]];
+        [laOptions setEnablePushToUpdate:[options[@"enablePushToUpdate"] boolValue]];
+    }
+
+    [OneSignalLiveActivitiesManagerImpl setupDefaultWithOptions:laOptions];    
+}
+
+RCT_EXPORT_METHOD(startDefaultLiveActivity:(NSString *)activityId
+                withAttributes:(NSDictionary * _Nonnull)attributes
+                withContent:(NSDictionary * _Nonnull)content) {
+
+    [OneSignalLiveActivitiesManagerImpl startDefault:activityId attributes:attributes content:content];
 }
 
 RCT_EXPORT_METHOD(setPrivacyConsentGiven:(BOOL)granted) {

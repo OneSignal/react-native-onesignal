@@ -21,6 +21,11 @@ target 'RNOneSignalTS' do
   # post_install do |installer|
   #   flipper_post_install(installer)
   # end
+  pod 'OneSignalXCFramework', :path => '~/Development/OneSignal/onesignal-ios-sdk'
+end
+
+target 'RNOneSignalWidgetExtension' do
+  pod 'OneSignalXCFramework', :path => '~/Development/OneSignal/onesignal-ios-sdk'
 end
 
 target 'RNOneSignalTS-tvOS' do

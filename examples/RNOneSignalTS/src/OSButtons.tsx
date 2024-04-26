@@ -181,6 +181,79 @@ class OSButtons extends React.Component<Props> {
     ];
   }
 
+  createLiveActivitiesFields() {
+    const {loggingFunction} = this.props;
+
+    const startDefaultLiveActivity = renderButtonView(
+      'Start Default Live Activity',
+      async () => {
+        loggingFunction('Starting live activity');
+        await OneSignal.LiveActivities.startDefault(
+          this.props.inputFieldValue,
+          {title: 'Welcome!'},
+          {
+            message: {en: 'Hello World!'},
+            intValue: 3,
+            doubleValue: 3.14,
+            boolValue: true,
+          },
+        );
+        loggingFunction('Live Activity started');
+      },
+    );
+
+    // In a real app the below methods would call a bridge to perform a live
+    // activity function, the data then passed back to RN, and subsequently
+    // passed over to the OneSignal SDK.
+    const enterLiveActivity = renderButtonView(
+      'Enter Live Activity',
+      async () => {
+        loggingFunction('Entering live activity');
+        await OneSignal.LiveActivities.enter(
+          this.props.inputFieldValue,
+          'FAKE_TOKEN',
+        );
+      },
+    );
+
+    const exitLiveActivity = renderButtonView(
+      'Exit Live Activity',
+      async () => {
+        loggingFunction('Exiting live activity');
+        await OneSignal.LiveActivities.exit(this.props.inputFieldValue);
+      },
+    );
+
+    const setPushToStartLiveActivity = renderButtonView(
+      'Set Push-To-Start Live Activity',
+      async () => {
+        loggingFunction('Exiting live activity');
+        await OneSignal.LiveActivities.setPushToStartToken(
+          this.props.inputFieldValue,
+          'FAKE_TOKEN',
+        );
+      },
+    );
+
+    const removePushToStartLiveActivity = renderButtonView(
+      'Remove Push-To-Start Live Activity',
+      async () => {
+        loggingFunction('Exiting live activity');
+        await OneSignal.LiveActivities.removePushToStartToken(
+          this.props.inputFieldValue,
+        );
+      },
+    );
+
+    return [
+      startDefaultLiveActivity,
+      enterLiveActivity,
+      exitLiveActivity,
+      setPushToStartLiveActivity,
+      removePushToStartLiveActivity,
+    ];
+  }
+
   createSessionFields() {
     const {loggingFunction} = this.props;
 
@@ -483,6 +556,10 @@ class OSButtons extends React.Component<Props> {
         <Text variant="h5">Notifications</Text>
         <Divider style={{marginTop: 10, marginBottom: 10}} />
         {this.createNotificationFields()}
+
+        <Text variant="h5">Live Activities</Text>
+        <Divider style={{marginTop: 10, marginBottom: 10}} />
+        {this.createLiveActivitiesFields()}
 
         <Divider style={{marginTop: 10, marginBottom: 10}} />
         <Text variant="h5">Session</Text>

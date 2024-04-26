@@ -11,11 +11,18 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		253695C4E9A699005F42621D /* libPods-RNOneSignalWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 61034C424A27BFA51ECE7842 /* libPods-RNOneSignalWidgetExtension.a */; };
 		29BEA1DBD99B294F68C30F74 /* libPods-RNOneSignalTS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A9C6834BD4C5D01D66A88E4 /* libPods-RNOneSignalTS.a */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* RNOneSignalTSTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* RNOneSignalTSTests.m */; };
+		47D8EDE32BDC200D00C1DFB8 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D8EDE22BDC200D00C1DFB8 /* WidgetKit.framework */; };
+		47D8EDE52BDC200D00C1DFB8 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D8EDE42BDC200D00C1DFB8 /* SwiftUI.framework */; };
+		47D8EDE82BDC200D00C1DFB8 /* RNOneSignalWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D8EDE72BDC200D00C1DFB8 /* RNOneSignalWidgetBundle.swift */; };
+		47D8EDEA2BDC200D00C1DFB8 /* RNOneSignalWidgetLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D8EDE92BDC200D00C1DFB8 /* RNOneSignalWidgetLiveActivity.swift */; };
+		47D8EDEE2BDC200E00C1DFB8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 47D8EDED2BDC200E00C1DFB8 /* Assets.xcassets */; };
+		47D8EDF22BDC200E00C1DFB8 /* RNOneSignalWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 47D8EDE12BDC200D00C1DFB8 /* RNOneSignalWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		498F06C29F943469E4545E09 /* libPods-RNOneSignalTS-RNOneSignalTSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0F4647666F7BF086F879F61 /* libPods-RNOneSignalTS-RNOneSignalTSTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		E59362D331330C433770475D /* libPods-RNOneSignalTS-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 731F649974B0D3A78561EBEB /* libPods-RNOneSignalTS-tvOS.a */; };
@@ -37,10 +44,32 @@
 			remoteGlobalIDString = 2D02E47A1E0B4A5D006451C7;
 			remoteInfo = "RNOneSignalTS-tvOS";
 		};
+		47D8EDF02BDC200E00C1DFB8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47D8EDE02BDC200D00C1DFB8;
+			remoteInfo = RNOneSignalWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		47D8EDF32BDC200E00C1DFB8 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				47D8EDF22BDC200E00C1DFB8 /* RNOneSignalWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		00BDEDC593673D3A90947A63 /* Pods-RNOneSignalWidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignalWidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-RNOneSignalWidgetExtension/Pods-RNOneSignalWidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		00E356EE1AD99517003FC87E /* RNOneSignalTSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNOneSignalTSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RNOneSignalTSTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNOneSignalTSTests.m; sourceTree = "<group>"; };
@@ -55,9 +84,19 @@
 		2D02E47B1E0B4A5D006451C7 /* RNOneSignalTS-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RNOneSignalTS-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* RNOneSignalTS-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RNOneSignalTS-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		36D4E6F2A4B2D0FD6204CDC5 /* Pods-RNOneSignalTS-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignalTS-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-RNOneSignalTS-tvOSTests/Pods-RNOneSignalTS-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		47D8EDE12BDC200D00C1DFB8 /* RNOneSignalWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RNOneSignalWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		47D8EDE22BDC200D00C1DFB8 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		47D8EDE42BDC200D00C1DFB8 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		47D8EDE72BDC200D00C1DFB8 /* RNOneSignalWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNOneSignalWidgetBundle.swift; sourceTree = "<group>"; };
+		47D8EDE92BDC200D00C1DFB8 /* RNOneSignalWidgetLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNOneSignalWidgetLiveActivity.swift; sourceTree = "<group>"; };
+		47D8EDED2BDC200E00C1DFB8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		47D8EDEF2BDC200E00C1DFB8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		47D8EDF72BDC206D00C1DFB8 /* OneSignalLiveActivities.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OneSignalLiveActivities.xcframework; path = "../../../../onesignal-ios-sdk/iOS_SDK/OneSignalSDK/OneSignal_LiveActivities/OneSignalLiveActivities.xcframework"; sourceTree = "<group>"; };
 		4D0B08EF16DFB3514375DEA2 /* Pods-RNOneSignalTS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignalTS.release.xcconfig"; path = "Target Support Files/Pods-RNOneSignalTS/Pods-RNOneSignalTS.release.xcconfig"; sourceTree = "<group>"; };
 		5B888D71258AA3AB00DE2069 /* RNOneSignalTS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNOneSignalTS.entitlements; path = RNOneSignalTS/RNOneSignalTS.entitlements; sourceTree = "<group>"; };
 		5E39C0CF1D4B9C731BDF0E2B /* Pods-RNOneSignalTS-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignalTS-tvOS.release.xcconfig"; path = "Target Support Files/Pods-RNOneSignalTS-tvOS/Pods-RNOneSignalTS-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		61034C424A27BFA51ECE7842 /* libPods-RNOneSignalWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNOneSignalWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		71DAE3F4B0D815B08FEFC968 /* Pods-RNOneSignalWidgetExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNOneSignalWidgetExtension.release.xcconfig"; path = "Target Support Files/Pods-RNOneSignalWidgetExtension/Pods-RNOneSignalWidgetExtension.release.xcconfig"; sourceTree = "<group>"; };
 		731F649974B0D3A78561EBEB /* libPods-RNOneSignalTS-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNOneSignalTS-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = RNOneSignalTS/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		87C7E919B1029F3FE8F8EFD4 /* libPods-RNOneSignalTS-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNOneSignalTS-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -103,6 +142,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47D8EDDE2BDC200D00C1DFB8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47D8EDE52BDC200D00C1DFB8 /* SwiftUI.framework in Frameworks */,
+				47D8EDE32BDC200D00C1DFB8 /* WidgetKit.framework in Frameworks */,
+				253695C4E9A699005F42621D /* libPods-RNOneSignalWidgetExtension.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -141,14 +190,29 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47D8EDF72BDC206D00C1DFB8 /* OneSignalLiveActivities.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				0A9C6834BD4C5D01D66A88E4 /* libPods-RNOneSignalTS.a */,
 				B0F4647666F7BF086F879F61 /* libPods-RNOneSignalTS-RNOneSignalTSTests.a */,
 				731F649974B0D3A78561EBEB /* libPods-RNOneSignalTS-tvOS.a */,
 				87C7E919B1029F3FE8F8EFD4 /* libPods-RNOneSignalTS-tvOSTests.a */,
+				47D8EDE22BDC200D00C1DFB8 /* WidgetKit.framework */,
+				47D8EDE42BDC200D00C1DFB8 /* SwiftUI.framework */,
+				61034C424A27BFA51ECE7842 /* libPods-RNOneSignalWidgetExtension.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		47D8EDE62BDC200D00C1DFB8 /* RNOneSignalWidget */ = {
+			isa = PBXGroup;
+			children = (
+				47D8EDE72BDC200D00C1DFB8 /* RNOneSignalWidgetBundle.swift */,
+				47D8EDE92BDC200D00C1DFB8 /* RNOneSignalWidgetLiveActivity.swift */,
+				47D8EDED2BDC200E00C1DFB8 /* Assets.xcassets */,
+				47D8EDEF2BDC200E00C1DFB8 /* Info.plist */,
+			);
+			path = RNOneSignalWidget;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -164,6 +228,7 @@
 				13B07FAE1A68108700A75B9A /* RNOneSignalTS */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* RNOneSignalTSTests */,
+				47D8EDE62BDC200D00C1DFB8 /* RNOneSignalWidget */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				8FFF12E89EE080FB55269932 /* Pods */,
@@ -180,6 +245,7 @@
 				00E356EE1AD99517003FC87E /* RNOneSignalTSTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* RNOneSignalTS-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* RNOneSignalTS-tvOSTests.xctest */,
+				47D8EDE12BDC200D00C1DFB8 /* RNOneSignalWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -195,6 +261,8 @@
 				5E39C0CF1D4B9C731BDF0E2B /* Pods-RNOneSignalTS-tvOS.release.xcconfig */,
 				36D4E6F2A4B2D0FD6204CDC5 /* Pods-RNOneSignalTS-tvOSTests.debug.xcconfig */,
 				885D3FE2ACBD052AC8EF22FC /* Pods-RNOneSignalTS-tvOSTests.release.xcconfig */,
+				00BDEDC593673D3A90947A63 /* Pods-RNOneSignalWidgetExtension.debug.xcconfig */,
+				71DAE3F4B0D815B08FEFC968 /* Pods-RNOneSignalWidgetExtension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -235,10 +303,12 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				258A29E138A5D5C56B8AB2B5 /* [CP] Copy Pods Resources */,
 				BF08836FBCCF6DF73FFD31DC /* [CP] Embed Pods Frameworks */,
+				47D8EDF32BDC200E00C1DFB8 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				47D8EDF12BDC200E00C1DFB8 /* PBXTargetDependency */,
 			);
 			name = RNOneSignalTS;
 			productName = RNOneSignalTS;
@@ -284,12 +354,31 @@
 			productReference = 2D02E4901E0B4A5D006451C7 /* RNOneSignalTS-tvOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		47D8EDE02BDC200D00C1DFB8 /* RNOneSignalWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 47D8EDF62BDC200E00C1DFB8 /* Build configuration list for PBXNativeTarget "RNOneSignalWidgetExtension" */;
+			buildPhases = (
+				800906FA7CF5F140E441461B /* [CP] Check Pods Manifest.lock */,
+				47D8EDDD2BDC200D00C1DFB8 /* Sources */,
+				47D8EDDE2BDC200D00C1DFB8 /* Frameworks */,
+				47D8EDDF2BDC200D00C1DFB8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNOneSignalWidgetExtension;
+			productName = RNOneSignalWidgetExtension;
+			productReference = 47D8EDE12BDC200D00C1DFB8 /* RNOneSignalWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1530;
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -312,6 +401,11 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = 2D02E47A1E0B4A5D006451C7;
 					};
+					47D8EDE02BDC200D00C1DFB8 = {
+						CreatedOnToolsVersion = 15.3;
+						DevelopmentTeam = 99SW8E36CT;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "RNOneSignalTS" */;
@@ -331,6 +425,7 @@
 				00E356ED1AD99517003FC87E /* RNOneSignalTSTests */,
 				2D02E47A1E0B4A5D006451C7 /* RNOneSignalTS-tvOS */,
 				2D02E48F1E0B4A5D006451C7 /* RNOneSignalTS-tvOSTests */,
+				47D8EDE02BDC200D00C1DFB8 /* RNOneSignalWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -364,6 +459,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		47D8EDDF2BDC200D00C1DFB8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47D8EDEE2BDC200E00C1DFB8 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -467,9 +570,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNOneSignalTS-RNOneSignalTSTests/Pods-RNOneSignalTS-RNOneSignalTSTests-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalFramework.framework/OneSignalFramework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignal/OneSignalFramework.framework/OneSignalFramework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalCore/OneSignalCore.framework/OneSignalCore",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalExtension/OneSignalExtension.framework/OneSignalExtension",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalInAppMessages/OneSignalInAppMessages.framework/OneSignalInAppMessages",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalLiveActivities/OneSignalLiveActivities.framework/OneSignalLiveActivities",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalLocation/OneSignalLocation.framework/OneSignalLocation",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalNotifications/OneSignalNotifications.framework/OneSignalNotifications",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalOSCore/OneSignalOSCore.framework/OneSignalOSCore",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalOutcomes/OneSignalOutcomes.framework/OneSignalOutcomes",
@@ -480,6 +586,9 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalFramework.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalExtension.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalInAppMessages.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalLiveActivities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalLocation.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalNotifications.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalOSCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalOutcomes.framework",
@@ -534,6 +643,28 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		800906FA7CF5F140E441461B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RNOneSignalWidgetExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		985973970AD5AD54BC615F13 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -559,9 +690,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNOneSignalTS/Pods-RNOneSignalTS-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalFramework.framework/OneSignalFramework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignal/OneSignalFramework.framework/OneSignalFramework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalCore/OneSignalCore.framework/OneSignalCore",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalExtension/OneSignalExtension.framework/OneSignalExtension",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalInAppMessages/OneSignalInAppMessages.framework/OneSignalInAppMessages",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalLiveActivities/OneSignalLiveActivities.framework/OneSignalLiveActivities",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalLocation/OneSignalLocation.framework/OneSignalLocation",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalNotifications/OneSignalNotifications.framework/OneSignalNotifications",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalOSCore/OneSignalOSCore.framework/OneSignalOSCore",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OneSignalXCFramework/OneSignalOutcomes/OneSignalOutcomes.framework/OneSignalOutcomes",
@@ -572,6 +706,9 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalFramework.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalExtension.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalInAppMessages.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalLiveActivities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalLocation.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalNotifications.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalOSCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OneSignalOutcomes.framework",
@@ -657,6 +794,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47D8EDDD2BDC200D00C1DFB8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47D8EDE82BDC200D00C1DFB8 /* RNOneSignalWidgetBundle.swift in Sources */,
+				47D8EDEA2BDC200D00C1DFB8 /* RNOneSignalWidgetLiveActivity.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -669,6 +815,11 @@
 			isa = PBXTargetDependency;
 			target = 2D02E47A1E0B4A5D006451C7 /* RNOneSignalTS-tvOS */;
 			targetProxy = 2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */;
+		};
+		47D8EDF12BDC200E00C1DFB8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47D8EDE02BDC200D00C1DFB8 /* RNOneSignalWidgetExtension */;
+			targetProxy = 47D8EDF02BDC200E00C1DFB8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -722,6 +873,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0A7DFFDE8B0834B951B8FAB1 /* Pods-RNOneSignalTS.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = RNOneSignalTS/RNOneSignalTS.entitlements;
@@ -747,6 +899,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4D0B08EF16DFB3514375DEA2 /* Pods-RNOneSignalTS.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = RNOneSignalTS/RNOneSignalTS.entitlements;
@@ -877,6 +1030,99 @@
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNOneSignalTS-tvOS.app/RNOneSignalTS-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
+		47D8EDF42BDC200E00C1DFB8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 00BDEDC593673D3A90947A63 /* Pods-RNOneSignalWidgetExtension.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 99SW8E36CT;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RNOneSignalWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RNOneSignalWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.5/$(PLATFORM_NAME)\"",
+					"\"$(inherited)\"",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.RNOneSignalWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		47D8EDF52BDC200E00C1DFB8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 71DAE3F4B0D815B08FEFC968 /* Pods-RNOneSignalWidgetExtension.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 99SW8E36CT;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RNOneSignalWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RNOneSignalWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.5/$(PLATFORM_NAME)\"",
+					"\"$(inherited)\"",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.RNOneSignalWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1028,6 +1274,15 @@
 			buildConfigurations = (
 				2D02E4991E0B4A5E006451C7 /* Debug */,
 				2D02E49A1E0B4A5E006451C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		47D8EDF62BDC200E00C1DFB8 /* Build configuration list for PBXNativeTarget "RNOneSignalWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				47D8EDF42BDC200E00C1DFB8 /* Debug */,
+				47D8EDF52BDC200E00C1DFB8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
