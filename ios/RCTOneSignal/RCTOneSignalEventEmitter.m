@@ -353,13 +353,8 @@ RCT_EXPORT_METHOD(removeSms:(NSString *)smsNumber) {
 }
 
 RCT_EXPORT_METHOD(addTag:(NSString *)key value:(id)value) {
- if([value isKindOfClass:[NSNumber class]]) {
-         //It is a number, convert to a string
-         value = [value stringValue];
- }
- [OneSignal.User addTagWithKey:key value:value];
+    [OneSignal.User addTagWithKey:key value:value];
 }
-
 
 RCT_EXPORT_METHOD(addTags:(NSDictionary *)tags) {
     [OneSignal.User addTags:tags];
