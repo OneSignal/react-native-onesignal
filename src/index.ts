@@ -433,8 +433,8 @@ export namespace OneSignal {
     export function addTag(key: string, value: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      if (!key || !value) {
-        console.error('OneSignal: sendTag: must include a key and a value');
+      if (!key || value === undefined || value === null) {
+        console.error('OneSignal: addTag: must include a key and a value');
         return;
       }
 
@@ -464,9 +464,7 @@ export namespace OneSignal {
       const convertedTags = tags as { [key: string]: any };
       Object.keys(tags).forEach(function (key) {
         // forces values to be string types
-        if (typeof convertedTags[key] !== 'string') {
-          convertedTags[key] = JSON.stringify(convertedTags[key]);
-        }
+        convertedTags[key] = String(convertedTags[key]);
       });
 
       RNOneSignal.addTags(tags);
