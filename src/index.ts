@@ -441,7 +441,7 @@ export namespace OneSignal {
       // forces values to be string types
       if (typeof value !== 'string') {
         console.warn(
-          'OneSignal: addTag: tag value must be of type string; attempting to convert'
+          'OneSignal: addTag: tag value must be of type string; attempting to convert',
         );
         value = String(value);
       }
@@ -468,7 +468,9 @@ export namespace OneSignal {
       Object.keys(tags).forEach(function (key) {
         if (typeof convertedTags[key] !== 'string') {
           console.warn(
-            'OneSignal: addTags: tag value for key ' + key + ' must be of type string; attempting to convert'
+            'OneSignal: addTags: tag value for key ' +
+              key +
+              ' must be of type string; attempting to convert',
           );
           convertedTags[key] = String(convertedTags[key]);
         }
