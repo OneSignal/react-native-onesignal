@@ -393,7 +393,7 @@ RCT_EXPORT_METHOD(removeSms:(NSString *)smsNumber) {
     [OneSignal.User removeSms:smsNumber]; 
 }
 
-RCT_EXPORT_METHOD(addTag:(NSString *)key value:(NSString*)value) {
+RCT_EXPORT_METHOD(addTag:(NSString *)key value:(id)value) {
     [OneSignal.User addTagWithKey:key value:value];
 }
 

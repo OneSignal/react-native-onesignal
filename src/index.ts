@@ -525,9 +525,17 @@ export namespace OneSignal {
     export function addTag(key: string, value: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      if (!key || (!value && value !== '')) {
-        console.error('OneSignal: sendTag: must include a key and a value');
+      if (!key || value === undefined || value === null) {
+        console.error('OneSignal: addTag: must include a key and a value');
         return;
+      }
+
+      // forces values to be string types
+      if (typeof value !== 'string') {
+        console.warn(
+          'OneSignal: addTag: tag value must be of type string; attempting to convert',
+        );
+        value = String(value);
       }
 
       RNOneSignal.addTag(key, value);
@@ -547,6 +555,18 @@ export namespace OneSignal {
         );
         return;
       }
+
+      const convertedTags = tags as { [key: string]: any };
+      Object.keys(tags).forEach(function (key) {
+        if (typeof convertedTags[key] !== 'string') {
+          console.warn(
+            'OneSignal: addTags: tag value for key ' +
+              key +
+              ' must be of type string; attempting to convert',
+          );
+          convertedTags[key] = String(convertedTags[key]);
+        }
+      });
 
       RNOneSignal.addTags(tags);
     }
