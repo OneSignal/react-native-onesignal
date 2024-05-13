@@ -21,11 +21,11 @@ target 'RNOneSignalTS' do
   # post_install do |installer|
   #   flipper_post_install(installer)
   # end
-  pod 'OneSignalXCFramework', :path => '~/Development/OneSignal/onesignal-ios-sdk'
 end
 
 target 'RNOneSignalWidgetExtension' do
-  pod 'OneSignalXCFramework', :path => '~/Development/OneSignal/onesignal-ios-sdk'
+  # Note that this should match the version used by react-native-onesignal.podspec
+  pod 'OneSignalXCFramework', '5.2.0'
 end
 
 target 'RNOneSignalTS-tvOS' do
