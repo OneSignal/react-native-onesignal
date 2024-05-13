@@ -24,8 +24,7 @@ target 'RNOneSignalTS' do
 end
 
 target 'RNOneSignalWidgetExtension' do
-  # Note that this should match the version used by react-native-onesignal.podspec
-  pod 'OneSignalXCFramework', '5.2.0'
+  pod 'OneSignalXCFramework', '>= 5.0.2', '< 6.0.0'
 end
 
 target 'RNOneSignalTS-tvOS' do
