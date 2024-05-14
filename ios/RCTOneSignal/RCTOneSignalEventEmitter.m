@@ -133,22 +133,28 @@ RCT_EXPORT_METHOD(exitLiveActivity:(NSString *)activityId
 
 RCT_EXPORT_METHOD(setPushToStartToken:(NSString *)activityType 
                   withToken:(NSString *)token) {
-    @autoreleasepool {
-        NSError* err=nil;
+    NSError* err=nil;
+
+    if (@available(iOS 17.2, *)) {
         [OneSignalLiveActivitiesManagerImpl setPushToStartToken:activityType withToken:token error:&err];
         if (err) {
             [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"activityType must be the name of your ActivityAttributes struct"]];
         }
+    } else {
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot setPushToStartToken on iOS < 17.2"]];
     }
 }
 
 RCT_EXPORT_METHOD(removePushToStartToken:(NSString *)activityType) {
-    @autoreleasepool {
-        NSError* err=nil;
+    NSError* err=nil;
+
+    if (@available(iOS 17.2, *)) {
         [OneSignalLiveActivitiesManagerImpl removePushToStartToken:activityType error:&err];
         if (err) {
             [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"activityType must be the name of your ActivityAttributes struct"]];
         }
+    } else {
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot removePushToStartToken on iOS < 17.2"]];
     }
 }
 
@@ -161,14 +167,22 @@ RCT_EXPORT_METHOD(setupDefaultLiveActivity:(NSDictionary * _Nullable)options) {
         [laOptions setEnablePushToUpdate:[options[@"enablePushToUpdate"] boolValue]];
     }
 
-    [OneSignalLiveActivitiesManagerImpl setupDefaultWithOptions:laOptions];    
+    if (@available(iOS 16.1, *)) {
+        [OneSignalLiveActivitiesManagerImpl setupDefaultWithOptions:laOptions];
+    } else {
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot setupDefault on iOS < 16.1"]];
+    }
 }
 
 RCT_EXPORT_METHOD(startDefaultLiveActivity:(NSString *)activityId
                 withAttributes:(NSDictionary * _Nonnull)attributes
                 withContent:(NSDictionary * _Nonnull)content) {
 
-    [OneSignalLiveActivitiesManagerImpl startDefault:activityId attributes:attributes content:content];
+    if (@available(iOS 16.1, *)) {
+        [OneSignalLiveActivitiesManagerImpl startDefault:activityId attributes:attributes content:content];
+    } else {
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot startDefault on iOS < 16.1"]];
+    }
 }
 
 RCT_EXPORT_METHOD(setPrivacyConsentGiven:(BOOL)granted) {

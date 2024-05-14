@@ -323,7 +323,7 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - OneSignalXCFramework (= 5.2.0)
+  - OneSignalXCFramework (< 6.0.0, >= 5.0.2)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -450,6 +450,6 @@ SPEC CHECKSUMS:
   ReactCommon: b4a65d2d6e9eeffd4b32dde1245962b3f43907d0
   Yoga: d1fc3575b8b68891ff5ef3c276daa855e841eb32
 
-PODFILE CHECKSUM: 74dbbba09d2d611b469faf8787a048dd71c49137
+PODFILE CHECKSUM: f48dbc25fab0526ba40a2fa6aadce3376f5c6602
 
 COCOAPODS: 1.15.2

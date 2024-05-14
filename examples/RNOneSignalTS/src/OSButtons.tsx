@@ -227,7 +227,7 @@ class OSButtons extends React.Component<Props> {
     const setPushToStartLiveActivity = renderButtonView(
       'Set Push-To-Start Live Activity',
       async () => {
-        loggingFunction('Exiting live activity');
+        loggingFunction('Set pushToStart token');
         await OneSignal.LiveActivities.setPushToStartToken(
           this.props.inputFieldValue,
           'FAKE_TOKEN',
@@ -238,7 +238,7 @@ class OSButtons extends React.Component<Props> {
     const removePushToStartLiveActivity = renderButtonView(
       'Remove Push-To-Start Live Activity',
       async () => {
-        loggingFunction('Exiting live activity');
+        loggingFunction('Remove pushToStart token');
         await OneSignal.LiveActivities.removePushToStartToken(
           this.props.inputFieldValue,
         );
