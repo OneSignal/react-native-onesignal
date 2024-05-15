@@ -33,6 +33,12 @@ class OSDemo extends React.Component<Props, State> {
     OneSignal.initialize(APP_ID);
     OneSignal.Debug.setLogLevel(LogLevel.Verbose);
 
+    OneSignal.LiveActivities.setupDefault();
+    // OneSignal.LiveActivities.setupDefault({
+    //   enablePushToStart: false,
+    //   enablePushToUpdate: true,
+    // });
+
     OneSignal.Notifications.addEventListener(
       'foregroundWillDisplay',
       (event) => {

@@ -23,6 +23,10 @@ target 'RNOneSignalTS' do
   # end
 end
 
+target 'RNOneSignalWidgetExtension' do
+  pod 'OneSignalXCFramework', '>= 5.0.2', '< 6.0.0'
+end
+
 target 'RNOneSignalTS-tvOS' do
   # Pods for RNOneSignalTS-tvOS
 

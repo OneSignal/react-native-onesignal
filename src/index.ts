@@ -26,6 +26,7 @@ import {
 } from './models/Subscription';
 import { UserState, UserChangedState } from './models/User';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
+import { LiveActivitySetupOptions } from './models/LiveActivities';
 import {
   InAppMessage,
   InAppMessageEventTypeMap,
@@ -156,8 +157,13 @@ export namespace OneSignal {
 
   export namespace LiveActivities {
     /**
-     * Associates a temporary push token with an Activity ID on the OneSignal server.
-     */
+     * Indicate this device has exited a live activity, identified within OneSignal by the `activityId`.
+     *
+     * Only applies to iOS
+     *
+     * @param activityId: The activity identifier the live activity on this device will receive updates for.
+     * @param token: The activity's update token to receive the updates.
+     **/
     export function enter(
       activityId: string,
       token: string,
@@ -176,8 +182,12 @@ export namespace OneSignal {
     }
 
     /**
-     * Deletes activityId associated temporary push token on the OneSignal server.
-     */
+     * Indicate this device has exited a live activity, identified within OneSignal by the `activityId`.
+     *
+     * Only applies to iOS
+     *
+     * @param activityId: The activity identifier the live activity on this device will no longer receive updates for.
+     **/
     export function exit(activityId: string, handler?: Function) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
@@ -185,9 +195,91 @@ export namespace OneSignal {
         handler = () => {};
       }
 
-      // Only Available on iOS
       if (Platform.OS === 'ios') {
         RNOneSignal.exitLiveActivity(activityId, handler);
+      }
+    }
+
+    /**
+     * Indicate this device is capable of receiving pushToStart live activities for the
+     * `activityType`. The `activityType` **must** be the name of the struct conforming
+     * to `ActivityAttributes` that will be used to start the live activity.
+     *
+     * Only applies to iOS
+     *
+     * @param activityType: The name of the specific `ActivityAttributes` structure tied
+     * to the live activity.
+     * @param token: The activity type's pushToStart token.
+     */
+    export function setPushToStartToken(activityType: string, token: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (Platform.OS === 'ios') {
+        RNOneSignal.setPushToStartToken(activityType, token);
+      }
+    }
+
+    /**
+     * Indicate this device is no longer capable of receiving pushToStart live activities
+     * for the `activityType`. The `activityType` **must** be the name of the struct conforming
+     * to `ActivityAttributes` that will be used to start the live activity.
+     *
+     * Only applies to iOS
+     *
+     * @param activityType: The name of the specific `ActivityAttributes` structure tied
+     * to the live activity.
+     */
+    export function removePushToStartToken(activityType: string) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (Platform.OS === 'ios') {
+        RNOneSignal.removePushToStartToken(activityType);
+      }
+    }
+
+    /**
+     * Enable the OneSignalSDK to setup the default`DefaultLiveActivityAttributes` structure,
+     * which conforms to the `OneSignalLiveActivityAttributes`. When using this function, the
+     * widget attributes are owned by the OneSignal SDK, which will allow the SDK to handle the
+     * entire lifecycle of the live activity.  All that is needed from an app-perspective is to
+     * create a Live Activity widget in a widget extension, with a `ActivityConfiguration` for
+     * `DefaultLiveActivityAttributes`. This is most useful for users that (1) only have one Live
+     * Activity widget and (2) are using a cross-platform framework and do not want to create the
+     * cross-platform <-> iOS native bindings to manage ActivityKit.
+     *
+     * Only applies to iOS
+     *
+     * @param options: An optional structure to provide for more granular setup options.
+     */
+    export function setupDefault(options?: LiveActivitySetupOptions) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (Platform.OS === 'ios') {
+        RNOneSignal.setupDefaultLiveActivity(options);
+      }
+    }
+
+    /**
+     * Start a new LiveActivity that is modelled by the default`DefaultLiveActivityAttributes`
+     * structure. The `DefaultLiveActivityAttributes` is initialized with the dynamic `attributes`
+     * and `content` passed in.
+     *
+     * Only applies to iOS
+     *
+     * @param activityId: The activity identifier the live activity on this device will be started
+     * and eligible to receive updates for.
+     * @param attributes: A dynamic type containing the static attributes passed into `DefaultLiveActivityAttributes`.
+     * @param content: A dynamic type containing the content attributes passed into `DefaultLiveActivityAttributes`.
+     */
+    export function startDefault(
+      activityId: string,
+      attributes: object,
+      content: object,
+    ) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (Platform.OS === 'ios') {
+        RNOneSignal.startDefaultLiveActivity(activityId, attributes, content);
       }
     }
   }
