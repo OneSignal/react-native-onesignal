@@ -106,7 +106,7 @@ public class RNUtils {
         if (notification.getSmallIconAccentColor() != null)
             notificationHash.put("smallIconAccentColor", notification.getSmallIconAccentColor());
         if (notification.getLaunchURL() != null)
-            notificationHash.put("launchUrl", notification.getLaunchURL());
+            notificationHash.put("launchURL", notification.getLaunchURL());
         if (notification.getSound() != null)
             notificationHash.put("sound", notification.getSound());
         if (notification.getLedColor() != null)
