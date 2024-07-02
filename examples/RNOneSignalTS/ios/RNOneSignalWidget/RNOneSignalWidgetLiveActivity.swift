@@ -5,6 +5,7 @@
 //  Created by Brian Smith on 4/26/24.
 //
 
+#if !targetEnvironment(macCatalyst)
 import ActivityKit
 import WidgetKit
 import SwiftUI
@@ -63,3 +64,4 @@ struct RNOneSignalWidgetLiveActivity: Widget {
         }
     }
 }
+#endif

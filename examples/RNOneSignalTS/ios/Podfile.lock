@@ -10,9 +10,9 @@ PODS:
     - React-jsi (= 0.64.4)
     - ReactCommon/turbomodule/core (= 0.64.4)
   - glog (0.3.5)
-  - OneSignalXCFramework (5.2.0):
-    - OneSignalXCFramework/OneSignalComplete (= 5.2.0)
-  - OneSignalXCFramework/OneSignal (5.2.0):
+  - OneSignalXCFramework (5.2.1):
+    - OneSignalXCFramework/OneSignalComplete (= 5.2.1)
+  - OneSignalXCFramework/OneSignal (5.2.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalExtension
     - OneSignalXCFramework/OneSignalLiveActivities
@@ -20,38 +20,38 @@ PODS:
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalOutcomes
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalComplete (5.2.0):
+  - OneSignalXCFramework/OneSignalComplete (5.2.1):
     - OneSignalXCFramework/OneSignal
     - OneSignalXCFramework/OneSignalInAppMessages
     - OneSignalXCFramework/OneSignalLocation
-  - OneSignalXCFramework/OneSignalCore (5.2.0)
-  - OneSignalXCFramework/OneSignalExtension (5.2.0):
+  - OneSignalXCFramework/OneSignalCore (5.2.1)
+  - OneSignalXCFramework/OneSignalExtension (5.2.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalOutcomes
-  - OneSignalXCFramework/OneSignalInAppMessages (5.2.0):
+  - OneSignalXCFramework/OneSignalInAppMessages (5.2.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalNotifications
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalOutcomes
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalLiveActivities (5.2.0):
+  - OneSignalXCFramework/OneSignalLiveActivities (5.2.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalLocation (5.2.0):
+  - OneSignalXCFramework/OneSignalLocation (5.2.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalNotifications
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalNotifications (5.2.0):
+  - OneSignalXCFramework/OneSignalNotifications (5.2.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalExtension
     - OneSignalXCFramework/OneSignalOutcomes
-  - OneSignalXCFramework/OneSignalOSCore (5.2.0):
+  - OneSignalXCFramework/OneSignalOSCore (5.2.1):
     - OneSignalXCFramework/OneSignalCore
-  - OneSignalXCFramework/OneSignalOutcomes (5.2.0):
+  - OneSignalXCFramework/OneSignalOutcomes (5.2.1):
     - OneSignalXCFramework/OneSignalCore
-  - OneSignalXCFramework/OneSignalUser (5.2.0):
+  - OneSignalXCFramework/OneSignalUser (5.2.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalNotifications
     - OneSignalXCFramework/OneSignalOSCore
@@ -249,8 +249,8 @@ PODS:
     - React-jsi (= 0.64.4)
     - React-perflogger (= 0.64.4)
   - React-jsinspector (0.64.4)
-  - react-native-onesignal (5.1.2):
-    - OneSignalXCFramework (= 5.2.0)
+  - react-native-onesignal (5.2.1):
+    - OneSignalXCFramework (= 5.2.1)
     - React (< 1.0.0, >= 0.13.0)
   - React-perflogger (0.64.4)
   - React-RCTActionSheet (0.64.4):
@@ -421,9 +421,9 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: fa8275d5086566e22a26ddc385ab5772e7f9b1bd
-  FBReactNativeSpec: 342841ad3cdf88a10071a3507d3708b236cee677
+  FBReactNativeSpec: ac29642c312b20b463b263a24f2472d03b7cd008
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
-  OneSignalXCFramework: bdf74fdc06888f9466dc21e826fe1549ed143095
+  OneSignalXCFramework: fbafb3b4964a37f8b0ff273419d1c0e5ac0e07d6
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
   RCTRequired: f85fa00af016059cf88b90b8f8ff9a6af9e4b6c3
   RCTTypeSafety: 5279aaf0fb1ad715cbbbbee32d5c98c72598bc9c
@@ -435,7 +435,7 @@ SPEC CHECKSUMS:
   React-jsi: 64f80675a66899bf0f4a58b8e3908966fa516234
   React-jsiexecutor: 8c077bef1c64430b6034f27df1000d194551e2eb
   React-jsinspector: d4f6973dd474357dbaaf6f52f31ffc713bf3e766
-  react-native-onesignal: be215738778e57af4c6da177d548e7983052d3fd
+  react-native-onesignal: 77a5dfd158b6c190243af73e2a9fc724130fbff5
   React-perflogger: 5a890ca0911669421b7611661e9b58f91c805f5c
   React-RCTActionSheet: bd180e0879f8424a73650c5c28fbef4f3b5b27fb
   React-RCTAnimation: 1004d2b4be1f2cedfdc4cb2326adc95b989e6c6b

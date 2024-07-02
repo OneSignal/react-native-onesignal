@@ -8,9 +8,11 @@
 import WidgetKit
 import SwiftUI
 
+#if !targetEnvironment(macCatalyst)
 @main
 struct RNOneSignalWidgetBundle: WidgetBundle {
     var body: some Widget {
         RNOneSignalWidgetLiveActivity()
     }
 }
+#endif
