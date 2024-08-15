@@ -286,7 +286,7 @@ RCT_REMAP_METHOD(requestNotificationPermission,
                  requestNotificationPermissionResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     [OneSignal.Notifications requestPermission:^(BOOL accepted) {
-        resolve(@[@(accepted)]);
+        resolve(@(accepted));
     } fallbackToSettings:[fallbackToSettings boolValue]];
 }
 
