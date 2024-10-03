@@ -95,6 +95,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     private boolean hasSetPermissionObserver = false;
     private boolean hasSetPushSubscriptionObserver = false;
     private boolean hasSetUserStateObserver = false;
+    private boolean hasSetUserJwtInvalidatedListener = false;
 
     private HashMap<String, INotificationWillDisplayEvent> notificationWillDisplayCache;
     private HashMap<String, INotificationWillDisplayEvent> preventDefaultCache;
@@ -578,13 +579,40 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     // OneSignal.User namespace methods
     @ReactMethod
-    public void login(String externalUserId) {
-        OneSignal.login(externalUserId);
+    public void login(String externalId, String jwtToken) {
+        OneSignal.login(externalId, jwtToken);
     }
 
     @ReactMethod
     public void logout() {
         OneSignal.logout();
+    }
+
+    @ReactMethod
+    public void updateUserJwt(String externalId, String jwtToken) {
+        OneSignal.updateUserJwt(externalId, jwtToken);
+    }
+
+    @ReactMethod
+    public void addUserJwtInvalidatedListener() {
+        if (!hasSetUserJwtInvalidatedListener) {
+            OneSignal.addUserJwtInvalidatedListener(this);
+            hasSetUserJwtInvalidatedListener = true;
+        }
+    }
+
+    @Override
+    public void onUserJwtInvalidated(UserJwtInvalidatedEvent event) {
+        try {
+            sendEvent("OneSignal-userJwtInvalidated"
+            //TODO
+                    // RNUtils.convertHashMapToWritableMap(
+                    //         RNUtils.convertPushSubscriptionChangedStateToMap(pushSubscriptionChangedState))
+                    );
+            Log.i("OneSignal", "User JWT token invalidated");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } 
     }
 
     @ReactMethod

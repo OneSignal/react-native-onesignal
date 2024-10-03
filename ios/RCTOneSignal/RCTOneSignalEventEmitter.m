@@ -15,6 +15,7 @@
     BOOL _hasAddedNotificationForegroundLifecycleListener;
     BOOL _hasAddedInAppMessageClickListener;
     BOOL _hasAddedInAppMessageLifecycleListener;
+    BOOL _hasAddedUserJwtInvalidatedListener;
     NSMutableDictionary* _preventDefaultCache;
     NSMutableDictionary* _notificationWillDisplayCache;
 }
@@ -104,12 +105,23 @@ RCT_EXPORT_METHOD(initialize:(NSString* _Nonnull)appId) {
     [OneSignal initialize:appId withLaunchOptions:NULL];
 }
 
-RCT_EXPORT_METHOD(login:(NSString *)externalId) {
-    [OneSignal login:externalId];
+RCT_EXPORT_METHOD(login:(NSString *)externalId jwtToken:(NSString *)jwtToken) {
+    [OneSignal login:externalId withJWTToken:jwtToken];
 }
 
 RCT_EXPORT_METHOD(logout) {
     [OneSignal logout];
+}
+
+RCT_EXPORT_METHOD(updateUserJwt:(NSString *)externalId jwtToken:(NSString *)jwtToken) {
+    [OneSignal updateUserJwt:externalUserId withToken:token];
+}
+
+RCT_EXPORT_METHOD(addUserJwtInvalidatedListener) {
+    if (!_hasAddedUserJwtInvalidatedListener) {
+        [OneSignal addUserJwtInvalidatedListener:[RCTOneSignal sharedInstance]];
+        _hasAddedUserJwtInvalidatedListener = true;
+    }
 }
 
 RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId 

@@ -15,6 +15,7 @@ import {
   IN_APP_MESSAGE_WILL_DISMISS,
   IN_APP_MESSAGE_DID_DISMISS,
   IN_APP_MESSAGE_DID_DISPLAY,
+  USER_JWT_INVALIDATED,
 } from './events';
 import OSNotification from '../OSNotification';
 
@@ -29,6 +30,7 @@ const eventList = [
   IN_APP_MESSAGE_WILL_DISMISS,
   IN_APP_MESSAGE_DID_DISMISS,
   IN_APP_MESSAGE_DID_DISPLAY,
+  USER_JWT_INVALIDATED,
 ];
 
 export default class EventManager {
