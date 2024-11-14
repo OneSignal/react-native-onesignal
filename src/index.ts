@@ -12,6 +12,7 @@ import {
   NOTIFICATION_WILL_DISPLAY,
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
+  USER_JWT_INVALIDATED,
   USER_STATE_CHANGED,
 } from './events/events';
 import {
@@ -51,6 +52,10 @@ export enum LogLevel {
   Info,
   Debug,
   Verbose,
+}
+
+export interface UserJwtInvalidatedEvent {
+  externalId: string;
 }
 
 // Internal wrapper notification permission state that is being updated by the permission change handler.
@@ -99,10 +104,10 @@ export namespace OneSignal {
    * If your integration is user-centric, or you want the ability to identify the user beyond the current device, the
    * login method should be called to identify the user.
    */
-  export function login(externalId: string) {
+  export function login(externalId: string, jwtToken?: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-    RNOneSignal.login(externalId);
+    RNOneSignal.login(externalId, jwtToken || null);
   }
 
   /**
@@ -113,6 +118,40 @@ export namespace OneSignal {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
 
     RNOneSignal.logout();
+  }
+
+  /**
+   * Update the JWT token for a user.
+   */
+  export function updateUserJwt(externalId: string, token: string) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+    RNOneSignal.updateUserJwt(externalId, token);
+  }
+
+  /** Add a callback that fires when the user's JWT is invalidated. */
+  export function addEventListener(
+    event: 'userJwtInvalidated',
+    listener: (event: UserJwtInvalidatedEvent) => void,
+  ) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+    isValidCallback(listener);
+    RNOneSignal.addUserJwtInvalidatedListener();
+    eventManager.addEventListener<UserJwtInvalidatedEvent>(
+      USER_JWT_INVALIDATED,
+      listener,
+    );
+  }
+
+  /** Clears current UserJwtInvalidated listeners. */
+  export function removeEventListener(
+    event: 'userJwtInvalidated',
+    listener: (event: UserJwtInvalidatedEvent) => void,
+  ) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+    eventManager.removeEventListener(USER_JWT_INVALIDATED, listener);
   }
 
   /** For GDPR users, your application should call this method before setting the App ID. */
