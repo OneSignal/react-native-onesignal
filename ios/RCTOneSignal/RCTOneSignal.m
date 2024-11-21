@@ -150,6 +150,10 @@ OSNotificationClickResult* coldStartOSNotificationClickResult;
     [self sendEvent:OSEventString(InAppMessageDidDismiss) withBody:[event jsonRepresentation]];
 }
 
+- (void)onUserJwtInvalidated:(OSUserJwtInvalidatedEvent * _Nonnull)event {
+    [self sendEvent:OSEventString(UserJwtInvalidated) withBody:[event jsonRepresentation]];
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
