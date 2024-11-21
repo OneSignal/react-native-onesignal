@@ -104,10 +104,10 @@ export namespace OneSignal {
    * If your integration is user-centric, or you want the ability to identify the user beyond the current device, the
    * login method should be called to identify the user.
    */
-  export function login(externalId: string, jwtToken: string) {
+  export function login(externalId: string, jwtToken?: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-    RNOneSignal.login(externalId, jwtToken);
+    RNOneSignal.login(externalId, jwtToken || null);
   }
 
   /**

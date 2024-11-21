@@ -106,6 +106,11 @@ RCT_EXPORT_METHOD(initialize:(NSString* _Nonnull)appId) {
 }
 
 RCT_EXPORT_METHOD(login:(NSString *)externalId jwtToken:(NSString *)jwtToken) {
+    // Pass nil if jwtToken is not provided
+    if (jwtToken == (id)[NSNull null]) {
+        jwtToken = nil;
+    }
+    
     [OneSignal login:externalId withToken:jwtToken];
 }
 
