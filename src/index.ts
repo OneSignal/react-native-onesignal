@@ -40,7 +40,11 @@ import {
 import { isValidCallback, isNativeModuleLoaded } from './helpers';
 
 const RNOneSignal = NativeModules.OneSignal;
-const eventManager = new EventManager(RNOneSignal);
+let eventManager: EventManager;
+
+if (isNativeModuleLoaded(RNOneSignal)) {
+  eventManager = new EventManager(RNOneSignal);
+}
 
 /// An enum that declares different types of log levels you can use with the OneSignal SDK, going from the least verbose (none) to verbose (print all comments).
 export enum LogLevel {
