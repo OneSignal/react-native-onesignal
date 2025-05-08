@@ -38,7 +38,7 @@ package com.onesignal.rnonesignalandroid;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
-import android.util.Log;
+import com.onesignal.debug.internal.logging.Logging;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -172,7 +172,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     private void removeHandlers() {
         if(!oneSignalInitDone) {
-            Log.i("OneSignal", "OneSignal React-Native SDK not initialized yet. Could not remove handlers.");
+            Logging.debug("OneSignal React-Native SDK not initialized yet. Could not remove handlers.", null);
             return;
         }
 
@@ -232,7 +232,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         OneSignalWrapper.setSdkVersion("050209");
 
         if (oneSignalInitDone) {
-            Log.e("OneSignal", "Already initialized the OneSignal React-Native SDK");
+            Logging.debug("Already initialized the OneSignal React-Native SDK", null);
             return;
         }
 
@@ -384,7 +384,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
                     }
                 }
             } catch(InterruptedException e){
-                Log.e("InterruptedException" + e.toString(), null);
+                Logging.error("InterruptedException: " + e.toString(), null);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -395,7 +395,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     private void displayNotification(String notificationId){
         INotificationWillDisplayEvent event = notificationWillDisplayCache.get(notificationId);
         if (event == null) {
-            Log.e("Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
+            Logging.error("Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
             return;
         }
         event.getNotification().display();
@@ -405,7 +405,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     private void preventDefault(String notificationId) {
         INotificationWillDisplayEvent event = notificationWillDisplayCache.get(notificationId);
         if (event == null) {
-            Log.e("Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
+            Logging.error("Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
             return;
         }
         event.preventDefault();
@@ -432,7 +432,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     public void onNotificationPermissionChange(boolean permission) {
         try {
             sendEvent("OneSignal-permissionChanged", RNUtils.convertHashMapToWritableMap(RNUtils.convertPermissionToMap(permission)));
-            Log.i("OneSignal", "sending permission change event");
+            Logging.debug("Sending permission change event", null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -546,7 +546,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
             sendEvent("OneSignal-subscriptionChanged",
                     RNUtils.convertHashMapToWritableMap(
                             RNUtils.convertPushSubscriptionChangedStateToMap(pushSubscriptionChangedState)));
-            Log.i("OneSignal", "sending subscription change event");
+            Logging.debug("Sending subscription change event", null);
         } catch (JSONException e) {
             e.printStackTrace();
         } 
@@ -715,7 +715,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
             sendEvent("OneSignal-userStateChanged",
                     RNUtils.convertHashMapToWritableMap(
                             RNUtils.convertUserChangedStateToMap(state)));
-            Log.i("OneSignal", "sending user state change event");
+            Logging.debug("Sending user state change event", null);
         } catch (JSONException e) {
             e.printStackTrace();
         } 
