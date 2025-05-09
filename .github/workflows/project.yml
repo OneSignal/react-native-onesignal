@@ -1,5 +1,4 @@
 name: Add issues to project
-
 on:
   issues:
     types:

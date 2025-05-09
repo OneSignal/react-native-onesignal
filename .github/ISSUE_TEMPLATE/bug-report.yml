@@ -3,7 +3,6 @@ description: File a bug report
 title: '[Bug]: '
 labels: ['Bug']
 
-
 body:
   - type: markdown
     attributes:
@@ -21,7 +20,7 @@ body:
     id: reproduction-steps
     attributes:
       label: Steps to reproduce?
-      description: Provide as much detail as posible to reproduce the issue.
+      description: Provide as much detail as possible to reproduce the issue.
       placeholder: |
         1. Install vX.Y.Z of dependency
         2. Launch the app on iOS device
