@@ -14,4 +14,3 @@ jobs:
           # SDK Cross-Platform Project
           project-url: https://github.com/orgs/OneSignal/projects/10
           github-token: ${{ secrets.GH_PROJECTS_TOKEN }}
-          labeled: Bug
