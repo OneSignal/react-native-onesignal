@@ -157,7 +157,7 @@ export namespace OneSignal {
 
   export namespace LiveActivities {
     /**
-     * Indicate this device has exited a live activity, identified within OneSignal by the `activityId`.
+     * Indicate this device has entered a live activity, identified within OneSignal by the `activityId`.
      *
      * Only applies to iOS
      *
