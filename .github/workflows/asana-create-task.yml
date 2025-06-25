@@ -1,0 +1,119 @@
+name: Github --> Asana Create Task Workflow
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    steps:
+        - name: Create Asana task
+          env:
+            ISSUE_TITLE: ${{ github.event.issue.title }}
+            ISSUE_BODY: ${{ github.event.issue.body }}
+            ISSUE_HTML_URL: ${{ github.event.issue.html_url }}
+            ISSUE_ID: ${{ github.event.issue.id }}
+            ISSUE_NUMBER: ${{ github.event.issue.number }}
+            REPO_FULL_NAME: ${{ github.event.repository.full_name }}
+            SDK_PLATFORM_GROUP: "1208961704779581"
+            SDK_PLATFORM_GROUP_CROSS_PLATFORM: "1208961704779584"
+            SDK_PLATFORM: "1208961704779592"
+            SDK_PLATFORM_REACT_NATIVE: "1208961704779607"
+            DSA_PRIORITY: "1208779519954980"
+            DSA_PRIORITY_NO_PRIORITY: "1208779521616959"
+            DSA_STATUS: "1210103546117753"
+            DSA_STATUS_TRIAGE: "1210103546117756"
+            DSA_REPO_TICKET_URL: "1210347857768758"
+            WORKSPACE_ID: "780103692902078"
+            PROJECT_ID_GITHUB_AND_IMPORTANT_SDK_ISSUES: "1208970714650308"
+            PROJECT_ID_SDK_BACKLOG: "1208777198342772"
+          run: |
+            DATA_BODY=$(jq -n \
+              --arg title "$ISSUE_TITLE" \
+              --arg body "$ISSUE_BODY" \
+              --arg url "$ISSUE_HTML_URL" \
+              --arg id "$ISSUE_ID" \
+              --arg number "$ISSUE_NUMBER" \
+              --arg repo_full_name "$REPO_FULL_NAME" \
+              --arg sdk_platform_group "$SDK_PLATFORM_GROUP" \
+              --arg sdk_platform_group_cross_platform "$SDK_PLATFORM_GROUP_CROSS_PLATFORM" \
+              --arg sdk_platform "$SDK_PLATFORM" \
+              --arg sdk_platform_react_native "$SDK_PLATFORM_REACT_NATIVE" \
+              --arg dsa_priority "$DSA_PRIORITY" \
+              --arg dsa_priority_no_priority "$DSA_PRIORITY_NO_PRIORITY" \
+              --arg dsa_status "$DSA_STATUS" \
+              --arg dsa_status_triage "$DSA_STATUS_TRIAGE" \
+              --arg dsa_repo_ticket_url "$DSA_REPO_TICKET_URL" \
+              --arg workspace_id "$WORKSPACE_ID" \
+              --arg project_id_github_and_important_sdk_issues "$PROJECT_ID_GITHUB_AND_IMPORTANT_SDK_ISSUES" \
+              --arg project_id_sdk_backlog "$PROJECT_ID_SDK_BACKLOG" \
+              '{
+                "data": {
+                  "custom_fields": {
+                    $sdk_platform_group: $sdk_platform_group_cross_platform,
+                    $sdk_platform: $sdk_platform_react_native,
+                    $dsa_priority: $dsa_priority_no_priority,
+                    $dsa_status: $dsa_status_triage,
+                    $dsa_repo_ticket_url: $url
+                  },
+                  "name": $title,
+                  "workspace": $workspace_id,
+                  "projects": [$project_id_github_and_important_sdk_issues, $project_id_sdk_backlog],
+                  "notes": "Issue ID: \($repo_full_name)#\($id)\nIssue number: \($number)\nCreated via GitHub Actions\n----\n\n\($body)"
+                }
+              }')
+
+            curl --request POST \
+                 --url https://app.asana.com/api/1.0/tasks?opt_pretty=true \
+                 --header 'accept: application/json' \
+                 --header 'authorization: Bearer ${{ secrets.ASANA_PAT }}' \
+                 --header 'content-type: application/json' \
+                 --data "$DATA_BODY" \
+                 --output response.json
+
+            TASK_GID=$(jq -r '.data.gid' response.json)
+            echo "TASK_GID=$TASK_GID" >> $GITHUB_ENV
+        - name: Move to "0 Unclassified" section in "Github & Important SDK Issues" project
+          env:
+            SECTION_ID_GITHUB_AND_IMPORTANT_SDK_ISSUES: "1208970755434051"
+          run: |
+              DATA_BODY=$(jq -n \
+                --arg task_gid "$TASK_GID" \
+                --arg section_id "$SECTION_ID_GITHUB_AND_IMPORTANT_SDK_ISSUES" \
+                '{
+                  "data": {
+                    "task": $task_gid,
+                    "insert_after": "null"
+                  }
+                }')
+
+              curl --request POST \
+              --url https://app.asana.com/api/1.0/sections/$section_id/addTask \
+              --header 'accept: application/json' \
+              --header 'authorization: Bearer ${{ secrets.ASANA_PAT }}' \
+              --header 'content-type: application/json' \
+              --data "$DATA_BODY"
+        - name: Move to "Untriaged" section in "SDK / Backlog" project
+          env:
+            SECTION_ID_SDK_BACKLOG: "1208899729378982"
+          run: |
+              DATA_BODY=$(jq -n \
+                --arg task_gid "$TASK_GID" \
+                --arg section_id "$SECTION_ID_SDK_BACKLOG" \
+                '{
+                  "data": {
+                    "task": $task_gid,
+                    "insert_after": "null"
+                  }
+                }')
+
+              curl --request POST \
+              --url https://app.asana.com/api/1.0/sections/$section_id/addTask \
+              --header 'accept: application/json' \
+              --header 'authorization: Bearer ${{ secrets.ASANA_PAT }}' \
+              --header 'content-type: application/json' \
+              --data "$DATA_BODY"
