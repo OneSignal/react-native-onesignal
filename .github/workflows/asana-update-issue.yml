@@ -1,0 +1,172 @@
+name: Github --> Asana Issue Updates Workflow
+
+on:
+  issues:
+    types: [edited, deleted, closed, reopened, assigned, unassigned, labeled, unlabeled, milestoned, demilestoned, pinned, unpinned, locked, unlocked, transferred]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    steps:
+        - name: Get Asana Task Corresponding to Issue
+          env:
+            ISSUE_ID: ${{ github.event.issue.id }}
+            REPO_FULL_NAME: ${{ github.event.repository.full_name }}
+            WORKSPACE_ID: "780103692902078"
+          run: |
+            REPO_SCOPED_ISSUE_ID="$REPO_FULL_NAME#$ISSUE_ID"
+
+            curl --request GET \
+                 --url "https://app.asana.com/api/1.0/workspaces/$WORKSPACE_ID/tasks/search?opt_fields=notes&text=$REPO_SCOPED_ISSUE_ID&sort_by=modified_at&sort_ascending=false" \
+                 --header 'accept: application/json' \
+                 --header 'authorization: Bearer ${{ secrets.ASANA_PAT }}' \
+                 --output response.json
+            TASK_GID=$(jq -r '.data[0].gid' response.json)
+            echo "TASK_GID=$TASK_GID" >> $GITHUB_ENV
+        - name: Determine Action and Post to Asana
+          env:
+            ACTION_TYPE: ${{ github.event.action }}
+            ACTOR_NAME: ${{ github.event.sender.login }}
+            ISSUE_TITLE: ${{ github.event.issue.title }}
+            ISSUE_NUMBER: ${{ github.event.issue.number }}
+            ISSUE_STATE: ${{ github.event.issue.state }}
+          run: |
+            # Map GitHub action types to human-readable descriptions
+            case "$ACTION_TYPE" in
+              "edited")
+                ACTION_DESC="edited the issue"
+                ;;
+              "deleted")
+                ACTION_DESC="deleted the issue"
+                ;;
+              "closed")
+                ACTION_DESC="closed the issue"
+                ;;
+              "reopened")
+                ACTION_DESC="reopened the issue"
+                ;;
+              "assigned")
+                ACTION_DESC="assigned the issue"
+                ;;
+              "unassigned")
+                ACTION_DESC="unassigned the issue"
+                ;;
+              "labeled")
+                ACTION_DESC="added labels to the issue"
+                ;;
+              "unlabeled")
+                ACTION_DESC="removed labels from the issue"
+                ;;
+              "milestoned")
+                ACTION_DESC="added the issue to a milestone"
+                ;;
+              "demilestoned")
+                ACTION_DESC="removed the issue from a milestone"
+                ;;
+              "pinned")
+                ACTION_DESC="pinned the issue"
+                ;;
+              "unpinned")
+                ACTION_DESC="unpinned the issue"
+                ;;
+              "locked")
+                ACTION_DESC="locked the issue"
+                ;;
+              "unlocked")
+                ACTION_DESC="unlocked the issue"
+                ;;
+              "transferred")
+                ACTION_DESC="transferred the issue"
+                ;;
+              *)
+                ACTION_DESC="performed an action on the issue"
+                ;;
+            esac
+
+            # Add additional context for specific actions based on webhook payload
+            if [ "$ACTION_TYPE" = "assigned" ] && [ -n "${{ github.event.assignee.login }}" ]; then
+              ACTION_DESC="assigned the issue to ${{ github.event.assignee.login }}"
+            fi
+
+            if [ "$ACTION_TYPE" = "unassigned" ] && [ -n "${{ github.event.assignee.login }}" ]; then
+              ACTION_DESC="unassigned the issue from ${{ github.event.assignee.login }}"
+            fi
+
+            if [ "$ACTION_TYPE" = "labeled" ] && [ -n "${{ github.event.label.name }}" ]; then
+              LABEL_COLOR="${{ github.event.label.color }}"
+              ACTION_DESC="added label '${{ github.event.label.name }}' to the issue"
+              if [ -n "$LABEL_COLOR" ]; then
+                ACTION_DESC="$ACTION_DESC (color: #$LABEL_COLOR)"
+              fi
+            fi
+
+            if [ "$ACTION_TYPE" = "unlabeled" ] && [ -n "${{ github.event.label.name }}" ]; then
+              LABEL_COLOR="${{ github.event.label.color }}"
+              ACTION_DESC="removed label '${{ github.event.label.name }}' from the issue"
+              if [ -n "$LABEL_COLOR" ]; then
+                ACTION_DESC="$ACTION_DESC (color: #$LABEL_COLOR)"
+              fi
+            fi
+
+            if [ "$ACTION_TYPE" = "milestoned" ] && [ -n "${{ github.event.milestone.title }}" ]; then
+              MILESTONE_DUE_DATE="${{ github.event.milestone.due_on }}"
+              ACTION_DESC="added the issue to milestone '${{ github.event.milestone.title }}'"
+              if [ -n "$MILESTONE_DUE_DATE" ] && [ "$MILESTONE_DUE_DATE" != "null" ]; then
+                ACTION_DESC="$ACTION_DESC (due: $MILESTONE_DUE_DATE)"
+              fi
+            fi
+
+            if [ "$ACTION_TYPE" = "demilestoned" ] && [ -n "${{ github.event.milestone.title }}" ]; then
+              ACTION_DESC="removed the issue from milestone '${{ github.event.milestone.title }}'"
+            fi
+
+            if [ "$ACTION_TYPE" = "transferred" ] && [ -n "${{ github.event.changes.new_repository.full_name }}" ]; then
+              ACTION_DESC="transferred the issue to repository ${{ github.event.changes.new_repository.full_name }}"
+            fi
+
+            if [ "$ACTION_TYPE" = "edited" ] && [ -n "${{ github.event.changes.title.from }}" ]; then
+              OLD_TITLE="${{ github.event.changes.title.from }}"
+              NEW_TITLE="${{ github.event.issue.title }}"
+              ACTION_DESC="edited the issue title from '$OLD_TITLE' to '$NEW_TITLE'"
+            fi
+
+            echo "ACTION_DESC=$ACTION_DESC" >> $GITHUB_ENV
+
+            # Only proceed if we found a task
+            if [ "$TASK_GID" != "null" ] && [ -n "$TASK_GID" ]; then
+              # Create a more detailed message with additional context
+              MESSAGE_TEXT="$ACTOR_NAME performed an action: $ACTION_DESC"
+              
+              # Add issue state information for state changes
+              if [ "$ACTION_TYPE" = "closed" ] || [ "$ACTION_TYPE" = "reopened" ]; then
+                MESSAGE_TEXT=$(printf "%s\nIssue state: %s" "$MESSAGE_TEXT" "$ISSUE_STATE")
+              fi
+              
+              # Add repository information for transferred issues
+              if [ "$ACTION_TYPE" = "transferred" ]; then
+                REPO_NAME="${{ github.event.repository.full_name }}"
+                MESSAGE_TEXT=$(printf "%s\nFrom repository: %s" "$MESSAGE_TEXT" "$REPO_NAME")
+              fi
+              
+              MESSAGE_TEXT=$(printf "%s\n\nIssue: #%s - %s" "$MESSAGE_TEXT" "$ISSUE_NUMBER" "$ISSUE_TITLE")
+
+              BODY_DATA=$(jq -n \
+                --arg text "$MESSAGE_TEXT" \
+                '{
+                  "data": {
+                    "text": $text
+                  }
+                }')
+
+              curl --request POST \
+                   --url https://app.asana.com/api/1.0/tasks/$TASK_GID/stories \
+                   --header 'accept: application/json' \
+                   --header 'authorization: Bearer ${{ secrets.ASANA_PAT }}' \
+                   --header 'content-type: application/json' \
+                   --data "$BODY_DATA"
+            else
+              echo "No corresponding Asana task found for issue ID: $ISSUE_ID"
+            fi

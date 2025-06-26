@@ -1,0 +1,47 @@
+name: Github --> Asana Add Comment Workflow
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    steps:
+        - name: Get Asana Task Corresponding to Issue
+          env:
+            ISSUE_ID: ${{ github.event.issue.id }}
+            REPO_FULL_NAME: ${{ github.event.repository.full_name }}
+            WORKSPACE_ID: "780103692902078"
+          run: |
+            REPO_SCOPED_ISSUE_ID="$REPO_FULL_NAME#$ISSUE_ID"
+
+            curl --request GET \
+                 --url "https://app.asana.com/api/1.0/workspaces/$WORKSPACE_ID/tasks/search?opt_fields=notes&text=$REPO_SCOPED_ISSUE_ID&sort_by=modified_at&sort_ascending=false" \
+                 --header 'accept: application/json' \
+                 --header 'authorization: Bearer ${{ secrets.ASANA_PAT }}' \
+                 --output response.json
+            TASK_GID=$(jq -r '.data[0].gid' response.json)
+            echo "TASK_GID=$TASK_GID" >> $GITHUB_ENV
+        - name: Comment on Asana Task
+          env:
+            ISSUE_COMMENT: ${{ github.event.comment.body }}
+            COMMENTER_NAME: ${{ github.event.comment.user.login }}
+          run: |
+            BODY_DATA=$(jq -n \
+              --arg text "$ISSUE_COMMENT" \
+              --arg commenter_name "$COMMENTER_NAME" \
+              '{
+                "data": {
+                  "text": "\($commenter_name) left a comment:\n\n\($text)",
+                }
+              }')
+            curl --request POST \
+                 --url https://app.asana.com/api/1.0/tasks/$TASK_GID/stories \
+                 --header 'accept: application/json' \
+                 --header 'authorization: Bearer ${{ secrets.ASANA_PAT }}' \
+                 --header 'content-type: application/json' \
+                 --data "$BODY_DATA"
