@@ -528,4 +528,8 @@ RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
     // iOS Stub
 }
 
+RCT_EXPORT_METHOD(trackEvent:(NSString *)name withProperties:(NSDictionary * _Nullable)properties) {
+    [OneSignal.User trackEvent:name withProperties:properties];
+}
+
 @end
