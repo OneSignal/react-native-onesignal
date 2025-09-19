@@ -14,30 +14,30 @@ import {
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
 } from './events/events';
-import {
-  NotificationEventName,
-  NotificationEventTypeMap,
-  NotificationClickEvent,
-} from './models/NotificationEvents';
-import {
-  PushSubscriptionState,
-  OSNotificationPermission,
-  PushSubscriptionChangedState,
-} from './models/Subscription';
-import { UserState, UserChangedState } from './models/User';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
-import { LiveActivitySetupOptions } from './models/LiveActivities';
+import { isNativeModuleLoaded, isValidCallback } from './helpers';
 import {
   InAppMessage,
-  InAppMessageEventTypeMap,
-  InAppMessageEventName,
   InAppMessageClickEvent,
-  InAppMessageWillDisplayEvent,
-  InAppMessageDidDisplayEvent,
-  InAppMessageWillDismissEvent,
   InAppMessageDidDismissEvent,
+  InAppMessageDidDisplayEvent,
+  InAppMessageEventName,
+  InAppMessageEventTypeMap,
+  InAppMessageWillDismissEvent,
+  InAppMessageWillDisplayEvent,
 } from './models/InAppMessage';
-import { isValidCallback, isNativeModuleLoaded } from './helpers';
+import { LiveActivitySetupOptions } from './models/LiveActivities';
+import {
+  NotificationClickEvent,
+  NotificationEventName,
+  NotificationEventTypeMap,
+} from './models/NotificationEvents';
+import {
+  OSNotificationPermission,
+  PushSubscriptionChangedState,
+  PushSubscriptionState,
+} from './models/Subscription';
+import { UserChangedState, UserState } from './models/User';
 
 const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
@@ -605,6 +605,16 @@ export namespace OneSignal {
 
       return RNOneSignal.getTags();
     }
+
+    /** Track custom events for the current user. */
+    export function trackEvent(
+      name: string,
+      properties?: Record<string, string>,
+    ) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      RNOneSignal.trackEvent(name, properties);
+    }
   }
 
   export namespace Notifications {
@@ -1001,21 +1011,21 @@ export namespace OneSignal {
 }
 
 export {
-  NotificationWillDisplayEvent,
-  NotificationClickEvent,
   InAppMessage,
   InAppMessageClickEvent,
-  InAppMessageWillDisplayEvent,
+  InAppMessageDidDismissEvent,
   InAppMessageDidDisplayEvent,
   InAppMessageWillDismissEvent,
-  InAppMessageDidDismissEvent,
-  PushSubscriptionState,
-  PushSubscriptionChangedState,
-  UserState,
-  UserChangedState,
+  InAppMessageWillDisplayEvent,
+  NotificationClickEvent,
+  NotificationWillDisplayEvent,
   OSNotificationPermission,
+  PushSubscriptionChangedState,
+  PushSubscriptionState,
+  UserChangedState,
+  UserState,
 };
 
-export { default as OSNotification } from './OSNotification';
-export { NotificationClickResult } from './models/NotificationEvents';
 export { InAppMessageClickResult } from './models/InAppMessage';
+export { NotificationClickResult } from './models/NotificationEvents';
+export { default as OSNotification } from './OSNotification';
