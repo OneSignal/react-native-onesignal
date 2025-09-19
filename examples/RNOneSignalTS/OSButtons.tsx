@@ -1,8 +1,8 @@
-import {OneSignal} from 'react-native-onesignal';
 import * as React from 'react';
-import {StyleSheet, View, Platform} from 'react-native';
-import {renderButtonView} from './Helpers';
-import {Text, Divider} from '@react-native-material/core';
+import { StyleSheet, Text, View } from 'react-native';
+import { OneSignal } from 'react-native-onesignal';
+import { renderButtonView } from './Helpers';
+// Remove: import {Text, Divider} from '@react-native-material/core';
 
 export interface Props {
   loggingFunction: Function;
@@ -11,7 +11,7 @@ export interface Props {
 
 class OSButtons extends React.Component<Props> {
   createInAppMessagesFields() {
-    const {loggingFunction} = this.props;
+    const { loggingFunction } = this.props;
 
     const getPausedButton = renderButtonView('Get paused', async () => {
       const paused = await OneSignal.InAppMessages.getPaused();
@@ -94,7 +94,7 @@ class OSButtons extends React.Component<Props> {
   }
 
   createLocationFields() {
-    const {loggingFunction} = this.props;
+    const { loggingFunction } = this.props;
     const locationShared = renderButtonView('Is Location Shared', async () => {
       const isLocationShared = await OneSignal.Location.isShared();
       loggingFunction(
@@ -129,7 +129,7 @@ class OSButtons extends React.Component<Props> {
   }
 
   createNotificationFields() {
-    const {loggingFunction} = this.props;
+    const { loggingFunction } = this.props;
 
     const hasPermissionButton = renderButtonView(
       'Has Notification Permission',
@@ -182,7 +182,7 @@ class OSButtons extends React.Component<Props> {
   }
 
   createLiveActivitiesFields() {
-    const {loggingFunction} = this.props;
+    const { loggingFunction } = this.props;
 
     const startDefaultLiveActivity = renderButtonView(
       'Start Default Live Activity',
@@ -190,9 +190,9 @@ class OSButtons extends React.Component<Props> {
         loggingFunction('Starting live activity');
         await OneSignal.LiveActivities.startDefault(
           this.props.inputFieldValue,
-          {title: 'Welcome!'},
+          { title: 'Welcome!' },
           {
-            message: {en: 'Hello World!'},
+            message: { en: 'Hello World!' },
             intValue: 3,
             doubleValue: 3.14,
             boolValue: true,
@@ -255,7 +255,7 @@ class OSButtons extends React.Component<Props> {
   }
 
   createSessionFields() {
-    const {loggingFunction} = this.props;
+    const { loggingFunction } = this.props;
 
     const sendOutcomeButton = renderButtonView('Send Outcome With Name', () => {
       loggingFunction('Sending outcome: ', this.props.inputFieldValue);
@@ -295,7 +295,7 @@ class OSButtons extends React.Component<Props> {
   }
 
   createUserFields() {
-    const {loggingFunction} = this.props;
+    const { loggingFunction } = this.props;
 
     const addEmailButton = renderButtonView('Add Email', () => {
       loggingFunction('Attempting to set email: ', this.props.inputFieldValue);
@@ -341,7 +341,7 @@ class OSButtons extends React.Component<Props> {
 
     const addTagsButton = renderButtonView('Add list of tags', () => {
       loggingFunction('Adding list of tags');
-      OneSignal.User.addTags({my_tag1: 'my_value', my_tag2: 'my_value2'});
+      OneSignal.User.addTags({ my_tag1: 'my_value', my_tag2: 'my_value2' });
     });
 
     const removeTagsButton = renderButtonView('Remove list of tags', () => {
@@ -454,7 +454,7 @@ class OSButtons extends React.Component<Props> {
   }
 
   pushSubscriptionFields() {
-    const {loggingFunction} = this.props;
+    const { loggingFunction } = this.props;
 
     const getPushSubscriptionIdButton = renderButtonView(
       'Get Push Subscription Id',
@@ -497,7 +497,7 @@ class OSButtons extends React.Component<Props> {
   }
 
   privacyConsentFields() {
-    const {loggingFunction} = this.props;
+    const { loggingFunction } = this.props;
 
     const setPrivacyConsentGivenTrueButton = renderButtonView(
       'Set Privacy Consent to true',
@@ -542,43 +542,79 @@ class OSButtons extends React.Component<Props> {
   render() {
     return (
       <View>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Text variant="h5">InAppMessages</Text>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>InAppMessages</Text>
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
         {this.createInAppMessagesFields()}
 
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Text variant="h5">Location</Text>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Location</Text>
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
         {this.createLocationFields()}
 
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Text variant="h5">Notifications</Text>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Notifications</Text>
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
         {this.createNotificationFields()}
 
-        <Text variant="h5">Live Activities</Text>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+          Live Activities
+        </Text>
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
         {this.createLiveActivitiesFields()}
 
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Text variant="h5">Session</Text>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Session</Text>
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
         {this.createSessionFields()}
 
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Text variant="h5">User</Text>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>User</Text>
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
         {this.createUserFields()}
 
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Text variant="h5">Push Subscription</Text>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+          Push Subscription
+        </Text>
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
         {this.pushSubscriptionFields()}
 
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Text variant="h5">Privacy Consent</Text>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+          Privacy Consent
+        </Text>
+        <View
+          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+        />
         {this.privacyConsentFields()}
       </View>
     );

@@ -1,19 +1,18 @@
-import * as React from 'react';
 import {
-  View,
-  StyleSheet,
-  Platform,
+  Button,
   KeyboardAvoidingView,
+  StyleSheet,
   TextInput,
+  View,
 } from 'react-native';
-import {Button} from '@react-native-material/core';
 
-const disabledColor = '#BEBEBE';
+// const disabledColor = '#BEBEBE';
 
 export const renderButtonView = (name: string, callback: Function) => {
   return (
     <View key={name + '_parent'} style={styles.buttonContainer}>
       <Button
+        color="white"
         key={name}
         title={name}
         onPress={() => {
@@ -59,11 +58,11 @@ export const renderFieldView = (
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    flexDirection: 'column',
-    overflow: 'hidden',
-    borderRadius: 10,
+    backgroundColor: '#007bff',
+    borderRadius: 8,
     marginVertical: 10,
     marginHorizontal: 10,
+    overflow: 'hidden',
   },
   textInput: {
     marginHorizontal: 10,

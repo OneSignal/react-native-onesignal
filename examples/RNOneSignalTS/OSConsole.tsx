@@ -25,12 +25,14 @@ export interface Props {
 export interface State {}
 
 class OSConsole extends React.Component<Props, State> {
+  private scrollView: ScrollView | null = null;
+
   constructor(props: Props) {
     super(props);
   }
 
   scrollToEnd = () => {
-    this.scrollView.scrollToEnd({ animated: true });
+    this.scrollView?.scrollToEnd({ animated: true });
   };
 
   render() {

@@ -1,10 +1,11 @@
-import { Text, TextInput } from '@react-native-material/core';
 import * as React from 'react';
 import {
   Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
+  Text,
+  TextInput,
   View,
 } from 'react-native';
 import { LogLevel, OneSignal } from 'react-native-onesignal';
