@@ -40,6 +40,7 @@ import java.util.Map;
 
 import javax.naming.Context;
 
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 
 import com.facebook.react.bridge.Arguments;
@@ -697,11 +698,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void trackEvent(String name, ReadableMap properties) {
-        OneSignal.getUser().trackEvent(name, RNUtils.convertReadableMapIntoStringMap(properties));
-    }
-
-    @ReactMethod
     public void addUserStateObserver() {
         if (!hasSetUserStateObserver) {
             OneSignal.getUser().addObserver(this);
@@ -738,5 +734,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void removeListeners(int count) {
         // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+
+    @ReactMethod
+    public void trackEvent(String name, @Nullable ReadableMap properties) {
+        OneSignal.getUser().trackEvent(name, properties != null ? RNUtils.convertReadableMapIntoStringMap(properties) : null);
     }
 }
