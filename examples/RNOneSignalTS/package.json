@@ -14,11 +14,12 @@
     "build:ios": "cd ios && xcodebuild -workspace RNOneSignalTS.xcworkspace -scheme RNOneSignalTS -configuration Release -destination generic/platform=iOS -archivePath RNOneSignalTS.xcarchive archive"
   },
   "dependencies": {
+    "@react-native-material/core": "^1.3.7",
+    "@react-native/new-app-screen": "0.81.4",
     "react": "19.1.0",
     "react-native": "0.81.4",
-    "@react-native/new-app-screen": "0.81.4",
-    "react-native-safe-area-context": "^5.5.2",
-    "react-native-onesignal": "file:../../"
+    "react-native-onesignal": "file:../../",
+    "react-native-safe-area-context": "^5.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
