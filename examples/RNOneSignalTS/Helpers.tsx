@@ -1,25 +1,24 @@
 import {
-  Button,
   KeyboardAvoidingView,
   StyleSheet,
+  Text,
   TextInput,
-  View,
+  TouchableOpacity,
 } from 'react-native';
 
 // const disabledColor = '#BEBEBE';
 
 export const renderButtonView = (name: string, callback: Function) => {
   return (
-    <View key={name + '_parent'} style={styles.buttonContainer}>
-      <Button
-        color="white"
-        key={name}
-        title={name}
-        onPress={() => {
-          callback();
-        }}
-      />
-    </View>
+    <TouchableOpacity
+      key={name + '_parent'}
+      style={styles.buttonContainer}
+      onPress={() => {
+        callback();
+      }}
+    >
+      <Text style={styles.buttonText}>{name}</Text>
+    </TouchableOpacity>
   );
 };
 
@@ -62,7 +61,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginVertical: 10,
     marginHorizontal: 10,
-    overflow: 'hidden',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
   textInput: {
     marginHorizontal: 10,
