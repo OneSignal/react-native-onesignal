@@ -5,7 +5,6 @@
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
 import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import {
   SafeAreaProvider,
@@ -29,17 +28,13 @@ function AppContent() {
 
   return (
     <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    <OSDemo name="OneSignal" />
+      <OSDemo name="OneSignal" />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  body: {
+  container: {
     flex: 1,
   },
 });
