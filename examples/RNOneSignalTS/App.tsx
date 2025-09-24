@@ -11,6 +11,7 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
+import OSDemo from './OSDemo';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -32,12 +33,13 @@ function AppContent() {
         templateFileName="App.tsx"
         safeAreaInsets={safeAreaInsets}
       />
+    <OSDemo name="OneSignal" />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
+  body: {
     flex: 1,
   },
 });
