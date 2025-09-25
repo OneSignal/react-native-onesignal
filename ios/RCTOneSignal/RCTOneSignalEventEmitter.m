@@ -529,7 +529,7 @@ RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
 }
 
 RCT_EXPORT_METHOD(trackEvent:(NSString *)name withProperties:(NSDictionary * _Nullable)properties) {
-    [OneSignal.User trackEvent:name withProperties:properties];
+    [OneSignal.User trackEventWithName:name properties:properties];
 }
 
 @end

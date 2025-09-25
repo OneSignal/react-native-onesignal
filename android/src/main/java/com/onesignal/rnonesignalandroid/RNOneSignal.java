@@ -38,7 +38,7 @@ package com.onesignal.rnonesignalandroid;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.naming.Context;
+import android.content.Context;
 
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
