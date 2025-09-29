@@ -609,9 +609,13 @@ export namespace OneSignal {
     /** Track custom events for the current user. */
     export function trackEvent(
       name: string,
-      properties?: Record<string, string>,
+      properties?: Record<string, unknown>,
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (!isObjectSerializable(properties)) {
+        return console.error('Properties must be JSON-serializable');
+      }
 
       RNOneSignal.trackEvent(name, properties);
     }
@@ -1007,6 +1011,21 @@ export namespace OneSignal {
 
       RNOneSignal.addOutcomeWithValue(name, Number(value));
     }
+  }
+}
+
+/**
+ * Returns true if the value is a JSON-serializable object.
+ */
+function isObjectSerializable(value: unknown): boolean {
+  if (!(typeof value === 'object' && value !== null && !Array.isArray(value))) {
+    return false;
+  }
+  try {
+    JSON.stringify(value);
+    return true;
+  } catch (e) {
+    return false;
   }
 }
 
