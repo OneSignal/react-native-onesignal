@@ -434,8 +434,19 @@ class OSButtons extends React.Component<Props> {
     const trackEventButton = renderButtonView('Track Event', () => {
       loggingFunction('Tracking event: ', 'ReactNative');
       const platform = Platform.OS; // This will be 'ios' or 'android'
+      OneSignal.User.trackEvent(`ReactNative-${platform}-noprops`);
       OneSignal.User.trackEvent(`ReactNative-${platform}`, {
-        DEF: '456',
+        someNum: 123,
+        someString: 'abc',
+        someBool: true,
+        someObject: {
+          abc: '123',
+          nested: {
+            def: '456',
+          },
+        },
+        someArray: [1, 2, 3],
+        someNull: null,
       });
     });
 

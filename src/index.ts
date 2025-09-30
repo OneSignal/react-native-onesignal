@@ -609,12 +609,13 @@ export namespace OneSignal {
     /** Track custom events for the current user. */
     export function trackEvent(
       name: string,
-      properties?: Record<string, unknown>,
+      properties: Record<string, unknown> = {},
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (!isObjectSerializable(properties)) {
-        return console.error('Properties must be JSON-serializable');
+        console.error('Properties must be JSON-serializable');
+        return;
       }
 
       RNOneSignal.trackEvent(name, properties);
