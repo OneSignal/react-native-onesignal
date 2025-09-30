@@ -38,7 +38,7 @@ class OSDemo extends React.Component<Props, State> {
 
   async componentDidMount() {
     OneSignal.initialize(APP_ID);
-    OneSignal.Debug.setLogLevel(LogLevel.None);
+    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
 
     OneSignal.LiveActivities.setupDefault();
     // OneSignal.LiveActivities.setupDefault({

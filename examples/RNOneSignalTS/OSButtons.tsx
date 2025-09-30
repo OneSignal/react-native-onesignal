@@ -437,6 +437,7 @@ class OSButtons extends React.Component<Props> {
       OneSignal.User.trackEvent(`ReactNative-${platform}-noprops`);
       OneSignal.User.trackEvent(`ReactNative-${platform}`, {
         someNum: 123,
+        someFloat: 3.14159,
         someString: 'abc',
         someBool: true,
         someObject: {
@@ -445,7 +446,8 @@ class OSButtons extends React.Component<Props> {
             def: '456',
           },
         },
-        someArray: [1, 2, 3],
+        someArray: [1, 2, 3, 4],
+        someMixedArray: [1, '2', { abc: '123' }],
         someNull: null,
       });
     });
