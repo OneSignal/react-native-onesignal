@@ -1,6 +1,7 @@
 name: NPM Publish
 
 on:
+  workflow_dispatch:
   release:
     types: [created]
 
