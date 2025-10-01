@@ -446,7 +446,7 @@ class OSButtons extends React.Component<Props> {
             def: '456',
           },
         },
-        someArray: [1, 2, 3, 4],
+        someArray: [1, 2],
         someMixedArray: [1, '2', { abc: '123' }],
         someNull: null,
       });
