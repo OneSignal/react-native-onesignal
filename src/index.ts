@@ -1019,7 +1019,7 @@ export namespace OneSignal {
  * Returns true if the value is a JSON-serializable object.
  */
 function isObjectSerializable(value: unknown): boolean {
-  if (!(typeof value === 'object' && value !== null && !Array.isArray(value))) {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return false;
   }
   try {

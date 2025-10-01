@@ -310,25 +310,23 @@ public class RNUtils {
     
     private static Object convertValue(ReadableType type, ReadableMap map, String key) {
         switch (type) {
-            case Null: return null;
             case Boolean: return map.getBoolean(key);
             case Number: return map.getDouble(key);
             case String: return map.getString(key);
             case Map: return convertReadableMapToMap(map.getMap(key));
             case Array: return convertReadableArrayToList(map.getArray(key));
-            default: throw new IllegalArgumentException("Unknown type for key: " + key);
+            default: return null;
         }
     }
     
     private static Object convertValue(ReadableType type, ReadableArray array, int index) {
         switch (type) {
-            case Null: return null;
             case Boolean: return array.getBoolean(index);
             case Number: return array.getDouble(index);
             case String: return array.getString(index);
             case Map: return convertReadableMapToMap(array.getMap(index));
             case Array: return convertReadableArrayToList(array.getArray(index));
-            default: throw new IllegalArgumentException("Unknown type for index: " + index);
+            default: return null;
         }
     }
 
