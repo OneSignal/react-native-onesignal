@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
 import { renderButtonView } from './Helpers';
 // Remove: import {Text, Divider} from '@react-native-material/core';
@@ -431,11 +431,33 @@ class OSButtons extends React.Component<Props> {
       },
     );
 
+    const trackEventButton = renderButtonView('Track Event', () => {
+      loggingFunction('Tracking event: ', 'ReactNative');
+      const platform = Platform.OS; // This will be 'ios' or 'android'
+      OneSignal.User.trackEvent(`ReactNative-${platform}-noprops`);
+      OneSignal.User.trackEvent(`ReactNative-${platform}`, {
+        someNum: 123,
+        someFloat: 3.14159,
+        someString: 'abc',
+        someBool: true,
+        someObject: {
+          abc: '123',
+          nested: {
+            def: '456',
+          },
+        },
+        someArray: [1, 2, 3, 4],
+        someMixedArray: [1, '2', { abc: '123' }],
+        someNull: null,
+      });
+    });
+
     return [
       loginButton,
       logoutButton,
       addEmailButton,
       removeEmailButton,
+      trackEventButton,
       sendTagWithKeyButton,
       deleteTagWithKeyButton,
       addTagsButton,

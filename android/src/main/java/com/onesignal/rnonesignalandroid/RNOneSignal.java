@@ -35,11 +35,15 @@ Authors:
 
 package com.onesignal.rnonesignalandroid;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.os.Bundle;
-import com.onesignal.debug.internal.logging.Logging;
-import com.facebook.react.bridge.Callback;
+
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONException;
+
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -48,39 +52,31 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.Arguments;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.onesignal.Continue;
 import com.onesignal.OneSignal;
-import com.onesignal.debug.LogLevel;
 import com.onesignal.common.OneSignalWrapper;
-import com.onesignal.inAppMessages.IInAppMessage;
-import com.onesignal.inAppMessages.IInAppMessageClickListener;
+import com.onesignal.debug.LogLevel;
+import com.onesignal.debug.internal.logging.Logging;
 import com.onesignal.inAppMessages.IInAppMessageClickEvent;
-import com.onesignal.inAppMessages.IInAppMessageClickResult;
-import com.onesignal.inAppMessages.IInAppMessageLifecycleListener;
-import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
-import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
-import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
+import com.onesignal.inAppMessages.IInAppMessageClickListener;
 import com.onesignal.inAppMessages.IInAppMessageDidDismissEvent;
+import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
+import com.onesignal.inAppMessages.IInAppMessageLifecycleListener;
+import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
+import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
 import com.onesignal.notifications.INotification;
-import com.onesignal.notifications.INotificationClickListener;
 import com.onesignal.notifications.INotificationClickEvent;
+import com.onesignal.notifications.INotificationClickListener;
 import com.onesignal.notifications.INotificationLifecycleListener;
 import com.onesignal.notifications.INotificationWillDisplayEvent;
 import com.onesignal.notifications.IPermissionObserver;
+import com.onesignal.user.state.IUserStateObserver;
+import com.onesignal.user.state.UserChangedState;
 import com.onesignal.user.subscriptions.IPushSubscription;
 import com.onesignal.user.subscriptions.IPushSubscriptionObserver;
-import com.onesignal.user.subscriptions.PushSubscriptionState;
 import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
-import com.onesignal.user.state.UserState;
-import com.onesignal.user.state.UserChangedState;
-import com.onesignal.user.state.IUserStateObserver;
-import org.json.JSONException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RNOneSignal extends ReactContextBaseJavaModule implements
         IPushSubscriptionObserver,
@@ -738,5 +734,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void removeListeners(int count) {
         // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+
+    @ReactMethod
+    public void trackEvent(String name, @Nullable ReadableMap properties) {
+        OneSignal.getUser().trackEvent(name, properties != null ? RNUtils.convertReadableMapToMap(properties) : null);
     }
 }

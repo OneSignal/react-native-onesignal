@@ -284,6 +284,52 @@ public class RNUtils {
         return stringMap;
     }
 
+    public static Map<String, Object> convertReadableMapToMap(ReadableMap readableMap) {
+        Map<String, Object> map = new HashMap<>();
+        ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
+    
+        while (iterator.hasNextKey()) {
+            String key = iterator.nextKey();
+            ReadableType type = readableMap.getType(key);
+            map.put(key, convertValue(type, readableMap, key));
+        }
+    
+        return map;
+    }
+    
+    public static List<Object> convertReadableArrayToList(ReadableArray readableArray) {
+        List<Object> list = new ArrayList<>();
+    
+        for (int i = 0; i < readableArray.size(); i++) {
+            ReadableType type = readableArray.getType(i);
+            list.add(convertValue(type, readableArray, i));
+        }
+    
+        return list;
+    }
+    
+    private static Object convertValue(ReadableType type, ReadableMap map, String key) {
+        switch (type) {
+            case Boolean: return map.getBoolean(key);
+            case Number: return map.getDouble(key);
+            case String: return map.getString(key);
+            case Map: return convertReadableMapToMap(map.getMap(key));
+            case Array: return convertReadableArrayToList(map.getArray(key));
+            default: return null;
+        }
+    }
+    
+    private static Object convertValue(ReadableType type, ReadableArray array, int index) {
+        switch (type) {
+            case Boolean: return array.getBoolean(index);
+            case Number: return array.getDouble(index);
+            case String: return array.getString(index);
+            case Map: return convertReadableMapToMap(array.getMap(index));
+            case Array: return convertReadableArrayToList(array.getArray(index));
+            default: return null;
+        }
+    }
+
     public static HashMap<String, Object> convertPermissionToMap(boolean granted) {
         HashMap<String, Object> hash = new HashMap<>();
 
