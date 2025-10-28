@@ -41,7 +41,7 @@ class OSConsole extends React.Component<Props, State> {
         <ScrollView
           nestedScrollEnabled={true}
           style={styles.scrollView}
-          ref={scrollView => {
+          ref={(scrollView) => {
             this.scrollView = scrollView;
           }}
           onContentSizeChange={() => this.scrollToEnd()}
