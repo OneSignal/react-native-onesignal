@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
 import { renderButtonView } from './Helpers';
 // Remove: import {Text, Divider} from '@react-native-material/core';
@@ -75,7 +75,6 @@ class OSButtons extends React.Component<Props> {
     const clearAllTriggersButton = renderButtonView(
       'Clear all triggers',
       () => {
-        const triggerValue = this.props.inputFieldValue;
         loggingFunction(`Clearing all triggers`);
         OneSignal.InAppMessages.clearTriggers();
       },
@@ -620,12 +619,5 @@ class OSButtons extends React.Component<Props> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  greeting: {
-    color: '#999',
-    fontWeight: 'bold',
-  },
-});
 
 export default OSButtons;

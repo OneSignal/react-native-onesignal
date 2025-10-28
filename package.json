@@ -7,8 +7,8 @@
   "scripts": {
     "prepare": "bun run build",
     "build": "tsc",
-    "lint": "oxlint src && prettier --check src",
-    "lint:fix": "oxlint src --fix && prettier --write src"
+    "lint": "oxlint src examples && prettier --check src examples",
+    "lint:fix": "oxlint src examples --fix && prettier --write src examples"
   },
   "dependencies": {
     "invariant": "^2.2.2"
