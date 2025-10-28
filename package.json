@@ -6,18 +6,14 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "bun run build",
-    "build": "tsc",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx; prettier --check src"
+    "build": "tsc"
   },
   "dependencies": {
     "invariant": "^2.2.2"
   },
   "devDependencies": {
-    "@react-native-community/eslint-config": "^1.1.0",
     "@types/invariant": "^2.2.2",
     "@types/react-native": "^0.66.8",
-    "eslint": "^7.0.0",
-    "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.7.1",
     "typescript": "^3.8.3"
   },
