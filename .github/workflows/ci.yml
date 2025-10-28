@@ -2,25 +2,22 @@ name: Test
 
 on:
   pull_request:
-    branches: '**'
+    branches: "**"
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - name: '[Setup] Node'
-        uses: actions/setup-node@v4
-        with:
-          node-version: 16
-      - name: '[Setup] Dependencies'
-        run: yarn
-      - name: '[Test] Linting'
-        run: yarn lint
+      - name: "Checkout"
+        uses: actions/checkout@v5
 
-      - name: Unit tests results
-        if: failure()
-        uses: actions/upload-artifact@v4
+      - name: "Setup Bun"
+        uses: oven-sh/setup-bun@v2
         with:
-          name: unit-tests-results
-          path: .
+          bun-version: latest
+
+      - name: "Install"
+        run: bun i
+
+      - name: "Linting"
+        run: bun run lint

@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "yarn run build",
+    "prepare": "bun run build",
     "build": "tsc",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx; prettier --check src"
   },
