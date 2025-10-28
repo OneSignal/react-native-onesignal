@@ -6,7 +6,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "bun run build",
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "oxlint src && prettier --check src",
+    "lint:fix": "oxlint src --fix && prettier --write src"
   },
   "dependencies": {
     "invariant": "^2.2.2"
@@ -14,6 +16,7 @@
   "devDependencies": {
     "@types/invariant": "^2.2.2",
     "@types/react-native": "^0.66.8",
+    "oxlint": "^1.24.0",
     "prettier": "^2.7.1",
     "typescript": "^3.8.3"
   },
