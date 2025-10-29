@@ -3,20 +3,20 @@ import {
   NativeEventEmitter,
   NativeModule,
 } from 'react-native';
+import OSNotification from '../OSNotification';
 import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
 import {
+  IN_APP_MESSAGE_CLICKED,
+  IN_APP_MESSAGE_DID_DISMISS,
+  IN_APP_MESSAGE_DID_DISPLAY,
+  IN_APP_MESSAGE_WILL_DISMISS,
+  IN_APP_MESSAGE_WILL_DISPLAY,
+  NOTIFICATION_CLICKED,
+  NOTIFICATION_WILL_DISPLAY,
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
-  NOTIFICATION_WILL_DISPLAY,
-  NOTIFICATION_CLICKED,
-  IN_APP_MESSAGE_CLICKED,
-  IN_APP_MESSAGE_WILL_DISPLAY,
-  IN_APP_MESSAGE_WILL_DISMISS,
-  IN_APP_MESSAGE_DID_DISMISS,
-  IN_APP_MESSAGE_DID_DISPLAY,
 } from './events';
-import OSNotification from '../OSNotification';
 
 const eventList = [
   PERMISSION_CHANGED,
@@ -63,9 +63,11 @@ export default class EventManager {
    */
   addEventListener<T>(eventName: string, handler: (event: T) => void) {
     let handlerArray = this.eventListenerArrayMap.get(eventName);
-    handlerArray && handlerArray.length > 0
-      ? handlerArray.push(handler)
-      : this.eventListenerArrayMap.set(eventName, [handler]);
+    if (handlerArray && handlerArray.length > 0) {
+      handlerArray.push(handler);
+    } else {
+      this.eventListenerArrayMap.set(eventName, [handler]);
+    }
   }
 
   /**
@@ -90,7 +92,7 @@ export default class EventManager {
 
   // returns an event listener with the js to native mapping
   generateEventListener(eventName: string): EmitterSubscription {
-    const addListenerCallback = (payload: Object) => {
+    const addListenerCallback = (payload: object) => {
       let handlerArray = this.eventListenerArrayMap.get(eventName);
       if (handlerArray) {
         if (eventName === NOTIFICATION_WILL_DISPLAY) {
