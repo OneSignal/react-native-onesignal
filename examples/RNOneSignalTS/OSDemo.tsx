@@ -112,29 +112,74 @@ class OSDemo extends React.Component<Props, State> {
     //   enablePushToUpdate: true,
     // });
 
-    OneSignal.Notifications.addEventListener('foregroundWillDisplay', this.onForegroundWillDisplay);
+    OneSignal.Notifications.addEventListener(
+      'foregroundWillDisplay',
+      this.onForegroundWillDisplay,
+    );
     OneSignal.Notifications.addEventListener('click', this.onNotificationClick);
     OneSignal.InAppMessages.addEventListener('click', this.onIAMClick);
-    OneSignal.InAppMessages.addEventListener('willDisplay', this.onIAMWillDisplay);
-    OneSignal.InAppMessages.addEventListener('didDisplay', this.onIAMDidDisplay);
-    OneSignal.InAppMessages.addEventListener('willDismiss', this.onIAMWillDismiss);
-    OneSignal.InAppMessages.addEventListener('didDismiss', this.onIAMDidDismiss);
-    OneSignal.User.pushSubscription.addEventListener('change', this.onSubscriptionChange);
-    OneSignal.Notifications.addEventListener('permissionChange', this.onPermissionChange);
+    OneSignal.InAppMessages.addEventListener(
+      'willDisplay',
+      this.onIAMWillDisplay,
+    );
+    OneSignal.InAppMessages.addEventListener(
+      'didDisplay',
+      this.onIAMDidDisplay,
+    );
+    OneSignal.InAppMessages.addEventListener(
+      'willDismiss',
+      this.onIAMWillDismiss,
+    );
+    OneSignal.InAppMessages.addEventListener(
+      'didDismiss',
+      this.onIAMDidDismiss,
+    );
+    OneSignal.User.pushSubscription.addEventListener(
+      'change',
+      this.onSubscriptionChange,
+    );
+    OneSignal.Notifications.addEventListener(
+      'permissionChange',
+      this.onPermissionChange,
+    );
     OneSignal.User.addEventListener('change', this.onUserChange);
   }
 
   componentWillUnmount() {
     // Clean up all event listeners
-    OneSignal.Notifications.removeEventListener('foregroundWillDisplay', this.onForegroundWillDisplay);
-    OneSignal.Notifications.removeEventListener('click', this.onNotificationClick);
+    OneSignal.Notifications.removeEventListener(
+      'foregroundWillDisplay',
+      this.onForegroundWillDisplay,
+    );
+    OneSignal.Notifications.removeEventListener(
+      'click',
+      this.onNotificationClick,
+    );
     OneSignal.InAppMessages.removeEventListener('click', this.onIAMClick);
-    OneSignal.InAppMessages.removeEventListener('willDisplay', this.onIAMWillDisplay);
-    OneSignal.InAppMessages.removeEventListener('didDisplay', this.onIAMDidDisplay);
-    OneSignal.InAppMessages.removeEventListener('willDismiss', this.onIAMWillDismiss);
-    OneSignal.InAppMessages.removeEventListener('didDismiss', this.onIAMDidDismiss);
-    OneSignal.User.pushSubscription.removeEventListener('change', this.onSubscriptionChange);
-    OneSignal.Notifications.removeEventListener('permissionChange', this.onPermissionChange);
+    OneSignal.InAppMessages.removeEventListener(
+      'willDisplay',
+      this.onIAMWillDisplay,
+    );
+    OneSignal.InAppMessages.removeEventListener(
+      'didDisplay',
+      this.onIAMDidDisplay,
+    );
+    OneSignal.InAppMessages.removeEventListener(
+      'willDismiss',
+      this.onIAMWillDismiss,
+    );
+    OneSignal.InAppMessages.removeEventListener(
+      'didDismiss',
+      this.onIAMDidDismiss,
+    );
+    OneSignal.User.pushSubscription.removeEventListener(
+      'change',
+      this.onSubscriptionChange,
+    );
+    OneSignal.Notifications.removeEventListener(
+      'permissionChange',
+      this.onPermissionChange,
+    );
     OneSignal.User.removeEventListener('change', this.onUserChange);
   }
 
