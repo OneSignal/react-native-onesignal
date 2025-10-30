@@ -26,6 +26,72 @@ export interface State {
 }
 
 class OSDemo extends React.Component<Props, State> {
+  // Event listener references for cleanup
+  private onForegroundWillDisplay = (event: any) => {
+    this.OSLog('OneSignal: notification will show in foreground:', event);
+    let notif = event.getNotification();
+
+    const cancelButton = {
+      text: 'Cancel',
+      onPress: () => {
+        event.preventDefault();
+      },
+      style: 'cancel',
+    };
+
+    const completeButton = {
+      text: 'Display',
+      onPress: () => {
+        event.getNotification().display();
+      },
+    };
+
+    Alert.alert(
+      'Display notification?',
+      notif.title,
+      [cancelButton, completeButton],
+      {
+        cancelable: true,
+      },
+    );
+  };
+
+  private onNotificationClick = (event: any) => {
+    this.OSLog('OneSignal: notification clicked:', event);
+  };
+
+  private onIAMClick = (event: any) => {
+    this.OSLog('OneSignal IAM clicked:', event);
+  };
+
+  private onIAMWillDisplay = (event: any) => {
+    this.OSLog('OneSignal: will display IAM: ', event);
+  };
+
+  private onIAMDidDisplay = (event: any) => {
+    this.OSLog('OneSignal: did display IAM: ', event);
+  };
+
+  private onIAMWillDismiss = (event: any) => {
+    this.OSLog('OneSignal: will dismiss IAM: ', event);
+  };
+
+  private onIAMDidDismiss = (event: any) => {
+    this.OSLog('OneSignal: did dismiss IAM: ', event);
+  };
+
+  private onSubscriptionChange = (subscription: any) => {
+    this.OSLog('OneSignal: subscription changed:', subscription);
+  };
+
+  private onPermissionChange = (granted: any) => {
+    this.OSLog('OneSignal: permission changed:', granted);
+  };
+
+  private onUserChange = (event: any) => {
+    this.OSLog('OneSignal: user changed: ', event);
+  };
+
   constructor(props: Props) {
     super(props);
 
@@ -46,76 +112,30 @@ class OSDemo extends React.Component<Props, State> {
     //   enablePushToUpdate: true,
     // });
 
-    OneSignal.Notifications.addEventListener(
-      'foregroundWillDisplay',
-      (event) => {
-        this.OSLog('OneSignal: notification will show in foreground:', event);
-        let notif = event.getNotification();
+    OneSignal.Notifications.addEventListener('foregroundWillDisplay', this.onForegroundWillDisplay);
+    OneSignal.Notifications.addEventListener('click', this.onNotificationClick);
+    OneSignal.InAppMessages.addEventListener('click', this.onIAMClick);
+    OneSignal.InAppMessages.addEventListener('willDisplay', this.onIAMWillDisplay);
+    OneSignal.InAppMessages.addEventListener('didDisplay', this.onIAMDidDisplay);
+    OneSignal.InAppMessages.addEventListener('willDismiss', this.onIAMWillDismiss);
+    OneSignal.InAppMessages.addEventListener('didDismiss', this.onIAMDidDismiss);
+    OneSignal.User.pushSubscription.addEventListener('change', this.onSubscriptionChange);
+    OneSignal.Notifications.addEventListener('permissionChange', this.onPermissionChange);
+    OneSignal.User.addEventListener('change', this.onUserChange);
+  }
 
-        const cancelButton = {
-          text: 'Cancel',
-          onPress: () => {
-            event.preventDefault();
-          },
-          style: 'cancel',
-        };
-
-        const completeButton = {
-          text: 'Display',
-          onPress: () => {
-            event.getNotification().display();
-          },
-        };
-
-        Alert.alert(
-          'Display notification?',
-          notif.title,
-          [cancelButton, completeButton],
-          {
-            cancelable: true,
-          },
-        );
-      },
-    );
-
-    OneSignal.Notifications.addEventListener('click', (event) => {
-      this.OSLog('OneSignal: notification clicked:', event);
-    });
-
-    OneSignal.InAppMessages.addEventListener('click', (event) => {
-      this.OSLog('OneSignal IAM clicked:', event);
-    });
-
-    OneSignal.InAppMessages.addEventListener('willDisplay', (event) => {
-      this.OSLog('OneSignal: will display IAM: ', event);
-    });
-
-    OneSignal.InAppMessages.addEventListener('didDisplay', (event) => {
-      this.OSLog('OneSignal: did display IAM: ', event);
-    });
-
-    OneSignal.InAppMessages.addEventListener('willDismiss', (event) => {
-      this.OSLog('OneSignal: will dismiss IAM: ', event);
-    });
-
-    OneSignal.InAppMessages.addEventListener('didDismiss', (event) => {
-      this.OSLog('OneSignal: did dismiss IAM: ', event);
-    });
-
-    OneSignal.User.pushSubscription.addEventListener(
-      'change',
-      (subscription) => {
-        this.OSLog('OneSignal: subscription changed:', subscription);
-      },
-    );
-
-    OneSignal.Notifications.addEventListener('permissionChange', (granted) => {
-      this.OSLog('OneSignal: permission changed:', granted);
-    });
-
-    OneSignal.User.addEventListener('change', (event) => {
-      this.OSLog('OneSignal: user changed: ', event);
-    });
+  componentWillUnmount() {
+    // Clean up all event listeners
+    OneSignal.Notifications.removeEventListener('foregroundWillDisplay', this.onForegroundWillDisplay);
+    OneSignal.Notifications.removeEventListener('click', this.onNotificationClick);
+    OneSignal.InAppMessages.removeEventListener('click', this.onIAMClick);
+    OneSignal.InAppMessages.removeEventListener('willDisplay', this.onIAMWillDisplay);
+    OneSignal.InAppMessages.removeEventListener('didDisplay', this.onIAMDidDisplay);
+    OneSignal.InAppMessages.removeEventListener('willDismiss', this.onIAMWillDismiss);
+    OneSignal.InAppMessages.removeEventListener('didDismiss', this.onIAMDidDismiss);
+    OneSignal.User.pushSubscription.removeEventListener('change', this.onSubscriptionChange);
+    OneSignal.Notifications.removeEventListener('permissionChange', this.onPermissionChange);
+    OneSignal.User.removeEventListener('change', this.onUserChange);
   }
 
   OSLog = (message: string, optionalArg: any = null) => {
