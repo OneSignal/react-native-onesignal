@@ -1,0 +1,331 @@
+name: Create Release PR
+
+on:
+  # For making a release pr from android / ios sdk actions
+  workflow_call:
+    inputs:
+      rn_version:
+        description: 'New React Native Version (e.g., 5.2.15 or 5.2.15-beta.1)'
+        required: true
+        type: string
+      android_version:
+        description: 'New Android SDK Version (e.g., 2.3.0). Leave blank to skip.'
+        required: false
+        type: string
+      ios_version:
+        description: 'New iOS SDK Version (e.g., 1.5.0). Leave blank to skip.'
+        required: false
+        type: string
+
+  # For making a release pr from cordova github actions
+  workflow_dispatch:
+    inputs:
+      rn_version:
+        description: 'New React Native Version (e.g., 5.2.15 or 5.2.15-beta.1)'
+        required: true
+        type: string
+      android_version:
+        description: 'New Android SDK Version (e.g., 2.3.0). Leave blank to skip.'
+        required: false
+        type: string
+      ios_version:
+        description: 'New iOS SDK Version (e.g., 1.5.0). Leave blank to skip.'
+        required: false
+        type: string
+
+jobs:
+  update-version:
+    runs-on: macos-latest
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Get release type
+        id: release_type
+        run: |
+          NEW_VERSION="${{ inputs.cordova_version }}"
+          if [[ "$NEW_VERSION" =~ -alpha ]]; then
+            echo "release-type=Alpha" >> $GITHUB_OUTPUT
+          elif [[ "$NEW_VERSION" =~ -beta ]]; then
+            echo "release-type=Beta" >> $GITHUB_OUTPUT
+          else
+            echo "release-type=Current" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get last release commit
+        id: last_commit
+        run: |
+          CURRENT_VERSION=$(bun -e "console.log(require('./package.json').version)")
+          LAST_RELEASE_DATE=$(git show -s --format=%cI "$CURRENT_VERSION")
+          echo "date=$LAST_RELEASE_DATE" >> $GITHUB_OUTPUT
+
+      - name: Release branch name
+        id: release_branch
+        run: |
+          # Omit alpha/beta version e.g. 5.2.15-beta.1 -> 5.2.15-beta
+          BRANCH_VERSION=$(echo "${{ inputs.cordova_version }}" | sed 's/\(-[a-z]*\)\.[0-9]*$/\1/')
+          echo "releaseBranch=rel/$BRANCH_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create release branch
+        run: |
+          releaseBranch="${{ steps.release_branch.outputs.releaseBranch }}"
+          releaseType="${{ steps.release_type.outputs.release-type }}"
+
+          if ! git checkout -b "$releaseBranch" 2>/dev/null; then
+            # Branch already exists
+            if [[ "$releaseType" == "Current" ]]; then
+              echo "Error: Release branch already exists for Current release"
+              exit 1
+            fi
+            # For Alpha/Beta, use existing branch
+            git checkout "$releaseBranch"
+          fi
+          git push -u origin "$releaseBranch"
+
+      - name: Get merged PRs
+        id: get_prs
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const lastReleaseDate = '${{ steps.last_commit.outputs.date }}';
+            const releaseBranch = '${{ steps.release_branch.outputs.releaseBranch }}';
+
+            // Get the creation date of the release branch (when it diverged from main)
+            const { data: branchInfo } = await github.rest.repos.getBranch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              branch: releaseBranch
+            });
+            const branchCreatedAt = branchInfo.commit.commit.committer.date;
+
+            // Get PRs merged to main since last release but BEFORE release branch was created
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed',
+              base: 'main',
+              per_page: 100
+            });
+
+            const mergedPrs = prs
+              .filter(pr =>
+                pr.merged_at &&
+                new Date(pr.merged_at) > new Date(lastReleaseDate) &&
+                new Date(pr.merged_at) <= new Date(branchCreatedAt)  // Only before branch creation
+              )
+              .map(pr => ({
+                number: pr.number,
+                title: pr.title,
+              }));
+            core.setOutput('prs', JSON.stringify(mergedPrs));
+      - name: Get current native SDK versions
+        id: current_versions
+        run: |
+          # Extract current Android SDK version
+          ANDROID_VERSION=$(sed -n 's/.*com\.onesignal:OneSignal:\([0-9.]*\).*/\1/p' plugin.xml | head -1)
+
+          # Extract current iOS SDK version
+          IOS_VERSION=$(sed -n 's/.*OneSignalXCFramework.*spec="\([0-9.]*\)".*/\1/p' plugin.xml | head -1)
+
+          echo "prev_android=$ANDROID_VERSION" >> $GITHUB_OUTPUT
+          echo "prev_ios=$IOS_VERSION" >> $GITHUB_OUTPUT
+
+      # Cordova specific steps
+      - name: Setup Capacitor
+        run: |
+          bun link
+          cd example/IonicCapOneSignal
+          bun install --frozen-lockfile
+          bun run build
+
+      - name: Update Android SDK version
+        if: inputs.android_version != ''
+        run: |
+          VERSION="${{ inputs.android_version }}"
+
+          # Validate version exists on GitHub
+          RELEASE=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-Android-SDK/releases/tags/${VERSION}")
+
+          if sed -n '/\"id\"/p' <<< "$RELEASE" | grep -q .; then
+            # Update plugin.xml with new version
+            # mac os sed syntax
+            sed -i '' 's|<framework src="com\.onesignal:OneSignal:[^"]*" />|<framework src="com.onesignal:OneSignal:'"$VERSION"'" />|' plugin.xml
+            echo "✓ Updated plugin.xml with Android SDK ${VERSION}"
+
+            cd example/IonicCapOneSignal
+            bunx cap sync android
+            git add .
+          else
+            echo "✗ Android SDK version ${VERSION} not found"
+            exit 1
+          fi
+
+      - name: Update iOS SDK version
+        if: inputs.ios_version != ''
+        run: |
+          VERSION="${{ inputs.ios_version }}"
+
+          # Validate version exists on GitHub
+          RELEASE=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}")
+
+          if sed -n '/\"id\"/p' <<< "$RELEASE" | grep -q .; then
+            # Update plugin.xml with new version
+            # mac os sed syntax
+            sed -i '' "s|<pod name=\"OneSignalXCFramework\" spec=\"[^\"]*\" />|<pod name=\"OneSignalXCFramework\" spec=\"${VERSION}\" />|" plugin.xml
+            echo "✓ Updated plugin.xml with iOS SDK ${VERSION}"
+
+            # Need to regenerate the Podfile.lock
+            cd example/IonicCapOneSignal/ios/App
+            rm -f Podfile.lock
+            cd ../..
+            bunx cap sync ios
+            git add .
+
+          else
+            echo "✗ iOS SDK version ${VERSION} not found"
+            exit 1
+          fi
+
+      - name: Update sdk version
+        run: |
+          NEW_VERSION="${{ inputs.cordova_version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Convert version format for OneSignal wrapper (e.g., 5.2.15 -> 050215)
+          # For pre-releases, extract base version first (e.g., 5.2.15-alpha.1 -> 5.2.15)
+          BASE_VERSION=$(echo "$NEW_VERSION" | sed 's/-[a-z].*//')
+          WRAPPER_VERSION=$(echo "$BASE_VERSION" | awk -F'.' '{printf "%02d%02d%02d", $1, $2, $3}')
+
+          # Update package.json version
+          npm pkg set version="$NEW_VERSION"
+
+          # Update plugin.xml cordova plugin version (target <plugin> element specifically)
+          sed -i '' '/<plugin/,/>/ { s/version="[^"]*"/version="'"$NEW_VERSION"'"/; }' plugin.xml
+
+          # Update OneSignalPush.java wrapper version
+          sed -i '' "s/OneSignalWrapper\.setSdkVersion(\"[^\"]*\")/OneSignalWrapper.setSdkVersion(\"$WRAPPER_VERSION\")/g" src/android/com/onesignal/cordova/OneSignalPush.java
+
+          # Update OneSignalPush.m wrapper version
+          sed -i '' "s/OneSignalWrapper\.sdkVersion = @\"[^\"]*\"/OneSignalWrapper.sdkVersion = @\"$WRAPPER_VERSION\"/g" src/ios/OneSignalPush.m
+
+          git add package.json plugin.xml src/android/com/onesignal/cordova/OneSignalPush.java src/ios/OneSignalPush.m
+
+          git commit -m "Release $NEW_VERSION"
+          git push
+
+      - name: Document native sdk changes
+        id: native_deps
+        run: |
+          # Get the current plugin.xml
+          CURRENT_PLUGIN=$(cat plugin.xml)
+
+          # Extract current Android SDK version
+          ANDROID_VERSION=$(sed -n 's/.*com\.onesignal:OneSignal:\([0-9.]*\).*/\1/p' <<< "$CURRENT_PLUGIN" | head -1)
+          PREVIOUS_ANDROID="${{ steps.current_versions.outputs.prev_android }}"
+
+          # Extract current iOS SDK version
+          IOS_VERSION=$(sed -n 's/.*OneSignalXCFramework.*spec="\([0-9.]*\)".*/\1/p' <<< "$CURRENT_PLUGIN" | head -1)
+          PREVIOUS_IOS="${{ steps.current_versions.outputs.prev_ios }}"
+
+          # Build output for native dependency changes
+          NATIVE_UPDATES=""
+          if [[ "$ANDROID_VERSION" != "$PREVIOUS_ANDROID" && ! -z "$PREVIOUS_ANDROID" ]]; then
+            printf -v NATIVE_UPDATES '%sANDROID_UPDATE=true\nANDROID_FROM=%s\nANDROID_TO=%s\n' "$NATIVE_UPDATES" "$PREVIOUS_ANDROID" "$ANDROID_VERSION"
+          fi
+
+          if [[ "$IOS_VERSION" != "$PREVIOUS_IOS" && ! -z "$PREVIOUS_IOS" ]]; then
+            printf -v NATIVE_UPDATES '%sIOS_UPDATE=true\nIOS_FROM=%s\nIOS_TO=%s\n' "$NATIVE_UPDATES" "$PREVIOUS_IOS" "$IOS_VERSION"
+          fi
+
+          # Output the variables
+          echo "$NATIVE_UPDATES" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: release_notes
+        uses: actions/github-script@v8
+        with:
+          script: |
+            // Trim whitespace from PR titles
+            const prs = JSON.parse('${{ steps.get_prs.outputs.prs }}').map(pr => ({
+              ...pr,
+              title: pr.title.trim()
+            }));
+
+            // Categorize PRs (exclude internal changes like ci/chore)
+            const features = prs.filter(pr => /^feat/i.test(pr.title));
+            const fixes = prs.filter(pr => /^fix/i.test(pr.title));
+            const improvements = prs.filter(pr => /^(perf|refactor)/i.test(pr.title));
+
+            // Helper function to build section
+            const buildSection = (title, prs) => {
+              if (prs.length === 0) return '';
+              let section = `### ${title}\n\n`;
+              prs.forEach(pr => {
+                section += `- ${pr.title} (#${pr.number})\n`;
+              });
+              return section + '\n';
+            };
+
+            let releaseNotes = `Channels: ${{ steps.release_type.outputs.release-type }}\n\n`;
+            releaseNotes += buildSection('🚀 New Features', features);
+            releaseNotes += buildSection('🐛 Bug Fixes', fixes);
+            releaseNotes += buildSection('✨ Improvements', improvements);
+
+            // Check for native dependency changes
+            const hasAndroidUpdate = '${{ steps.native_deps.outputs.ANDROID_UPDATE }}' === 'true';
+            const hasIosUpdate = '${{ steps.native_deps.outputs.IOS_UPDATE }}' === 'true';
+
+            if (hasAndroidUpdate || hasIosUpdate) {
+              releaseNotes += '\n### 🛠️ Native Dependency Updates\n\n';
+              if (hasAndroidUpdate) {
+                releaseNotes += `- Update Android SDK from ${{ steps.native_deps.outputs.ANDROID_FROM }} to ${{ steps.native_deps.outputs.ANDROID_TO }}\n`;
+                releaseNotes += `  - See [release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases) for full details\n`;
+              }
+              if (hasIosUpdate) {
+                releaseNotes += `- Update iOS SDK from ${{ steps.native_deps.outputs.IOS_FROM }} to ${{ steps.native_deps.outputs.IOS_TO }}\n`;
+                releaseNotes += `  - See [release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases) for full details\n`;
+              }
+              releaseNotes += '\n';
+            }
+
+            core.setOutput('notes', releaseNotes);
+
+      - name: Create release PR
+        run: |
+          NEW_VERSION="${{ inputs.cordova_version }}"
+          RELEASE_TYPE="${{ steps.release_type.outputs.release-type }}"
+
+          # Determine base branch based on release type
+          if [[ "$RELEASE_TYPE" == "Current" ]]; then
+            BASE_BRANCH="main"
+          else
+            BASE_BRANCH="${{ steps.release_branch.outputs.releaseBranch }}"
+          fi
+
+          # Write release notes to file to avoid shell interpretation
+          cat > release_notes.md << 'EOF'
+          ${{ steps.release_notes.outputs.notes }}
+          EOF
+
+          gh pr create \
+            --title "chore: Release $NEW_VERSION" \
+            --body-file release_notes.md \
+            --base "$BASE_BRANCH"
