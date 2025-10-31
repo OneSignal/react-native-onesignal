@@ -1,0 +1,11 @@
+# Checks if the PR title follows semantic commit message conventions
+name: Lint PR
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  call:
+    uses: OneSignal/sdk-actions/.github/workflows/lint-pr-title.yml@main
+    secrets: inherit
