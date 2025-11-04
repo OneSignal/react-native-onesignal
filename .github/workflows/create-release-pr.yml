@@ -1,0 +1,150 @@
+name: Create Release PR
+
+on:
+  # For making a release pr from android / ios sdk actions
+  workflow_call:
+    inputs:
+      rn_version:
+        description: 'New React Native Version (e.g., 5.2.15 or 5.2.15-beta.1)'
+        required: true
+        type: string
+      android_version:
+        description: 'New Android SDK Version (e.g., 2.3.0). Leave blank to skip.'
+        required: false
+        type: string
+      ios_version:
+        description: 'New iOS SDK Version (e.g., 1.5.0). Leave blank to skip.'
+        required: false
+        type: string
+
+  # For making a release pr from cordova github actions
+  workflow_dispatch:
+    inputs:
+      rn_version:
+        description: 'New React Native Version (e.g., 5.2.15 or 5.2.15-beta.1)'
+        required: true
+        type: string
+      android_version:
+        description: 'New Android SDK Version (e.g., 2.3.0). Leave blank to skip.'
+        required: false
+        type: string
+      ios_version:
+        description: 'New iOS SDK Version (e.g., 1.5.0). Leave blank to skip.'
+        required: false
+        type: string
+
+jobs:
+  prep:
+    uses: OneSignal/sdk-actions/.github/workflows/prep-release.yml@main
+    with:
+      version: ${{ inputs.rn_version }}
+
+  # React Native specific steps
+  update-version:
+    needs: prep
+    runs-on: macos-latest
+    outputs:
+      rn_from: ${{ steps.current_versions.outputs.rn_from }}
+      ios_from: ${{ steps.current_versions.outputs.ios_from }}
+      android_from: ${{ steps.current_versions.outputs.android_from }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.prep.outputs.release_branch }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Get current native SDK versions
+        id: current_versions
+        run: |
+          # Current cordova version
+          CURRENT_VERSION=$(jq -r .version package.json)
+
+          # Extract current Android SDK version
+          ANDROID_VERSION=$(grep "api 'com.onesignal:OneSignal:" android/build.gradle | sed -E "s/.*OneSignal:([0-9.]+).*/\1/")
+
+          # Extract current iOS SDK version
+          IOS_VERSION=$(grep "OneSignalXCFramework" react-native-onesignal.podspec | sed -E "s/.*'([0-9.]+)'.*/\1/")
+
+          echo "rn_from=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "android_from=$ANDROID_VERSION" >> $GITHUB_OUTPUT
+          echo "ios_from=$IOS_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update Android SDK version
+        if: inputs.android_version != ''
+        run: |
+          VERSION="${{ inputs.android_version }}"
+
+          # Validate version exists on GitHub
+          RELEASE=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-Android-SDK/releases/tags/${VERSION}")
+
+
+          if [ -z "$RELEASE" ]; then
+            echo "✗ Android SDK version ${VERSION} not found"
+            exit 1
+          fi
+
+          # Update Android SDK version in build.gradle
+          sed -i '' "s/api 'com.onesignal:OneSignal:[^']*'/api 'com.onesignal:OneSignal:$VERSION'/" android/build.gradle
+          echo "✓ Updated android/build.gradle with Android SDK ${VERSION}"
+          git add .
+
+      - name: Update iOS SDK version
+        if: inputs.ios_version != ''
+        run: |
+          VERSION="${{ inputs.ios_version }}"
+
+          # Validate version exists on GitHub
+          RELEASE=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}")
+
+          if [ -z "$RELEASE" ]; then
+            echo "✗ iOS SDK version ${VERSION} not found"
+            exit 1
+          fi
+
+          sed -i '' "s/s\.dependency 'OneSignalXCFramework', '[^']*'/s.dependency 'OneSignalXCFramework', '$VERSION'/" react-native-onesignal.podspec
+          echo "✓ Updated react-native-onesignal.podspec with iOS SDK ${VERSION}"
+
+          # Update example
+          bun link
+          cd examples/RNOneSignalTS
+          bun install
+          cd ios
+          pod update OneSignalXCFramework
+          git add .
+
+      - name: Update sdk version
+        run: |
+          NEW_VERSION="${{ inputs.rn_version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Update package.json version & lockfile
+          bun pm pkg set version="$NEW_VERSION"
+          bun install
+
+          git add .
+          git commit -m "Release $NEW_VERSION"
+          git push
+
+  create-pr:
+    needs: [prep, update-version]
+    uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
+    with:
+      release_branch: ${{ needs.prep.outputs.release_branch }}
+      version_from: ${{ needs.update-version.outputs.rn_from }}
+      version_to: ${{ inputs.rn_version }}
+      android_from: ${{ needs.update-version.outputs.android_from }}
+      android_to: ${{ inputs.android_version }}
+      ios_from: ${{ needs.update-version.outputs.ios_from }}
+      ios_to: ${{ inputs.ios_version }}
