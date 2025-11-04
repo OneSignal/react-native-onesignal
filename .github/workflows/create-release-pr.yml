@@ -131,7 +131,6 @@ jobs:
 
           # Update package.json version & lockfile
           bun pm pkg set version="$NEW_VERSION"
-          bun install
 
           git add .
           git commit -m "Release $NEW_VERSION"
