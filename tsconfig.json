@@ -18,5 +18,12 @@
      */
     "verbatimModuleSyntax": true
   },
-  "exclude": ["node_modules", "dist", "android", "examples", "ios"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "android",
+    "examples",
+    "ios",
+    "vitest.config.ts"
+  ]
 }
