@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { NativeModule } from 'react-native';
+import type { NativeModule } from 'react-native';
 
 export function isValidCallback(handler: Function) {
   invariant(typeof handler === 'function', 'Must provide a valid callback');

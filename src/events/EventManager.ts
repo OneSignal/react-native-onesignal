@@ -1,7 +1,7 @@
 import {
-  EmitterSubscription,
+  type EmitterSubscription,
   NativeEventEmitter,
-  NativeModule,
+  type NativeModule,
 } from 'react-native';
 import OSNotification from '../OSNotification';
 import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';

@@ -14,30 +14,30 @@ import {
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
 } from './events/events';
-import {
+import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
+import { isNativeModuleLoaded, isValidCallback } from './helpers';
+import type {
+  InAppMessage,
+  InAppMessageClickEvent,
+  InAppMessageDidDismissEvent,
+  InAppMessageDidDisplayEvent,
+  InAppMessageEventName,
+  InAppMessageEventTypeMap,
+  InAppMessageWillDismissEvent,
+  InAppMessageWillDisplayEvent,
+} from './models/InAppMessage';
+import type { LiveActivitySetupOptions } from './models/LiveActivities';
+import type {
+  NotificationClickEvent,
   NotificationEventName,
   NotificationEventTypeMap,
-  NotificationClickEvent,
 } from './models/NotificationEvents';
 import {
-  PushSubscriptionState,
   OSNotificationPermission,
-  PushSubscriptionChangedState,
+  type PushSubscriptionChangedState,
+  type PushSubscriptionState,
 } from './models/Subscription';
-import { UserState, UserChangedState } from './models/User';
-import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
-import { LiveActivitySetupOptions } from './models/LiveActivities';
-import {
-  InAppMessage,
-  InAppMessageEventTypeMap,
-  InAppMessageEventName,
-  InAppMessageClickEvent,
-  InAppMessageWillDisplayEvent,
-  InAppMessageDidDisplayEvent,
-  InAppMessageWillDismissEvent,
-  InAppMessageDidDismissEvent,
-} from './models/InAppMessage';
-import { isValidCallback, isNativeModuleLoaded } from './helpers';
+import type { UserChangedState, UserState } from './models/User';
 
 const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
@@ -288,7 +288,7 @@ export namespace OneSignal {
     export namespace pushSubscription {
       /** Add a callback that fires when the OneSignal subscription state changes. */
       export function addEventListener(
-        event: 'change',
+        _event: 'change',
         listener: (event: PushSubscriptionChangedState) => void,
       ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
@@ -303,7 +303,7 @@ export namespace OneSignal {
 
       /** Clears current subscription observers. */
       export function removeEventListener(
-        event: 'change',
+        _event: 'change',
         listener: (event: PushSubscriptionChangedState) => void,
       ) {
         if (!isNativeModuleLoaded(RNOneSignal)) return;
@@ -410,7 +410,7 @@ export namespace OneSignal {
      * Important: When using the observer to retrieve the onesignalId, check the externalId as well to confirm the values are associated with the expected user.
      */
     export function addEventListener(
-      event: 'change',
+      _event: 'change',
       listener: (event: UserChangedState) => void,
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
@@ -425,7 +425,7 @@ export namespace OneSignal {
 
     /** Clears current user state observers. */
     export function removeEventListener(
-      event: 'change',
+      _event: 'change',
       listener: (event: UserChangedState) => void,
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
@@ -1002,20 +1002,20 @@ export namespace OneSignal {
 
 export {
   NotificationWillDisplayEvent,
-  NotificationClickEvent,
-  InAppMessage,
-  InAppMessageClickEvent,
-  InAppMessageWillDisplayEvent,
-  InAppMessageDidDisplayEvent,
-  InAppMessageWillDismissEvent,
-  InAppMessageDidDismissEvent,
-  PushSubscriptionState,
-  PushSubscriptionChangedState,
-  UserState,
-  UserChangedState,
   OSNotificationPermission,
+  type InAppMessage,
+  type InAppMessageClickEvent,
+  type InAppMessageDidDismissEvent,
+  type InAppMessageDidDisplayEvent,
+  type InAppMessageWillDismissEvent,
+  type InAppMessageWillDisplayEvent,
+  type NotificationClickEvent,
+  type PushSubscriptionChangedState,
+  type PushSubscriptionState,
+  type UserChangedState,
+  type UserState,
 };
 
+export type { InAppMessageClickResult } from './models/InAppMessage';
+export type { NotificationClickResult } from './models/NotificationEvents';
 export { default as OSNotification } from './OSNotification';
-export { NotificationClickResult } from './models/NotificationEvents';
-export { InAppMessageClickResult } from './models/InAppMessage';

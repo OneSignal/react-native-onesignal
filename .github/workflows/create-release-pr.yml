@@ -60,7 +60,12 @@ jobs:
           bun-version: latest
 
       - name: Install
-        run: bun install --frozen-lockfile
+        run: |
+          bun install --frozen-lockfile
+          bun link
+          cd examples/RNOneSignalTS
+          bun install --frozen-lockfile
+
 
       - name: Get current native SDK versions
         id: current_versions
@@ -115,14 +120,6 @@ jobs:
           sed -i '' "s/s\.dependency 'OneSignalXCFramework', '[^']*'/s.dependency 'OneSignalXCFramework', '$VERSION'/" react-native-onesignal.podspec
           echo "✓ Updated react-native-onesignal.podspec with iOS SDK ${VERSION}"
 
-          # Update example
-          bun link
-          cd examples/RNOneSignalTS
-          bun install
-          cd ios
-          pod update OneSignalXCFramework
-          git add .
-
       - name: Update sdk version
         run: |
           NEW_VERSION="${{ inputs.rn_version }}"
@@ -131,6 +128,10 @@ jobs:
 
           # Update package.json version
           bun pm pkg set version="$NEW_VERSION"
+
+          # Update example
+          cd examples/RNOneSignalTS/ios
+          pod update OneSignalXCFramework
 
           git add .
           git commit -m "Release $NEW_VERSION"
