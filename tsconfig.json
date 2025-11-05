@@ -1,17 +1,22 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "target": "es5",
-    "moduleResolution": "node",
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "noImplicitAny": true,
-    "lib": ["es6"],
-    "rootDir": "src",
-    "declaration": true,
-    "allowSyntheticDefaultImports": true,
+    "lib": ["es2020"],
     "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "strict": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    /**
+     * Should use import type syntax instead of regular import when getting types/interfaces from a module
+     */
+    "verbatimModuleSyntax": true
   },
   "exclude": ["node_modules", "dist", "android", "examples", "ios"]
 }

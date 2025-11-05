@@ -11,5 +11,8 @@ export default defineConfig({
       formats: ['es'],
       fileName: () => 'index.js',
     },
+    rollupOptions: {
+      external: ['react-native'],
+    },
   },
 });
