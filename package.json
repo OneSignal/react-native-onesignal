@@ -6,19 +6,19 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "bun run build",
-    "build": "tsc",
+    "build": "vite build",
     "lint": "oxlint src examples && prettier --check src examples",
     "lint:fix": "oxlint src examples --fix && prettier --write src examples"
   },
   "dependencies": {
-    "invariant": "^2.2.2"
+    "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "@types/invariant": "^2.2.2",
-    "@types/react-native": "^0.66.8",
-    "oxlint": "^1.24.0",
-    "prettier": "^2.7.1",
-    "typescript": "^3.8.3"
+    "@types/invariant": "^2.2.37",
+    "@types/react-native": "^0.73.0",
+    "oxlint": "^1.26.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
   },
   "keywords": [
     "react-component",
