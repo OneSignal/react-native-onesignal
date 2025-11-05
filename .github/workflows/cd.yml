@@ -1,0 +1,21 @@
+name: Publish to NPM & Github
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+      - rel/**
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: write
+
+jobs:
+  publish:
+    if: |
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.title, 'chore: Release')
+    uses: OneSignal/sdk-actions/.github/workflows/publish-npm-github.yml@main
+    with:
+      branch: ${{ github.event.pull_request.base.ref }}
