@@ -129,7 +129,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Update package.json version & lockfile
+          # Update package.json version
           bun pm pkg set version="$NEW_VERSION"
 
           git add .
