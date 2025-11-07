@@ -61,6 +61,7 @@ const mockRNOneSignal = {
   addOutcome: vi.fn(),
   addUniqueOutcome: vi.fn(),
   addOutcomeWithValue: vi.fn(),
+  displayNotification: vi.fn(),
 };
 
 const mockPlatform = {

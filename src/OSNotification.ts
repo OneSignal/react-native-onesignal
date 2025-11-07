@@ -1,6 +1,47 @@
 import { NativeModules, Platform } from 'react-native';
 const RNOneSignal = NativeModules.OneSignal;
 
+export interface BaseNotificationData {
+  body: string;
+  sound?: string;
+  title?: string;
+  launchURL?: string;
+  rawPayload: object | string; // platform bridges return different types
+  actionButtons?: object[];
+  additionalData?: object;
+  notificationId: string;
+}
+
+interface AndroidNotificationData extends BaseNotificationData {
+  groupKey?: string;
+  groupMessage?: string;
+  ledColor?: string;
+  priority?: number;
+  smallIcon?: string;
+  largeIcon?: string;
+  bigPicture?: string;
+  collapseId?: string;
+  fromProjectNumber?: string;
+  smallIconAccentColor?: string;
+  lockScreenVisibility?: string;
+  androidNotificationId?: number;
+}
+
+interface iOSNotificationData extends BaseNotificationData {
+  badge?: string;
+  badgeIncrement?: string;
+  category?: string;
+  threadId?: string;
+  subtitle?: string;
+  templateId?: string;
+  templateName?: string;
+  attachments?: object;
+  mutableContent?: boolean;
+  contentAvailable?: string;
+  relevanceScore?: number;
+  interruptionLevel?: string;
+}
+
 export default class OSNotification {
   body: string;
   sound?: string;
@@ -37,7 +78,7 @@ export default class OSNotification {
   relevanceScore?: number;
   interruptionLevel?: string;
 
-  constructor(receivedEvent: OSNotification) {
+  constructor(receivedEvent: AndroidNotificationData | iOSNotificationData) {
     this.body = receivedEvent.body;
     this.sound = receivedEvent.sound;
     this.title = receivedEvent.title;
@@ -47,7 +88,8 @@ export default class OSNotification {
     this.additionalData = receivedEvent.additionalData;
     this.notificationId = receivedEvent.notificationId;
 
-    if (Platform.OS === 'android') {
+    /* v8 ignore else -- @preserve */
+    if (isAndroidNotificationData(receivedEvent)) {
       this.groupKey = receivedEvent.groupKey;
       this.ledColor = receivedEvent.ledColor;
       this.priority = receivedEvent.priority;
@@ -60,9 +102,7 @@ export default class OSNotification {
       this.smallIconAccentColor = receivedEvent.smallIconAccentColor;
       this.lockScreenVisibility = receivedEvent.lockScreenVisibility;
       this.androidNotificationId = receivedEvent.androidNotificationId;
-    }
-
-    if (Platform.OS === 'ios') {
+    } else if (isiOSNotificationData(receivedEvent)) {
       this.badge = receivedEvent.badge;
       this.category = receivedEvent.category;
       this.threadId = receivedEvent.threadId;
@@ -83,3 +123,15 @@ export default class OSNotification {
     return;
   }
 }
+
+const isAndroidNotificationData = (
+  _data: AndroidNotificationData | iOSNotificationData,
+): _data is AndroidNotificationData => {
+  return Platform.OS === 'android';
+};
+
+const isiOSNotificationData = (
+  _data: AndroidNotificationData | iOSNotificationData,
+): _data is iOSNotificationData => {
+  return Platform.OS === 'ios';
+};
