@@ -1,5 +1,3 @@
-'use strict';
-
 import { NativeModules, Platform } from 'react-native';
 import type { OSNotificationPermission } from './constants/Subscription';
 import EventManager from './events/EventManager';
@@ -668,7 +666,7 @@ export namespace OneSignal {
         isValidCallback(handler);
         RNOneSignal.registerForProvisionalAuthorization(handler);
       } else {
-        console.log(
+        console.warn(
           'registerForProvisionalAuthorization: this function is not supported on Android',
         );
       }
@@ -757,7 +755,7 @@ export namespace OneSignal {
       if (Platform.OS === 'android') {
         RNOneSignal.removeNotification(id);
       } else {
-        console.log(
+        console.warn(
           'removeNotification: this function is not supported on iOS',
         );
       }
@@ -774,7 +772,7 @@ export namespace OneSignal {
       if (Platform.OS === 'android') {
         RNOneSignal.removeGroupedNotifications(id);
       } else {
-        console.log(
+        console.warn(
           'removeGroupedNotifications: this function is not supported on iOS',
         );
       }
