@@ -165,13 +165,9 @@ export namespace OneSignal {
     export function enter(
       activityId: string,
       token: string,
-      handler?: Function,
+      handler: Function = () => {},
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      if (!handler) {
-        handler = () => {};
-      }
 
       // Only Available on iOS
       if (Platform.OS === 'ios') {
@@ -186,12 +182,8 @@ export namespace OneSignal {
      *
      * @param activityId: The activity identifier the live activity on this device will no longer receive updates for.
      **/
-    export function exit(activityId: string, handler?: Function) {
+    export function exit(activityId: string, handler: Function = () => {}) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      if (!handler) {
-        handler = () => {};
-      }
 
       if (Platform.OS === 'ios') {
         RNOneSignal.exitLiveActivity(activityId, handler);
@@ -697,6 +689,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
       isValidCallback(listener);
 
+      /* v8 ignore else -- @preserve */
       if (event === 'click') {
         RNOneSignal.addNotificationClickListener();
         eventManager.addEventListener<NotificationClickEvent>(
@@ -725,14 +718,13 @@ export namespace OneSignal {
       event: K,
       listener: (event: NotificationEventTypeMap[K]) => void,
     ): void {
+      /* v8 ignore else -- @preserve */
       if (event === 'click') {
         eventManager.removeEventListener(NOTIFICATION_CLICKED, listener);
       } else if (event === 'foregroundWillDisplay') {
         eventManager.removeEventListener(NOTIFICATION_WILL_DISPLAY, listener);
       } else if (event === 'permissionChange') {
         eventManager.removeEventListener(PERMISSION_CHANGED, listener);
-      } else {
-        return;
       }
     }
 
@@ -799,6 +791,7 @@ export namespace OneSignal {
           listener as (event: InAppMessageClickEvent) => void,
         );
       } else {
+        /* v8 ignore else -- @preserve */
         if (event === 'willDisplay') {
           isValidCallback(listener);
           eventManager.addEventListener<InAppMessageWillDisplayEvent>(
@@ -840,6 +833,7 @@ export namespace OneSignal {
       if (event === 'click') {
         eventManager.removeEventListener(IN_APP_MESSAGE_CLICKED, listener);
       } else {
+        /* v8 ignore else -- @preserve */
         if (event === 'willDisplay') {
           eventManager.removeEventListener(
             IN_APP_MESSAGE_WILL_DISPLAY,
@@ -860,8 +854,6 @@ export namespace OneSignal {
             IN_APP_MESSAGE_DID_DISMISS,
             listener,
           );
-        } else {
-          return;
         }
       }
     }

@@ -38,6 +38,12 @@ const removeEventManagerListenerSpy = vi.spyOn(
   'removeEventListener',
 );
 
+const filterEventListener = (eventName: string) => {
+  return addEventManagerListenerSpy.mock.calls.filter(
+    (call) => call[0] === eventName,
+  )[0][1];
+};
+
 describe('OneSignal', () => {
   beforeEach(() => {
     mockPlatform.OS = 'ios';
@@ -64,6 +70,28 @@ describe('OneSignal', () => {
     test('should initialize OneSignal with appId', () => {
       OneSignal.initialize(APP_ID);
       expect(mockRNOneSignal.initialize).toHaveBeenCalledWith(APP_ID);
+
+      // test permission change listener
+      const changeFn = filterEventListener(PERMISSION_CHANGED);
+      changeFn(true);
+      const permission = OneSignal.Notifications.hasPermission();
+      expect(permission).toBe(true);
+
+      // test push subscription change listener
+      const subscriptionChangeFn = filterEventListener(SUBSCRIPTION_CHANGED);
+      subscriptionChangeFn({
+        current: {
+          id: 'subscription-id',
+          token: 'push-token',
+          optedIn: true,
+        },
+      });
+      const pushSubscription =
+        OneSignal.User.pushSubscription.getPushSubscriptionId();
+      expect(pushSubscription).toBe('subscription-id');
+
+      // reset push subscription
+      subscriptionChangeFn({ current: {} });
     });
 
     test('should not initialize if native module is not loaded', () => {
