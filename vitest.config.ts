@@ -7,12 +7,13 @@ export default defineConfig({
     globals: true,
     clearMocks: true,
     include: ['**/*.test.ts', '**/*.test.tsx'],
-    // coverage: {
-    //   enabled: true,
-    //   reporter: ['text-summary', 'lcov'],
-    //   reportOnFailure: true,
-    //   reportsDirectory: 'coverage',
-    // },
+    coverage: {
+      exclude: ['__mocks__'],
+      enabled: true,
+      reporter: ['text-summary', 'lcov'],
+      reportOnFailure: true,
+      reportsDirectory: 'coverage',
+    },
   },
   resolve: {
     alias: {

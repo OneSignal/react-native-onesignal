@@ -16,7 +16,8 @@
     /**
      * Should use import type syntax instead of regular import when getting types/interfaces from a module
      */
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "types": ["vitest/globals"]
   },
   "exclude": [
     "node_modules",

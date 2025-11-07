@@ -1,6 +1,7 @@
 'use strict';
 
 import { NativeModules, Platform } from 'react-native';
+import type { OSNotificationPermission } from './constants/Subscription';
 import EventManager from './events/EventManager';
 import {
   IN_APP_MESSAGE_CLICKED,
@@ -25,19 +26,18 @@ import type {
   InAppMessageEventTypeMap,
   InAppMessageWillDismissEvent,
   InAppMessageWillDisplayEvent,
-} from './models/InAppMessage';
-import type { LiveActivitySetupOptions } from './models/LiveActivities';
+} from './types/InAppMessage';
+import type { LiveActivitySetupOptions } from './types/LiveActivities';
 import type {
   NotificationClickEvent,
   NotificationEventName,
   NotificationEventTypeMap,
-} from './models/NotificationEvents';
-import {
-  OSNotificationPermission,
-  type PushSubscriptionChangedState,
-  type PushSubscriptionState,
-} from './models/Subscription';
-import type { UserChangedState, UserState } from './models/User';
+} from './types/NotificationEvents';
+import type {
+  PushSubscriptionChangedState,
+  PushSubscriptionState,
+} from './types/Subscription';
+import type { UserChangedState, UserState } from './types/User';
 
 const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
@@ -371,7 +371,7 @@ export namespace OneSignal {
           'OneSignal: This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
         );
 
-        return pushSub.optedIn;
+        return pushSub.optedIn ?? false;
       }
 
       /**
@@ -1000,9 +1000,9 @@ export namespace OneSignal {
   }
 }
 
+export { OSNotificationPermission } from './constants/Subscription';
 export {
   NotificationWillDisplayEvent,
-  OSNotificationPermission,
   type InAppMessage,
   type InAppMessageClickEvent,
   type InAppMessageDidDismissEvent,
@@ -1016,6 +1016,6 @@ export {
   type UserState,
 };
 
-export type { InAppMessageClickResult } from './models/InAppMessage';
-export type { NotificationClickResult } from './models/NotificationEvents';
 export { default as OSNotification } from './OSNotification';
+export type { InAppMessageClickResult } from './types/InAppMessage';
+export type { NotificationClickResult } from './types/NotificationEvents';
