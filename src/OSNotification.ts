@@ -42,6 +42,8 @@ interface iOSNotificationData extends BaseNotificationData {
   interruptionLevel?: string;
 }
 
+export type OSNotificationData = AndroidNotificationData | iOSNotificationData;
+
 export default class OSNotification {
   body: string;
   sound?: string;
@@ -78,7 +80,7 @@ export default class OSNotification {
   relevanceScore?: number;
   interruptionLevel?: string;
 
-  constructor(receivedEvent: AndroidNotificationData | iOSNotificationData) {
+  constructor(receivedEvent: OSNotificationData) {
     this.body = receivedEvent.body;
     this.sound = receivedEvent.sound;
     this.title = receivedEvent.title;

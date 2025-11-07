@@ -16,7 +16,30 @@ import {
   USER_STATE_CHANGED,
 } from '../constants/events';
 import OSNotification from '../OSNotification';
+import type {
+  InAppMessageClickEvent,
+  InAppMessageDidDismissEvent,
+  InAppMessageDidDisplayEvent,
+  InAppMessageWillDismissEvent,
+  InAppMessageWillDisplayEvent,
+} from '../types/inAppMessage';
+import type { NotificationClickEvent } from '../types/notificationEvents';
+import type { PushSubscriptionChangedState } from '../types/subscription';
+import type { UserChangedState } from '../types/user';
 import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
+
+export interface EventListenerMap {
+  [PERMISSION_CHANGED]: (event: { permission: boolean }) => void;
+  [SUBSCRIPTION_CHANGED]: (event: PushSubscriptionChangedState) => void;
+  [USER_STATE_CHANGED]: (event: UserChangedState) => void;
+  [NOTIFICATION_WILL_DISPLAY]: (event: NotificationWillDisplayEvent) => void;
+  [NOTIFICATION_CLICKED]: (event: NotificationClickEvent) => void;
+  [IN_APP_MESSAGE_CLICKED]: (event: InAppMessageClickEvent) => void;
+  [IN_APP_MESSAGE_WILL_DISPLAY]: (event: InAppMessageWillDisplayEvent) => void;
+  [IN_APP_MESSAGE_WILL_DISMISS]: (event: InAppMessageWillDismissEvent) => void;
+  [IN_APP_MESSAGE_DID_DISMISS]: (event: InAppMessageDidDismissEvent) => void;
+  [IN_APP_MESSAGE_DID_DISPLAY]: (event: InAppMessageDidDisplayEvent) => void;
+}
 
 const eventList = [
   PERMISSION_CHANGED,
@@ -29,7 +52,7 @@ const eventList = [
   IN_APP_MESSAGE_WILL_DISMISS,
   IN_APP_MESSAGE_DID_DISMISS,
   IN_APP_MESSAGE_DID_DISPLAY,
-];
+] as const;
 
 export default class EventManager {
   private RNOneSignal: NativeModule;
@@ -61,7 +84,10 @@ export default class EventManager {
    * @param  {function} handler
    * @returns void
    */
-  addEventListener<T>(eventName: string, handler: (event: T) => void) {
+  addEventListener<K extends keyof EventListenerMap>(
+    eventName: K,
+    handler: EventListenerMap[K],
+  ) {
     let handlerArray = this.eventListenerArrayMap.get(eventName);
     if (handlerArray && handlerArray.length > 0) {
       handlerArray.push(handler);
@@ -76,7 +102,10 @@ export default class EventManager {
    * @param  {function} handler
    * @returns void
    */
-  removeEventListener(eventName: string, handler: any) {
+  removeEventListener<K extends keyof EventListenerMap>(
+    eventName: K,
+    handler: EventListenerMap[K],
+  ) {
     const handlerArray = this.eventListenerArrayMap.get(eventName);
     if (!handlerArray) {
       return;
@@ -91,8 +120,10 @@ export default class EventManager {
   }
 
   // returns an event listener with the js to native mapping
-  generateEventListener(eventName: string): EmitterSubscription {
-    const addListenerCallback = (payload: object) => {
+  generateEventListener<K extends keyof EventListenerMap>(
+    eventName: K,
+  ): EmitterSubscription {
+    const addListenerCallback = (payload: unknown) => {
       let handlerArray = this.eventListenerArrayMap.get(eventName);
       if (handlerArray) {
         if (eventName === NOTIFICATION_WILL_DISPLAY) {
@@ -108,7 +139,7 @@ export default class EventManager {
           });
         } else {
           handlerArray.forEach((handler) => {
-            handler(payload);
+            handler(payload as EventListenerMap[K]);
           });
         }
       }

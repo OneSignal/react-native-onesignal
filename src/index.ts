@@ -407,10 +407,7 @@ export namespace OneSignal {
 
       isValidCallback(listener);
       RNOneSignal.addUserStateObserver();
-      eventManager.addEventListener<UserChangedState>(
-        USER_STATE_CHANGED,
-        listener,
-      );
+      eventManager.addEventListener(USER_STATE_CHANGED, listener);
     }
 
     /** Clears current user state observers. */
