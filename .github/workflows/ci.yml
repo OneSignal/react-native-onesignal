@@ -2,22 +2,24 @@ name: Test
 
 on:
   pull_request:
-    branches: "**"
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - name: "Checkout"
+      - name: 'Checkout'
         uses: actions/checkout@v5
 
-      - name: "Setup Bun"
+      - name: 'Setup Bun'
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: "Install"
+      - name: 'Install'
         run: bun i
 
-      - name: "Linting"
+      - name: 'Linting'
         run: bun run lint
+
+      - name: 'Testing Coverage'
+        run: bun run test:coverage
