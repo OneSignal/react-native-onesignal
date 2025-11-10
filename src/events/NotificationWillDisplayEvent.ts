@@ -11,7 +11,6 @@ export default class NotificationWillDisplayEvent {
 
   preventDefault(): void {
     RNOneSignal.preventDefault(this.notification.notificationId);
-    return;
   }
 
   getNotification(): OSNotification {
