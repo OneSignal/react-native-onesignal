@@ -1,3 +1,5 @@
+import type { EventListenerMap } from '../events/EventManager';
+
 export type InAppMessageEventName =
   | 'click'
   | 'willDisplay'
@@ -5,13 +7,12 @@ export type InAppMessageEventName =
   | 'willDismiss'
   | 'didDismiss';
 
-export type InAppMessageEventTypeMap = {
-  click: InAppMessageClickEvent;
-  willDisplay: InAppMessageWillDisplayEvent;
-  didDisplay: InAppMessageDidDisplayEvent;
-  willDismiss: InAppMessageWillDismissEvent;
-  didDismiss: InAppMessageDidDismissEvent;
-};
+export type InAppMessageListeners =
+  | ['click', EventListenerMap['OneSignal-inAppMessageClicked']]
+  | ['willDisplay', EventListenerMap['OneSignal-inAppMessageWillDisplay']]
+  | ['didDisplay', EventListenerMap['OneSignal-inAppMessageDidDisplay']]
+  | ['willDismiss', EventListenerMap['OneSignal-inAppMessageWillDismiss']]
+  | ['didDismiss', EventListenerMap['OneSignal-inAppMessageDidDismiss']];
 
 export interface InAppMessage {
   messageId: string;

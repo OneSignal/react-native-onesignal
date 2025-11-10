@@ -12,9 +12,11 @@ import {
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
 } from '../constants/events';
+import OSNotification from '../OSNotification';
+import type { NotificationClickEvent } from '../types/notificationEvents';
 import type { PushSubscriptionChangedState } from '../types/subscription';
 import type { UserChangedState } from '../types/user';
-import EventManager, { type EventListenerMap } from './EventManager';
+import EventManager, { type RawEventListenerMap } from './EventManager';
 import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
 
 describe('EventManager', () => {
@@ -22,10 +24,10 @@ describe('EventManager', () => {
   let mockNativeModule: any;
   let eventCallbacks: Map<string, (payload: any) => void>;
 
-  const getCallback = <K extends keyof EventListenerMap>(
+  const getCallback = <K extends keyof RawEventListenerMap>(
     eventName: K,
-  ): ((payload: Parameters<EventListenerMap[K]>[0]) => void) | undefined => {
-    return eventCallbacks.get(eventName) as any;
+  ): RawEventListenerMap[K] | undefined => {
+    return eventCallbacks.get(eventName) as RawEventListenerMap[K] | undefined;
   };
 
   beforeEach(() => {
@@ -210,14 +212,7 @@ describe('EventManager', () => {
       eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, handler);
 
       const callback = getCallback(NOTIFICATION_WILL_DISPLAY);
-
-      const notificationPayload = {
-        notificationId: 'test-id',
-        body: 'test-body',
-        rawPayload: {},
-      };
-
-      callback!(notificationPayload);
+      callback!(rawWillDisplayPayload);
 
       expect(handler).toHaveBeenCalled();
       const receivedEvent = handler.mock.calls[0][0];
@@ -228,33 +223,22 @@ describe('EventManager', () => {
       const handler = vi.fn();
       eventManager.addEventListener(PERMISSION_CHANGED, handler);
 
+      const payload = getRawPermissionChangedPayload(true);
       const callback = getCallback(PERMISSION_CHANGED);
-      callback!({ permission: true });
+      callback!(payload);
 
       expect(handler).toHaveBeenCalledWith(true);
     });
 
     test('should handle generic events with object payload', () => {
       const handler = vi.fn();
-      const payload = {
-        previous: {
-          id: 'previous-id',
-          token: 'previous-token',
-          optedIn: false,
-        },
-        current: {
-          id: 'current-id',
-          token: 'current-token',
-          optedIn: true,
-        },
-      } satisfies PushSubscriptionChangedState;
 
       eventManager.addEventListener(SUBSCRIPTION_CHANGED, handler);
 
       const callback = getCallback(SUBSCRIPTION_CHANGED);
-      callback!(payload);
+      callback!(pushChangedPayload);
 
-      expect(handler).toHaveBeenCalledWith(payload);
+      expect(handler).toHaveBeenCalledWith(pushChangedPayload);
     });
 
     test('should call all handlers for an event', () => {
@@ -350,7 +334,14 @@ describe('EventManager', () => {
 
     test('should handle NOTIFICATION_CLICKED events', () => {
       const handler = vi.fn();
-      const payload = { notificationId: 'notif-123', action: 'clicked' };
+      const payload = {
+        result: { actionId: 'action-1' },
+        notification: new OSNotification({
+          notificationId: 'test-id',
+          body: 'test-body',
+          rawPayload: {},
+        }),
+      } satisfies NotificationClickEvent;
 
       eventManager.addEventListener(NOTIFICATION_CLICKED, handler);
 
@@ -372,7 +363,8 @@ describe('EventManager', () => {
 
       // Trigger event
       const callback = getCallback(PERMISSION_CHANGED);
-      callback!({ permission: true });
+      const payload = getRawPermissionChangedPayload(true);
+      callback!(payload);
 
       expect(handler1).toHaveBeenCalledWith(true);
       expect(handler2).toHaveBeenCalledWith(true);
@@ -385,7 +377,7 @@ describe('EventManager', () => {
       handler2.mockClear();
 
       // Trigger event again
-      callback!({ permission: false });
+      callback!(getRawPermissionChangedPayload(false));
 
       expect(handler1).not.toHaveBeenCalled();
       expect(handler2).toHaveBeenCalledWith(false);
@@ -409,17 +401,16 @@ describe('EventManager', () => {
       const notificationCallback = getCallback(NOTIFICATION_WILL_DISPLAY);
 
       // Trigger different event types
-      permissionCallback!({ permission: true });
-      subscriptionCallback!({ id: 'sub-123' });
-      notificationCallback!({
-        notificationId: 'notif-123',
-        body: 'test',
-        rawPayload: {},
-      });
+      const permissionPayload = getRawPermissionChangedPayload(true);
+      permissionCallback!(permissionPayload);
+      subscriptionCallback!(pushChangedPayload);
+      notificationCallback!(rawWillDisplayPayload);
 
       expect(permissionHandler).toHaveBeenCalledWith(true);
-      expect(subscriptionHandler).toHaveBeenCalledWith({ id: 'sub-123' });
-      expect(notificationWillDisplayHandler).toHaveBeenCalled();
+      expect(subscriptionHandler).toHaveBeenCalledWith(pushChangedPayload);
+      expect(notificationWillDisplayHandler).toHaveBeenCalledWith(
+        new NotificationWillDisplayEvent(rawWillDisplayPayload),
+      );
     });
 
     test('should maintain separate handler arrays for different events', () => {
@@ -455,20 +446,44 @@ describe('EventManager', () => {
 
       const callback = getCallback(SUBSCRIPTION_CHANGED);
 
-      callback!({ id: '1' });
-      expect(handler1).toHaveBeenCalledWith({ id: '1' });
-      expect(handler2).toHaveBeenCalledWith({ id: '1' });
-      expect(handler3).toHaveBeenCalledWith({ id: '1' });
+      callback!(pushChangedPayload);
+      expect(handler1).toHaveBeenCalledWith(pushChangedPayload);
+      expect(handler2).toHaveBeenCalledWith(pushChangedPayload);
+      expect(handler3).toHaveBeenCalledWith(pushChangedPayload);
 
       eventManager.removeEventListener(SUBSCRIPTION_CHANGED, handler2);
       handler1.mockClear();
       handler2.mockClear();
       handler3.mockClear();
 
-      callback!({ id: '2' });
-      expect(handler1).toHaveBeenCalledWith({ id: '2' });
+      callback!(pushChangedPayload);
+      expect(handler1).toHaveBeenCalledWith(pushChangedPayload);
       expect(handler2).not.toHaveBeenCalled();
-      expect(handler3).toHaveBeenCalledWith({ id: '2' });
+      expect(handler3).toHaveBeenCalledWith(pushChangedPayload);
     });
   });
 });
+
+// helper payloads
+const getRawPermissionChangedPayload = (permission: boolean) => ({
+  permission: permission,
+});
+
+const rawWillDisplayPayload = new OSNotification({
+  notificationId: 'test-id',
+  body: 'test-body',
+  rawPayload: {},
+});
+
+const pushChangedPayload = {
+  previous: {
+    id: 'previous-id',
+    token: 'previous-token',
+    optedIn: false,
+  },
+  current: {
+    id: 'current-id',
+    token: 'current-token',
+    optedIn: true,
+  },
+} satisfies PushSubscriptionChangedState;

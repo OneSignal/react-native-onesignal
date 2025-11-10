@@ -20,16 +20,14 @@ import type {
   InAppMessageClickEvent,
   InAppMessageDidDismissEvent,
   InAppMessageDidDisplayEvent,
-  InAppMessageEventName,
-  InAppMessageEventTypeMap,
+  InAppMessageListeners,
   InAppMessageWillDismissEvent,
   InAppMessageWillDisplayEvent,
 } from './types/inAppMessage';
 import type { LiveActivitySetupOptions } from './types/liveActivities';
 import type {
   NotificationClickEvent,
-  NotificationEventName,
-  NotificationEventTypeMap,
+  NotificationListeners,
 } from './types/notificationEvents';
 import type {
   PushSubscriptionChangedState,
@@ -62,9 +60,12 @@ let pushSub: PushSubscriptionState = {
 };
 
 async function _addPermissionObserver() {
-  OneSignal.Notifications.addEventListener('permissionChange', (granted) => {
-    notificationPermission = granted;
-  });
+  OneSignal.Notifications.addEventListener(
+    'permissionChange',
+    (granted: boolean) => {
+      notificationPermission = granted;
+    },
+  );
 
   notificationPermission = await RNOneSignal.hasNotificationPermission();
 }
@@ -285,10 +286,7 @@ export namespace OneSignal {
 
         isValidCallback(listener);
         RNOneSignal.addPushSubscriptionObserver();
-        eventManager.addEventListener<PushSubscriptionChangedState>(
-          SUBSCRIPTION_CHANGED,
-          listener,
-        );
+        eventManager.addEventListener(SUBSCRIPTION_CHANGED, listener);
       }
 
       /** Clears current subscription observers. */
@@ -679,9 +677,8 @@ export namespace OneSignal {
 
     /**
      * Add listeners for notification click and/or lifecycle events. */
-    export function addEventListener<K extends NotificationEventName>(
-      event: K,
-      listener: (event: NotificationEventTypeMap[K]) => void,
+    export function addEventListener(
+      ...[event, listener]: NotificationListeners
     ): void {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
       isValidCallback(listener);
@@ -689,31 +686,21 @@ export namespace OneSignal {
       /* v8 ignore else -- @preserve */
       if (event === 'click') {
         RNOneSignal.addNotificationClickListener();
-        eventManager.addEventListener<NotificationClickEvent>(
-          NOTIFICATION_CLICKED,
-          listener as (event: NotificationClickEvent) => void,
-        );
+        eventManager.addEventListener(NOTIFICATION_CLICKED, listener);
       } else if (event === 'foregroundWillDisplay') {
         RNOneSignal.addNotificationForegroundLifecycleListener();
-        eventManager.addEventListener<NotificationWillDisplayEvent>(
-          NOTIFICATION_WILL_DISPLAY,
-          listener as (event: NotificationWillDisplayEvent) => void,
-        );
+        eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, listener);
       } else if (event === 'permissionChange') {
         isValidCallback(listener);
         RNOneSignal.addPermissionObserver();
-        eventManager.addEventListener<boolean>(
-          PERMISSION_CHANGED,
-          listener as (event: boolean) => void,
-        );
+        eventManager.addEventListener(PERMISSION_CHANGED, listener);
       }
     }
 
     /**
      * Remove listeners for notification click and/or lifecycle events. */
-    export function removeEventListener<K extends NotificationEventName>(
-      event: K,
-      listener: (event: NotificationEventTypeMap[K]) => void,
+    export function removeEventListener(
+      ...[event, listener]: NotificationListeners
     ): void {
       /* v8 ignore else -- @preserve */
       if (event === 'click') {
@@ -772,86 +759,50 @@ export namespace OneSignal {
     /**
      * Add listeners for In-App Message click and/or lifecycle events.
      */
-    export function addEventListener<K extends InAppMessageEventName>(
-      event: K,
-      listener: (event: InAppMessageEventTypeMap[K]) => void,
+    export function addEventListener(
+      ...[event, listener]: InAppMessageListeners
     ): void {
-      if (!isNativeModuleLoaded(RNOneSignal)) {
-        return;
-      }
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+      isValidCallback(listener);
 
+      /* v8 ignore else -- @preserve */
       if (event === 'click') {
-        isValidCallback(listener);
         RNOneSignal.addInAppMessageClickListener();
-        eventManager.addEventListener<InAppMessageClickEvent>(
-          IN_APP_MESSAGE_CLICKED,
-          listener as (event: InAppMessageClickEvent) => void,
-        );
-      } else {
-        /* v8 ignore else -- @preserve */
-        if (event === 'willDisplay') {
-          isValidCallback(listener);
-          eventManager.addEventListener<InAppMessageWillDisplayEvent>(
-            IN_APP_MESSAGE_WILL_DISPLAY,
-            listener as (event: InAppMessageWillDisplayEvent) => void,
-          );
-        } else if (event === 'didDisplay') {
-          isValidCallback(listener);
-          eventManager.addEventListener<InAppMessageDidDisplayEvent>(
-            IN_APP_MESSAGE_DID_DISPLAY,
-            listener as (event: InAppMessageDidDisplayEvent) => void,
-          );
-        } else if (event === 'willDismiss') {
-          isValidCallback(listener);
-          eventManager.addEventListener<InAppMessageWillDismissEvent>(
-            IN_APP_MESSAGE_WILL_DISMISS,
-            listener as (event: InAppMessageWillDismissEvent) => void,
-          );
-        } else if (event === 'didDismiss') {
-          isValidCallback(listener);
-          eventManager.addEventListener<InAppMessageDidDismissEvent>(
-            IN_APP_MESSAGE_DID_DISMISS,
-            listener as (event: InAppMessageDidDismissEvent) => void,
-          );
-        } else {
-          return;
-        }
+        eventManager.addEventListener(IN_APP_MESSAGE_CLICKED, listener);
+      } else if (event === 'willDisplay') {
         RNOneSignal.addInAppMessagesLifecycleListener();
+        eventManager.addEventListener(IN_APP_MESSAGE_WILL_DISPLAY, listener);
+      } else if (event === 'didDisplay') {
+        RNOneSignal.addInAppMessagesLifecycleListener();
+        eventManager.addEventListener(IN_APP_MESSAGE_DID_DISPLAY, listener);
+      } else if (event === 'willDismiss') {
+        RNOneSignal.addInAppMessagesLifecycleListener();
+        eventManager.addEventListener(IN_APP_MESSAGE_WILL_DISMISS, listener);
+      } else if (event === 'didDismiss') {
+        RNOneSignal.addInAppMessagesLifecycleListener();
+        eventManager.addEventListener(IN_APP_MESSAGE_DID_DISMISS, listener);
       }
     }
 
     /**
      * Remove listeners for In-App Message click and/or lifecycle events.
      */
-    export function removeEventListener<K extends InAppMessageEventName>(
-      event: K,
-      listener: (obj: InAppMessageEventTypeMap[K]) => void,
+    export function removeEventListener(
+      ...[event, listener]: InAppMessageListeners
     ): void {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+      isValidCallback(listener);
+
       if (event === 'click') {
         eventManager.removeEventListener(IN_APP_MESSAGE_CLICKED, listener);
-      } else {
-        /* v8 ignore else -- @preserve */
-        if (event === 'willDisplay') {
-          eventManager.removeEventListener(
-            IN_APP_MESSAGE_WILL_DISPLAY,
-            listener,
-          );
-        } else if (event === 'didDisplay') {
-          eventManager.removeEventListener(
-            IN_APP_MESSAGE_DID_DISPLAY,
-            listener,
-          );
-        } else if (event === 'willDismiss') {
-          eventManager.removeEventListener(
-            IN_APP_MESSAGE_WILL_DISMISS,
-            listener,
-          );
-        } else if (event === 'didDismiss') {
-          eventManager.removeEventListener(
-            IN_APP_MESSAGE_DID_DISMISS,
-            listener,
-          );
-        }
+      } else if (event === 'willDisplay') {
+        eventManager.removeEventListener(IN_APP_MESSAGE_WILL_DISPLAY, listener);
+      } else if (event === 'didDisplay') {
+        eventManager.removeEventListener(IN_APP_MESSAGE_DID_DISPLAY, listener);
+      } else if (event === 'willDismiss') {
+        eventManager.removeEventListener(IN_APP_MESSAGE_WILL_DISMISS, listener);
+      } else if (event === 'didDismiss') {
+        eventManager.removeEventListener(IN_APP_MESSAGE_DID_DISMISS, listener);
       }
     }
 

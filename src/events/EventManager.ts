@@ -29,7 +29,7 @@ import type { UserChangedState } from '../types/user';
 import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
 
 export interface EventListenerMap {
-  [PERMISSION_CHANGED]: (event: { permission: boolean }) => void;
+  [PERMISSION_CHANGED]: (event: boolean) => void;
   [SUBSCRIPTION_CHANGED]: (event: PushSubscriptionChangedState) => void;
   [USER_STATE_CHANGED]: (event: UserChangedState) => void;
   [NOTIFICATION_WILL_DISPLAY]: (event: NotificationWillDisplayEvent) => void;
@@ -40,6 +40,18 @@ export interface EventListenerMap {
   [IN_APP_MESSAGE_DID_DISMISS]: (event: InAppMessageDidDismissEvent) => void;
   [IN_APP_MESSAGE_DID_DISPLAY]: (event: InAppMessageDidDisplayEvent) => void;
 }
+
+// Internal event listeners that connect to the native modules then get
+// transformed (via generateEventListener) into the EventListenerMap types
+type RawNotificationOverrides = {
+  [PERMISSION_CHANGED]: (payload: { permission: boolean }) => void;
+  [NOTIFICATION_WILL_DISPLAY]: (payload: OSNotification) => void;
+};
+export type RawEventListenerMap = Omit<
+  EventListenerMap,
+  keyof RawNotificationOverrides
+> &
+  RawNotificationOverrides;
 
 const eventList = [
   PERMISSION_CHANGED,
@@ -120,10 +132,10 @@ export default class EventManager {
   }
 
   // returns an event listener with the js to native mapping
-  generateEventListener<K extends keyof EventListenerMap>(
+  generateEventListener<K extends keyof RawEventListenerMap>(
     eventName: K,
   ): EmitterSubscription {
-    const addListenerCallback = (payload: unknown) => {
+    const addListenerCallback: RawEventListenerMap[K] = (payload: unknown) => {
       let handlerArray = this.eventListenerArrayMap.get(eventName);
       if (handlerArray) {
         if (eventName === NOTIFICATION_WILL_DISPLAY) {
