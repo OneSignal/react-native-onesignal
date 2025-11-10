@@ -13,6 +13,12 @@ export default defineConfig({
       reporter: ['text-summary', 'lcov'],
       reportOnFailure: true,
       reportsDirectory: 'coverage',
+      thresholds: {
+        statements: 95,
+        branches: 95,
+        functions: 95,
+        lines: 95,
+      },
     },
   },
   resolve: {
