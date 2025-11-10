@@ -1,5 +1,5 @@
 import { NativeModules, Platform } from 'react-native';
-import type { OSNotificationPermission } from './constants/Subscription';
+import type { OSNotificationPermission } from './constants/Subscription2';
 import EventManager from './events/EventManager';
 import {
   IN_APP_MESSAGE_CLICKED,
@@ -998,7 +998,7 @@ export namespace OneSignal {
   }
 }
 
-export { OSNotificationPermission } from './constants/Subscription';
+export { OSNotificationPermission } from './constants/Subscription2';
 export {
   NotificationWillDisplayEvent,
   type InAppMessage,
