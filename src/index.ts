@@ -1,6 +1,4 @@
 import { NativeModules, Platform } from 'react-native';
-import type { OSNotificationPermission } from './constants/Subscription2';
-import EventManager from './events/EventManager';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -12,7 +10,9 @@ import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
-} from './events/events';
+} from './constants/events';
+import type { OSNotificationPermission } from './constants/subscription';
+import EventManager from './events/EventManager';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import { isNativeModuleLoaded, isValidCallback } from './helpers';
 import type {
@@ -24,18 +24,18 @@ import type {
   InAppMessageEventTypeMap,
   InAppMessageWillDismissEvent,
   InAppMessageWillDisplayEvent,
-} from './types/InAppMessage';
-import type { LiveActivitySetupOptions } from './types/LiveActivities';
+} from './types/inAppMessage';
+import type { LiveActivitySetupOptions } from './types/liveActivities';
 import type {
   NotificationClickEvent,
   NotificationEventName,
   NotificationEventTypeMap,
-} from './types/NotificationEvents';
+} from './types/notificationEvents';
 import type {
   PushSubscriptionChangedState,
   PushSubscriptionState,
-} from './types/Subscription';
-import type { UserChangedState, UserState } from './types/User';
+} from './types/subscription';
+import type { UserChangedState, UserState } from './types/user';
 
 const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
@@ -998,7 +998,7 @@ export namespace OneSignal {
   }
 }
 
-export { OSNotificationPermission } from './constants/Subscription2';
+export { OSNotificationPermission } from './constants/subscription';
 export {
   NotificationWillDisplayEvent,
   type InAppMessage,
@@ -1015,5 +1015,5 @@ export {
 };
 
 export { default as OSNotification } from './OSNotification';
-export type { InAppMessageClickResult } from './types/InAppMessage';
-export type { NotificationClickResult } from './types/NotificationEvents';
+export type { InAppMessageClickResult } from './types/inAppMessage';
+export type { NotificationClickResult } from './types/notificationEvents';

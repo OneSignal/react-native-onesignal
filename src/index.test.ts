@@ -1,6 +1,5 @@
 import { NativeModules, Platform } from 'react-native';
 import type { MockInstance } from 'vitest';
-import EventManager from './events/EventManager';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -12,7 +11,8 @@ import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
-} from './events/events';
+} from './constants/events';
+import EventManager from './events/EventManager';
 import * as helpers from './helpers';
 import { LogLevel, OneSignal, OSNotificationPermission } from './index';
 

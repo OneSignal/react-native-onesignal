@@ -3,8 +3,6 @@ import {
   NativeEventEmitter,
   type NativeModule,
 } from 'react-native';
-import OSNotification from '../OSNotification';
-import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -16,7 +14,9 @@ import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
-} from './events';
+} from '../constants/events';
+import OSNotification from '../OSNotification';
+import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
 
 const eventList = [
   PERMISSION_CHANGED,
