@@ -1,0 +1,1476 @@
+import { NativeModules, Platform } from 'react-native';
+import type { MockInstance } from 'vitest';
+import {
+  IN_APP_MESSAGE_CLICKED,
+  IN_APP_MESSAGE_DID_DISMISS,
+  IN_APP_MESSAGE_DID_DISPLAY,
+  IN_APP_MESSAGE_WILL_DISMISS,
+  IN_APP_MESSAGE_WILL_DISPLAY,
+  NOTIFICATION_CLICKED,
+  NOTIFICATION_WILL_DISPLAY,
+  PERMISSION_CHANGED,
+  SUBSCRIPTION_CHANGED,
+  USER_STATE_CHANGED,
+} from './constants/events';
+import EventManager from './events/EventManager';
+import * as helpers from './helpers';
+import { LogLevel, OneSignal, OSNotificationPermission } from './index';
+
+const mockRNOneSignal = NativeModules.OneSignal;
+const mockPlatform = Platform;
+
+const APP_ID = 'test-app-id';
+const PUSH_ID = 'subscription-id';
+const PUSH_TOKEN = 'push-token';
+
+// spies
+const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+let warnSpy: MockInstance;
+
+const isNativeLoadedSpy = vi.spyOn(helpers, 'isNativeModuleLoaded');
+const isValidCallbackSpy = vi.spyOn(helpers, 'isValidCallback');
+const addEventManagerListenerSpy = vi.spyOn(
+  EventManager.prototype,
+  'addEventListener',
+);
+const removeEventManagerListenerSpy = vi.spyOn(
+  EventManager.prototype,
+  'removeEventListener',
+);
+
+describe('OneSignal', () => {
+  beforeEach(() => {
+    mockPlatform.OS = 'ios';
+    isNativeLoadedSpy.mockReturnValue(true);
+    isValidCallbackSpy.mockImplementation(() => {});
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  describe('LogLevel enum', () => {
+    test.each([
+      [LogLevel.None, 0],
+      [LogLevel.Fatal, 1],
+      [LogLevel.Error, 2],
+      [LogLevel.Warn, 3],
+      [LogLevel.Info, 4],
+      [LogLevel.Debug, 5],
+      [LogLevel.Verbose, 6],
+    ])('should have correct enum values', (logLevel, expected) => {
+      expect(logLevel).toBe(expected);
+    });
+  });
+
+  describe('initialize', () => {
+    test('should initialize OneSignal with appId', () => {
+      OneSignal.initialize(APP_ID);
+      expect(mockRNOneSignal.initialize).toHaveBeenCalledWith(APP_ID);
+    });
+
+    test('should not initialize if native module is not loaded', () => {
+      isNativeLoadedSpy.mockReturnValue(false);
+      OneSignal.initialize(APP_ID);
+      expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('login', () => {
+    test('should login with externalId', () => {
+      OneSignal.login('external-123');
+      expect(mockRNOneSignal.login).toHaveBeenCalledWith('external-123');
+    });
+
+    test('should not login if native module is not loaded', () => {
+      isNativeLoadedSpy.mockReturnValue(false);
+      OneSignal.login('external-123');
+      expect(mockRNOneSignal.login).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('logout', () => {
+    test('should logout', () => {
+      OneSignal.logout();
+      expect(mockRNOneSignal.logout).toHaveBeenCalled();
+    });
+
+    test('should not logout if native module is not loaded', () => {
+      isNativeLoadedSpy.mockReturnValue(false);
+      OneSignal.logout();
+      expect(mockRNOneSignal.logout).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('setConsentRequired', () => {
+    test('should set consent required', () => {
+      OneSignal.setConsentRequired(true);
+      expect(mockRNOneSignal.setPrivacyConsentRequired).toHaveBeenCalledWith(
+        true,
+      );
+    });
+
+    test('should not set consent if native module is not loaded', () => {
+      isNativeLoadedSpy.mockReturnValue(false);
+      OneSignal.setConsentRequired(true);
+      expect(mockRNOneSignal.setPrivacyConsentRequired).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('setConsentGiven', () => {
+    test('should set consent given', () => {
+      OneSignal.setConsentGiven(true);
+      expect(mockRNOneSignal.setPrivacyConsentGiven).toHaveBeenCalledWith(true);
+    });
+
+    test('should not set consent if native module is not loaded', () => {
+      isNativeLoadedSpy.mockReturnValue(false);
+      OneSignal.setConsentGiven(true);
+      expect(mockRNOneSignal.setPrivacyConsentGiven).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Debug', () => {
+    describe('setLogLevel', () => {
+      test('should set log level', () => {
+        OneSignal.Debug.setLogLevel(LogLevel.Info);
+        expect(mockRNOneSignal.setLogLevel).toHaveBeenCalledWith(LogLevel.Info);
+      });
+
+      test('should not set log level if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.Debug.setLogLevel(LogLevel.Info);
+        expect(mockRNOneSignal.setLogLevel).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('setAlertLevel', () => {
+      test('should set alert level', () => {
+        OneSignal.Debug.setAlertLevel(LogLevel.Warn);
+        expect(mockRNOneSignal.setAlertLevel).toHaveBeenCalledWith(
+          LogLevel.Warn,
+        );
+      });
+
+      test('should not set alert level if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.Debug.setAlertLevel(LogLevel.Warn);
+        expect(mockRNOneSignal.setAlertLevel).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('LiveActivities', () => {
+    describe('enter', () => {
+      test('should enter live activity on iOS', () => {
+        const handler = vi.fn();
+        OneSignal.LiveActivities.enter('activity-id', 'token', handler);
+        expect(mockRNOneSignal.enterLiveActivity).toHaveBeenCalledWith(
+          'activity-id',
+          'token',
+          handler,
+        );
+      });
+
+      test('should use default handler if not provided', () => {
+        OneSignal.LiveActivities.enter('activity-id', 'token');
+        expect(mockRNOneSignal.enterLiveActivity).toHaveBeenCalledWith(
+          'activity-id',
+          'token',
+          expect.any(Function),
+        );
+      });
+
+      test('should not enter if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.LiveActivities.enter('activity-id', 'token');
+        expect(mockRNOneSignal.enterLiveActivity).not.toHaveBeenCalled();
+      });
+
+      test('should not enter on Android', () => {
+        mockPlatform.OS = 'android';
+        OneSignal.LiveActivities.enter('activity-id', 'token');
+        expect(mockRNOneSignal.enterLiveActivity).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('exit', () => {
+      test('should exit live activity on iOS', () => {
+        const handler = vi.fn();
+        OneSignal.LiveActivities.exit('activity-id', handler);
+        expect(mockRNOneSignal.exitLiveActivity).toHaveBeenCalledWith(
+          'activity-id',
+          handler,
+        );
+      });
+
+      test('should use default handler if not provided', () => {
+        OneSignal.LiveActivities.exit('activity-id');
+        expect(mockRNOneSignal.exitLiveActivity).toHaveBeenCalledWith(
+          'activity-id',
+          expect.any(Function),
+        );
+      });
+
+      test('should not exit if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.LiveActivities.exit('activity-id');
+        expect(mockRNOneSignal.exitLiveActivity).not.toHaveBeenCalled();
+      });
+
+      test('should not exit on Android', () => {
+        mockPlatform.OS = 'android';
+        OneSignal.LiveActivities.exit('activity-id');
+        expect(mockRNOneSignal.exitLiveActivity).not.toHaveBeenCalled();
+        mockPlatform.OS = 'ios';
+      });
+    });
+
+    describe('setPushToStartToken', () => {
+      test('should set push to start token on iOS', () => {
+        OneSignal.LiveActivities.setPushToStartToken('activity-type', 'token');
+        expect(mockRNOneSignal.setPushToStartToken).toHaveBeenCalledWith(
+          'activity-type',
+          'token',
+        );
+      });
+
+      test('should not set token if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.LiveActivities.setPushToStartToken('activity-type', 'token');
+        expect(mockRNOneSignal.setPushToStartToken).not.toHaveBeenCalled();
+      });
+
+      test('should not set token on Android', () => {
+        mockPlatform.OS = 'android';
+        OneSignal.LiveActivities.setPushToStartToken('activity-type', 'token');
+        expect(mockRNOneSignal.setPushToStartToken).not.toHaveBeenCalled();
+        mockPlatform.OS = 'ios';
+      });
+    });
+
+    describe('removePushToStartToken', () => {
+      test('should remove push to start token on iOS', () => {
+        OneSignal.LiveActivities.removePushToStartToken('activity-type');
+        expect(mockRNOneSignal.removePushToStartToken).toHaveBeenCalledWith(
+          'activity-type',
+        );
+      });
+
+      test('should not remove token if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.LiveActivities.removePushToStartToken('activity-type');
+        expect(mockRNOneSignal.removePushToStartToken).not.toHaveBeenCalled();
+      });
+
+      test('should not remove token on Android', () => {
+        mockPlatform.OS = 'android';
+        OneSignal.LiveActivities.removePushToStartToken('activity-type');
+        expect(mockRNOneSignal.removePushToStartToken).not.toHaveBeenCalled();
+        mockPlatform.OS = 'ios';
+      });
+    });
+
+    describe('setupDefault', () => {
+      test('should setup default live activity on iOS', () => {
+        const options = { enablePushToStart: true, enablePushToUpdate: false };
+        OneSignal.LiveActivities.setupDefault(options);
+        expect(mockRNOneSignal.setupDefaultLiveActivity).toHaveBeenCalledWith(
+          options,
+        );
+      });
+
+      test('should setup default without options', () => {
+        OneSignal.LiveActivities.setupDefault();
+        expect(mockRNOneSignal.setupDefaultLiveActivity).toHaveBeenCalledWith(
+          undefined,
+        );
+      });
+
+      test('should not setup if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.LiveActivities.setupDefault();
+        expect(mockRNOneSignal.setupDefaultLiveActivity).not.toHaveBeenCalled();
+      });
+
+      test('should not setup on Android', () => {
+        mockPlatform.OS = 'android';
+        OneSignal.LiveActivities.setupDefault();
+        expect(mockRNOneSignal.setupDefaultLiveActivity).not.toHaveBeenCalled();
+        mockPlatform.OS = 'ios';
+      });
+    });
+
+    describe('startDefault', () => {
+      test('should start default live activity on iOS', () => {
+        const attributes = { key: 'value' };
+        const content = { text: 'content' };
+        OneSignal.LiveActivities.startDefault(
+          'activity-id',
+          attributes,
+          content,
+        );
+        expect(mockRNOneSignal.startDefaultLiveActivity).toHaveBeenCalledWith(
+          'activity-id',
+          attributes,
+          content,
+        );
+      });
+
+      test('should not start if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.LiveActivities.startDefault('activity-id', {}, {});
+        expect(mockRNOneSignal.startDefaultLiveActivity).not.toHaveBeenCalled();
+      });
+
+      test('should not start on Android', () => {
+        mockPlatform.OS = 'android';
+        OneSignal.LiveActivities.startDefault('activity-id', {}, {});
+        expect(mockRNOneSignal.startDefaultLiveActivity).not.toHaveBeenCalled();
+        mockPlatform.OS = 'ios';
+      });
+    });
+  });
+
+  describe('User.pushSubscription', () => {
+    describe('addEventListener', () => {
+      test('should validate callback', () => {
+        const listener = vi.fn();
+        OneSignal.User.pushSubscription.addEventListener('change', listener);
+        expect(helpers.isValidCallback).toHaveBeenCalledWith(listener);
+      });
+
+      test('should add push subscription change listener', () => {
+        const listener = vi.fn();
+        OneSignal.User.pushSubscription.addEventListener('change', listener);
+        expect(mockRNOneSignal.addPushSubscriptionObserver).toHaveBeenCalled();
+        expect(addEventManagerListenerSpy).toHaveBeenCalledWith(
+          SUBSCRIPTION_CHANGED,
+          listener,
+        );
+      });
+
+      test('should not add listener if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        const listener = vi.fn();
+        OneSignal.User.pushSubscription.addEventListener('change', listener);
+        expect(
+          mockRNOneSignal.addPushSubscriptionObserver,
+        ).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('removeEventListener', () => {
+      test('should not remove listener if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        const listener = vi.fn();
+        OneSignal.User.pushSubscription.removeEventListener('change', listener);
+        expect(removeEventManagerListenerSpy).not.toHaveBeenCalled();
+      });
+
+      test('should remove push subscription change listener', () => {
+        const listener = vi.fn();
+        OneSignal.User.pushSubscription.removeEventListener('change', listener);
+        expect(removeEventManagerListenerSpy).toHaveBeenCalledWith(
+          SUBSCRIPTION_CHANGED,
+          listener,
+        );
+      });
+    });
+
+    describe('getPushSubscriptionId (deprecated)', () => {
+      test('should return empty string if native module not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        const result = OneSignal.User.pushSubscription.getPushSubscriptionId();
+        expect(result).toBe('');
+      });
+
+      test('should log deprecation warning and return the push id', async () => {
+        // with no push id
+        const result = OneSignal.User.pushSubscription.getPushSubscriptionId();
+        expect(result).toBe('');
+        expect(console.warn).toHaveBeenCalledWith(
+          'OneSignal: This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
+        );
+
+        // with a push id
+        mockRNOneSignal.getPushSubscriptionId.mockResolvedValue(PUSH_ID);
+        OneSignal.initialize(APP_ID);
+        await vi.waitFor(() => {
+          const result2 =
+            OneSignal.User.pushSubscription.getPushSubscriptionId();
+          expect(result2).toBe(PUSH_ID);
+        });
+      });
+    });
+
+    describe('getIdAsync', () => {
+      test('should get push subscription id', async () => {
+        mockRNOneSignal.getPushSubscriptionId.mockResolvedValue(PUSH_ID);
+        const result = await OneSignal.User.pushSubscription.getIdAsync();
+        expect(result).toBe(PUSH_ID);
+        expect(mockRNOneSignal.getPushSubscriptionId).toHaveBeenCalled();
+      });
+
+      test('should reject if native module is not loaded', async () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        await expect(
+          OneSignal.User.pushSubscription.getIdAsync(),
+        ).rejects.toThrow('OneSignal native module not loaded');
+      });
+    });
+
+    describe('getPushSubscriptionToken (deprecated)', () => {
+      test('should return empty string if native module not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        const result =
+          OneSignal.User.pushSubscription.getPushSubscriptionToken();
+        expect(result).toBe('');
+      });
+
+      test('should log deprecation warning and return the push token', async () => {
+        // with no push token
+        const result =
+          OneSignal.User.pushSubscription.getPushSubscriptionToken();
+        expect(result).toBe('');
+        expect(console.warn).toHaveBeenCalledWith(
+          'OneSignal: This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
+        );
+
+        // with a push token
+        vi.mocked(mockRNOneSignal.getPushSubscriptionToken).mockResolvedValue(
+          PUSH_TOKEN,
+        );
+        OneSignal.initialize(APP_ID);
+        await vi.waitFor(() => {
+          const result2 =
+            OneSignal.User.pushSubscription.getPushSubscriptionToken();
+          expect(result2).toBe(PUSH_TOKEN);
+        });
+      });
+    });
+
+    describe('getTokenAsync', () => {
+      test('should get push subscription token', async () => {
+        vi.mocked(mockRNOneSignal.getPushSubscriptionToken).mockResolvedValue(
+          PUSH_TOKEN,
+        );
+        const result = await OneSignal.User.pushSubscription.getTokenAsync();
+        expect(result).toBe(PUSH_TOKEN);
+        expect(mockRNOneSignal.getPushSubscriptionToken).toHaveBeenCalled();
+      });
+
+      test('should reject if native module is not loaded', async () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        await expect(
+          OneSignal.User.pushSubscription.getTokenAsync(),
+        ).rejects.toThrow('OneSignal native module not loaded');
+      });
+    });
+
+    describe('getOptedIn (deprecated)', () => {
+      test('should return false if native module not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        const result = OneSignal.User.pushSubscription.getOptedIn();
+        expect(result).toBe(false);
+      });
+
+      test('should log deprecation warning and return the opted in status', async () => {
+        // with no opted in status
+        const result = OneSignal.User.pushSubscription.getOptedIn();
+        expect(result).toBe(false);
+        expect(console.warn).toHaveBeenCalledWith(
+          'OneSignal: This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
+        );
+
+        // with a opted in status
+        vi.mocked(mockRNOneSignal.getOptedIn).mockResolvedValue(true);
+        OneSignal.initialize(APP_ID);
+        await vi.waitFor(() => {
+          const result2 = OneSignal.User.pushSubscription.getOptedIn();
+          expect(result2).toBe(true);
+        });
+      });
+    });
+
+    describe('getOptedInAsync', () => {
+      test('should get opted in status', async () => {
+        vi.mocked(mockRNOneSignal.getOptedIn).mockResolvedValue(true);
+        const result = await OneSignal.User.pushSubscription.getOptedInAsync();
+        expect(result).toBe(true);
+        expect(mockRNOneSignal.getOptedIn).toHaveBeenCalled();
+      });
+
+      test('should reject if native module is not loaded', async () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        await expect(
+          OneSignal.User.pushSubscription.getOptedInAsync(),
+        ).rejects.toThrow('OneSignal native module not loaded');
+      });
+    });
+
+    describe('optOut', () => {
+      test('should opt out', () => {
+        OneSignal.User.pushSubscription.optOut();
+        expect(mockRNOneSignal.optOut).toHaveBeenCalled();
+      });
+
+      test('should not opt out if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.pushSubscription.optOut();
+        expect(mockRNOneSignal.optOut).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('optIn', () => {
+      test('should opt in', () => {
+        OneSignal.User.pushSubscription.optIn();
+        expect(mockRNOneSignal.optIn).toHaveBeenCalled();
+      });
+
+      test('should not opt in if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.pushSubscription.optIn();
+        expect(mockRNOneSignal.optIn).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('User', () => {
+    const EMAIL = 'test@example.com';
+    const SMS_NUMBER = '+1234567890';
+
+    describe('addEventListener', () => {
+      test('should add user state change listener', () => {
+        const listener = vi.fn();
+        OneSignal.User.addEventListener('change', listener);
+        expect(mockRNOneSignal.addUserStateObserver).toHaveBeenCalled();
+        expect(addEventManagerListenerSpy).toHaveBeenCalledWith(
+          USER_STATE_CHANGED,
+          listener,
+        );
+      });
+
+      test('should validate callback', () => {
+        const listener = vi.fn();
+        OneSignal.User.addEventListener('change', listener);
+        expect(helpers.isValidCallback).toHaveBeenCalledWith(listener);
+      });
+
+      test('should not add listener if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        const listener = vi.fn();
+        OneSignal.User.addEventListener('change', listener);
+        expect(mockRNOneSignal.addUserStateObserver).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('removeEventListener', () => {
+      test('should remove user state change listener', () => {
+        const listener = vi.fn();
+        OneSignal.User.removeEventListener('change', listener);
+        expect(removeEventManagerListenerSpy).toHaveBeenCalledWith(
+          USER_STATE_CHANGED,
+          listener,
+        );
+      });
+
+      test('should not remove listener if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        const listener = vi.fn();
+        OneSignal.User.removeEventListener('change', listener);
+        expect(removeEventManagerListenerSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('getOnesignalId', () => {
+      test('should get onesignal id', async () => {
+        const mockId = 'onesignal-id';
+        vi.mocked(mockRNOneSignal.getOnesignalId).mockResolvedValue(mockId);
+
+        const result = await OneSignal.User.getOnesignalId();
+        expect(result).toBe(mockId);
+        expect(mockRNOneSignal.getOnesignalId).toHaveBeenCalled();
+      });
+
+      test('should reject if native module is not loaded', async () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        await expect(OneSignal.User.getOnesignalId()).rejects.toThrow(
+          'OneSignal native module not loaded',
+        );
+      });
+    });
+
+    describe('getExternalId', () => {
+      test('should get external id', async () => {
+        const mockId = 'external-id';
+        vi.mocked(mockRNOneSignal.getExternalId).mockResolvedValue(mockId);
+
+        const result = await OneSignal.User.getExternalId();
+        expect(result).toBe(mockId);
+        expect(mockRNOneSignal.getExternalId).toHaveBeenCalled();
+      });
+
+      test('should reject if native module is not loaded', async () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        await expect(OneSignal.User.getExternalId()).rejects.toThrow(
+          'OneSignal native module not loaded',
+        );
+      });
+    });
+
+    describe('setLanguage', () => {
+      test('should set language', () => {
+        OneSignal.User.setLanguage('en');
+        expect(mockRNOneSignal.setLanguage).toHaveBeenCalledWith('en');
+      });
+
+      test('should not set language if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.setLanguage('en');
+        expect(mockRNOneSignal.setLanguage).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('addAlias', () => {
+      test('should add alias', () => {
+        OneSignal.User.addAlias('label', 'id');
+        expect(mockRNOneSignal.addAlias).toHaveBeenCalledWith('label', 'id');
+      });
+
+      test('should not add alias if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.addAlias('label', 'id');
+        expect(mockRNOneSignal.addAlias).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('addAliases', () => {
+      test('should add aliases', () => {
+        const aliases = { label1: 'id1', label2: 'id2' };
+        OneSignal.User.addAliases(aliases);
+        expect(mockRNOneSignal.addAliases).toHaveBeenCalledWith(aliases);
+      });
+
+      test('should not add aliases if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.addAliases({});
+        expect(mockRNOneSignal.addAliases).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('removeAlias', () => {
+      test('should remove alias', () => {
+        OneSignal.User.removeAlias('label');
+        expect(mockRNOneSignal.removeAlias).toHaveBeenCalledWith('label');
+      });
+
+      test('should not remove alias if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.removeAlias('label');
+        expect(mockRNOneSignal.removeAlias).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('removeAliases', () => {
+      test('should remove aliases', () => {
+        const labels = ['label1', 'label2'];
+        OneSignal.User.removeAliases(labels);
+        expect(mockRNOneSignal.removeAliases).toHaveBeenCalledWith(labels);
+      });
+
+      test('should not remove aliases if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.removeAliases(['label']);
+        expect(mockRNOneSignal.removeAliases).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('addEmail', () => {
+      test('should add email', () => {
+        OneSignal.User.addEmail(EMAIL);
+        expect(mockRNOneSignal.addEmail).toHaveBeenCalledWith(EMAIL);
+      });
+
+      test('should not add email if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.addEmail(EMAIL);
+        expect(mockRNOneSignal.addEmail).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('removeEmail', () => {
+      test('should remove email', () => {
+        OneSignal.User.removeEmail(EMAIL);
+        expect(mockRNOneSignal.removeEmail).toHaveBeenCalledWith(EMAIL);
+      });
+
+      test('should not remove email if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.removeEmail('test@example.com');
+        expect(mockRNOneSignal.removeEmail).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('addSms', () => {
+      test('should add SMS', () => {
+        OneSignal.User.addSms(SMS_NUMBER);
+        expect(mockRNOneSignal.addSms).toHaveBeenCalledWith(SMS_NUMBER);
+      });
+
+      test('should not add SMS if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.addSms(SMS_NUMBER);
+        expect(mockRNOneSignal.addSms).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('removeSms', () => {
+      test('should remove SMS', () => {
+        OneSignal.User.removeSms(SMS_NUMBER);
+        expect(mockRNOneSignal.removeSms).toHaveBeenCalledWith(SMS_NUMBER);
+      });
+
+      test('should not remove SMS if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.removeSms(SMS_NUMBER);
+        expect(mockRNOneSignal.removeSms).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('addTag', () => {
+      test('should add tag', () => {
+        OneSignal.User.addTag('key', 'value');
+        expect(mockRNOneSignal.addTag).toHaveBeenCalledWith('key', 'value');
+      });
+
+      test('should convert non-string values to string', () => {
+        OneSignal.User.addTag('key', 123 as unknown as string);
+        expect(console.warn).toHaveBeenCalledWith(
+          'OneSignal: addTag: tag value must be of type string; attempting to convert',
+        );
+        expect(mockRNOneSignal.addTag).toHaveBeenCalledWith('key', '123');
+      });
+
+      test('should not add tag if key is missing', () => {
+        OneSignal.User.addTag('', 'value');
+        expect(errorSpy).toHaveBeenCalled();
+        expect(mockRNOneSignal.addTag).not.toHaveBeenCalled();
+      });
+
+      test('should not add tag if value is null', () => {
+        OneSignal.User.addTag('key', null as unknown as string);
+        expect(errorSpy).toHaveBeenCalled();
+        expect(mockRNOneSignal.addTag).not.toHaveBeenCalled();
+      });
+
+      test('should not add tag if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.addTag('key', 'value');
+        expect(mockRNOneSignal.addTag).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('addTags', () => {
+      test('should add tags', () => {
+        const tags = { key1: 'value1', key2: 'value2' };
+        OneSignal.User.addTags(tags);
+        expect(mockRNOneSignal.addTags).toHaveBeenCalledWith(tags);
+      });
+
+      test('should convert non-string values to string', () => {
+        const tags = { key1: 'value1', key2: 123 };
+        OneSignal.User.addTags(tags);
+        expect(warnSpy).toHaveBeenCalled();
+        expect(mockRNOneSignal.addTags).toHaveBeenCalledWith({
+          key1: 'value1',
+          key2: '123',
+        });
+      });
+
+      test('should not add tags if tags object is empty', () => {
+        OneSignal.User.addTags({});
+        expect(errorSpy).toHaveBeenCalled();
+        expect(mockRNOneSignal.addTags).not.toHaveBeenCalled();
+      });
+
+      test('should not add tags if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.addTags({ key: 'value' });
+        expect(mockRNOneSignal.addTags).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('removeTag', () => {
+      test('should remove tag', () => {
+        OneSignal.User.removeTag('key');
+        expect(mockRNOneSignal.removeTags).toHaveBeenCalledWith(['key']);
+      });
+
+      test('should not remove tag if key is not a string', () => {
+        OneSignal.User.removeTag(123 as unknown as string);
+        expect(errorSpy).toHaveBeenCalled();
+        expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
+      });
+
+      test('should not remove tag if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.removeTag('key');
+        expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('removeTags', () => {
+      test('should remove tags', () => {
+        const keys = ['key1', 'key2'];
+        OneSignal.User.removeTags(keys);
+        expect(mockRNOneSignal.removeTags).toHaveBeenCalledWith(keys);
+      });
+
+      test('should not remove tags if keys is not an array', () => {
+        OneSignal.User.removeTags('key' as unknown as string[]);
+        expect(errorSpy).toHaveBeenCalled();
+        expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
+      });
+
+      test('should not remove tags if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.removeTags(['key']);
+        expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('getTags', () => {
+      test('should get tags', async () => {
+        const mockTags = { key1: 'value1', key2: 'value2' };
+        vi.mocked(mockRNOneSignal.getTags).mockResolvedValue(mockTags);
+
+        const result = await OneSignal.User.getTags();
+        expect(result).toEqual(mockTags);
+        expect(mockRNOneSignal.getTags).toHaveBeenCalled();
+      });
+
+      test('should reject if native module is not loaded', async () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        await expect(OneSignal.User.getTags()).rejects.toThrow(
+          'OneSignal native module not loaded',
+        );
+      });
+    });
+
+    describe('Notifications', () => {
+      describe('hasPermission (deprecated)', () => {
+        test('should log deprecation warning', () => {
+          const consoleSpy = vi
+            .spyOn(console, 'warn')
+            .mockImplementation(() => {});
+          OneSignal.Notifications.hasPermission();
+          expect(consoleSpy).toHaveBeenCalled();
+          consoleSpy.mockRestore();
+        });
+      });
+
+      describe('getPermissionAsync', () => {
+        test('should get permission status', async () => {
+          vi.mocked(
+            mockRNOneSignal.hasNotificationPermission,
+          ).mockResolvedValue(true);
+          const result = await OneSignal.Notifications.getPermissionAsync();
+          expect(result).toBe(true);
+          expect(mockRNOneSignal.hasNotificationPermission).toHaveBeenCalled();
+        });
+      });
+
+      describe('requestPermission', () => {
+        test('should request permission', async () => {
+          vi.mocked(
+            mockRNOneSignal.requestNotificationPermission,
+          ).mockResolvedValue(true);
+          const result = await OneSignal.Notifications.requestPermission(true);
+          expect(result).toBe(true);
+          expect(
+            mockRNOneSignal.requestNotificationPermission,
+          ).toHaveBeenCalledWith(true);
+        });
+
+        test('should reject if native module is not loaded', async () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          await expect(
+            OneSignal.Notifications.requestPermission(true),
+          ).rejects.toThrow('OneSignal native module not loaded');
+        });
+      });
+
+      describe('canRequestPermission', () => {
+        test('should check if can request permission', async () => {
+          vi.mocked(
+            mockRNOneSignal.canRequestNotificationPermission,
+          ).mockResolvedValue(true);
+          const result = await OneSignal.Notifications.canRequestPermission();
+          expect(result).toBe(true);
+          expect(
+            mockRNOneSignal.canRequestNotificationPermission,
+          ).toHaveBeenCalled();
+        });
+
+        test('should reject if native module is not loaded', async () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          await expect(
+            OneSignal.Notifications.canRequestPermission(),
+          ).rejects.toThrow('OneSignal native module not loaded');
+        });
+      });
+
+      describe('registerForProvisionalAuthorization', () => {
+        beforeEach(() => {
+          mockPlatform.OS = 'ios';
+        });
+
+        test('should register for provisional authorization on iOS', () => {
+          const handler = vi.fn();
+          OneSignal.Notifications.registerForProvisionalAuthorization(handler);
+
+          expect(
+            mockRNOneSignal.registerForProvisionalAuthorization,
+          ).toHaveBeenCalledWith(handler);
+          expect(helpers.isValidCallback).toHaveBeenCalledWith(handler);
+        });
+
+        test('should not register if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          const handler = vi.fn();
+
+          OneSignal.Notifications.registerForProvisionalAuthorization(handler);
+          expect(
+            mockRNOneSignal.registerForProvisionalAuthorization,
+          ).not.toHaveBeenCalled();
+        });
+
+        test('should log message on Android', () => {
+          mockPlatform.OS = 'android';
+          const handler = vi.fn();
+
+          OneSignal.Notifications.registerForProvisionalAuthorization(handler);
+          expect(console.warn).toHaveBeenCalledWith(
+            'registerForProvisionalAuthorization: this function is not supported on Android',
+          );
+          expect(
+            mockRNOneSignal.registerForProvisionalAuthorization,
+          ).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('permissionNative', () => {
+        test('should get native permission', async () => {
+          vi.mocked(mockRNOneSignal.permissionNative).mockResolvedValue(
+            OSNotificationPermission.Authorized,
+          );
+          const result = await OneSignal.Notifications.permissionNative();
+
+          expect(result).toBe(OSNotificationPermission.Authorized);
+          expect(mockRNOneSignal.permissionNative).toHaveBeenCalled();
+        });
+
+        test('should reject if native module is not loaded', async () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          await expect(
+            OneSignal.Notifications.permissionNative(),
+          ).rejects.toThrow('OneSignal native module not loaded');
+        });
+      });
+
+      describe('addEventListener', () => {
+        test('should add click listener', () => {
+          const listener = vi.fn();
+          OneSignal.Notifications.addEventListener('click', listener);
+
+          expect(
+            mockRNOneSignal.addNotificationClickListener,
+          ).toHaveBeenCalled();
+          expect(addEventManagerListenerSpy).toHaveBeenCalledWith(
+            NOTIFICATION_CLICKED,
+            listener,
+          );
+          expect(helpers.isValidCallback).toHaveBeenCalledWith(listener);
+        });
+
+        test('should add foregroundWillDisplay listener', () => {
+          const listener = vi.fn();
+          OneSignal.Notifications.addEventListener(
+            'foregroundWillDisplay',
+            listener,
+          );
+
+          expect(
+            mockRNOneSignal.addNotificationForegroundLifecycleListener,
+          ).toHaveBeenCalled();
+          expect(addEventManagerListenerSpy).toHaveBeenCalledWith(
+            NOTIFICATION_WILL_DISPLAY,
+            listener,
+          );
+          expect(helpers.isValidCallback).toHaveBeenCalledWith(listener);
+        });
+
+        test('should add permissionChange listener', () => {
+          const listener = vi.fn();
+          OneSignal.Notifications.addEventListener(
+            'permissionChange',
+            listener,
+          );
+
+          expect(mockRNOneSignal.addPermissionObserver).toHaveBeenCalled();
+          expect(addEventManagerListenerSpy).toHaveBeenCalledWith(
+            PERMISSION_CHANGED,
+            listener,
+          );
+          expect(helpers.isValidCallback).toHaveBeenCalledWith(listener);
+        });
+
+        test('should not add listener if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          const listener = vi.fn();
+          OneSignal.Notifications.addEventListener('click', listener);
+          expect(
+            mockRNOneSignal.addNotificationClickListener,
+          ).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('removeEventListener', () => {
+        test('should remove click listener', () => {
+          const listener = vi.fn();
+          OneSignal.Notifications.removeEventListener('click', listener);
+
+          expect(removeEventManagerListenerSpy).toHaveBeenCalledWith(
+            NOTIFICATION_CLICKED,
+            listener,
+          );
+        });
+
+        test('should remove foregroundWillDisplay listener', () => {
+          const listener = vi.fn();
+          OneSignal.Notifications.removeEventListener(
+            'foregroundWillDisplay',
+            listener,
+          );
+
+          expect(removeEventManagerListenerSpy).toHaveBeenCalledWith(
+            NOTIFICATION_WILL_DISPLAY,
+            listener,
+          );
+        });
+
+        test('should remove permissionChange listener', () => {
+          const listener = vi.fn();
+          OneSignal.Notifications.removeEventListener(
+            'permissionChange',
+            listener,
+          );
+
+          expect(removeEventManagerListenerSpy).toHaveBeenCalledWith(
+            PERMISSION_CHANGED,
+            listener,
+          );
+        });
+      });
+
+      describe('clearAll', () => {
+        test('should clear all notifications', () => {
+          OneSignal.Notifications.clearAll();
+          expect(mockRNOneSignal.clearAllNotifications).toHaveBeenCalled();
+        });
+
+        test('should not clear if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.Notifications.clearAll();
+          expect(mockRNOneSignal.clearAllNotifications).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('removeNotification', () => {
+        const NOTIFICATION_ID = 123;
+        beforeEach(() => {
+          mockPlatform.OS = 'android';
+        });
+
+        test('should remove notification on Android', () => {
+          OneSignal.Notifications.removeNotification(NOTIFICATION_ID);
+          expect(mockRNOneSignal.removeNotification).toHaveBeenCalledWith(
+            NOTIFICATION_ID,
+          );
+        });
+
+        test('should not remove if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.Notifications.removeNotification(NOTIFICATION_ID);
+          expect(mockRNOneSignal.removeNotification).not.toHaveBeenCalled();
+        });
+
+        test('should log message on iOS', () => {
+          mockPlatform.OS = 'ios';
+          OneSignal.Notifications.removeNotification(NOTIFICATION_ID);
+          expect(console.warn).toHaveBeenCalled();
+          expect(mockRNOneSignal.removeNotification).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('removeGroupedNotifications', () => {
+        const GROUP_ID = 'group-id';
+
+        beforeEach(() => {
+          mockPlatform.OS = 'android';
+        });
+
+        test('should remove grouped notifications on Android', () => {
+          OneSignal.Notifications.removeGroupedNotifications(GROUP_ID);
+          expect(
+            mockRNOneSignal.removeGroupedNotifications,
+          ).toHaveBeenCalledWith(GROUP_ID);
+        });
+
+        test('should not remove if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.Notifications.removeGroupedNotifications(GROUP_ID);
+
+          expect(
+            mockRNOneSignal.removeGroupedNotifications,
+          ).not.toHaveBeenCalled();
+        });
+
+        test('should log message on iOS', () => {
+          mockPlatform.OS = 'ios';
+          OneSignal.Notifications.removeGroupedNotifications(GROUP_ID);
+
+          expect(console.warn).toHaveBeenCalledWith(
+            'removeGroupedNotifications: this function is not supported on iOS',
+          );
+          expect(
+            mockRNOneSignal.removeGroupedNotifications,
+          ).not.toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('InAppMessages', () => {
+      describe('addEventListener', () => {
+        test('should add click listener', () => {
+          const listener = vi.fn();
+          OneSignal.InAppMessages.addEventListener('click', listener);
+
+          expect(
+            mockRNOneSignal.addInAppMessageClickListener,
+          ).toHaveBeenCalled();
+          expect(addEventManagerListenerSpy).toHaveBeenCalledWith(
+            IN_APP_MESSAGE_CLICKED,
+            listener,
+          );
+          expect(helpers.isValidCallback).toHaveBeenCalledWith(listener);
+        });
+
+        test('should add willDisplay listener', () => {
+          const listener = vi.fn();
+          OneSignal.InAppMessages.addEventListener('willDisplay', listener);
+
+          expect(
+            mockRNOneSignal.addInAppMessagesLifecycleListener,
+          ).toHaveBeenCalled();
+          expect(addEventManagerListenerSpy).toHaveBeenCalledWith(
+            IN_APP_MESSAGE_WILL_DISPLAY,
+            listener,
+          );
+          expect(helpers.isValidCallback).toHaveBeenCalledWith(listener);
+        });
+
+        test('should add didDisplay listener', () => {
+          const listener = vi.fn();
+          OneSignal.InAppMessages.addEventListener('didDisplay', listener);
+
+          expect(
+            mockRNOneSignal.addInAppMessagesLifecycleListener,
+          ).toHaveBeenCalled();
+          expect(addEventManagerListenerSpy).toHaveBeenCalledWith(
+            IN_APP_MESSAGE_DID_DISPLAY,
+            listener,
+          );
+          expect(helpers.isValidCallback).toHaveBeenCalledWith(listener);
+        });
+
+        test('should add willDismiss listener', () => {
+          const listener = vi.fn();
+          OneSignal.InAppMessages.addEventListener('willDismiss', listener);
+
+          expect(
+            mockRNOneSignal.addInAppMessagesLifecycleListener,
+          ).toHaveBeenCalled();
+          expect(addEventManagerListenerSpy).toHaveBeenCalledWith(
+            IN_APP_MESSAGE_WILL_DISMISS,
+            listener,
+          );
+          expect(helpers.isValidCallback).toHaveBeenCalledWith(listener);
+        });
+
+        test('should add didDismiss listener', () => {
+          const listener = vi.fn();
+          OneSignal.InAppMessages.addEventListener('didDismiss', listener);
+
+          expect(
+            mockRNOneSignal.addInAppMessagesLifecycleListener,
+          ).toHaveBeenCalled();
+          expect(addEventManagerListenerSpy).toHaveBeenCalledWith(
+            IN_APP_MESSAGE_DID_DISMISS,
+            listener,
+          );
+          expect(helpers.isValidCallback).toHaveBeenCalledWith(listener);
+        });
+
+        test('should not add listener if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          const listener = vi.fn();
+          OneSignal.InAppMessages.addEventListener('click', listener);
+          expect(
+            mockRNOneSignal.addInAppMessageClickListener,
+          ).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('removeEventListener', () => {
+        test.each([
+          ['click', IN_APP_MESSAGE_CLICKED],
+          ['willDisplay', IN_APP_MESSAGE_WILL_DISPLAY],
+          ['didDisplay', IN_APP_MESSAGE_DID_DISPLAY],
+          ['willDismiss', IN_APP_MESSAGE_WILL_DISMISS],
+          ['didDismiss', IN_APP_MESSAGE_DID_DISMISS],
+        ])('should remove %s listener', (eventName, eventConstant) => {
+          const listener = vi.fn();
+          OneSignal.InAppMessages.removeEventListener(
+            eventName as any,
+            listener,
+          );
+          expect(removeEventManagerListenerSpy).toHaveBeenCalledWith(
+            eventConstant,
+            listener,
+          );
+        });
+      });
+
+      describe('addTrigger', () => {
+        test('should add trigger', () => {
+          OneSignal.InAppMessages.addTrigger('key', 'value');
+          expect(mockRNOneSignal.addTriggers).toHaveBeenCalledWith({
+            key: 'value',
+          });
+        });
+
+        test('should log error but still call native method if key is missing', () => {
+          OneSignal.InAppMessages.addTrigger('', 'value');
+          expect(errorSpy).toHaveBeenCalled();
+          expect(mockRNOneSignal.addTriggers).toHaveBeenCalledWith({
+            '': 'value',
+          });
+        });
+
+        test('should log error but still call native method if value is null', () => {
+          OneSignal.InAppMessages.addTrigger('key', null as unknown as string);
+          expect(errorSpy).toHaveBeenCalled();
+          expect(mockRNOneSignal.addTriggers).toHaveBeenCalledWith({
+            key: null,
+          });
+        });
+
+        test('should not add trigger if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.InAppMessages.addTrigger('key', 'value');
+          expect(mockRNOneSignal.addTriggers).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('addTriggers', () => {
+        test('should add triggers', () => {
+          const triggers = { key1: 'value1', key2: 'value2' };
+          OneSignal.InAppMessages.addTriggers(triggers);
+          expect(mockRNOneSignal.addTriggers).toHaveBeenCalledWith(triggers);
+        });
+
+        test('should log error but still call native method if empty', () => {
+          OneSignal.InAppMessages.addTriggers({});
+          expect(errorSpy).toHaveBeenCalled();
+          expect(mockRNOneSignal.addTriggers).toHaveBeenCalled();
+        });
+
+        test('should not add triggers if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.InAppMessages.addTriggers({ key: 'value' });
+          expect(mockRNOneSignal.addTriggers).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('removeTrigger', () => {
+        test('should remove trigger', () => {
+          OneSignal.InAppMessages.removeTrigger('key');
+          expect(mockRNOneSignal.removeTrigger).toHaveBeenCalledWith('key');
+        });
+
+        test('should not remove trigger if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.InAppMessages.removeTrigger('key');
+          expect(mockRNOneSignal.removeTrigger).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('removeTriggers', () => {
+        test('should remove triggers', () => {
+          const keys = ['key1', 'key2'];
+          OneSignal.InAppMessages.removeTriggers(keys);
+          expect(mockRNOneSignal.removeTriggers).toHaveBeenCalledWith(keys);
+        });
+
+        test('should not remove triggers if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.InAppMessages.removeTriggers(['key']);
+          expect(mockRNOneSignal.removeTriggers).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('clearTriggers', () => {
+        test('should clear triggers', () => {
+          OneSignal.InAppMessages.clearTriggers();
+          expect(mockRNOneSignal.clearTriggers).toHaveBeenCalled();
+        });
+
+        test('should not clear triggers if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.InAppMessages.clearTriggers();
+          expect(mockRNOneSignal.clearTriggers).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('setPaused', () => {
+        test('should set paused', () => {
+          OneSignal.InAppMessages.setPaused(true);
+          expect(mockRNOneSignal.paused).toHaveBeenCalledWith(true);
+        });
+
+        test('should not set paused if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.InAppMessages.setPaused(true);
+          expect(mockRNOneSignal.paused).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('getPaused', () => {
+        test('should get paused status', async () => {
+          vi.mocked(mockRNOneSignal.getPaused).mockResolvedValue(true);
+          const result = await OneSignal.InAppMessages.getPaused();
+          expect(result).toBe(true);
+          expect(mockRNOneSignal.getPaused).toHaveBeenCalled();
+        });
+
+        test('should reject if native module is not loaded', async () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          await expect(OneSignal.InAppMessages.getPaused()).rejects.toThrow(
+            'OneSignal native module not loaded',
+          );
+        });
+      });
+    });
+
+    describe('Location', () => {
+      describe('requestPermission', () => {
+        test('should request location permission', () => {
+          OneSignal.Location.requestPermission();
+          expect(mockRNOneSignal.requestLocationPermission).toHaveBeenCalled();
+        });
+
+        test('should not request permission if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.Location.requestPermission();
+          expect(
+            mockRNOneSignal.requestLocationPermission,
+          ).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('setShared', () => {
+        test('should set location shared', () => {
+          OneSignal.Location.setShared(true);
+          expect(mockRNOneSignal.setLocationShared).toHaveBeenCalledWith(true);
+        });
+
+        test('should not set shared if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.Location.setShared(true);
+          expect(mockRNOneSignal.setLocationShared).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('isShared', () => {
+        test('should check if location is shared', async () => {
+          vi.mocked(mockRNOneSignal.isLocationShared).mockResolvedValue(true);
+          const result = await OneSignal.Location.isShared();
+          expect(result).toBe(true);
+          expect(mockRNOneSignal.isLocationShared).toHaveBeenCalled();
+        });
+
+        test('should reject if native module is not loaded', async () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          await expect(OneSignal.Location.isShared()).rejects.toThrow(
+            'OneSignal native module not loaded',
+          );
+        });
+      });
+    });
+
+    describe('Session', () => {
+      const OUTCOME_NAME = 'outcome-name';
+
+      describe('addOutcome', () => {
+        test('should add outcome', () => {
+          OneSignal.Session.addOutcome(OUTCOME_NAME);
+          expect(mockRNOneSignal.addOutcome).toHaveBeenCalledWith(OUTCOME_NAME);
+        });
+
+        test('should not add outcome if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.Session.addOutcome(OUTCOME_NAME);
+          expect(mockRNOneSignal.addOutcome).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('addUniqueOutcome', () => {
+        test('should add unique outcome', () => {
+          OneSignal.Session.addUniqueOutcome(OUTCOME_NAME);
+          expect(mockRNOneSignal.addUniqueOutcome).toHaveBeenCalledWith(
+            OUTCOME_NAME,
+          );
+        });
+
+        test('should not add unique outcome if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.Session.addUniqueOutcome(OUTCOME_NAME);
+          expect(mockRNOneSignal.addUniqueOutcome).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('addOutcomeWithValue', () => {
+        test('should add outcome with string value', () => {
+          OneSignal.Session.addOutcomeWithValue(OUTCOME_NAME, '100');
+          expect(mockRNOneSignal.addOutcomeWithValue).toHaveBeenCalledWith(
+            OUTCOME_NAME,
+            100,
+          );
+        });
+
+        test('should add outcome with number value', () => {
+          OneSignal.Session.addOutcomeWithValue(OUTCOME_NAME, 100);
+          expect(mockRNOneSignal.addOutcomeWithValue).toHaveBeenCalledWith(
+            OUTCOME_NAME,
+            100,
+          );
+        });
+
+        test('should not add outcome if native module is not loaded', () => {
+          isNativeLoadedSpy.mockReturnValue(false);
+          OneSignal.Session.addOutcomeWithValue(OUTCOME_NAME, 100);
+          expect(mockRNOneSignal.addOutcomeWithValue).not.toHaveBeenCalled();
+        });
+      });
+    });
+  });
+});

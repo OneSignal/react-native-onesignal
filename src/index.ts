@@ -1,7 +1,4 @@
-'use strict';
-
 import { NativeModules, Platform } from 'react-native';
-import EventManager from './events/EventManager';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -13,7 +10,9 @@ import {
   PERMISSION_CHANGED,
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
-} from './events/events';
+} from './constants/events';
+import type { OSNotificationPermission } from './constants/subscription';
+import EventManager from './events/EventManager';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import { isNativeModuleLoaded, isValidCallback } from './helpers';
 import type {
@@ -25,19 +24,18 @@ import type {
   InAppMessageEventTypeMap,
   InAppMessageWillDismissEvent,
   InAppMessageWillDisplayEvent,
-} from './models/InAppMessage';
-import type { LiveActivitySetupOptions } from './models/LiveActivities';
+} from './types/inAppMessage';
+import type { LiveActivitySetupOptions } from './types/liveActivities';
 import type {
   NotificationClickEvent,
   NotificationEventName,
   NotificationEventTypeMap,
-} from './models/NotificationEvents';
-import {
-  OSNotificationPermission,
-  type PushSubscriptionChangedState,
-  type PushSubscriptionState,
-} from './models/Subscription';
-import type { UserChangedState, UserState } from './models/User';
+} from './types/notificationEvents';
+import type {
+  PushSubscriptionChangedState,
+  PushSubscriptionState,
+} from './types/subscription';
+import type { UserChangedState, UserState } from './types/user';
 
 const RNOneSignal = NativeModules.OneSignal;
 const eventManager = new EventManager(RNOneSignal);
@@ -371,7 +369,7 @@ export namespace OneSignal {
           'OneSignal: This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
         );
 
-        return pushSub.optedIn;
+        return pushSub.optedIn ?? false;
       }
 
       /**
@@ -668,7 +666,7 @@ export namespace OneSignal {
         isValidCallback(handler);
         RNOneSignal.registerForProvisionalAuthorization(handler);
       } else {
-        console.log(
+        console.warn(
           'registerForProvisionalAuthorization: this function is not supported on Android',
         );
       }
@@ -757,7 +755,7 @@ export namespace OneSignal {
       if (Platform.OS === 'android') {
         RNOneSignal.removeNotification(id);
       } else {
-        console.log(
+        console.warn(
           'removeNotification: this function is not supported on iOS',
         );
       }
@@ -774,7 +772,7 @@ export namespace OneSignal {
       if (Platform.OS === 'android') {
         RNOneSignal.removeGroupedNotifications(id);
       } else {
-        console.log(
+        console.warn(
           'removeGroupedNotifications: this function is not supported on iOS',
         );
       }
@@ -1000,9 +998,9 @@ export namespace OneSignal {
   }
 }
 
+export { OSNotificationPermission } from './constants/subscription';
 export {
   NotificationWillDisplayEvent,
-  OSNotificationPermission,
   type InAppMessage,
   type InAppMessageClickEvent,
   type InAppMessageDidDismissEvent,
@@ -1016,6 +1014,6 @@ export {
   type UserState,
 };
 
-export type { InAppMessageClickResult } from './models/InAppMessage';
-export type { NotificationClickResult } from './models/NotificationEvents';
 export { default as OSNotification } from './OSNotification';
+export type { InAppMessageClickResult } from './types/inAppMessage';
+export type { NotificationClickResult } from './types/notificationEvents';
