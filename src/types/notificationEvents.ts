@@ -1,16 +1,18 @@
 import OSNotification from '../OSNotification';
-import NotificationWillDisplayEvent from '../events/NotificationWillDisplayEvent';
+import type { EventListenerMap } from '../events/EventManager';
 
 export type NotificationEventName =
   | 'click'
   | 'foregroundWillDisplay'
   | 'permissionChange';
 
-export type NotificationEventTypeMap = {
-  click: NotificationClickEvent;
-  foregroundWillDisplay: NotificationWillDisplayEvent;
-  permissionChange: boolean;
-};
+export type NotificationListeners =
+  | ['click', EventListenerMap['OneSignal-notificationClicked']]
+  | [
+      'foregroundWillDisplay',
+      EventListenerMap['OneSignal-notificationWillDisplayInForeground'],
+    ]
+  | ['permissionChange', EventListenerMap['OneSignal-permissionChanged']];
 
 export interface NotificationClickEvent {
   result: NotificationClickResult;

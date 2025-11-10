@@ -12,7 +12,7 @@ import {
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
 } from './constants/events';
-import EventManager from './events/EventManager';
+import EventManager, { type EventListenerMap } from './events/EventManager';
 import * as helpers from './helpers';
 import { LogLevel, OneSignal, OSNotificationPermission } from './index';
 
@@ -37,6 +37,14 @@ const removeEventManagerListenerSpy = vi.spyOn(
   EventManager.prototype,
   'removeEventListener',
 );
+
+const filterEventListener = <K extends keyof EventListenerMap>(
+  eventName: K,
+): EventListenerMap[K] => {
+  return addEventManagerListenerSpy.mock.calls.filter(
+    (call) => call[0] === eventName,
+  )[0][1] as EventListenerMap[K];
+};
 
 describe('OneSignal', () => {
   beforeEach(() => {
@@ -64,6 +72,37 @@ describe('OneSignal', () => {
     test('should initialize OneSignal with appId', () => {
       OneSignal.initialize(APP_ID);
       expect(mockRNOneSignal.initialize).toHaveBeenCalledWith(APP_ID);
+
+      // test permission change listener
+      const changeFn = filterEventListener(PERMISSION_CHANGED);
+      changeFn(true);
+      const permission = OneSignal.Notifications.hasPermission();
+      expect(permission).toBe(true);
+
+      // test push subscription change listener
+      const pushData = {
+        previous: {
+          id: '',
+          token: '',
+          optedIn: false,
+        },
+        current: {
+          id: 'subscription-id',
+          token: 'push-token',
+          optedIn: true,
+        },
+      };
+      const subscriptionChangeFn = filterEventListener(SUBSCRIPTION_CHANGED);
+      subscriptionChangeFn(pushData);
+      const pushSubscription =
+        OneSignal.User.pushSubscription.getPushSubscriptionId();
+      expect(pushSubscription).toBe('subscription-id');
+
+      // reset push subscription
+      subscriptionChangeFn({
+        ...pushData,
+        current: { id: '', token: '', optedIn: false },
+      });
     });
 
     test('should not initialize if native module is not loaded', () => {
