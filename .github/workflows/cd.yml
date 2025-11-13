@@ -1,3 +1,4 @@
+# Filename (cd.yml) should match the workflow filename in Trusted Publisher setting on npmjs
 name: Publish to NPM & Github
 on:
   pull_request:
