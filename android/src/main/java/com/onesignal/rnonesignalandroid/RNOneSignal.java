@@ -515,6 +515,102 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
+    public void waitForPushSubscriptionIdAsync(final int timeoutMs, final Promise promise) {
+        IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
+        String currentId = pushSubscription.getId();
+
+        // If ID already exists, resolve immediately
+        if (currentId != null && !currentId.isEmpty()) {
+            promise.resolve(currentId);
+            return;
+        }
+
+        // Create a one-time observer
+        final IPushSubscriptionObserver observer = new IPushSubscriptionObserver() {
+            private boolean isResolved = false;
+            private final android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+            private Runnable timeoutRunnable;
+
+            {
+                // Set up timeout
+                timeoutRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!isResolved) {
+                            isResolved = true;
+                            OneSignal.getUser().getPushSubscription().removeObserver(this);
+                            promise.resolve(null);
+                        }
+                    }
+                };
+                handler.postDelayed(timeoutRunnable, timeoutMs);
+            }
+
+            @Override
+            public void onPushSubscriptionChange(PushSubscriptionChangedState state) {
+                String newId = state.getCurrent().getId();
+                if (newId != null && !newId.isEmpty() && !isResolved) {
+                    isResolved = true;
+                    handler.removeCallbacks(timeoutRunnable);
+                    OneSignal.getUser().getPushSubscription().removeObserver(this);
+                    promise.resolve(newId);
+                }
+            }
+        };
+
+        // Add the observer
+        pushSubscription.addObserver(observer);
+    }
+
+    @ReactMethod
+    public void waitForPushSubscriptionTokenAsync(final int timeoutMs, final Promise promise) {
+        IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
+        String currentToken = pushSubscription.getToken();
+
+        // If token already exists, resolve immediately
+        if (currentToken != null && !currentToken.isEmpty()) {
+            promise.resolve(currentToken);
+            return;
+        }
+
+        // Create a one-time observer
+        final IPushSubscriptionObserver observer = new IPushSubscriptionObserver() {
+            private boolean isResolved = false;
+            private final android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+            private Runnable timeoutRunnable;
+
+            {
+                // Set up timeout
+                timeoutRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!isResolved) {
+                            isResolved = true;
+                            OneSignal.getUser().getPushSubscription().removeObserver(this);
+                            promise.resolve(null);
+                        }
+                    }
+                };
+                handler.postDelayed(timeoutRunnable, timeoutMs);
+            }
+
+            @Override
+            public void onPushSubscriptionChange(PushSubscriptionChangedState state) {
+                String newToken = state.getCurrent().getToken();
+                if (newToken != null && !newToken.isEmpty() && !isResolved) {
+                    isResolved = true;
+                    handler.removeCallbacks(timeoutRunnable);
+                    OneSignal.getUser().getPushSubscription().removeObserver(this);
+                    promise.resolve(newToken);
+                }
+            }
+        };
+
+        // Add the observer
+        pushSubscription.addObserver(observer);
+    }
+
+    @ReactMethod
     public void getOptedIn(Promise promise) {
         IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
         promise.resolve(pushSubscription.getOptedIn());
