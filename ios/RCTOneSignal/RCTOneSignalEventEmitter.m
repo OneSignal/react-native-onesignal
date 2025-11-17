@@ -79,7 +79,7 @@ RCT_EXPORT_MODULE(RCTOneSignal)
     } else if (error.userInfo[@"returned"]) {
         return @[error.userInfo[@"returned"]];
     }
-    
+
     return @[error.localizedDescription];
 }
 
@@ -112,7 +112,7 @@ RCT_EXPORT_METHOD(logout) {
     [OneSignal logout];
 }
 
-RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId 
+RCT_EXPORT_METHOD(enterLiveActivity:(NSString *)activityId
                   withToken:(NSString *)token
                   withResponse:(RCTResponseSenderBlock)callback) {
     [OneSignal.LiveActivities enter:activityId withToken:token withSuccess:^(NSDictionary *result) {
@@ -131,7 +131,7 @@ RCT_EXPORT_METHOD(exitLiveActivity:(NSString *)activityId
     }];
 }
 
-RCT_EXPORT_METHOD(setPushToStartToken:(NSString *)activityType 
+RCT_EXPORT_METHOD(setPushToStartToken:(NSString *)activityType
                   withToken:(NSString *)token) {
     #if !TARGET_OS_MACCATALYST
     NSError* err=nil;
@@ -209,7 +209,7 @@ RCT_EXPORT_METHOD(setAlertLevel:(int)logLevel) {
 }
 
 // OneSignal.InAppMessages namespace methods
-RCT_REMAP_METHOD(getPaused, 
+RCT_REMAP_METHOD(getPaused,
                  getPausedResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@([OneSignal.InAppMessages paused]));
@@ -269,13 +269,13 @@ RCT_EXPORT_METHOD(requestLocationPermission) {
 }
 
 // OneSignal.Notifications namespace methods
-RCT_REMAP_METHOD(hasNotificationPermission, 
+RCT_REMAP_METHOD(hasNotificationPermission,
                  hasNotificationPermissionResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@([OneSignal.Notifications permission]));
 }
 
-RCT_REMAP_METHOD(canRequestNotificationPermission, 
+RCT_REMAP_METHOD(canRequestNotificationPermission,
                  canRequestNotificationPermissionResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@([OneSignal.Notifications canRequestPermission]));
@@ -408,7 +408,7 @@ RCT_EXPORT_METHOD(addSms:(NSString *)smsNumber) {
 }
 
 RCT_EXPORT_METHOD(removeSms:(NSString *)smsNumber) {
-    [OneSignal.User removeSms:smsNumber]; 
+    [OneSignal.User removeSms:smsNumber];
 }
 
 RCT_EXPORT_METHOD(addTag:(NSString *)key value:(id)value) {
@@ -436,7 +436,7 @@ RCT_REMAP_METHOD(getOnesignalId,
                  getOnesignalIdResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     NSString *onesignalId = OneSignal.User.onesignalId;
-    
+
     if (onesignalId == nil || [onesignalId length] == 0) {
         resolve([NSNull null]); // Resolve with null if nil or empty
     } else {
@@ -448,7 +448,7 @@ RCT_REMAP_METHOD(getExternalId,
                  getExternalIdResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     NSString *externalId = OneSignal.User.externalId;
-    
+
     if (externalId == nil || [externalId length] == 0) {
         resolve([NSNull null]); // Resolve with null if nil or empty
     } else {
@@ -474,13 +474,13 @@ RCT_EXPORT_METHOD(removeAliases:(NSArray *)labels) {
 
 
 // OneSignal.User.pushSubscription namespace methods
-RCT_REMAP_METHOD(getOptedIn, 
+RCT_REMAP_METHOD(getOptedIn,
                  getOptedInResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@(OneSignal.User.pushSubscription.optedIn));
 }
 
-RCT_REMAP_METHOD(getPushSubscriptionId, 
+RCT_REMAP_METHOD(getPushSubscriptionId,
                  getPushSubscriptionIdResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     NSString *pushId = OneSignal.User.pushSubscription.id;
@@ -491,7 +491,7 @@ RCT_REMAP_METHOD(getPushSubscriptionId,
     }
 }
 
-RCT_REMAP_METHOD(getPushSubscriptionToken, 
+RCT_REMAP_METHOD(getPushSubscriptionToken,
                  getPushSubscriptionTokenResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     NSString *token = OneSignal.User.pushSubscription.token;
@@ -500,6 +500,78 @@ RCT_REMAP_METHOD(getPushSubscriptionToken,
     } else {
         resolve([NSNull null]);
     }
+}
+
+RCT_REMAP_METHOD(waitForPushSubscriptionIdAsync,
+                 waitForPushSubscriptionIdWithTimeoutMs:(nonnull NSNumber *)timeoutMs
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    NSString *currentId = OneSignal.User.pushSubscription.id;
+
+    // If ID already exists, resolve immediately
+    if (currentId && ![currentId isEqualToString:@""]) {
+        resolve(currentId);
+        return;
+    }
+
+    __block BOOL isResolved = NO;
+    __block id<NSObject> observer = nil;
+
+    // Create observer
+    observer = [OneSignal.User.pushSubscription addObserver:^(OSPushSubscriptionChangedState * _Nonnull state) {
+        NSString *newId = state.current.id;
+        if (newId && ![newId isEqualToString:@""] && !isResolved) {
+            isResolved = YES;
+            [OneSignal.User.pushSubscription removeObserver:observer];
+            resolve(newId);
+        }
+    }];
+
+    // Set up timeout
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([timeoutMs integerValue] * NSEC_PER_MSEC)),
+                   dispatch_get_main_queue(), ^{
+        if (!isResolved) {
+            isResolved = YES;
+            [OneSignal.User.pushSubscription removeObserver:observer];
+            resolve([NSNull null]);
+        }
+    });
+}
+
+RCT_REMAP_METHOD(waitForPushSubscriptionTokenAsync,
+                 waitForPushSubscriptionTokenWithTimeoutMs:(nonnull NSNumber *)timeoutMs
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    NSString *currentToken = OneSignal.User.pushSubscription.token;
+
+    // If token already exists, resolve immediately
+    if (currentToken && ![currentToken isEqualToString:@""]) {
+        resolve(currentToken);
+        return;
+    }
+
+    __block BOOL isResolved = NO;
+    __block id<NSObject> observer = nil;
+
+    // Create observer
+    observer = [OneSignal.User.pushSubscription addObserver:^(OSPushSubscriptionChangedState * _Nonnull state) {
+        NSString *newToken = state.current.token;
+        if (newToken && ![newToken isEqualToString:@""] && !isResolved) {
+            isResolved = YES;
+            [OneSignal.User.pushSubscription removeObserver:observer];
+            resolve(newToken);
+        }
+    }];
+
+    // Set up timeout
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([timeoutMs integerValue] * NSEC_PER_MSEC)),
+                   dispatch_get_main_queue(), ^{
+        if (!isResolved) {
+            isResolved = YES;
+            [OneSignal.User.pushSubscription removeObserver:observer];
+            resolve([NSNull null]);
+        }
+    });
 }
 
 RCT_EXPORT_METHOD(optIn) {
