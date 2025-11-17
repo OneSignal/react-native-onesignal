@@ -454,6 +454,48 @@ describe('OneSignal', () => {
           OneSignal.User.pushSubscription.getIdAsync(),
         ).rejects.toThrow('OneSignal native module not loaded');
       });
+
+      test('should wait for subscription id using native method', async () => {
+        // Mock the native wait method to resolve with ID after delay
+        mockRNOneSignal.waitForPushSubscriptionIdAsync.mockResolvedValue(
+          PUSH_ID,
+        );
+
+        const result = await OneSignal.User.pushSubscription.getIdAsync({
+          timeout: 5000,
+        });
+
+        expect(result).toBe(PUSH_ID);
+        expect(
+          mockRNOneSignal.waitForPushSubscriptionIdAsync,
+        ).toHaveBeenCalledWith(5000);
+      });
+
+      test('should return null if id not available after timeout', async () => {
+        mockRNOneSignal.waitForPushSubscriptionIdAsync.mockResolvedValue(null);
+
+        const result = await OneSignal.User.pushSubscription.getIdAsync({
+          timeout: 1000,
+        });
+
+        expect(result).toBeNull();
+        expect(
+          mockRNOneSignal.waitForPushSubscriptionIdAsync,
+        ).toHaveBeenCalledWith(1000);
+      });
+
+      test('should use default timeout if not specified', async () => {
+        mockRNOneSignal.waitForPushSubscriptionIdAsync.mockResolvedValue(
+          PUSH_ID,
+        );
+
+        const result = await OneSignal.User.pushSubscription.getIdAsync();
+
+        expect(result).toBe(PUSH_ID);
+        expect(
+          mockRNOneSignal.waitForPushSubscriptionIdAsync,
+        ).toHaveBeenCalledWith(5000); // Default timeout
+      });
     });
 
     describe('getPushSubscriptionToken (deprecated)', () => {
@@ -501,6 +543,50 @@ describe('OneSignal', () => {
         await expect(
           OneSignal.User.pushSubscription.getTokenAsync(),
         ).rejects.toThrow('OneSignal native module not loaded');
+      });
+
+      test('should wait for subscription token using native method', async () => {
+        // Mock the native wait method to resolve with token
+        vi.mocked(
+          mockRNOneSignal.waitForPushSubscriptionTokenAsync,
+        ).mockResolvedValue(PUSH_TOKEN);
+
+        const result = await OneSignal.User.pushSubscription.getTokenAsync({
+          timeout: 5000,
+        });
+
+        expect(result).toBe(PUSH_TOKEN);
+        expect(
+          mockRNOneSignal.waitForPushSubscriptionTokenAsync,
+        ).toHaveBeenCalledWith(5000);
+      });
+
+      test('should return null if token not available after timeout', async () => {
+        vi.mocked(
+          mockRNOneSignal.waitForPushSubscriptionTokenAsync,
+        ).mockResolvedValue(null);
+
+        const result = await OneSignal.User.pushSubscription.getTokenAsync({
+          timeout: 1000,
+        });
+
+        expect(result).toBeNull();
+        expect(
+          mockRNOneSignal.waitForPushSubscriptionTokenAsync,
+        ).toHaveBeenCalledWith(1000);
+      });
+
+      test('should use default timeout if not specified', async () => {
+        vi.mocked(
+          mockRNOneSignal.waitForPushSubscriptionTokenAsync,
+        ).mockResolvedValue(PUSH_TOKEN);
+
+        const result = await OneSignal.User.pushSubscription.getTokenAsync();
+
+        expect(result).toBe(PUSH_TOKEN);
+        expect(
+          mockRNOneSignal.waitForPushSubscriptionTokenAsync,
+        ).toHaveBeenCalledWith(5000); // Default timeout
       });
     });
 
