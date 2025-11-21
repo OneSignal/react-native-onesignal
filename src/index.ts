@@ -313,14 +313,37 @@ export namespace OneSignal {
         return pushSub.id ? pushSub.id : '';
       }
 
-      export async function getIdAsync(): Promise<string | null> {
+      /**
+       * Gets the push subscription ID, waiting for it to be available if necessary.
+       *
+       * This method addresses a race condition where the subscription ID may not be
+       * immediately available after permission is granted. It uses native event
+       * listeners to wait for the ID to be generated, with a configurable timeout.
+       *
+       * @param options - Optional configuration
+       * @param options.timeout - Maximum time to wait in milliseconds (default: 5000)
+       * @returns The subscription ID, or null if not available after timeout
+       */
+      export async function getIdAsync(options?: {
+        timeout?: number;
+      }): Promise<string | null> {
         if (!isNativeModuleLoaded(RNOneSignal)) {
           return Promise.reject(
             new Error('OneSignal native module not loaded'),
           );
         }
 
-        return await RNOneSignal.getPushSubscriptionId();
+        const timeout = options?.timeout ?? 5000;
+
+        // Use the native wait method which listens for subscription events
+        const id = await RNOneSignal.waitForPushSubscriptionIdAsync(timeout);
+
+        // Update cached state if we got an ID
+        if (id) {
+          pushSub.id = id;
+        }
+
+        return id;
       }
 
       /**
@@ -337,15 +360,39 @@ export namespace OneSignal {
         return pushSub.token ? pushSub.token : '';
       }
 
-      /** The readonly push subscription token */
-      export async function getTokenAsync(): Promise<string | null> {
+      /**
+       * Gets the push subscription token, waiting for it to be available if necessary.
+       *
+       * This method addresses a race condition where the subscription token may not be
+       * immediately available after permission is granted. It uses native event
+       * listeners to wait for the token to be generated, with a configurable timeout.
+       *
+       * @param options - Optional configuration
+       * @param options.timeout - Maximum time to wait in milliseconds (default: 5000)
+       * @returns The subscription token, or null if not available after timeout
+       */
+      export async function getTokenAsync(options?: {
+        timeout?: number;
+      }): Promise<string | null> {
         if (!isNativeModuleLoaded(RNOneSignal)) {
           return Promise.reject(
             new Error('OneSignal native module not loaded'),
           );
         }
 
-        return await RNOneSignal.getPushSubscriptionToken();
+        const timeout = options?.timeout ?? 5000;
+
+        // Use the native wait method which listens for subscription events
+        const token = await RNOneSignal.waitForPushSubscriptionTokenAsync(
+          timeout,
+        );
+
+        // Update cached state if we got a token
+        if (token) {
+          pushSub.token = token;
+        }
+
+        return token;
       }
 
       /**
