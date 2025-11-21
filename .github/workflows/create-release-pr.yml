@@ -3,6 +3,10 @@ name: Create Release PR
 on:
   # For making a release pr from android / ios sdk actions
   workflow_call:
+    secrets:
+      GH_PUSH_TOKEN:
+        required: false
+        description: 'GitHub token for pushing changes'
     inputs:
       rn_version:
         description: 'New React Native Version (e.g., 5.2.15 or 5.2.15-beta.1)'
@@ -22,7 +26,7 @@ on:
         type: string
         default: main
 
-  # For making a release pr from cordova github actions
+  # For making a release pr from the github actions
   workflow_dispatch:
     inputs:
       rn_version:
@@ -46,11 +50,16 @@ on:
 jobs:
   prep:
     uses: OneSignal/sdk-actions/.github/workflows/prep-release.yml@main
+    secrets:
+      # Need this cross-repo token (sdk-actions & this repo) to perform changes
+
+      GH_PUSH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
     with:
+      target_repo: OneSignal/react-native-onesignal
       version: ${{ inputs.rn_version }}
 
   # React Native specific steps
-  update-version:
+  update_version:
     needs: prep
     runs-on: macos-latest
     outputs:
@@ -62,7 +71,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
+          # Need repository otherwise caller would set github.repository to the caller itself (e.g. sdk-actions)
+          repository: OneSignal/react-native-onesignal
           ref: ${{ needs.prep.outputs.release_branch }}
+          token: ${{ secrets.GH_PUSH_TOKEN || github.token }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -79,7 +91,7 @@ jobs:
       - name: Get current native SDK versions
         id: current_versions
         run: |
-          # Current cordova version
+          # Current React Native version
           CURRENT_VERSION=$(jq -r .version package.json)
 
           # Extract current Android SDK version
@@ -147,12 +159,17 @@ jobs:
           git push
 
   create-pr:
-    needs: [prep, update-version]
+    needs: [prep, update_version]
     uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
+    secrets:
+      # Need this cross-repo token (sdk-actions & this repo) to perform changes
+      GH_PUSH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
     with:
+      # Need target_repo otherwise caller would set github.repository to the caller itself (e.g. sdk-actions)
+      target_repo: OneSignal/react-native-onesignal
       release_branch: ${{ needs.prep.outputs.release_branch }}
       target_branch: ${{ inputs.target_branch }}
-      android_from: ${{ needs.update-version.outputs.android_from }}
+      android_from: ${{ needs.update_version.outputs.android_from }}
       android_to: ${{ inputs.android_version }}
-      ios_from: ${{ needs.update-version.outputs.ios_from }}
+      ios_from: ${{ needs.update_version.outputs.ios_from }}
       ios_to: ${{ inputs.ios_version }}
