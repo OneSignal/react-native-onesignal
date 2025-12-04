@@ -76,6 +76,9 @@ jobs:
           ref: ${{ needs.prep.outputs.release_branch }}
           token: ${{ secrets.GH_PUSH_TOKEN || github.token }}
 
+      - name: Setup Git User
+        uses: OneSignal/sdk-actions/.github/actions/setup-git-user@main
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -153,8 +156,6 @@ jobs:
       - name: Update sdk version
         run: |
           NEW_VERSION="${{ inputs.rn_version }}"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Update package.json version
           bun pm pkg set version="$NEW_VERSION"
