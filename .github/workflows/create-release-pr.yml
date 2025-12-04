@@ -122,7 +122,11 @@ jobs:
           # Update Android SDK version in build.gradle
           sed -i '' "s/api 'com.onesignal:OneSignal:[^']*'/api 'com.onesignal:OneSignal:$VERSION'/" android/build.gradle
           echo "✓ Updated android/build.gradle with Android SDK ${VERSION}"
-          git add .
+
+          # Only commit if there are changes
+          git add -A
+          git diff --staged --quiet && exit 0
+          git commit -m "Update Android SDK to ${VERSION}" && git push
 
       - name: Update iOS SDK version
         if: inputs.ios_version != ''
@@ -141,6 +145,11 @@ jobs:
           sed -i '' "s/s\.dependency 'OneSignalXCFramework', '[^']*'/s.dependency 'OneSignalXCFramework', '$VERSION'/" react-native-onesignal.podspec
           echo "✓ Updated react-native-onesignal.podspec with iOS SDK ${VERSION}"
 
+          # Only commit if there are changes
+          git add -A
+          git diff --staged --quiet && exit 0
+          git commit -m "Update iOS SDK to ${VERSION}" && git push
+
       - name: Update sdk version
         run: |
           NEW_VERSION="${{ inputs.rn_version }}"
@@ -154,9 +163,10 @@ jobs:
           cd examples/RNOneSignalTS/ios
           pod update OneSignalXCFramework
 
+          # Only commit if there are changes
           git add -A
-          git commit -m "Release $NEW_VERSION"
-          git push
+          git diff --staged --quiet && exit 0
+          git commit -m "Release $NEW_VERSION" && git push
 
   create-pr:
     needs: [prep, update_version]
