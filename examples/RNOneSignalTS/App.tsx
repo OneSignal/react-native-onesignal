@@ -23,7 +23,7 @@ function App() {
 function AppContent() {
   return (
     <View style={styles.container}>
-      <OSDemo name="OneSignal" />
+      <OSDemo />
     </View>
   );
 }

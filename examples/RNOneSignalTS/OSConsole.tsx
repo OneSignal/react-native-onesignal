@@ -8,7 +8,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import {
   Platform,
   SafeAreaView,
@@ -22,44 +22,34 @@ export interface Props {
   value: string;
 }
 
-export interface State {}
+const OSConsole: React.FC<Props> = ({ value }) => {
+  const scrollViewRef = useRef<ScrollView>(null);
 
-class OSConsole extends React.Component<Props, State> {
-  private scrollView: ScrollView | null = null;
+  const scrollToEnd = useCallback(() => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, []);
 
-  constructor(props: Props) {
-    super(props);
-  }
-
-  scrollToEnd = () => {
-    this.scrollView?.scrollToEnd({ animated: true });
-  };
-
-  render() {
-    return (
-      <SafeAreaView style={styles.body}>
-        <ScrollView
-          nestedScrollEnabled={true}
-          style={styles.scrollView}
-          ref={(scrollView) => {
-            this.scrollView = scrollView;
-          }}
-          onContentSizeChange={() => this.scrollToEnd()}
-        >
-          <View style={styles.console}>
-            <Text
-              style={
-                Platform.OS === 'android' ? styles.textAndroid : styles.textIOS
-              }
-            >
-              {this.props.value}
-            </Text>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
-}
+  return (
+    <SafeAreaView style={styles.body}>
+      <ScrollView
+        nestedScrollEnabled={true}
+        style={styles.scrollView}
+        ref={scrollViewRef}
+        onContentSizeChange={scrollToEnd}
+      >
+        <View style={styles.console}>
+          <Text
+            style={
+              Platform.OS === 'android' ? styles.textAndroid : styles.textIOS
+            }
+          >
+            {value}
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   scrollView: {
