@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "setup": "./setup.sh",
+    "preandroid": "bun run setup",
+    "preios": "bun run setup",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start"
