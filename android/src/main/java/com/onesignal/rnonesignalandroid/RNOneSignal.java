@@ -165,6 +165,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     };
 
     private void removeObservers() {
+        if(!oneSignalInitDone) {
+            Logging.debug("OneSignal React-Native SDK not initialized yet. Could not remove observers.", null);
+            return;
+        }
+
         this.removePermissionObserver();
         this.removePushSubscriptionObserver();
         this.removeUserStateObserver();
@@ -208,8 +213,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @Override
     public void onHostDestroy() {
-        removeHandlers();
-        removeObservers();
+        try {
+            removeHandlers();
+            removeObservers();
+        } catch (Exception e) {
+            Logging.debug("OneSignal SDK not fully initialized. Could not remove handlers/observers: " + e.getMessage(), null);
+        }
     }
 
     @Override
@@ -220,8 +229,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @Override
     public void onCatalystInstanceDestroy() {
-        removeHandlers();
-        removeObservers();
+        try {
+            removeHandlers();
+            removeObservers();
+        } catch (Exception e) {
+            Logging.debug("OneSignal SDK not fully initialized. Could not remove handlers/observers: " + e.getMessage(), null);
+        }
     }
 
     // OneSignal namespace methods
@@ -236,8 +249,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
             return;
         }
 
-        oneSignalInitDone = true;
-
         if (context == null) {
             // in some cases, especially when react-native-navigation is installed,
             // the activity can be null, so we can initialize with the context instead
@@ -245,6 +256,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         }
 
         OneSignal.initWithContext(context, appId);
+        oneSignalInitDone = true;
     }
 
     @ReactMethod
