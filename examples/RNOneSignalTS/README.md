@@ -4,8 +4,7 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
 
 > **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
 
-Also make sure to run the link command in root:
-`bun link`
+Run `bun run setup` to package the bundle and use it for the example.
 
 ## Step 1: Start Metro
 
