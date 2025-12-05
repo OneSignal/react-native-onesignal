@@ -40,6 +40,8 @@ const mockRNOneSignal = {
   addPushSubscriptionObserver: vi.fn(),
   getPushSubscriptionId: vi.fn(),
   getPushSubscriptionToken: vi.fn(),
+  waitForPushSubscriptionIdAsync: vi.fn(),
+  waitForPushSubscriptionTokenAsync: vi.fn(),
   getOptedIn: vi.fn(),
   optOut: vi.fn(),
   optIn: vi.fn(),
