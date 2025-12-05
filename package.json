@@ -6,9 +6,7 @@
     "dist",
     "android",
     "ios",
-    "react-native-onesignal.podspec",
-    "README.md",
-    "LICENSE"
+    "react-native-onesignal.podspec"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
