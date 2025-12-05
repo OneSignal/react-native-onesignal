@@ -7,10 +7,11 @@ yarn-error.log
 # jest
 coverage/
 
-# tsc
+# tsc / build
 #
 dist
 android/build
+*.tgz
 
 # OSX
 #
