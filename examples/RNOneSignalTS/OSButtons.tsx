@@ -1,18 +1,16 @@
-import * as React from 'react';
+import React from 'react';
 import { Text, View } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
 import { renderButtonView } from './Helpers';
 // Remove: import {Text, Divider} from '@react-native-material/core';
 
 export interface Props {
-  loggingFunction: Function;
+  loggingFunction: (message: string, optionalArg?: unknown) => void;
   inputFieldValue: string;
 }
 
-class OSButtons extends React.Component<Props> {
-  createInAppMessagesFields() {
-    const { loggingFunction } = this.props;
-
+const OSButtons: React.FC<Props> = ({ loggingFunction, inputFieldValue }) => {
+  const createInAppMessagesFields = () => {
     const getPausedButton = renderButtonView('Get paused', async () => {
       const paused = await OneSignal.InAppMessages.getPaused();
       loggingFunction(`Is IAM Paused: ${paused}`);
@@ -31,7 +29,7 @@ class OSButtons extends React.Component<Props> {
     const removeTriggerButton = renderButtonView(
       'Remove trigger for key',
       () => {
-        const key = this.props.inputFieldValue;
+        const key = inputFieldValue;
         loggingFunction('Removing trigger for key: ', key);
         OneSignal.InAppMessages.removeTrigger(key);
       },
@@ -40,7 +38,7 @@ class OSButtons extends React.Component<Props> {
     const addTriggerButton = renderButtonView(
       'Add trigger with key my_trigger',
       () => {
-        const triggerValue = this.props.inputFieldValue;
+        const triggerValue = inputFieldValue;
         loggingFunction(
           `Adding trigger with key 'my_trigger' and value ${triggerValue}`,
         );
@@ -90,10 +88,9 @@ class OSButtons extends React.Component<Props> {
       removeTriggersButton,
       clearAllTriggersButton,
     ];
-  }
+  };
 
-  createLocationFields() {
-    const { loggingFunction } = this.props;
+  const createLocationFields = () => {
     const locationShared = renderButtonView('Is Location Shared', async () => {
       const isLocationShared = await OneSignal.Location.isShared();
       loggingFunction(
@@ -125,11 +122,9 @@ class OSButtons extends React.Component<Props> {
       setLocationUnshared,
       requestPermissionButton,
     ];
-  }
+  };
 
-  createNotificationFields() {
-    const { loggingFunction } = this.props;
-
+  const createNotificationFields = () => {
     const hasPermissionButton = renderButtonView(
       'Has Notification Permission',
       async () => {
@@ -178,17 +173,15 @@ class OSButtons extends React.Component<Props> {
       requestPermissionButton,
       clearOneSignalNotificationsButton,
     ];
-  }
+  };
 
-  createLiveActivitiesFields() {
-    const { loggingFunction } = this.props;
-
+  const createLiveActivitiesFields = () => {
     const startDefaultLiveActivity = renderButtonView(
       'Start Default Live Activity',
       async () => {
         loggingFunction('Starting live activity');
         await OneSignal.LiveActivities.startDefault(
-          this.props.inputFieldValue,
+          inputFieldValue,
           { title: 'Welcome!' },
           {
             message: { en: 'Hello World!' },
@@ -208,10 +201,7 @@ class OSButtons extends React.Component<Props> {
       'Enter Live Activity',
       async () => {
         loggingFunction('Entering live activity');
-        await OneSignal.LiveActivities.enter(
-          this.props.inputFieldValue,
-          'FAKE_TOKEN',
-        );
+        await OneSignal.LiveActivities.enter(inputFieldValue, 'FAKE_TOKEN');
       },
     );
 
@@ -219,7 +209,7 @@ class OSButtons extends React.Component<Props> {
       'Exit Live Activity',
       async () => {
         loggingFunction('Exiting live activity');
-        await OneSignal.LiveActivities.exit(this.props.inputFieldValue);
+        await OneSignal.LiveActivities.exit(inputFieldValue);
       },
     );
 
@@ -228,7 +218,7 @@ class OSButtons extends React.Component<Props> {
       async () => {
         loggingFunction('Set pushToStart token');
         await OneSignal.LiveActivities.setPushToStartToken(
-          this.props.inputFieldValue,
+          inputFieldValue,
           'FAKE_TOKEN',
         );
       },
@@ -238,9 +228,7 @@ class OSButtons extends React.Component<Props> {
       'Remove Push-To-Start Live Activity',
       async () => {
         loggingFunction('Remove pushToStart token');
-        await OneSignal.LiveActivities.removePushToStartToken(
-          this.props.inputFieldValue,
-        );
+        await OneSignal.LiveActivities.removePushToStartToken(inputFieldValue);
       },
     );
 
@@ -251,28 +239,26 @@ class OSButtons extends React.Component<Props> {
       setPushToStartLiveActivity,
       removePushToStartLiveActivity,
     ];
-  }
+  };
 
-  createSessionFields() {
-    const { loggingFunction } = this.props;
-
+  const createSessionFields = () => {
     const sendOutcomeButton = renderButtonView('Send Outcome With Name', () => {
-      loggingFunction('Sending outcome: ', this.props.inputFieldValue);
-      OneSignal.Session.addOutcome(this.props.inputFieldValue);
+      loggingFunction('Sending outcome: ', inputFieldValue);
+      OneSignal.Session.addOutcome(inputFieldValue);
     });
 
     const sendUniqueOutcomeButton = renderButtonView(
       'Send Unique Outcome With Name',
       () => {
-        loggingFunction('Sending unique outcome: ', this.props.inputFieldValue);
-        OneSignal.Session.addUniqueOutcome(this.props.inputFieldValue);
+        loggingFunction('Sending unique outcome: ', inputFieldValue);
+        OneSignal.Session.addUniqueOutcome(inputFieldValue);
       },
     );
 
     const sendOutcomeWithValueButton = renderButtonView(
       'Send "my_outcome" with value',
       () => {
-        const value = Number(this.props.inputFieldValue);
+        const value = Number(inputFieldValue);
         loggingFunction(
           'Sending outcome of name "my_outcome" with value: ',
           value,
@@ -291,30 +277,22 @@ class OSButtons extends React.Component<Props> {
       sendUniqueOutcomeButton,
       sendOutcomeWithValueButton,
     ];
-  }
+  };
 
-  createUserFields() {
-    const { loggingFunction } = this.props;
-
+  const createUserFields = () => {
     const addEmailButton = renderButtonView('Add Email', () => {
-      loggingFunction('Attempting to set email: ', this.props.inputFieldValue);
-      OneSignal.User.addEmail(this.props.inputFieldValue);
+      loggingFunction('Attempting to set email: ', inputFieldValue);
+      OneSignal.User.addEmail(inputFieldValue);
     });
 
     const removeEmailButton = renderButtonView('Remove Email', () => {
-      loggingFunction(
-        'Attempting to remove email: ',
-        this.props.inputFieldValue,
-      );
-      OneSignal.User.removeEmail(this.props.inputFieldValue);
+      loggingFunction('Attempting to remove email: ', inputFieldValue);
+      OneSignal.User.removeEmail(inputFieldValue);
     });
 
     const loginButton = renderButtonView('Login', () => {
-      loggingFunction(
-        'Attempting to login a user: ',
-        this.props.inputFieldValue,
-      );
-      OneSignal.login(this.props.inputFieldValue);
+      loggingFunction('Attempting to login a user: ', inputFieldValue);
+      OneSignal.login(inputFieldValue);
     });
 
     const logoutButton = renderButtonView('Logout', () => {
@@ -325,16 +303,16 @@ class OSButtons extends React.Component<Props> {
     const sendTagWithKeyButton = renderButtonView(
       'Send tag with key my_tag',
       async () => {
-        loggingFunction('Sending tag with value: ', this.props.inputFieldValue);
-        OneSignal.User.addTag('my_tag', this.props.inputFieldValue);
+        loggingFunction('Sending tag with value: ', inputFieldValue);
+        OneSignal.User.addTag('my_tag', inputFieldValue);
       },
     );
 
     const deleteTagWithKeyButton = renderButtonView(
       'Delete Tag With Key',
       async () => {
-        loggingFunction('Deleting tag with key: ', this.props.inputFieldValue);
-        OneSignal.User.removeTag(this.props.inputFieldValue);
+        loggingFunction('Deleting tag with key: ', inputFieldValue);
+        OneSignal.User.removeTag(inputFieldValue);
       },
     );
 
@@ -354,35 +332,23 @@ class OSButtons extends React.Component<Props> {
     });
 
     const setLanguageButton = renderButtonView('Set Language', () => {
-      loggingFunction(
-        'Attempting to set language: ',
-        this.props.inputFieldValue,
-      );
-      OneSignal.User.setLanguage(this.props.inputFieldValue);
+      loggingFunction('Attempting to set language: ', inputFieldValue);
+      OneSignal.User.setLanguage(inputFieldValue);
     });
 
     const addSmsButton = renderButtonView('Set SMS Number', () => {
-      loggingFunction(
-        'Attempting to set SMS number: ',
-        this.props.inputFieldValue,
-      );
-      OneSignal.User.addSms(this.props.inputFieldValue);
+      loggingFunction('Attempting to set SMS number: ', inputFieldValue);
+      OneSignal.User.addSms(inputFieldValue);
     });
 
     const removeSmsButton = renderButtonView('Logout SMS Number', () => {
-      loggingFunction(
-        'Attempting to remove SMS number: ',
-        this.props.inputFieldValue,
-      );
-      OneSignal.User.removeSms(this.props.inputFieldValue);
+      loggingFunction('Attempting to remove SMS number: ', inputFieldValue);
+      OneSignal.User.removeSms(inputFieldValue);
     });
 
     const addAliasButton = renderButtonView('Add my_alias with value', () => {
-      loggingFunction(
-        'Adding my_alias alias with value: ',
-        this.props.inputFieldValue,
-      );
-      OneSignal.User.addAlias('my_alias', this.props.inputFieldValue);
+      loggingFunction('Adding my_alias alias with value: ', inputFieldValue);
+      OneSignal.User.addAlias('my_alias', inputFieldValue);
     });
 
     const removeAliasButton = renderButtonView('Remove my_alias', () => {
@@ -450,11 +416,9 @@ class OSButtons extends React.Component<Props> {
       getOnesignalIdButton,
       getExternalIdButton,
     ];
-  }
+  };
 
-  pushSubscriptionFields() {
-    const { loggingFunction } = this.props;
-
+  const pushSubscriptionFields = () => {
     const getPushSubscriptionIdButton = renderButtonView(
       'Get Push Subscription Id',
       async () => {
@@ -493,11 +457,9 @@ class OSButtons extends React.Component<Props> {
       optInButton,
       optOutButton,
     ];
-  }
+  };
 
-  privacyConsentFields() {
-    const { loggingFunction } = this.props;
-
+  const privacyConsentFields = () => {
     const setPrivacyConsentGivenTrueButton = renderButtonView(
       'Set Privacy Consent to true',
       async () => {
@@ -536,88 +498,82 @@ class OSButtons extends React.Component<Props> {
       setPrivacyConsentRequiredTrueButton,
       setPrivacyConsentRequiredFalseButton,
     ];
-  }
+  };
 
-  render() {
-    return (
-      <View>
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>InAppMessages</Text>
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        {this.createInAppMessagesFields()}
+  return (
+    <View>
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>InAppMessages</Text>
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      {createInAppMessagesFields()}
 
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Location</Text>
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        {this.createLocationFields()}
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Location</Text>
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      {createLocationFields()}
 
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Notifications</Text>
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        {this.createNotificationFields()}
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Notifications</Text>
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      {createNotificationFields()}
 
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-          Live Activities
-        </Text>
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        {this.createLiveActivitiesFields()}
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Live Activities</Text>
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      {createLiveActivitiesFields()}
 
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Session</Text>
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        {this.createSessionFields()}
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Session</Text>
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      {createSessionFields()}
 
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>User</Text>
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        {this.createUserFields()}
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>User</Text>
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      {createUserFields()}
 
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-          Push Subscription
-        </Text>
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        {this.pushSubscriptionFields()}
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+        Push Subscription
+      </Text>
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      {pushSubscriptionFields()}
 
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-          Privacy Consent
-        </Text>
-        <View
-          style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
-        />
-        {this.privacyConsentFields()}
-      </View>
-    );
-  }
-}
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Privacy Consent</Text>
+      <View
+        style={{ height: 1, backgroundColor: '#ccc', marginVertical: 10 }}
+      />
+      {privacyConsentFields()}
+    </View>
+  );
+};
 
 export default OSButtons;
