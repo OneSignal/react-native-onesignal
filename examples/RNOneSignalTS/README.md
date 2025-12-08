@@ -13,7 +13,7 @@ First, you will need to run **Metro**, the JavaScript build tool for React Nativ
 To start the Metro dev server, run the following command from the root of your React Native project:
 
 ```sh
-bun i
+bun start
 ```
 
 ## Step 2: Build and run your app
@@ -44,14 +44,9 @@ This is one way to run your app — you can also build it directly from Android 
 
 ## Step 3: Modify your app
 
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+If you modifiy the javascript / typescript files the app should automatically reload otherwise you can press `r` in the terminal.
+If you update the root/package src files you will need to run `bun run setup` to update the local react-native-onesignal package.
+And if you modify things like java or c code, you will need to run `bun run android` or `bun run ios` again.
 
 ## Congratulations! :tada:
 

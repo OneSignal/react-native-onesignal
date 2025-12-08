@@ -10,7 +10,7 @@ mv react-native-onesignal-*.tgz react-native-onesignal.tgz
 
 # Use fresh install of the package
 cd $ORIGINAL_DIR
-rm -rf node_modules/react-native-onesignal
+bun pm cache rm
 bun i
 
 # Reinstall pods to pick up the updated native module
