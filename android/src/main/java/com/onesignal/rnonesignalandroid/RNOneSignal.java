@@ -170,17 +170,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
             return;
         }
 
-        this.removePermissionObserver();
-        this.removePushSubscriptionObserver();
-        this.removeUserStateObserver();
-    }
-
-    private void removeHandlers() {
-        if(!oneSignalInitDone) {
-            Logging.debug("OneSignal React-Native SDK not initialized yet. Could not remove handlers.", null);
-            return;
-        }
-
         OneSignal.getInAppMessages().removeClickListener(rnInAppClickListener);
         hasAddedInAppMessageClickListener = false;
         OneSignal.getInAppMessages().removeLifecycleListener(rnInAppLifecycleListener);
@@ -189,6 +178,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         hasAddedNotificationClickListener = false;
         OneSignal.getNotifications().removeForegroundLifecycleListener(this);
         hasAddedNotificationForegroundListener = false;
+
+        this.removePermissionObserver();
+        this.removePushSubscriptionObserver();
+        this.removeUserStateObserver();
     }
 
     private void sendEvent(String eventName, Object params) {
@@ -213,12 +206,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @Override
     public void onHostDestroy() {
-        try {
-            removeHandlers();
-            removeObservers();
-        } catch (Exception e) {
-            Logging.debug("OneSignal SDK not fully initialized. Could not remove handlers/observers: " + e.getMessage(), null);
-        }
+        removeObservers();
     }
 
     @Override
@@ -229,12 +217,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
 
     @Override
     public void onCatalystInstanceDestroy() {
-        try {
-            removeHandlers();
-            removeObservers();
-        } catch (Exception e) {
-            Logging.debug("OneSignal SDK not fully initialized. Could not remove handlers/observers: " + e.getMessage(), null);
-        }
+        removeObservers();
     }
 
     // OneSignal namespace methods
