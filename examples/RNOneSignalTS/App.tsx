@@ -5,9 +5,27 @@
  * @format
  */
 
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { StatusBar, Text, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import DetailsScreen from './DetailsScreen';
 import OSDemo from './OSDemo';
+
+export type RootTabParamList = {
+  Home: undefined;
+  Details: undefined;
+};
+
+const Tab = createBottomTabNavigator<RootTabParamList>();
+
+function HomeIcon() {
+  return <Text style={{ fontSize: 24 }}>🏠</Text>;
+}
+
+function DetailsIcon() {
+  return <Text style={{ fontSize: 24 }}>ℹ</Text>;
+}
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -15,23 +33,26 @@ function App() {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <NavigationContainer>
+        <Tab.Navigator>
+          <Tab.Screen
+            name="Home"
+            component={OSDemo}
+            options={{
+              tabBarIcon: () => <HomeIcon />,
+            }}
+          />
+          <Tab.Screen
+            name="Details"
+            component={DetailsScreen}
+            options={{
+              tabBarIcon: () => <DetailsIcon />,
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 }
-
-function AppContent() {
-  return (
-    <View style={styles.container}>
-      <OSDemo />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;

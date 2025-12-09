@@ -11,26 +11,29 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "@react-native/new-app-screen": "0.81.4",
-    "react": "19.1.0",
-    "react-native": "0.81.4",
+    "@react-native/new-app-screen": "0.82.1",
+    "@react-navigation/bottom-tabs": "^7.8.12",
+    "@react-navigation/native": "^7.1.25",
+    "react": "19.1.1",
+    "react-native": "0.82.1",
     "react-native-onesignal": "file:../../react-native-onesignal.tgz",
-    "react-native-safe-area-context": "^5.5.2"
+    "react-native-safe-area-context": "^5.6.2",
+    "react-native-screens": "^4.18.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@babel/preset-env": "^7.25.3",
-    "@babel/runtime": "^7.25.0",
-    "@react-native-community/cli": "20.0.0",
-    "@react-native-community/cli-platform-android": "20.0.0",
-    "@react-native-community/cli-platform-ios": "20.0.0",
-    "@react-native/babel-preset": "0.81.4",
-    "@react-native/metro-config": "0.81.4",
-    "@react-native/typescript-config": "0.81.4",
-    "@types/react": "^19.1.0",
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@babel/runtime": "^7.28.4",
+    "@react-native-community/cli": "20.0.2",
+    "@react-native-community/cli-platform-android": "20.0.2",
+    "@react-native-community/cli-platform-ios": "20.0.2",
+    "@react-native/babel-preset": "0.82.1",
+    "@react-native/metro-config": "0.82.1",
+    "@react-native/typescript-config": "0.82.1",
+    "@types/react": "^19.2.7",
     "@types/react-test-renderer": "^19.1.0",
-    "prettier": "2.8.8",
-    "react-test-renderer": "19.1.0",
-    "typescript": "^5.8.3"
+    "prettier": "3.7.4",
+    "react-test-renderer": "19.2.1",
+    "typescript": "^5.9.3"
   }
 }
