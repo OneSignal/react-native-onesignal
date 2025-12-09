@@ -9,6 +9,8 @@ coverage/
 
 # tsc / build
 #
+.gradle
+build
 dist
 android/build
 *.tgz
