@@ -178,22 +178,19 @@ public class RNOneSignal extends ReactContextBaseJavaModule
     }
 
     private void removeHandlers() {
-        if (hasAddedInAppMessageClickListener) {
-            OneSignal.getInAppMessages().removeClickListener(rnInAppClickListener);
-            hasAddedInAppMessageClickListener = false;
+        if (!oneSignalInitDone) {
+            Logging.debug("OneSignal React-Native SDK not initialized yet. Could not remove handlers.", null);
+            return;
         }
-        if (hasAddedInAppMessageLifecycleListener) {
-            OneSignal.getInAppMessages().removeLifecycleListener(rnInAppLifecycleListener);
-            hasAddedInAppMessageLifecycleListener = false;
-        }
-        if (hasAddedNotificationClickListener) {
-            OneSignal.getNotifications().removeClickListener(rnNotificationClickListener);
-            hasAddedNotificationClickListener = false;
-        }
-        if (hasAddedNotificationForegroundListener) {
-            OneSignal.getNotifications().removeForegroundLifecycleListener(this);
-            hasAddedNotificationForegroundListener = false;
-        }
+
+        OneSignal.getInAppMessages().removeClickListener(rnInAppClickListener);
+        hasAddedInAppMessageClickListener = false;
+        OneSignal.getInAppMessages().removeLifecycleListener(rnInAppLifecycleListener);
+        hasAddedInAppMessageLifecycleListener = false;
+        OneSignal.getNotifications().removeClickListener(rnNotificationClickListener);
+        hasAddedNotificationClickListener = false;
+        OneSignal.getNotifications().removeForegroundLifecycleListener(this);
+        hasAddedNotificationForegroundListener = false;
     }
 
     private void sendEvent(String eventName, Object params) {
