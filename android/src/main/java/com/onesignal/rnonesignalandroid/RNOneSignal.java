@@ -180,9 +180,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
         this.removePermissionObserver();
         this.removePushSubscriptionObserver();
         this.removeUserStateObserver();
-    }
 
-    private void removeHandlers() {
         if (hasAddedInAppMessageClickListener) {
             OneSignal.getInAppMessages().removeClickListener(rnInAppClickListener);
             hasAddedInAppMessageClickListener = false;
@@ -217,7 +215,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
         // Clean up previous instance if it exists (handles reload scenario)
         if (currentInstance != null && currentInstance != this) {
-            currentInstance.removeHandlers();
             currentInstance.removeObservers();
         }
         currentInstance = this;
@@ -231,12 +228,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
     @Override
     public void onHostDestroy() {
-        try {
-            removeHandlers();
-            removeObservers();
-        } catch (Exception e) {
-            Logging.debug("OneSignal SDK not fully initialized. Could not remove handlers/observers: " + e.getMessage(), null);
-        }
+        removeObservers();
     }
 
     @Override
@@ -247,12 +239,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
     @Override
     public void onCatalystInstanceDestroy() {
-        try {
-            removeHandlers();
-            removeObservers();
-        } catch (Exception e) {
-            Logging.debug("OneSignal SDK not fully initialized. Could not remove handlers/observers: " + e.getMessage(), null);
-        }
+        removeObservers();
     }
 
     // OneSignal namespace methods
