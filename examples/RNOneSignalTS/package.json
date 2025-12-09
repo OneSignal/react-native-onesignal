@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "setup": "./setup.sh",
+    "preandroid": "bun run setup",
+    "preios": "bun run setup",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start"
@@ -11,7 +14,7 @@
     "@react-native/new-app-screen": "0.81.4",
     "react": "19.1.0",
     "react-native": "0.81.4",
-    "react-native-onesignal": "link:react-native-onesignal",
+    "react-native-onesignal": "file:../../react-native-onesignal.tgz",
     "react-native-safe-area-context": "^5.5.2"
   },
   "devDependencies": {
