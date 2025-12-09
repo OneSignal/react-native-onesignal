@@ -135,16 +135,13 @@ const OSDemo: React.FC = () => {
   );
 
   useEffect(() => {
-    const initializeOneSignal = async () => {
-      OneSignal.initialize(APP_ID);
-      OneSignal.Debug.setLogLevel(LogLevel.None);
+    OneSignal.initialize(APP_ID);
+    OneSignal.Debug.setLogLevel(LogLevel.None);
+  }, []);
 
+  useEffect(() => {
+    const setup = async () => {
       OneSignal.LiveActivities.setupDefault();
-      // OneSignal.LiveActivities.setupDefault({
-      //   enablePushToStart: false,
-      //   enablePushToUpdate: true,
-      // });
-
       OneSignal.Notifications.addEventListener(
         'foregroundWillDisplay',
         onForegroundWillDisplay,
@@ -166,7 +163,7 @@ const OSDemo: React.FC = () => {
       OneSignal.User.addEventListener('change', onUserChange);
     };
 
-    initializeOneSignal();
+    setup();
 
     return () => {
       // Clean up all event listeners

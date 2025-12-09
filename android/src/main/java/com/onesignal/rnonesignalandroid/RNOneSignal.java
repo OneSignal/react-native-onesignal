@@ -96,6 +96,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule
     private boolean hasAddedNotificationClickListener = false;
     private boolean hasAddedInAppMessageClickListener = false;
 
+    // Static reference to track current instance for cleanup on reload
+    private static RNOneSignal currentInstance = null;
+
     private IInAppMessageClickListener rnInAppClickListener = new IInAppMessageClickListener() {
         @Override
         public void onClick(IInAppMessageClickEvent event) {
@@ -203,6 +206,13 @@ public class RNOneSignal extends ReactContextBaseJavaModule
         mReactContext.addLifecycleEventListener(this);
         notificationWillDisplayCache = new HashMap<String, INotificationWillDisplayEvent>();
         preventDefaultCache = new HashMap<String, INotificationWillDisplayEvent>();
+
+        // Clean up previous instance if it exists (handles reload scenario)
+        if (currentInstance != null && currentInstance != this) {
+            currentInstance.removeHandlers();
+            currentInstance.removeObservers();
+        }
+        currentInstance = this;
     }
 
     /** Native Module Overrides */
