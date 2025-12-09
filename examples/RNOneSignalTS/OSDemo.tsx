@@ -2,7 +2,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { LogLevel, OneSignal } from 'react-native-onesignal';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { renderButtonView } from './Helpers';
 import OSButtons from './OSButtons';
 import OSConsole from './OSConsole';
