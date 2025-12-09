@@ -5,19 +5,19 @@
  * @format
  */
 
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import DetailsScreen from './DetailsScreen';
 import OSDemo from './OSDemo';
 
-export type RootStackParamList = {
+export type RootTabParamList = {
   Home: undefined;
   Details: undefined;
 };
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<RootTabParamList>();
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -26,10 +26,10 @@ function App() {
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen name="Home" component={OSDemo} />
-          <Stack.Screen name="Details" component={DetailsScreen} />
-        </Stack.Navigator>
+        <Tab.Navigator>
+          <Tab.Screen name="Home" component={OSDemo} />
+          <Tab.Screen name="Details" component={DetailsScreen} />
+        </Tab.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
   );

@@ -1,11 +1,7 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import type { RootStackParamList } from './App';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Details'>;
-
-const DetailsScreen: React.FC<Props> = ({ navigation }) => {
+const DetailsScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Details Screen</Text>
