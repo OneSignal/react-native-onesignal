@@ -10,7 +10,6 @@
 
 import React, { useCallback, useRef } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export interface Props {
   value: string;
@@ -24,10 +23,11 @@ const OSConsole: React.FC<Props> = ({ value }) => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.body}>
+    <View style={styles.body}>
       <ScrollView
         nestedScrollEnabled={true}
         style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
         ref={scrollViewRef}
         onContentSizeChange={scrollToEnd}
       >
@@ -41,19 +41,21 @@ const OSConsole: React.FC<Props> = ({ value }) => {
           </Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   scrollView: {
+    flex: 1,
     backgroundColor: '#f8f9fa',
   },
-  body: {
-    backgroundColor: 'grey',
-    flex: 1,
+  scrollViewContent: {
     flexGrow: 1,
-    flexDirection: 'row',
+  },
+  body: {
+    backgroundColor: '#f8f9fa',
+    flex: 1,
   },
   console: {
     flexWrap: 'wrap',
@@ -65,11 +67,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'wrap',
     fontSize: 10,
+    color: '#000',
   },
   textAndroid: {
     flex: 1,
     flexWrap: 'wrap',
     fontSize: 10,
+    color: '#000',
   },
 });
 

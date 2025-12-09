@@ -6,11 +6,11 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { LogLevel, OneSignal } from 'react-native-onesignal';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { renderButtonView } from './Helpers';
 import OSButtons from './OSButtons';
 import OSConsole from './OSConsole';
 
@@ -233,14 +233,19 @@ const OSDemo: React.FC = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       <View style={styles.header}>
         <Text style={styles.title}>OneSignal</Text>
         <OSConsole value={consoleValue} />
         <View style={styles.clearButton}>
-          {renderButtonView('X', () => {
-            setConsoleValue('');
-          })}
+          <TouchableOpacity
+            style={styles.clearButtonTouchable}
+            onPress={() => {
+              setConsoleValue('');
+            }}
+          >
+            <Text style={styles.clearButtonText}>X</Text>
+          </TouchableOpacity>
         </View>
         <TextInput
           style={styles.input}
@@ -273,12 +278,30 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 40,
     alignSelf: 'center',
-    paddingVertical: 10,
+    paddingTop: 4,
+    paddingBottom: 10,
   },
   clearButton: {
     position: 'absolute',
-    right: 0,
+    right: 10,
     top: 70,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  clearButtonTouchable: {
+    width: 44,
+    height: 44,
+    backgroundColor: '#007bff',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  clearButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
   },
   input: {
     marginTop: 10,
