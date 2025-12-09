@@ -1,43 +1,34 @@
 package com.onesignal.rnonesignalandroid;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.bridge.WritableNativeMap;
-
 import com.onesignal.inAppMessages.IInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessageClickEvent;
 import com.onesignal.inAppMessages.IInAppMessageClickResult;
-import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
+import com.onesignal.inAppMessages.IInAppMessageDidDismissEvent;
 import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
 import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
-import com.onesignal.inAppMessages.IInAppMessageDidDismissEvent;
+import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
 import com.onesignal.notifications.INotification;
-import com.onesignal.notifications.INotificationWillDisplayEvent;
 import com.onesignal.notifications.INotificationClickEvent;
 import com.onesignal.notifications.INotificationClickResult;
-import com.onesignal.notifications.INotificationReceivedEvent;
-import com.onesignal.user.subscriptions.IPushSubscription;
-import com.onesignal.user.subscriptions.PushSubscriptionState;
-import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
-import com.onesignal.user.state.UserState;
 import com.onesignal.user.state.UserChangedState;
-
+import com.onesignal.user.state.UserState;
+import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
+import com.onesignal.user.subscriptions.PushSubscriptionState;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import javax.annotation.Nullable;
 
 public class RNUtils {
     public static WritableMap convertHashMapToWritableMap(HashMap<String, Object> hashMap) throws JSONException {
@@ -67,11 +58,12 @@ public class RNUtils {
         return writableMap;
     }
 
-    public static HashMap<String, Object> convertNotificationClickEventToMap(INotificationClickEvent event) throws JSONException {
+    public static HashMap<String, Object> convertNotificationClickEventToMap(INotificationClickEvent event)
+            throws JSONException {
         HashMap<String, Object> clickResultHash = new HashMap<>();
         HashMap<String, Object> hash = new HashMap<>();
         HashMap<String, Object> notificationHash = convertNotificationToMap(event.getNotification());
-        INotificationClickResult clickResult =  event.getResult();
+        INotificationClickResult clickResult = event.getResult();
 
         clickResultHash.put("actionId", clickResult.getActionId());
         clickResultHash.put("url", clickResult.getUrl());
@@ -95,33 +87,25 @@ public class RNUtils {
         notificationHash.put("notificationId", notification.getNotificationId());
         notificationHash.put("title", notification.getTitle());
 
-        if (notification.getBody() != null)
-            notificationHash.put("body", notification.getBody());
-        if (notification.getSmallIcon() != null)
-            notificationHash.put("smallIcon", notification.getSmallIcon());
-        if (notification.getLargeIcon() != null)
-            notificationHash.put("largeIcon", notification.getLargeIcon());
-        if (notification.getBigPicture() != null)
-            notificationHash.put("bigPicture", notification.getBigPicture());
+        if (notification.getBody() != null) notificationHash.put("body", notification.getBody());
+        if (notification.getSmallIcon() != null) notificationHash.put("smallIcon", notification.getSmallIcon());
+        if (notification.getLargeIcon() != null) notificationHash.put("largeIcon", notification.getLargeIcon());
+        if (notification.getBigPicture() != null) notificationHash.put("bigPicture", notification.getBigPicture());
         if (notification.getSmallIconAccentColor() != null)
             notificationHash.put("smallIconAccentColor", notification.getSmallIconAccentColor());
-        if (notification.getLaunchURL() != null)
-            notificationHash.put("launchURL", notification.getLaunchURL());
-        if (notification.getSound() != null)
-            notificationHash.put("sound", notification.getSound());
-        if (notification.getLedColor() != null)
-            notificationHash.put("ledColor", notification.getLedColor());
+        if (notification.getLaunchURL() != null) notificationHash.put("launchURL", notification.getLaunchURL());
+        if (notification.getSound() != null) notificationHash.put("sound", notification.getSound());
+        if (notification.getLedColor() != null) notificationHash.put("ledColor", notification.getLedColor());
         notificationHash.put("lockScreenVisibility", notification.getLockScreenVisibility());
-        if (notification.getGroupKey() != null)
-            notificationHash.put("groupKey", notification.getGroupKey());
+        if (notification.getGroupKey() != null) notificationHash.put("groupKey", notification.getGroupKey());
         if (notification.getGroupMessage() != null)
             notificationHash.put("groupMessage", notification.getGroupMessage());
         if (notification.getFromProjectNumber() != null)
             notificationHash.put("fromProjectNumber", notification.getFromProjectNumber());
-        if (notification.getCollapseId() != null)
-            notificationHash.put("collapseId", notification.getCollapseId());
+        if (notification.getCollapseId() != null) notificationHash.put("collapseId", notification.getCollapseId());
         notificationHash.put("priority", notification.getPriority());
-        if (notification.getAdditionalData() != null && notification.getAdditionalData().length() > 0)
+        if (notification.getAdditionalData() != null
+                && notification.getAdditionalData().length() > 0)
             notificationHash.put("additionalData", convertJSONObjectToHashMap(notification.getAdditionalData()));
         if (notification.getActionButtons() != null) {
             notificationHash.put("actionButtons", notification.getActionButtons());
@@ -138,7 +122,8 @@ public class RNUtils {
         return hash;
     }
 
-    public static HashMap<String, Object> convertInAppMessageWillDisplayEventToMap(IInAppMessageWillDisplayEvent event) {
+    public static HashMap<String, Object> convertInAppMessageWillDisplayEventToMap(
+            IInAppMessageWillDisplayEvent event) {
         HashMap<String, Object> hash = new HashMap<>();
         hash.put("message", convertInAppMessageToMap(event.getMessage()));
 
@@ -152,7 +137,8 @@ public class RNUtils {
         return hash;
     }
 
-    public static HashMap<String, Object> convertInAppMessageWillDismissEventToMap(IInAppMessageWillDismissEvent event) {
+    public static HashMap<String, Object> convertInAppMessageWillDismissEventToMap(
+            IInAppMessageWillDismissEvent event) {
         HashMap<String, Object> hash = new HashMap<>();
         hash.put("message", convertInAppMessageToMap(event.getMessage()));
 
@@ -192,7 +178,7 @@ public class RNUtils {
         if (state.getId() != null && !state.getId().isEmpty()) {
             hash.put("id", state.getId());
         } else {
-            hash.put("id", JSONObject.NULL); 
+            hash.put("id", JSONObject.NULL);
         }
         hash.put("optedIn", state.getOptedIn());
 
@@ -204,14 +190,12 @@ public class RNUtils {
 
         if (user.getExternalId() != null && !user.getExternalId().isEmpty()) {
             hash.put("externalId", user.getExternalId());
-        }
-        else {
+        } else {
             hash.put("externalId", JSONObject.NULL);
         }
         if (user.getOnesignalId() != null && !user.getOnesignalId().isEmpty()) {
             hash.put("onesignalId", user.getOnesignalId());
-        }
-        else {
+        } else {
             hash.put("onesignalId", JSONObject.NULL);
         }
 
@@ -236,23 +220,21 @@ public class RNUtils {
     public static HashMap<String, Object> convertJSONObjectToHashMap(JSONObject object) throws JSONException {
         HashMap<String, Object> hash = new HashMap<>();
 
-        if (object == null || object == JSONObject.NULL)
-            return hash;
+        if (object == null || object == JSONObject.NULL) return hash;
 
         Iterator<String> keys = object.keys();
 
         while (keys.hasNext()) {
             String key = keys.next();
 
-            if (object.isNull(key))
-                continue;
+            if (object.isNull(key)) continue;
 
             Object val = object.get(key);
 
             if (val instanceof JSONArray) {
-                val = convertJSONArrayToList((JSONArray)val);
+                val = convertJSONArrayToList((JSONArray) val);
             } else if (val instanceof JSONObject) {
-                val = convertJSONObjectToHashMap((JSONObject)val);
+                val = convertJSONObjectToHashMap((JSONObject) val);
             }
 
             hash.put(key, val);
@@ -264,8 +246,7 @@ public class RNUtils {
     public static Collection<String> convertReadableArrayIntoStringCollection(ReadableArray readableArray) {
         ArrayList<String> strings = new ArrayList<>();
         for (Object object : readableArray.toArrayList()) {
-            if (object instanceof String)
-                strings.add((String) object);
+            if (object instanceof String) strings.add((String) object);
         }
         return strings;
     }
@@ -298,10 +279,8 @@ public class RNUtils {
         for (int i = 0; i < array.length(); i++) {
             Object val = array.get(i);
 
-            if (val instanceof JSONArray)
-                val = RNUtils.convertJSONArrayToList((JSONArray)val);
-            else if (val instanceof JSONObject)
-                val = convertJSONObjectToHashMap((JSONObject)val);
+            if (val instanceof JSONArray) val = RNUtils.convertJSONArrayToList((JSONArray) val);
+            else if (val instanceof JSONObject) val = convertJSONObjectToHashMap((JSONObject) val);
 
             list.add(val);
         }

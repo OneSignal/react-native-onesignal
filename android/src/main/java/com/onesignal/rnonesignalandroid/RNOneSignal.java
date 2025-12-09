@@ -36,10 +36,7 @@ Authors:
 package com.onesignal.rnonesignalandroid;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.os.Bundle;
-import com.onesignal.debug.internal.logging.Logging;
-import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -48,46 +45,41 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.Arguments;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.onesignal.Continue;
 import com.onesignal.OneSignal;
-import com.onesignal.debug.LogLevel;
 import com.onesignal.common.OneSignalWrapper;
-import com.onesignal.inAppMessages.IInAppMessage;
-import com.onesignal.inAppMessages.IInAppMessageClickListener;
+import com.onesignal.debug.LogLevel;
+import com.onesignal.debug.internal.logging.Logging;
 import com.onesignal.inAppMessages.IInAppMessageClickEvent;
-import com.onesignal.inAppMessages.IInAppMessageClickResult;
-import com.onesignal.inAppMessages.IInAppMessageLifecycleListener;
-import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
-import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
-import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
+import com.onesignal.inAppMessages.IInAppMessageClickListener;
 import com.onesignal.inAppMessages.IInAppMessageDidDismissEvent;
+import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
+import com.onesignal.inAppMessages.IInAppMessageLifecycleListener;
+import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
+import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
 import com.onesignal.notifications.INotification;
-import com.onesignal.notifications.INotificationClickListener;
 import com.onesignal.notifications.INotificationClickEvent;
+import com.onesignal.notifications.INotificationClickListener;
 import com.onesignal.notifications.INotificationLifecycleListener;
 import com.onesignal.notifications.INotificationWillDisplayEvent;
 import com.onesignal.notifications.IPermissionObserver;
+import com.onesignal.user.state.IUserStateObserver;
+import com.onesignal.user.state.UserChangedState;
 import com.onesignal.user.subscriptions.IPushSubscription;
 import com.onesignal.user.subscriptions.IPushSubscriptionObserver;
-import com.onesignal.user.subscriptions.PushSubscriptionState;
 import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
-import com.onesignal.user.state.UserState;
-import com.onesignal.user.state.UserChangedState;
-import com.onesignal.user.state.IUserStateObserver;
-import org.json.JSONException;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.json.JSONException;
 
-public class RNOneSignal extends ReactContextBaseJavaModule implements
-        IPushSubscriptionObserver,
-        IPermissionObserver,
-        IUserStateObserver,
-        LifecycleEventListener,
-        INotificationLifecycleListener{
+public class RNOneSignal extends ReactContextBaseJavaModule
+        implements IPushSubscriptionObserver,
+                IPermissionObserver,
+                IUserStateObserver,
+                LifecycleEventListener,
+                INotificationLifecycleListener {
     private ReactApplicationContext mReactApplicationContext;
     private ReactContext mReactContext;
 
@@ -108,7 +100,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         @Override
         public void onClick(IInAppMessageClickEvent event) {
             try {
-                sendEvent("OneSignal-inAppMessageClicked", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageClickEventToMap(event)));
+                sendEvent(
+                        "OneSignal-inAppMessageClicked",
+                        RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageClickEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -119,7 +113,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         @Override
         public void onWillDisplay(IInAppMessageWillDisplayEvent event) {
             try {
-                sendEvent("OneSignal-inAppMessageWillDisplay", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageWillDisplayEventToMap(event)));
+                sendEvent(
+                        "OneSignal-inAppMessageWillDisplay",
+                        RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageWillDisplayEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -128,7 +124,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         @Override
         public void onDidDisplay(IInAppMessageDidDisplayEvent event) {
             try {
-                sendEvent("OneSignal-inAppMessageDidDisplay", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageDidDisplayEventToMap(event)));
+                sendEvent(
+                        "OneSignal-inAppMessageDidDisplay",
+                        RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageDidDisplayEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -137,7 +135,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         @Override
         public void onWillDismiss(IInAppMessageWillDismissEvent event) {
             try {
-                sendEvent("OneSignal-inAppMessageWillDismiss", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageWillDismissEventToMap(event)));
+                sendEvent(
+                        "OneSignal-inAppMessageWillDismiss",
+                        RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageWillDismissEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -146,7 +146,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         @Override
         public void onDidDismiss(IInAppMessageDidDismissEvent event) {
             try {
-                sendEvent("OneSignal-inAppMessageDidDismiss", RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageDidDismissEventToMap(event)));
+                sendEvent(
+                        "OneSignal-inAppMessageDidDismiss",
+                        RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageDidDismissEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -157,7 +159,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         @Override
         public void onClick(INotificationClickEvent event) {
             try {
-                sendEvent("OneSignal-notificationClicked", RNUtils.convertHashMapToWritableMap(RNUtils.convertNotificationClickEventToMap(event)));
+                sendEvent(
+                        "OneSignal-notificationClicked",
+                        RNUtils.convertHashMapToWritableMap(RNUtils.convertNotificationClickEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -171,7 +175,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     private void removeHandlers() {
-        if(!oneSignalInitDone) {
+        if (!oneSignalInitDone) {
             Logging.debug("OneSignal React-Native SDK not initialized yet. Could not remove handlers.", null);
             return;
         }
@@ -187,7 +191,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     private void sendEvent(String eventName, Object params) {
-        mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+        mReactContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(eventName, params);
     }
 
     public RNOneSignal(ReactApplicationContext reactContext) {
@@ -198,7 +204,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         notificationWillDisplayCache = new HashMap<String, INotificationWillDisplayEvent>();
         preventDefaultCache = new HashMap<String, INotificationWillDisplayEvent>();
     }
-
 
     /** Native Module Overrides */
     @Override
@@ -257,7 +262,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         OneSignal.setConsentRequired(required);
     }
 
-
     // OneSignal.Debug namespace methods
     @ReactMethod
     public void setLogLevel(int logLevel) {
@@ -268,7 +272,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     public void setAlertLevel(int logLevel) {
         OneSignal.getDebug().setAlertLevel(LogLevel.fromInt(logLevel));
     }
-
 
     // OneSignal.InAppMessages namespace methods
     @ReactMethod
@@ -322,7 +325,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         OneSignal.getInAppMessages().clearTriggers();
     }
 
-
     // OneSignal.Location namespace methods
     @ReactMethod
     public void requestLocationPermission() {
@@ -338,7 +340,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     public void setLocationShared(Boolean shared) {
         OneSignal.getLocation().setShared(shared);
     }
-
 
     // OneSignal.Notifications namespace methods
     @ReactMethod
@@ -373,9 +374,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         event.preventDefault();
 
         try {
-            sendEvent("OneSignal-notificationWillDisplayInForeground",
-                    RNUtils.convertHashMapToWritableMap(
-                        RNUtils.convertNotificationToMap(notification)));
+            sendEvent(
+                    "OneSignal-notificationWillDisplayInForeground",
+                    RNUtils.convertHashMapToWritableMap(RNUtils.convertNotificationToMap(notification)));
 
             try {
                 synchronized (event) {
@@ -383,7 +384,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
                         event.wait();
                     }
                 }
-            } catch(InterruptedException e){
+            } catch (InterruptedException e) {
                 Logging.error("InterruptedException: " + e.toString(), null);
             }
         } catch (JSONException e) {
@@ -392,10 +393,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    private void displayNotification(String notificationId){
+    private void displayNotification(String notificationId) {
         INotificationWillDisplayEvent event = notificationWillDisplayCache.get(notificationId);
         if (event == null) {
-            Logging.error("Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
+            Logging.error(
+                    "Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
             return;
         }
         event.getNotification().display();
@@ -405,7 +407,8 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     private void preventDefault(String notificationId) {
         INotificationWillDisplayEvent event = notificationWillDisplayCache.get(notificationId);
         if (event == null) {
-            Logging.error("Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
+            Logging.error(
+                    "Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
             return;
         }
         event.preventDefault();
@@ -431,7 +434,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @Override
     public void onNotificationPermissionChange(boolean permission) {
         try {
-            sendEvent("OneSignal-permissionChanged", RNUtils.convertHashMapToWritableMap(RNUtils.convertPermissionToMap(permission)));
+            sendEvent(
+                    "OneSignal-permissionChanged",
+                    RNUtils.convertHashMapToWritableMap(RNUtils.convertPermissionToMap(permission)));
             Logging.debug("Sending permission change event", null);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -464,8 +469,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     public void permissionNative(Promise promise) {
         if (OneSignal.getNotifications().getPermission()) {
             promise.resolve(2);
-        }
-        else {
+        } else {
             promise.resolve(1);
         }
     }
@@ -490,13 +494,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         OneSignal.getNotifications().removeGroupedNotifications(id);
     }
 
-
     // OneSignal.User.pushSubscription namespace methods
     @ReactMethod
     public void getPushSubscriptionId(Promise promise) {
         IPushSubscription pushSubscription = OneSignal.getUser().getPushSubscription();
         String pushId = pushSubscription.getId();
-        if (pushId != null && !pushId.isEmpty()){
+        if (pushId != null && !pushId.isEmpty()) {
             promise.resolve(pushId);
         } else {
             promise.resolve(null);
@@ -543,13 +546,14 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @Override
     public void onPushSubscriptionChange(PushSubscriptionChangedState pushSubscriptionChangedState) {
         try {
-            sendEvent("OneSignal-subscriptionChanged",
+            sendEvent(
+                    "OneSignal-subscriptionChanged",
                     RNUtils.convertHashMapToWritableMap(
                             RNUtils.convertPushSubscriptionChangedStateToMap(pushSubscriptionChangedState)));
             Logging.debug("Sending subscription change event", null);
         } catch (JSONException e) {
             e.printStackTrace();
-        } 
+        }
     }
 
     @ReactMethod
@@ -619,7 +623,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
         for (Map.Entry<String, String> entry : tags.entrySet()) {
             writableTags.putString(entry.getKey(), entry.getValue());
         }
-        promise.resolve(writableTags); 
+        promise.resolve(writableTags);
     }
 
     @ReactMethod
@@ -689,7 +693,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
             onesignalId = null;
         }
         promise.resolve(onesignalId);
-
     }
 
     @ReactMethod
@@ -712,13 +715,13 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements
     @Override
     public void onUserStateChange(UserChangedState state) {
         try {
-            sendEvent("OneSignal-userStateChanged",
-                    RNUtils.convertHashMapToWritableMap(
-                            RNUtils.convertUserChangedStateToMap(state)));
+            sendEvent(
+                    "OneSignal-userStateChanged",
+                    RNUtils.convertHashMapToWritableMap(RNUtils.convertUserChangedStateToMap(state)));
             Logging.debug("Sending user state change event", null);
         } catch (JSONException e) {
             e.printStackTrace();
-        } 
+        }
     }
 
     @ReactMethod
