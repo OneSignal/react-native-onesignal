@@ -1,3 +1,4 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
@@ -9,13 +10,16 @@ import {
   View,
 } from 'react-native';
 import { LogLevel, OneSignal } from 'react-native-onesignal';
+import type { RootStackParamList } from './App';
 import { renderButtonView } from './Helpers';
 import OSButtons from './OSButtons';
 import OSConsole from './OSConsole';
 
 const APP_ID = '77e32082-ea27-42e3-a898-c72e141824ef';
 
-const OSDemo: React.FC = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+const OSDemo: React.FC<Props> = ({ navigation }) => {
   const [consoleValue, setConsoleValue] = useState('');
   const [inputValue, setInputValue] = useState('');
 
@@ -220,6 +224,11 @@ const OSDemo: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>OneSignal</Text>
+        <View style={styles.navButton}>
+          {renderButtonView('Go to Details', () => {
+            navigation.navigate('Details');
+          })}
+        </View>
         <OSConsole value={consoleValue} />
         <View style={styles.clearButton}>
           {renderButtonView('X', () => {
@@ -258,6 +267,11 @@ const styles = StyleSheet.create({
     fontSize: 40,
     alignSelf: 'center',
     paddingVertical: 10,
+  },
+  navButton: {
+    position: 'absolute',
+    right: 0,
+    top: 10,
   },
   clearButton: {
     position: 'absolute',
