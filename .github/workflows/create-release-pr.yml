@@ -89,7 +89,6 @@ jobs:
           bun install --frozen-lockfile
           cd examples/RNOneSignalTS
           bun run setup
-          pod install
 
       - name: Get current native SDK versions
         id: current_versions
@@ -162,7 +161,7 @@ jobs:
 
           # Update example
           cd examples/RNOneSignalTS/ios
-          pod update OneSignalXCFramework
+          pod install
 
           # Only commit if there are changes
           git add -A

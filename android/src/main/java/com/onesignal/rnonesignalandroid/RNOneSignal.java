@@ -172,7 +172,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
     };
 
     private void removeObservers() {
-        if(!oneSignalInitDone) {
+        if (!oneSignalInitDone) {
             Logging.debug("OneSignal React-Native SDK not initialized yet. Could not remove observers.", null);
             return;
         }
