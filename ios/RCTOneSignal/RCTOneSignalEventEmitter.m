@@ -19,6 +19,8 @@
 }
 
 static BOOL _didStartObserving = false;
+// Static reference to track current instance for cleanup on reload
+static RCTOneSignalEventEmitter *_currentInstance = nil;
 
 + (BOOL)hasSetBridge {
   return _didStartObserving;
@@ -48,6 +50,13 @@ RCT_EXPORT_MODULE(RCTOneSignal)
                                                selector:@selector(emitEvent:)
                                                    name:eventName
                                                  object:nil];
+
+    // Clean up previous instance if it exists (handles reload scenario)
+    if (_currentInstance != nil && _currentInstance != self) {
+      [_currentInstance removeHandlers];
+      [_currentInstance removeObservers];
+    }
+    _currentInstance = self;
   }
 
   return self;
@@ -64,6 +73,8 @@ RCT_EXPORT_MODULE(RCTOneSignal)
 
 - (void)stopObserving {
   _hasListeners = false;
+  [self removeHandlers];
+  [self removeObservers];
 }
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -582,6 +593,39 @@ RCT_EXPORT_METHOD(displayNotification : (NSString *)notificationId) {
 
 RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
   // iOS Stub
+}
+
+- (void)removeObservers {
+  [self removePermissionObserver];
+  [self removePushSubscriptionObserver];
+  [self removeUserStateObserver];
+}
+
+- (void)removeHandlers {
+  if (_hasAddedInAppMessageClickListener) {
+    [OneSignal.InAppMessages removeClickListener:[RCTOneSignal sharedInstance]];
+    _hasAddedInAppMessageClickListener = false;
+  }
+  if (_hasAddedInAppMessageLifecycleListener) {
+    [OneSignal.InAppMessages
+        removeLifecycleListener:[RCTOneSignal sharedInstance]];
+    _hasAddedInAppMessageLifecycleListener = false;
+  }
+  if (_hasAddedNotificationClickListener) {
+    [OneSignal.Notifications removeClickListener:[RCTOneSignal sharedInstance]];
+    _hasAddedNotificationClickListener = false;
+  }
+  if (_hasAddedNotificationForegroundLifecycleListener) {
+    [OneSignal.Notifications removeForegroundLifecycleListener:self];
+    _hasAddedNotificationForegroundLifecycleListener = false;
+  }
+}
+
+- (void)removeUserStateObserver {
+  if (_hasSetUserStateObserver) {
+    [OneSignal.User removeObserver:[RCTOneSignal sharedInstance]];
+    _hasSetUserStateObserver = false;
+  }
 }
 
 @end
