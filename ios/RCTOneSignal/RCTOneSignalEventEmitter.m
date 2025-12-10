@@ -604,7 +604,8 @@ RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
 - (void)removeHandlers {
   [OneSignal.InAppMessages removeClickListener:[RCTOneSignal sharedInstance]];
   _hasAddedInAppMessageClickListener = false;
-  [OneSignal.InAppMessages removeLifecycleListener:[RCTOneSignal sharedInstance]];
+  [OneSignal.InAppMessages
+      removeLifecycleListener:[RCTOneSignal sharedInstance]];
   _hasAddedInAppMessageLifecycleListener = false;
   [OneSignal.Notifications removeClickListener:[RCTOneSignal sharedInstance]];
   _hasAddedNotificationClickListener = false;
