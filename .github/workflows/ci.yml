@@ -9,43 +9,5 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v5
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@main
-
-      - name: Setup Clang
-        uses: tecolicom/actions-use-homebrew-tools@v1
-        with:
-          tools: clang-format
-          cache: yes
-
-      - name: Link clang-format
-        run: |
-          brew link --overwrite --force clang-format >/dev/null
-          export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-          clang-format --version
-
-      - name: 'Setup Bun'
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: 'Install'
-        run: bun i
-
-      - name: 'Linting'
-        run: bun run lint
-
-      - name: 'Testing Coverage'
-        run: bun run test:coverage
+  call:
+    uses: OneSignal/sdk-actions/.github/workflows/wrapper-js-ci.yml@main
