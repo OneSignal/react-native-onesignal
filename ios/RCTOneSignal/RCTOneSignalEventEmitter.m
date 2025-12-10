@@ -602,15 +602,23 @@ RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
 }
 
 - (void)removeHandlers {
-  [OneSignal.InAppMessages removeClickListener:[RCTOneSignal sharedInstance]];
-  _hasAddedInAppMessageClickListener = false;
-  [OneSignal.InAppMessages
-      removeLifecycleListener:[RCTOneSignal sharedInstance]];
-  _hasAddedInAppMessageLifecycleListener = false;
-  [OneSignal.Notifications removeClickListener:[RCTOneSignal sharedInstance]];
-  _hasAddedNotificationClickListener = false;
-  [OneSignal.Notifications removeForegroundLifecycleListener:self];
-  _hasAddedNotificationForegroundLifecycleListener = false;
+  if (_hasAddedInAppMessageClickListener) {
+    [OneSignal.InAppMessages removeClickListener:[RCTOneSignal sharedInstance]];
+    _hasAddedInAppMessageClickListener = false;
+  }
+  if (_hasAddedInAppMessageLifecycleListener) {
+    [OneSignal.InAppMessages
+        removeLifecycleListener:[RCTOneSignal sharedInstance]];
+    _hasAddedInAppMessageLifecycleListener = false;
+  }
+  if (_hasAddedNotificationClickListener) {
+    [OneSignal.Notifications removeClickListener:[RCTOneSignal sharedInstance]];
+    _hasAddedNotificationClickListener = false;
+  }
+  if (_hasAddedNotificationForegroundLifecycleListener) {
+    [OneSignal.Notifications removeForegroundLifecycleListener:self];
+    _hasAddedNotificationForegroundLifecycleListener = false;
+  }
 }
 
 - (void)removeUserStateObserver {
