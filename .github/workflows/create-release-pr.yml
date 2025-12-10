@@ -89,6 +89,7 @@ jobs:
           bun install --frozen-lockfile
           cd examples/RNOneSignalTS
           bun run setup
+          pod install
 
       - name: Get current native SDK versions
         id: current_versions
