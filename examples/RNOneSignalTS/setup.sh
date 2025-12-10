@@ -12,15 +12,3 @@ mv react-native-onesignal-*.tgz react-native-onesignal.tgz
 cd $ORIGINAL_DIR
 bun pm cache rm
 bun i
-
-# Reinstall pods to pick up the updated native module
-if [ -d "ios" ]; then
-  cd ios
-  echo "Updating pods"
-  pod install
-
-  echo "Updating OneSignalXCFramework"
-  pod update OneSignalXCFramework
-
-  cd ..
-fi

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "setup": "./setup.sh",
+    "update:pod": "cd ios && pod update OneSignalXCFramework",
     "preandroid": "bun run setup",
     "preios": "bun run setup",
     "android": "react-native run-android",

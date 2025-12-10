@@ -44,6 +44,8 @@ If everything is set up correctly, you should see your new app running in the An
 
 This is one way to run your app — you can also build it directly from Android Studio or Xcode.
 
+If you get pod install error you may need to run: `pod update OneSignalXCFramework`
+
 ## Step 3: Modify your app
 
 If you modifiy the javascript / typescript files the app should automatically reload otherwise you can press `r` in the terminal.
