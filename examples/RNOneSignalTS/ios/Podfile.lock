@@ -1828,7 +1828,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-onesignal (5.2.14):
+  - react-native-onesignal (5.2.15):
     - OneSignalXCFramework (= 5.2.15)
     - React (< 1.0.0, >= 0.13.0)
   - react-native-safe-area-context (5.6.2):
@@ -2802,7 +2802,7 @@ SPEC CHECKSUMS:
   React-logger: 500f2fa5697d224e63c33d913c8a4765319e19bf
   React-Mapbuffer: 06d59c448da7e34eb05b3fb2189e12f6a30fec57
   React-microtasksnativemodule: d1ee999dc9052e23f6488b730fa2d383a4ea40e5
-  react-native-onesignal: b68c981956150f288c1585889871affcef3c0b8b
+  react-native-onesignal: 3700f3187a6e3bf72c1ea2488522ba8e9ce93092
   react-native-safe-area-context: c00143b4823773bba23f2f19f85663ae89ceb460
   React-NativeModulesApple: 46690a0fe94ec28fc6fc686ec797b911d251ded0
   React-oscompat: 95875e81f5d4b3c7b2c888d5bd2c9d83450d8bdb

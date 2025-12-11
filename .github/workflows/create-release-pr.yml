@@ -161,7 +161,7 @@ jobs:
 
           # Update example
           cd examples/RNOneSignalTS/ios
-          pod update OneSignalXCFramework
+          pod install
 
           # Only commit if there are changes
           git add -A
