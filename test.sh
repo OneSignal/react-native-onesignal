@@ -1,6 +1,6 @@
 #!/bin/bash
-
 # Load environment variables from .env file
+# See .env.example for example data
 set -a
 [ -f .env ] && . .env
 set +a
