@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.onesignal.inAppMessages.IInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessageClickEvent;
@@ -51,6 +52,8 @@ public class RNUtils {
                 writableMap.putDouble(key, ((Long) value).doubleValue());
             } else if (value instanceof HashMap) {
                 writableMap.putMap(key, convertHashMapToWritableMap((HashMap<String, Object>) value));
+            } else if (value instanceof List) {
+                writableMap.putArray(key, convertListToWritableArray((List<Object>) value));
             } else {
                 writableMap.putNull(key);
             }
@@ -286,5 +289,31 @@ public class RNUtils {
         }
 
         return list;
+    }
+
+    private static WritableArray convertListToWritableArray(List<Object> list) throws JSONException {
+        WritableArray writableArray = Arguments.createArray();
+        for (Object item : list) {
+            if (item instanceof String) {
+                writableArray.pushString((String) item);
+            } else if (item instanceof Boolean) {
+                writableArray.pushBoolean((Boolean) item);
+            } else if (item instanceof Integer) {
+                writableArray.pushInt((Integer) item);
+            } else if (item instanceof Double) {
+                writableArray.pushDouble((Double) item);
+            } else if (item instanceof Float) {
+                writableArray.pushDouble(((Float) item).doubleValue());
+            } else if (item instanceof Long) {
+                writableArray.pushDouble(((Long) item).doubleValue());
+            } else if (item instanceof HashMap) {
+                writableArray.pushMap(convertHashMapToWritableMap((HashMap<String, Object>) item));
+            } else if (item instanceof List) {
+                writableArray.pushArray(convertListToWritableArray((List<Object>) item));
+            } else {
+                writableArray.pushNull();
+            }
+        }
+        return writableArray;
     }
 }

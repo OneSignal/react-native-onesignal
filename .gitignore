@@ -9,6 +9,7 @@ coverage/
 
 # tsc / build
 #
+.env
 .gradle
 build
 dist
