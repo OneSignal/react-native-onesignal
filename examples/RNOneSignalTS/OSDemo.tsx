@@ -48,41 +48,6 @@ const OSDemo: React.FC = () => {
     },
     [],
   );
-  // const onForegroundWillDisplay = useCallback(
-  //   (event: unknown) => {
-  //     OSLog('OneSignal: notification will show in foreground:', event);
-  //     // const notif = (
-  //     //   event as { getNotification: () => { title: string } }
-  //     // ).getNotification();
-
-  //     // const cancelButton = {
-  //     //   text: 'Cancel',
-  //     //   onPress: () => {
-  //     //     (event as { preventDefault: () => void }).preventDefault();
-  //     //   },
-  //     //   style: 'cancel' as const,
-  //     // };
-
-  //     // const completeButton = {
-  //     //   text: 'Display',
-  //     //   onPress: () => {
-  //     //     (event as { getNotification: () => { display: () => void } })
-  //     //       .getNotification()
-  //     //       .display();
-  //     //   },
-  //     // };
-
-  //     // Alert.alert(
-  //     //   'Display notification?',
-  //     //   notif.title,
-  //     //   [cancelButton, completeButton],
-  //     //   {
-  //     //     cancelable: true,
-  //     //   },
-  //     // );
-  //   },
-  //   [OSLog],
-  // );
 
   const onNotificationClick = useCallback(
     (event: unknown) => {
@@ -157,8 +122,12 @@ const OSDemo: React.FC = () => {
       console.log('Setting up event listeners');
 
       const setup = async () => {
+        // OneSignal.login('fadi-rna-11');
+        const onesignalID = await OneSignal.User.getOnesignalId();
+        console.log('OneSignal ID:', onesignalID);
         const externalID = await OneSignal.User.getExternalId();
         console.log('External ID:', externalID);
+
         OneSignal.LiveActivities.setupDefault();
         OneSignal.Notifications.addEventListener(
           'foregroundWillDisplay',
@@ -229,18 +198,7 @@ const OSDemo: React.FC = () => {
         );
         OneSignal.User.removeEventListener('change', onUserChange);
       };
-    }, [
-      onForegroundWillDisplay,
-      onNotificationClick,
-      onIAMClick,
-      onIAMWillDisplay,
-      onIAMDidDisplay,
-      onIAMWillDismiss,
-      onIAMDidDismiss,
-      onSubscriptionChange,
-      onPermissionChange,
-      onUserChange,
-    ]),
+    }, []),
   );
 
   const inputChange = useCallback((text: string) => {

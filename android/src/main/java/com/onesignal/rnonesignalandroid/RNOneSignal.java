@@ -378,6 +378,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
     public void onWillDisplay(INotificationWillDisplayEvent event) {
         if (!this.hasAddedNotificationForegroundListener) {
             event.getNotification().display();
+            return;
         }
 
         INotification notification = event.getNotification();
@@ -396,6 +397,12 @@ public class RNOneSignal extends ReactContextBaseJavaModule
                         event.wait();
                     }
                 }
+
+                // If notification wasn't prevented, display it automatically
+                if (!preventDefaultCache.containsKey(notificationId)) {
+                    event.getNotification().display();
+                    notificationWillDisplayCache.remove(notificationId);
+                }
             } catch (InterruptedException e) {
                 Logging.error("InterruptedException: " + e.toString(), null);
             }
@@ -412,7 +419,15 @@ public class RNOneSignal extends ReactContextBaseJavaModule
                     "Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
             return;
         }
+
+        // Notify waiting thread and clean up caches
+        synchronized (event) {
+            preventDefaultCache.remove(notificationId);
+            event.notify();
+        }
+
         event.getNotification().display();
+        notificationWillDisplayCache.remove(notificationId);
     }
 
     @ReactMethod
@@ -424,7 +439,14 @@ public class RNOneSignal extends ReactContextBaseJavaModule
             return;
         }
         event.preventDefault();
-        this.preventDefaultCache.put(notificationId, event);
+
+        // Add to cache and notify waiting thread
+        synchronized (event) {
+            this.preventDefaultCache.put(notificationId, event);
+            event.notify();
+        }
+
+        notificationWillDisplayCache.remove(notificationId);
     }
 
     @ReactMethod
