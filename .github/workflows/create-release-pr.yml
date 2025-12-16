@@ -159,10 +159,6 @@ jobs:
           # Update package.json version
           bun pm pkg set version="$NEW_VERSION"
 
-          # Update example
-          cd examples/RNOneSignalTS/ios
-          pod install
-
           # Only commit if there are changes
           git add -A
           git diff --staged --quiet && exit 0
