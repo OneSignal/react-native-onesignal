@@ -65,6 +65,8 @@ import com.onesignal.notifications.INotificationClickListener;
 import com.onesignal.notifications.INotificationLifecycleListener;
 import com.onesignal.notifications.INotificationWillDisplayEvent;
 import com.onesignal.notifications.IPermissionObserver;
+import com.onesignal.notifications.internal.badges.impl.shortcutbadger.ShortcutBadgeException;
+import com.onesignal.notifications.internal.badges.impl.shortcutbadger.ShortcutBadger;
 import com.onesignal.user.state.IUserStateObserver;
 import com.onesignal.user.state.UserChangedState;
 import com.onesignal.user.subscriptions.IPushSubscription;
@@ -272,6 +274,15 @@ public class RNOneSignal extends ReactContextBaseJavaModule
     @ReactMethod
     public void setPrivacyConsentRequired(Boolean required) {
         OneSignal.setConsentRequired(required);
+    }
+
+    @ReactMethod
+    public void setBadgeCount(int count) {
+        try {
+            ShortcutBadger.applyCountOrThrow(mReactApplicationContext, count);
+        } catch (ShortcutBadgeException e) {
+            e.printStackTrace();
+        }
     }
 
     // OneSignal.Debug namespace methods

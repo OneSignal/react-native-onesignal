@@ -132,6 +132,15 @@ export namespace OneSignal {
     RNOneSignal.setPrivacyConsentGiven(granted);
   }
 
+  /**
+   * Ultility function to set badge count manually
+   */
+  export function setBadgeCount(count: number) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
+    
+    RNOneSignal.setBadgeCount(count);
+  }
+
   export namespace Debug {
     /**
      * Enable logging to help debug if you run into an issue setting up OneSignal.
@@ -935,9 +944,6 @@ export namespace OneSignal {
 
       RNOneSignal.addOutcomeWithValue(name, Number(value));
     }
-  }
-}
-
 export { OSNotificationPermission } from './constants/subscription';
 export {
   NotificationWillDisplayEvent,
@@ -951,8 +957,12 @@ export {
   type PushSubscriptionChangedState,
   type PushSubscriptionState,
   type UserChangedState,
-  type UserState,
+  type UserState
 };
+  type UserChangedState,
+  export { default as OSNotification } from './OSNotification';
+  export type { InAppMessageClickResult } from './types/inAppMessage';
+  export type { NotificationClickResult } from './types/notificationEvents';
 
 export { default as OSNotification } from './OSNotification';
 export type { InAppMessageClickResult } from './types/inAppMessage';
