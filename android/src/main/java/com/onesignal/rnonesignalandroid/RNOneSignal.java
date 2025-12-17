@@ -424,6 +424,18 @@ public class RNOneSignal extends ReactContextBaseJavaModule
     @ReactMethod
     private void displayNotification(String notificationId) {
         INotificationWillDisplayEvent event = notificationWillDisplayCache.get(notificationId);
+
+        // If not found in notificationWillDisplayCache, check preventDefaultCache
+        // This handles the case where preventDefault() was called first
+        if (event == null) {
+            event = preventDefaultCache.get(notificationId);
+            if (event != null) {
+                Logging.debug(
+                        "displayNotification called after preventDefault for notification with id: " + notificationId
+                                + ". Displaying notification anyway.", null);
+            }
+        }
+
         if (event == null) {
             Logging.error(
                     "Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
