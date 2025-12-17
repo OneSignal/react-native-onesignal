@@ -389,12 +389,45 @@ RCT_EXPORT_METHOD(onWillDisplayNotification : (OSNotificationWillDisplayEvent *)
   if (!strongSelf)
     return;
 
-  strongSelf->_notificationWillDisplayCache[event.notification.notificationId] =
-      event;
+  NSString *notificationId = event.notification.notificationId;
+  strongSelf->_notificationWillDisplayCache[notificationId] = event;
   [event preventDefault];
   [RCTOneSignalEventEmitter
       sendEventWithName:@"OneSignal-notificationWillDisplayInForeground"
                withBody:[event.notification jsonRepresentation]];
+
+  // Wait for JS to respond (preventDefault or displayNotification)
+  // Use timeout slightly less than OneSignal SDK's 25s timeout (similar to Android's 25s with 30s SDK timeout)
+  // If JS doesn't respond within the timeout, display automatically
+  const NSTimeInterval kNotificationDisplayTimeout = 24.0; // Slightly less than SDK's 25s timeout
+
+  // Capture notificationId in a local variable for the block
+  __block NSString *blockNotificationId = [notificationId copy];
+
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kNotificationDisplayTimeout * NSEC_PER_SEC)),
+      dispatch_get_main_queue(), ^{
+        __weak RCTOneSignalEventEmitter *weakSelf = strongSelf;
+        RCTOneSignalEventEmitter *strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+
+        // Check if notification is still in cache (JS didn't call displayNotification)
+        OSNotificationWillDisplayEvent *cachedEvent =
+            strongSelf->_notificationWillDisplayCache[blockNotificationId];
+        if (cachedEvent) {
+          // Check if it wasn't prevented
+          if (!strongSelf->_preventDefaultCache[blockNotificationId]) {
+            // Display automatically if not prevented
+            // This matches Android: after wait loop exits, if not prevented, display
+            dispatch_async(dispatch_get_main_queue(), ^{
+              [cachedEvent.notification display];
+            });
+            [strongSelf->_notificationWillDisplayCache
+                removeObjectForKey:blockNotificationId];
+          }
+        }
+      });
 }
 
 RCT_EXPORT_METHOD(preventDefault : (NSString *)notificationId) {
@@ -412,8 +445,11 @@ RCT_EXPORT_METHOD(preventDefault : (NSString *)notificationId) {
                              notificationId]];
     return;
   }
-  strongSelf->_preventDefaultCache[event.notification.notificationId] = event;
   [event preventDefault];
+
+  // Add to preventDefaultCache and remove from notificationWillDisplayCache
+  strongSelf->_preventDefaultCache[event.notification.notificationId] = event;
+  [strongSelf->_notificationWillDisplayCache removeObjectForKey:notificationId];
 }
 
 RCT_EXPORT_METHOD(clearAllNotifications) { [OneSignal.Notifications clearAll]; }
@@ -573,6 +609,21 @@ RCT_EXPORT_METHOD(optOut) { [OneSignal.User.pushSubscription optOut]; }
 RCT_EXPORT_METHOD(displayNotification : (NSString *)notificationId) {
   OSNotificationWillDisplayEvent *event =
       _notificationWillDisplayCache[notificationId];
+
+  // If not found in notificationWillDisplayCache, check preventDefaultCache
+  // This handles the case where preventDefault() was called first
+  if (!event) {
+    event = _preventDefaultCache[notificationId];
+    if (event) {
+      [OneSignalLog
+          onesignalLog:ONE_S_LL_DEBUG
+               message:[NSString
+                           stringWithFormat:
+                               @"OneSignal (objc): displayNotification called after preventDefault for notification with id: %@. Displaying notification anyway.",
+                               notificationId]];
+    }
+  }
+
   if (!event) {
     [OneSignalLog
         onesignalLog:ONE_S_LL_ERROR
@@ -583,6 +634,7 @@ RCT_EXPORT_METHOD(displayNotification : (NSString *)notificationId) {
                              notificationId]];
     return;
   }
+
   dispatch_async(dispatch_get_main_queue(), ^{
     [event.notification display];
   });
