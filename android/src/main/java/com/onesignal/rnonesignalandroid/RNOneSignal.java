@@ -393,15 +393,25 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
             try {
                 synchronized (event) {
-                    while (preventDefaultCache.containsKey(notificationId)) {
-                        event.wait();
+                    // Wait while notification is still in cache (JS hasn't responded yet)
+                    // Use timeout of 25 seconds to prevent infinite wait if JS doesn't respond
+                    long timeout = 25000; // 25 seconds
+                    long startTime = System.currentTimeMillis();
+                    while (notificationWillDisplayCache.containsKey(notificationId)) {
+                        long elapsed = System.currentTimeMillis() - startTime;
+                        long remaining = timeout - elapsed;
+                        if (remaining <= 0) {
+                            // Timeout: remove from cache and display by default
+                            notificationWillDisplayCache.remove(notificationId);
+                            break;
+                        }
+                        event.wait(remaining);
                     }
                 }
 
                 // If notification wasn't prevented, display it automatically
                 if (!preventDefaultCache.containsKey(notificationId)) {
                     event.getNotification().display();
-                    notificationWillDisplayCache.remove(notificationId);
                 }
             } catch (InterruptedException e) {
                 Logging.error("InterruptedException: " + e.toString(), null);
@@ -423,11 +433,11 @@ public class RNOneSignal extends ReactContextBaseJavaModule
         // Notify waiting thread and clean up caches
         synchronized (event) {
             preventDefaultCache.remove(notificationId);
+            notificationWillDisplayCache.remove(notificationId);
             event.notify();
         }
 
         event.getNotification().display();
-        notificationWillDisplayCache.remove(notificationId);
     }
 
     @ReactMethod
@@ -443,10 +453,9 @@ public class RNOneSignal extends ReactContextBaseJavaModule
         // Add to cache and notify waiting thread
         synchronized (event) {
             this.preventDefaultCache.put(notificationId, event);
+            notificationWillDisplayCache.remove(notificationId);
             event.notify();
         }
-
-        notificationWillDisplayCache.remove(notificationId);
     }
 
     @ReactMethod
