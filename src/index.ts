@@ -944,6 +944,9 @@ export namespace OneSignal {
 
       RNOneSignal.addOutcomeWithValue(name, Number(value));
     }
+  }
+}
+
 export { OSNotificationPermission } from './constants/subscription';
 export {
   NotificationWillDisplayEvent,
@@ -957,12 +960,8 @@ export {
   type PushSubscriptionChangedState,
   type PushSubscriptionState,
   type UserChangedState,
-  type UserState
+  type UserState,
 };
-  type UserChangedState,
-  export { default as OSNotification } from './OSNotification';
-  export type { InAppMessageClickResult } from './types/inAppMessage';
-  export type { NotificationClickResult } from './types/notificationEvents';
 
 export { default as OSNotification } from './OSNotification';
 export type { InAppMessageClickResult } from './types/inAppMessage';
