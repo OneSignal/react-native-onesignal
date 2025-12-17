@@ -41,12 +41,16 @@ const OSDemo: React.FC = () => {
 
   const onForegroundWillDisplay = useCallback(
     (event: NotificationWillDisplayEvent) => {
-      console.log('OneSignal: notification will show in foreground:', event);
+      OSLog('OneSignal: notification will show in foreground:', event);
 
-      // console.log('Preventing display');
-      // event.preventDefault();
+      OSLog('Preventing display??????');
+      event.preventDefault();
+
+      // display the notification
+      OSLog('Displaying notification');
+      event.getNotification().display();
     },
-    [],
+    [OSLog],
   );
 
   const onNotificationClick = useCallback(
@@ -114,7 +118,7 @@ const OSDemo: React.FC = () => {
 
   useEffect(() => {
     OneSignal.initialize(APP_ID);
-    OneSignal.Debug.setLogLevel(LogLevel.None);
+    OneSignal.Debug.setLogLevel(LogLevel.Debug);
   }, []);
 
   useFocusEffect(
@@ -127,6 +131,8 @@ const OSDemo: React.FC = () => {
         console.log('OneSignal ID:', onesignalID);
         const externalID = await OneSignal.User.getExternalId();
         console.log('External ID:', externalID);
+        const pushID = await OneSignal.User.pushSubscription.getIdAsync();
+        console.log('Push ID:', pushID);
 
         OneSignal.LiveActivities.setupDefault();
         OneSignal.Notifications.addEventListener(
