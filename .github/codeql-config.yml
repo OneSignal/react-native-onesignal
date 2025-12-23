@@ -1,8 +1,6 @@
 paths:
   - src
   - android/src/main/java
-  - ios/RCTOneSignal/**/*.m
-  - ios/RCTOneSignal/**/*.h
   - .github/actions
 
 paths-ignore:

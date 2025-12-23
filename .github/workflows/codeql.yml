@@ -37,8 +37,7 @@ jobs:
             build-mode: none
           - language: java
             build-mode: none
-          - language: c-cpp
-            build-mode: none
+            # Not analyzing .m & .h files for now unless CodeQL supports it in the future
 
     steps:
       - name: Checkout repository
@@ -49,9 +48,14 @@ jobs:
         uses: github/codeql-action/init@v4
 
         with:
+          dependency-caching: true
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
           config-file: ./.github/codeql-config.yml
+
+      - name: Autobuild
+        if: matrix.build-mode == 'autobuild'
+        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
