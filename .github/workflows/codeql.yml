@@ -33,12 +33,14 @@ jobs:
         include:
           - language: actions
             build-mode: none
+            dependency-caching: true
           - language: javascript-typescript
             build-mode: none
+            dependency-caching: true
           - language: java
             build-mode: none
-          - language: c-cpp
-            build-mode: none
+            dependency-caching: true
+            # Not analyzing .m (Objective-C) & .h (Objective-C header) files for now unless CodeQL supports it in the future
 
     steps:
       - name: Checkout repository
@@ -49,9 +51,14 @@ jobs:
         uses: github/codeql-action/init@v4
 
         with:
+          dependency-caching: ${{ matrix.dependency-caching }}
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
           config-file: ./.github/codeql-config.yml
+
+      - name: Autobuild
+        if: matrix.build-mode == 'autobuild'
+        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
