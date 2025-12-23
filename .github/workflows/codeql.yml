@@ -37,7 +37,8 @@ jobs:
             build-mode: none
           - language: java
             build-mode: none
-            # Not analyzing .m & .h files for now unless CodeQL supports it in the future
+          - language: c-cpp
+            build-mode: none
 
     steps:
       - name: Checkout repository
