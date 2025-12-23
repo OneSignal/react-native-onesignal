@@ -1,7 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,7 +8,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { LogLevel, OneSignal } from 'react-native-onesignal';
+import {
+  LogLevel,
+  NotificationWillDisplayEvent,
+  OneSignal,
+} from 'react-native-onesignal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OSButtons from './OSButtons';
 import OSConsole from './OSConsole';
@@ -36,143 +39,112 @@ const OSDemo: React.FC = () => {
     });
   }, []);
 
-  const onForegroundWillDisplay = useCallback(
-    (event: unknown) => {
-      OSLog('OneSignal: notification will show in foreground:', event);
-      const notif = (
-        event as { getNotification: () => { title: string } }
-      ).getNotification();
-
-      const cancelButton = {
-        text: 'Cancel',
-        onPress: () => {
-          (event as { preventDefault: () => void }).preventDefault();
-        },
-        style: 'cancel' as const,
-      };
-
-      const completeButton = {
-        text: 'Display',
-        onPress: () => {
-          (event as { getNotification: () => { display: () => void } })
-            .getNotification()
-            .display();
-        },
-      };
-
-      Alert.alert(
-        'Display notification?',
-        notif.title,
-        [cancelButton, completeButton],
-        {
-          cancelable: true,
-        },
-      );
-    },
-    [OSLog],
-  );
-
-  const onNotificationClick = useCallback(
-    (event: unknown) => {
-      OSLog('OneSignal: notification clicked:', event);
-    },
-    [OSLog],
-  );
-
-  const onIAMClick = useCallback(
-    (event: unknown) => {
-      OSLog('OneSignal IAM clicked:', event);
-    },
-    [OSLog],
-  );
-
-  const onIAMWillDisplay = useCallback(
-    (event: unknown) => {
-      OSLog('OneSignal: will display IAM: ', event);
-    },
-    [OSLog],
-  );
-
-  const onIAMDidDisplay = useCallback(
-    (event: unknown) => {
-      OSLog('OneSignal: did display IAM: ', event);
-    },
-    [OSLog],
-  );
-
-  const onIAMWillDismiss = useCallback(
-    (event: unknown) => {
-      OSLog('OneSignal: will dismiss IAM: ', event);
-    },
-    [OSLog],
-  );
-
-  const onIAMDidDismiss = useCallback(
-    (event: unknown) => {
-      OSLog('OneSignal: did dismiss IAM: ', event);
-    },
-    [OSLog],
-  );
-
-  const onSubscriptionChange = useCallback(
-    (subscription: unknown) => {
-      OSLog('OneSignal: subscription changed:', subscription);
-    },
-    [OSLog],
-  );
-
-  const onPermissionChange = useCallback(
-    (granted: unknown) => {
-      OSLog('OneSignal: permission changed:', granted);
-    },
-    [OSLog],
-  );
-
-  const onUserChange = useCallback(
-    (event: unknown) => {
-      OSLog('OneSignal: user changed: ', event);
-    },
-    [OSLog],
-  );
-
   useEffect(() => {
+    console.log('Initializing OneSignal');
     OneSignal.initialize(APP_ID);
-    OneSignal.Debug.setLogLevel(LogLevel.None);
+    OneSignal.Debug.setLogLevel(LogLevel.Debug);
   }, []);
 
   useFocusEffect(
     useCallback(() => {
       console.log('Setting up event listeners');
 
+      const onForegroundWillDisplay = (event: NotificationWillDisplayEvent) => {
+        OSLog(
+          'OneSignal: notification will show in foreground:',
+          event.getNotification().title,
+        );
+
+        OSLog('Should show after 25 seconds:');
+        let i = 1;
+        const interval = setInterval(() => {
+          OSLog('Seconds passed:', i);
+          i++;
+          if (i > 25) {
+            clearInterval(interval);
+          }
+        }, 1000);
+        // OSLog('Preventing display');
+        // event.preventDefault();
+
+        // OSLog('Displaying notification');
+        // event.getNotification().display();
+      };
+
+      const onNotificationClick = (event: unknown) => {
+        OSLog('OneSignal: notification clicked:', event);
+      };
+
+      const onIAMClick = (event: unknown) => {
+        OSLog('OneSignal IAM clicked:', event);
+      };
+
+      const onIAMWillDisplay = (event: unknown) => {
+        OSLog('OneSignal: will display IAM: ', event);
+      };
+
+      const onIAMDidDisplay = (event: unknown) => {
+        OSLog('OneSignal: did display IAM: ', event);
+      };
+
+      const onIAMWillDismiss = (event: unknown) => {
+        OSLog('OneSignal: will dismiss IAM: ', event);
+      };
+
+      const onIAMDidDismiss = (event: unknown) => {
+        OSLog('OneSignal: did dismiss IAM: ', event);
+      };
+
+      const onSubscriptionChange = (subscription: unknown) => {
+        OSLog('OneSignal: subscription changed:', subscription);
+      };
+
+      const onPermissionChange = (granted: unknown) => {
+        OSLog('OneSignal: permission changed:', granted);
+      };
+
+      const onUserChange = (event: unknown) => {
+        OSLog('OneSignal: user changed: ', event);
+      };
+
       const setup = async () => {
-        OneSignal.LiveActivities.setupDefault();
+        // OneSignal.login('fadi-rna-11');
+        const onesignalID = await OneSignal.User.getOnesignalId();
+        console.log('OneSignal ID:', onesignalID);
+        const externalID = await OneSignal.User.getExternalId();
+        console.log('External ID:', externalID);
+        const pushID = await OneSignal.User.pushSubscription.getIdAsync();
+        console.log('Push ID:', pushID);
+
         OneSignal.Notifications.addEventListener(
           'foregroundWillDisplay',
           onForegroundWillDisplay,
         );
-        OneSignal.Notifications.addEventListener('click', onNotificationClick);
-        OneSignal.InAppMessages.addEventListener('click', onIAMClick);
-        OneSignal.InAppMessages.addEventListener(
-          'willDisplay',
-          onIAMWillDisplay,
-        );
-        OneSignal.InAppMessages.addEventListener('didDisplay', onIAMDidDisplay);
-        OneSignal.InAppMessages.addEventListener(
-          'willDismiss',
-          onIAMWillDismiss,
-        );
-        OneSignal.InAppMessages.addEventListener('didDismiss', onIAMDidDismiss);
-        OneSignal.User.pushSubscription.addEventListener(
-          'change',
-          onSubscriptionChange,
-        );
-        OneSignal.Notifications.addEventListener(
-          'permissionChange',
-          onPermissionChange,
-        );
-        OneSignal.User.addEventListener('change', onUserChange);
+        // OneSignal.LiveActivities.setupDefault();
+        // OneSignal.Notifications.addEventListener('click', onNotificationClick);
+        // OneSignal.InAppMessages.addEventListener('click', onIAMClick);
+        // OneSignal.InAppMessages.addEventListener(
+        //   'willDisplay',
+        //   onIAMWillDisplay,
+        // );
+        // OneSignal.InAppMessages.addEventListener('didDisplay', onIAMDidDisplay);
+        // OneSignal.InAppMessages.addEventListener(
+        //   'willDismiss',
+        //   onIAMWillDismiss,
+        // );
+        // OneSignal.InAppMessages.addEventListener('didDismiss', onIAMDidDismiss);
+        // OneSignal.User.pushSubscription.addEventListener(
+        //   'change',
+        //   onSubscriptionChange,
+        // );
+        // OneSignal.Notifications.addEventListener(
+        //   'permissionChange',
+        //   onPermissionChange,
+        // );
+        // OneSignal.User.addEventListener('change', onUserChange);
       };
 
+      console.log('Setup');
       setup();
 
       return () => {
@@ -214,18 +186,7 @@ const OSDemo: React.FC = () => {
         );
         OneSignal.User.removeEventListener('change', onUserChange);
       };
-    }, [
-      onForegroundWillDisplay,
-      onNotificationClick,
-      onIAMClick,
-      onIAMWillDisplay,
-      onIAMDidDisplay,
-      onIAMWillDismiss,
-      onIAMDidDismiss,
-      onSubscriptionChange,
-      onPermissionChange,
-      onUserChange,
-    ]),
+    }, [OSLog]),
   );
 
   const inputChange = useCallback((text: string) => {
