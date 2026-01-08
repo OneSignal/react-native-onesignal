@@ -90,17 +90,15 @@ jobs:
           cd examples/RNOneSignalTS
           bun run setup
 
-      - name: Get current native SDK versions
+      - name: Get current native SDK versions from target branch
         id: current_versions
         run: |
-          # Current React Native version
-          CURRENT_VERSION=$(jq -r .version package.json)
+          git fetch origin ${{ inputs.target_branch }}
 
-          # Extract current Android SDK version
-          ANDROID_VERSION=$(grep "api 'com.onesignal:OneSignal:" android/build.gradle | sed -E "s/.*OneSignal:([0-9.]+).*/\1/")
-
-          # Extract current iOS SDK version
-          IOS_VERSION=$(grep "OneSignalXCFramework" react-native-onesignal.podspec | sed -E "s/.*'([0-9.]+)'.*/\1/")
+          # Get versions from target branch (not the release branch)
+          CURRENT_VERSION=$(git show origin/${{ inputs.target_branch }}:package.json | jq -r .version)
+          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:android/build.gradle | grep "api 'com.onesignal:OneSignal:" | sed -E "s/.*OneSignal:([0-9.]+).*/\1/")
+          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:react-native-onesignal.podspec | grep "OneSignalXCFramework" | sed -E "s/.*'([0-9.]+)'.*/\1/")
 
           echo "rn_from=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "android_from=$ANDROID_VERSION" >> $GITHUB_OUTPUT
