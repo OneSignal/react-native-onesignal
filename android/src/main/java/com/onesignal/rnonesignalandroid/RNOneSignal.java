@@ -378,6 +378,7 @@ public class RNOneSignal extends ReactContextBaseJavaModule
     public void onWillDisplay(INotificationWillDisplayEvent event) {
         if (!this.hasAddedNotificationForegroundListener) {
             event.getNotification().display();
+            return;
         }
 
         INotification notification = event.getNotification();
@@ -392,9 +393,25 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
             try {
                 synchronized (event) {
-                    while (preventDefaultCache.containsKey(notificationId)) {
-                        event.wait();
+                    // Wait while notification is still in cache (JS hasn't responded yet)
+                    // Use timeout of 25 seconds to prevent infinite wait if JS doesn't respond
+                    long timeout = 25000; // 25 seconds
+                    long startTime = System.currentTimeMillis();
+                    while (notificationWillDisplayCache.containsKey(notificationId)) {
+                        long elapsed = System.currentTimeMillis() - startTime;
+                        long remaining = timeout - elapsed;
+                        if (remaining <= 0) {
+                            // Timeout: remove from cache and display by default
+                            notificationWillDisplayCache.remove(notificationId);
+                            break;
+                        }
+                        event.wait(remaining);
                     }
+                }
+
+                // If notification wasn't prevented, display it automatically
+                if (!preventDefaultCache.containsKey(notificationId)) {
+                    event.getNotification().display();
                 }
             } catch (InterruptedException e) {
                 Logging.error("InterruptedException: " + e.toString(), null);
@@ -407,11 +424,31 @@ public class RNOneSignal extends ReactContextBaseJavaModule
     @ReactMethod
     private void displayNotification(String notificationId) {
         INotificationWillDisplayEvent event = notificationWillDisplayCache.get(notificationId);
+
+        // If not found in notificationWillDisplayCache, check preventDefaultCache
+        // This handles the case where preventDefault() was called first
+        if (event == null) {
+            event = preventDefaultCache.get(notificationId);
+            if (event != null) {
+                Logging.debug(
+                        "displayNotification called after preventDefault for notification with id: " + notificationId
+                                + ". Displaying notification anyway.", null);
+            }
+        }
+
         if (event == null) {
             Logging.error(
                     "Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
             return;
         }
+
+        // Notify waiting thread and clean up caches
+        synchronized (event) {
+            preventDefaultCache.remove(notificationId);
+            notificationWillDisplayCache.remove(notificationId);
+            event.notify();
+        }
+
         event.getNotification().display();
     }
 
@@ -424,7 +461,13 @@ public class RNOneSignal extends ReactContextBaseJavaModule
             return;
         }
         event.preventDefault();
-        this.preventDefaultCache.put(notificationId, event);
+
+        // Add to cache and notify waiting thread
+        synchronized (event) {
+            this.preventDefaultCache.put(notificationId, event);
+            notificationWillDisplayCache.remove(notificationId);
+            event.notify();
+        }
     }
 
     @ReactMethod
