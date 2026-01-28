@@ -1,7 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,7 +8,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { LogLevel, OneSignal } from 'react-native-onesignal';
+import {
+  LogLevel,
+  NotificationClickEvent,
+  NotificationWillDisplayEvent,
+  OneSignal,
+} from 'react-native-onesignal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OSButtons from './OSButtons';
 import OSConsole from './OSConsole';
@@ -37,44 +41,51 @@ const OSDemo: React.FC = () => {
   }, []);
 
   const onForegroundWillDisplay = useCallback(
-    (event: unknown) => {
-      OSLog('OneSignal: notification will show in foreground:', event);
-      const notif = (
-        event as { getNotification: () => { title: string } }
-      ).getNotification();
+    (event: NotificationWillDisplayEvent) => {
+      const notif = event.getNotification();
+      OSLog('OneSignal: notification will show in foreground:', notif.title);
+      console.log('Will display notification event:', notif);
 
-      const cancelButton = {
-        text: 'Cancel',
-        onPress: () => {
-          (event as { preventDefault: () => void }).preventDefault();
-        },
-        style: 'cancel' as const,
-      };
+      event.preventDefault();
 
-      const completeButton = {
-        text: 'Display',
-        onPress: () => {
-          (event as { getNotification: () => { display: () => void } })
-            .getNotification()
-            .display();
-        },
-      };
+      setTimeout(() => {
+        notif.display();
+      }, 5000);
 
-      Alert.alert(
-        'Display notification?',
-        notif.title,
-        [cancelButton, completeButton],
-        {
-          cancelable: true,
-        },
-      );
+      // const cancelButton = {
+      //   text: 'Cancel',
+      //   onPress: () => {
+      //     (event as { preventDefault: () => void }).preventDefault();
+      //   },
+      //   style: 'cancel' as const,
+      // };
+
+      // const completeButton = {
+      //   text: 'Display',
+      //   onPress: () => {
+      //     (event as { getNotification: () => { display: () => void } })
+      //       .getNotification()
+      //       .display();
+      //   },
+      // };
+
+      // Alert.alert(
+      //   'Display notification?',
+      //   notif.title,
+      //   [cancelButton, completeButton],
+      //   {
+      //     cancelable: true,
+      //   },
+      // );
     },
     [OSLog],
   );
 
   const onNotificationClick = useCallback(
-    (event: unknown) => {
-      OSLog('OneSignal: notification clicked:', event);
+    (event: NotificationClickEvent) => {
+      const notif = event.notification;
+      OSLog('OneSignal: notification clicked:', notif.title);
+      console.log('Notification clicked event:', notif);
     },
     [OSLog],
   );
