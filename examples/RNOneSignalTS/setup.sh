@@ -9,6 +9,6 @@ bun pm pack
 mv react-native-onesignal-*.tgz react-native-onesignal.tgz
 
 # Use fresh install of the package
-cd $ORIGINAL_DIR
+cd "$ORIGINAL_DIR"
 bun pm cache rm
 bun i
