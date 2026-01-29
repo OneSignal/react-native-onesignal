@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
 import { renderButtonView } from './Helpers';
 // Remove: import {Text, Divider} from '@react-native-material/core';
@@ -410,9 +410,10 @@ const OSButtons: React.FC<Props> = ({ loggingFunction, inputFieldValue }) => {
           nested: {
             def: '456',
           },
+          ghi: null,
         },
         someArray: [1, 2],
-        someMixedArray: [1, '2', { abc: '123' }],
+        someMixedArray: [1, '2', { abc: '123' }, null],
         someNull: null,
       });
     });
