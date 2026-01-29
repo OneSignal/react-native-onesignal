@@ -19,7 +19,7 @@ spotless {
   java {
     target 'android/**/*.java', 'examples/RNOneSignalTS/android/app/src/**/*.java'
     targetExclude '**/build/**'
-    palantirJavaFormat('2.47.0')
+    palantirJavaFormat('2.85.0')
     removeUnusedImports()
     trimTrailingWhitespace()
     endWithNewline()
