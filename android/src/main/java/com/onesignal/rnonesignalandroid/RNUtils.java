@@ -275,7 +275,10 @@ public class RNUtils {
         while (iterator.hasNextKey()) {
             String key = iterator.nextKey();
             ReadableType type = readableMap.getType(key);
-            map.put(key, convertValue(type, readableMap, key));
+            Object value = convertValue(type, readableMap, key);
+            if (value != null) {
+                map.put(key, value);
+            }
         }
 
         return map;
@@ -286,7 +289,10 @@ public class RNUtils {
 
         for (int i = 0; i < readableArray.size(); i++) {
             ReadableType type = readableArray.getType(i);
-            list.add(convertValue(type, readableArray, i));
+            Object value = convertValue(type, readableArray, i);
+            if (value != null) {
+                list.add(value);
+            }
         }
 
         return list;
