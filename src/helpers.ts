@@ -16,3 +16,18 @@ export function isNativeModuleLoaded(module: NativeModule): boolean {
 
   return true;
 }
+
+/**
+ * Returns true if the value is a JSON-serializable object.
+ */
+export function isObjectSerializable(value: unknown): boolean {
+  if (!(typeof value === 'object' && value !== null && !Array.isArray(value))) {
+    return false;
+  }
+  try {
+    JSON.stringify(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
