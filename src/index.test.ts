@@ -894,6 +894,49 @@ describe('OneSignal', () => {
       });
     });
 
+    describe('trackEvent', () => {
+      test('should track event with name and properties', () => {
+        const properties = { key: 'value', count: 42 };
+        OneSignal.User.trackEvent('purchase', properties);
+        expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith(
+          'purchase',
+          properties,
+        );
+      });
+
+      test('should track event with just name using default empty properties', () => {
+        OneSignal.User.trackEvent('page_view');
+        expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('page_view', {});
+      });
+
+      test('should not track event if native module is not loaded', () => {
+        isNativeLoadedSpy.mockReturnValue(false);
+        OneSignal.User.trackEvent('event');
+        expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
+      });
+
+      test('should not track event if properties are not serializable', () => {
+        const circular: Record<string, unknown> = {};
+        circular.self = circular;
+        OneSignal.User.trackEvent('event', circular);
+        expect(errorSpy).toHaveBeenCalledWith(
+          'Properties must be a JSON-serializable object',
+        );
+        expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
+      });
+
+      test('should not track event if properties is not an object', () => {
+        OneSignal.User.trackEvent(
+          'event',
+          'invalid' as unknown as Record<string, unknown>,
+        );
+        expect(errorSpy).toHaveBeenCalledWith(
+          'Properties must be a JSON-serializable object',
+        );
+        expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
+      });
+    });
+
     describe('Notifications', () => {
       describe('hasPermission (deprecated)', () => {
         test('should log deprecation warning', () => {

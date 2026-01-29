@@ -14,7 +14,11 @@ import {
 import type { OSNotificationPermission } from './constants/subscription';
 import EventManager from './events/EventManager';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
-import { isNativeModuleLoaded, isValidCallback } from './helpers';
+import {
+  isNativeModuleLoaded,
+  isObjectSerializable,
+  isValidCallback,
+} from './helpers';
 import type {
   InAppMessage,
   InAppMessageClickEvent,
@@ -602,7 +606,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (!isObjectSerializable(properties)) {
-        console.error('Properties must be JSON-serializable');
+        console.error('Properties must be a JSON-serializable object');
         return;
       }
 
@@ -953,21 +957,6 @@ export namespace OneSignal {
 
       RNOneSignal.addOutcomeWithValue(name, Number(value));
     }
-  }
-}
-
-/**
- * Returns true if the value is a JSON-serializable object.
- */
-function isObjectSerializable(value: unknown): boolean {
-  if (!(typeof value === 'object' && value !== null && !Array.isArray(value))) {
-    return false;
-  }
-  try {
-    JSON.stringify(value);
-    return true;
-  } catch (e) {
-    return false;
   }
 }
 
