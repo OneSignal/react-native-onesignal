@@ -906,7 +906,10 @@ describe('OneSignal', () => {
 
       test('should track event with just name using default empty properties', () => {
         OneSignal.User.trackEvent('page_view');
-        expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('page_view', {});
+        expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith(
+          'page_view',
+          {},
+        );
       });
 
       test('should not track event if native module is not loaded', () => {
