@@ -14,7 +14,11 @@ import {
 import type { OSNotificationPermission } from './constants/subscription';
 import EventManager from './events/EventManager';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
-import { isNativeModuleLoaded, isValidCallback } from './helpers';
+import {
+  isNativeModuleLoaded,
+  isObjectSerializable,
+  isValidCallback,
+} from './helpers';
 import type {
   InAppMessage,
   InAppMessageClickEvent,
@@ -589,6 +593,24 @@ export namespace OneSignal {
       }
 
       return RNOneSignal.getTags();
+    }
+
+    /**
+     * Track custom events for the current user.
+     * Note: Currently, null values will be omitted for Android.
+     * */
+    export function trackEvent(
+      name: string,
+      properties: Record<string, unknown> = {},
+    ) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (!isObjectSerializable(properties)) {
+        console.error('Properties must be a JSON-serializable object');
+        return;
+      }
+
+      RNOneSignal.trackEvent(name, properties);
     }
   }
 
