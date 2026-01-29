@@ -590,6 +590,24 @@ export namespace OneSignal {
 
       return RNOneSignal.getTags();
     }
+
+    /**
+     * Track custom events for the current user.
+     * Note: Currently, null values will be omitted for Android.
+     * */
+    export function trackEvent(
+      name: string,
+      properties: Record<string, unknown> = {},
+    ) {
+      if (!isNativeModuleLoaded(RNOneSignal)) return;
+
+      if (!isObjectSerializable(properties)) {
+        console.error('Properties must be JSON-serializable');
+        return;
+      }
+
+      RNOneSignal.trackEvent(name, properties);
+    }
   }
 
   export namespace Notifications {
