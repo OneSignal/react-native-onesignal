@@ -956,6 +956,21 @@ export namespace OneSignal {
   }
 }
 
+/**
+ * Returns true if the value is a JSON-serializable object.
+ */
+function isObjectSerializable(value: unknown): boolean {
+  if (!(typeof value === 'object' && value !== null && !Array.isArray(value))) {
+    return false;
+  }
+  try {
+    JSON.stringify(value);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export { OSNotificationPermission } from './constants/subscription';
 export {
   NotificationWillDisplayEvent,
