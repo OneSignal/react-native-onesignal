@@ -758,9 +758,6 @@ public class RNOneSignal extends ReactContextBaseJavaModule
 
     @ReactMethod
     public void trackEvent(String name, @Nullable ReadableMap properties) {
-        OneSignal.getUser()
-                .trackEvent(
-                        name,
-                        properties != null ? RNUtils.convertReadableMapToMap(properties) : new java.util.HashMap<>());
+        OneSignal.getUser().trackEvent(name, properties != null ? properties.toHashMap() : new HashMap<>());
     }
 }
