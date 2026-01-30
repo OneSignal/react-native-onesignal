@@ -1,6 +1,6 @@
 {
   "name": "react-native-onesignal",
-  "version": "5.2.17",
+  "version": "5.3.0",
   "description": "React Native OneSignal SDK",
   "files": [
     "dist",
