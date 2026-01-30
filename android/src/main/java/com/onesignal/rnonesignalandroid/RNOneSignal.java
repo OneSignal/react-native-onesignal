@@ -36,6 +36,7 @@ Authors:
 package com.onesignal.rnonesignalandroid;
 
 import android.content.Context;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -753,5 +754,10 @@ public class RNOneSignal extends ReactContextBaseJavaModule
     @ReactMethod
     public void removeListeners(int count) {
         // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    public void trackEvent(String name, @Nullable ReadableMap properties) {
+        OneSignal.getUser().trackEvent(name, properties != null ? properties.toHashMap() : new HashMap<>());
     }
 }
