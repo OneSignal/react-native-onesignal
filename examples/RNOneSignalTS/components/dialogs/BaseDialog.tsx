@@ -7,6 +7,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
 } from 'react-native';
 import { Colors } from '../../constants/Colors';
 
@@ -36,58 +37,63 @@ export function BaseDialog({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.overlay}
-      >
-        <TouchableOpacity
-          style={styles.overlay}
-          activeOpacity={1}
-          onPress={onClose}
+      <Pressable style={styles.backdrop} onPress={onClose}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.centeredView}
         >
-          <TouchableOpacity activeOpacity={1} style={styles.container}>
+          <Pressable style={styles.container} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.title}>{title}</Text>
             <View style={styles.content}>{children}</View>
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+              <TouchableOpacity style={styles.button} onPress={onClose}>
+                <Text style={styles.cancelButtonText}>CANCEL</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.confirmButton,
-                  confirmDisabled && styles.confirmButtonDisabled,
-                ]}
+                style={styles.button}
                 onPress={onConfirm}
                 disabled={confirmDisabled}
               >
-                <Text style={styles.confirmButtonText}>{confirmText}</Text>
+                <Text style={[
+                  styles.confirmButtonText,
+                  confirmDisabled && styles.confirmButtonTextDisabled,
+                ]}>
+                  {confirmText.toUpperCase()}
+                </Text>
               </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
+          </Pressable>
+        </KeyboardAvoidingView>
+      </Pressable>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
+  backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  centeredView: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
     backgroundColor: Colors.cardBackground,
-    borderRadius: 8,
-    width: '80%',
+    borderRadius: 4,
+    width: '85%',
     maxWidth: 400,
-    padding: 20,
+    paddingTop: 20,
+    paddingHorizontal: 24,
+    paddingBottom: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 8,
+    elevation: 24,
   },
   title: {
     fontSize: 18,
@@ -101,29 +107,23 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 12,
+    gap: 8,
   },
-  cancelButton: {
+  button: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
   },
   cancelButtonText: {
-    color: Colors.darkText,
-    fontSize: 16,
+    color: Colors.primary,
+    fontSize: 14,
     fontWeight: '600',
-  },
-  confirmButton: {
-    backgroundColor: Colors.primary,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 4,
-  },
-  confirmButtonDisabled: {
-    backgroundColor: '#ccc',
   },
   confirmButtonText: {
-    color: Colors.white,
-    fontSize: 16,
+    color: Colors.primary,
+    fontSize: 14,
     fontWeight: '600',
+  },
+  confirmButtonTextDisabled: {
+    color: '#ccc',
   },
 });

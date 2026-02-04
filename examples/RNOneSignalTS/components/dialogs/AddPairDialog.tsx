@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextInput, StyleSheet } from 'react-native';
+import { TextInput, StyleSheet, View, Text } from 'react-native';
 import { BaseDialog } from './BaseDialog';
 import { Colors } from '../../constants/Colors';
 
@@ -46,31 +46,44 @@ export function AddPairDialog({
       confirmDisabled={!key.trim() || !value.trim()}
       confirmText="Add"
     >
-      <TextInput
-        style={styles.input}
-        placeholder={keyPlaceholder}
-        value={key}
-        onChangeText={setKey}
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder={valuePlaceholder}
-        value={value}
-        onChangeText={setValue}
-        autoCapitalize="none"
-      />
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>{keyPlaceholder}</Text>
+        <TextInput
+          style={styles.input}
+          placeholder={keyPlaceholder}
+          value={key}
+          onChangeText={setKey}
+          autoCapitalize="none"
+        />
+      </View>
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>{valuePlaceholder}</Text>
+        <TextInput
+          style={styles.input}
+          placeholder={valuePlaceholder}
+          value={value}
+          onChangeText={setValue}
+          autoCapitalize="none"
+        />
+      </View>
     </BaseDialog>
   );
 }
 
 const styles = StyleSheet.create({
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 12,
+    color: Colors.darkText,
+    marginBottom: 4,
+  },
   input: {
-    borderWidth: 1,
-    borderColor: Colors.divider,
-    borderRadius: 4,
-    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.darkText,
+    paddingVertical: 8,
     fontSize: 16,
-    marginBottom: 12,
+    color: Colors.darkText,
   },
 });

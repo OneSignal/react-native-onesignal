@@ -52,10 +52,10 @@ export function AddSmsDialog({
 
 const styles = StyleSheet.create({
   input: {
-    borderWidth: 1,
-    borderColor: Colors.divider,
-    borderRadius: 4,
-    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.darkText,
+    paddingVertical: 8,
     fontSize: 16,
+    color: Colors.darkText,
   },
 });
