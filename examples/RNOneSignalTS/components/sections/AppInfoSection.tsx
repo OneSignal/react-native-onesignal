@@ -1,25 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
 import { Card } from '../common/Card';
 import { SectionHeader } from '../common/SectionHeader';
 import { ActionButton } from '../common/ActionButton';
+import { LoginUserDialog } from '../dialogs/LoginUserDialog';
 import { Colors } from '../../constants/Colors';
+import { APP_ID } from '../../constants/Config';
 
 interface AppInfoSectionProps {
   loggingFunction: (message: string, optionalArg?: unknown) => void;
-  inputValue: string;
 }
 
 export function AppInfoSection({
   loggingFunction,
-  inputValue,
 }: AppInfoSectionProps) {
-  const APP_ID = '77e32082-ea27-42e3-a898-c72e141824ef';
+  const [loginDialogVisible, setLoginDialogVisible] = useState(false);
 
-  const handleLogin = () => {
-    loggingFunction('Attempting to login a user: ', inputValue);
-    OneSignal.login(inputValue);
+  const handleLogin = (externalId: string) => {
+    loggingFunction('Attempting to login a user: ', externalId);
+    OneSignal.login(externalId);
   };
 
   const handleLogout = () => {
@@ -41,12 +41,12 @@ export function AppInfoSection({
       </View>
       <View style={styles.buttonContainer}>
         <ActionButton
-          title="Login"
-          onPress={handleLogin}
+          title="Login User"
+          onPress={() => setLoginDialogVisible(true)}
           style={styles.button}
         />
         <ActionButton
-          title="Logout"
+          title="Logout User"
           onPress={handleLogout}
           style={styles.button}
         />
@@ -55,6 +55,11 @@ export function AppInfoSection({
         title="Revoke Consent"
         onPress={handleRevokeConsent}
         style={styles.revokeButton}
+      />
+      <LoginUserDialog
+        visible={loginDialogVisible}
+        onClose={() => setLoginDialogVisible(false)}
+        onConfirm={handleLogin}
       />
     </Card>
   );

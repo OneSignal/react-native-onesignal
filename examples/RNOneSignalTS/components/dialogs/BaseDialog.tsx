@@ -17,6 +17,7 @@ interface BaseDialogProps {
   onConfirm: () => void;
   children: ReactNode;
   confirmDisabled?: boolean;
+  confirmText?: string;
 }
 
 export function BaseDialog({
@@ -26,6 +27,7 @@ export function BaseDialog({
   onConfirm,
   children,
   confirmDisabled = false,
+  confirmText = 'Add',
 }: BaseDialogProps) {
   return (
     <Modal
@@ -58,7 +60,7 @@ export function BaseDialog({
                 onPress={onConfirm}
                 disabled={confirmDisabled}
               >
-                <Text style={styles.confirmButtonText}>Confirm</Text>
+                <Text style={styles.confirmButtonText}>{confirmText}</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

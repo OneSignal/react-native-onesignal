@@ -44,6 +44,7 @@ export function AddPairDialog({
       onClose={onClose}
       onConfirm={handleConfirm}
       confirmDisabled={!key.trim() || !value.trim()}
+      confirmText="Add"
     >
       <TextInput
         style={styles.input}
