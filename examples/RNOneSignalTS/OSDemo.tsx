@@ -15,8 +15,24 @@ import {
   OneSignal,
 } from 'react-native-onesignal';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import OSButtons from './OSButtons';
 import OSConsole from './OSConsole';
+import { AppStateProvider } from './context/AppStateContext';
+import { Colors } from './constants/Colors';
+import { PrivacyConsentSection } from './components/sections/PrivacyConsentSection';
+import { AppInfoSection } from './components/sections/AppInfoSection';
+import { AliasesSection } from './components/sections/AliasesSection';
+import { EmailSection } from './components/sections/EmailSection';
+import { SmsSection } from './components/sections/SmsSection';
+import { TagsSection } from './components/sections/TagsSection';
+import { PushSubscriptionSection } from './components/sections/PushSubscriptionSection';
+import { OutcomeSection } from './components/sections/OutcomeSection';
+import { InAppMessagingSection } from './components/sections/InAppMessagingSection';
+import { TriggersSection } from './components/sections/TriggersSection';
+import { LocationSection } from './components/sections/LocationSection';
+import { NotificationDemoSection } from './components/sections/NotificationDemoSection';
+import { IamDemoSection } from './components/sections/IamDemoSection';
+import { LiveActivitiesSection } from './components/sections/LiveActivitiesSection';
+import { NavigationSection } from './components/sections/NavigationSection';
 
 const APP_ID = '77e32082-ea27-42e3-a898-c72e141824ef';
 
@@ -244,30 +260,46 @@ const OSDemo: React.FC = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
-      <View style={styles.header}>
-        <Text style={styles.title}>OneSignal</Text>
-        <OSConsole value={consoleValue} />
-        <View style={styles.clearButton}>
-          <TouchableOpacity
-            style={styles.clearButtonTouchable}
-            onPress={() => {
-              setConsoleValue('');
-            }}
-          >
-            <Text style={styles.clearButtonText}>X</Text>
-          </TouchableOpacity>
+    <AppStateProvider>
+      <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+        <View style={styles.header}>
+          <Text style={styles.title}>OneSignal</Text>
+          <OSConsole value={consoleValue} />
+          <View style={styles.clearButton}>
+            <TouchableOpacity
+              style={styles.clearButtonTouchable}
+              onPress={() => {
+                setConsoleValue('');
+              }}
+            >
+              <Text style={styles.clearButtonText}>X</Text>
+            </TouchableOpacity>
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Input"
+            onChangeText={inputChange}
+          />
         </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Input"
-          onChangeText={inputChange}
-        />
-      </View>
-      <ScrollView style={styles.scrollView}>
-        <OSButtons loggingFunction={OSLog} inputFieldValue={inputValue} />
-      </ScrollView>
-    </SafeAreaView>
+        <ScrollView style={styles.scrollView}>
+          <PrivacyConsentSection loggingFunction={OSLog} />
+          <AppInfoSection loggingFunction={OSLog} inputValue={inputValue} />
+          <AliasesSection loggingFunction={OSLog} />
+          <EmailSection loggingFunction={OSLog} />
+          <SmsSection loggingFunction={OSLog} />
+          <TagsSection loggingFunction={OSLog} />
+          <PushSubscriptionSection loggingFunction={OSLog} />
+          <OutcomeSection loggingFunction={OSLog} />
+          <InAppMessagingSection loggingFunction={OSLog} />
+          <TriggersSection loggingFunction={OSLog} />
+          <LocationSection loggingFunction={OSLog} />
+          <LiveActivitiesSection loggingFunction={OSLog} inputValue={inputValue} />
+          <NotificationDemoSection loggingFunction={OSLog} />
+          <IamDemoSection loggingFunction={OSLog} />
+          <NavigationSection />
+        </ScrollView>
+      </SafeAreaView>
+    </AppStateProvider>
   );
 };
 
@@ -281,10 +313,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    flex: 0.5,
+    flex: 0.3,
   },
   scrollView: {
-    flex: 0.5,
+    flex: 0.7,
+    backgroundColor: Colors.background,
   },
   title: {
     fontSize: 40,
@@ -304,7 +337,7 @@ const styles = StyleSheet.create({
   clearButtonTouchable: {
     width: 44,
     height: 44,
-    backgroundColor: '#007bff',
+    backgroundColor: Colors.primary,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
