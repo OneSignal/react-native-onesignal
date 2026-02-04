@@ -3,28 +3,28 @@ import { TextInput, StyleSheet } from 'react-native';
 import { BaseDialog } from './BaseDialog';
 import { Colors } from '../../constants/Colors';
 
-interface AddSmsDialogProps {
+interface LoginUserDialogProps {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (phone: string) => void;
+  onConfirm: (externalId: string) => void;
 }
 
-export function AddSmsDialog({
+export function LoginUserDialog({
   visible,
   onClose,
   onConfirm,
-}: AddSmsDialogProps) {
-  const [phone, setPhone] = useState('');
+}: LoginUserDialogProps) {
+  const [externalId, setExternalId] = useState('test');
 
   useEffect(() => {
     if (!visible) {
-      setPhone('');
+      setExternalId('test');
     }
   }, [visible]);
 
   const handleConfirm = () => {
-    if (phone.trim()) {
-      onConfirm(phone.trim());
+    if (externalId.trim()) {
+      onConfirm(externalId.trim());
       onClose();
     }
   };
@@ -32,19 +32,19 @@ export function AddSmsDialog({
   return (
     <BaseDialog
       visible={visible}
-      title="New SMS"
+      title="External User Id"
       onClose={onClose}
       onConfirm={handleConfirm}
-      confirmDisabled={!phone.trim()}
-      confirmText="Add"
+      confirmDisabled={!externalId.trim()}
+      confirmText="Login"
     >
       <TextInput
         style={styles.input}
-        placeholder="Phone number"
-        value={phone}
-        onChangeText={setPhone}
-        keyboardType="phone-pad"
+        placeholder="External User Id"
+        value={externalId}
+        onChangeText={setExternalId}
         autoCapitalize="none"
+        autoCorrect={false}
       />
     </BaseDialog>
   );
@@ -52,10 +52,9 @@ export function AddSmsDialog({
 
 const styles = StyleSheet.create({
   input: {
-    borderWidth: 1,
-    borderColor: Colors.divider,
-    borderRadius: 4,
-    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.primary,
+    paddingVertical: 8,
     fontSize: 16,
   },
 });

@@ -32,10 +32,11 @@ export function AddEmailDialog({
   return (
     <BaseDialog
       visible={visible}
-      title="Add Email"
+      title="New Email"
       onClose={onClose}
       onConfirm={handleConfirm}
       confirmDisabled={!email.trim()}
+      confirmText="Add"
     >
       <TextInput
         style={styles.input}

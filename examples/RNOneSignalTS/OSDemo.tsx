@@ -18,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import OSConsole from './OSConsole';
 import { AppStateProvider } from './context/AppStateContext';
 import { Colors } from './constants/Colors';
+import { APP_ID } from './constants/Config';
 import { PrivacyConsentSection } from './components/sections/PrivacyConsentSection';
 import { AppInfoSection } from './components/sections/AppInfoSection';
 import { AliasesSection } from './components/sections/AliasesSection';
@@ -33,8 +34,6 @@ import { NotificationDemoSection } from './components/sections/NotificationDemoS
 import { IamDemoSection } from './components/sections/IamDemoSection';
 import { LiveActivitiesSection } from './components/sections/LiveActivitiesSection';
 import { NavigationSection } from './components/sections/NavigationSection';
-
-const APP_ID = '77e32082-ea27-42e3-a898-c72e141824ef';
 
 const OSDemo: React.FC = () => {
   const [consoleValue, setConsoleValue] = useState('');
@@ -283,7 +282,7 @@ const OSDemo: React.FC = () => {
         </View>
         <ScrollView style={styles.scrollView}>
           <PrivacyConsentSection loggingFunction={OSLog} />
-          <AppInfoSection loggingFunction={OSLog} inputValue={inputValue} />
+          <AppInfoSection loggingFunction={OSLog} />
           <AliasesSection loggingFunction={OSLog} />
           <EmailSection loggingFunction={OSLog} />
           <SmsSection loggingFunction={OSLog} />
