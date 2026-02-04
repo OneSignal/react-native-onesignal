@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Card } from '../common/Card';
 import { SectionHeader } from '../common/SectionHeader';
 import { IamTypes } from '../../constants/IamTemplates';
 import { Colors } from '../../constants/Colors';
@@ -17,8 +16,8 @@ export function IamDemoSection({ loggingFunction }: IamDemoSectionProps) {
   };
 
   return (
-    <Card>
-      <SectionHeader title="In-App Message Demos" />
+    <View style={styles.container}>
+      <SectionHeader title="Send In-App Message" />
       <View style={styles.grid}>
         {IamTypes.map((type) => (
           <TouchableOpacity
@@ -31,33 +30,38 @@ export function IamDemoSection({ loggingFunction }: IamDemoSectionProps) {
           </TouchableOpacity>
         ))}
       </View>
-    </Card>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: 12,
+    marginVertical: 8,
+  },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    justifyContent: 'space-between',
   },
   gridItem: {
     width: '48%',
-    backgroundColor: Colors.background,
-    borderRadius: 6,
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
     padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 80,
+    minHeight: 100,
+    marginBottom: 8,
   },
   icon: {
-    fontSize: 32,
+    fontSize: 36,
     marginBottom: 8,
   },
   title: {
-    fontSize: 12,
-    color: Colors.darkText,
+    fontSize: 14,
+    color: Colors.white,
     textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
 });
