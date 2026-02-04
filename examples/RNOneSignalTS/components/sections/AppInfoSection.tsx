@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
-import { Card } from '../common/Card';
-import { SectionHeader } from '../common/SectionHeader';
-import { ActionButton } from '../common/ActionButton';
-import { LoginUserDialog } from '../dialogs/LoginUserDialog';
 import { Colors } from '../../constants/Colors';
 import { APP_ID } from '../../constants/Config';
+import { ActionButton } from '../common/ActionButton';
+import { Card } from '../common/Card';
+import { SectionHeader } from '../common/SectionHeader';
+import { LoginUserDialog } from '../dialogs/LoginUserDialog';
 
 interface AppInfoSectionProps {
   loggingFunction: (message: string, optionalArg?: unknown) => void;
 }
 
-export function AppInfoSection({
-  loggingFunction,
-}: AppInfoSectionProps) {
+export function AppInfoSection({ loggingFunction }: AppInfoSectionProps) {
   const [loginDialogVisible, setLoginDialogVisible] = useState(false);
 
   const handleLogin = (externalId: string) => {

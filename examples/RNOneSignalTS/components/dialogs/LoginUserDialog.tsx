@@ -53,8 +53,9 @@ export function LoginUserDialog({
 const styles = StyleSheet.create({
   input: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.primary,
+    borderBottomColor: Colors.darkText,
     paddingVertical: 8,
     fontSize: 16,
+    color: Colors.darkText,
   },
 });
