@@ -27,7 +27,8 @@ export interface NotificationTemplate {
 }
 
 // Firebase Storage base URLs for notification icons and images
-const FIREBASE_BASE_URL = 'https://firebasestorage.googleapis.com/v0/b/onesignaltest-e7802.appspot.com/o/NOTIFICATION_ICON%2F';
+const FIREBASE_BASE_URL =
+  'https://firebasestorage.googleapis.com/v0/b/onesignaltest-e7802.appspot.com/o/NOTIFICATION_ICON%2F';
 
 // Helper function to build Firebase Storage URLs
 const buildIconUrl = (filename: string): string => {
@@ -55,7 +56,8 @@ const GENERAL_VARIATIONS: NotificationPayload[] = [
   {
     heading: 'Birthdays',
     content: 'Say happy birthday to Rodrigo and 5 others!',
-    largeIcon: 'https://images.vexels.com/media/users/3/147226/isolated/preview/068af50eededd7a739aac52d8e509ab5-three-candles-birthday-cake-icon-by-vexels.png',
+    largeIcon:
+      'https://images.vexels.com/media/users/3/147226/isolated/preview/068af50eededd7a739aac52d8e509ab5-three-candles-birthday-cake-icon-by-vexels.png',
   },
   {
     heading: 'New Post',
@@ -113,8 +115,10 @@ const BREAKING_NEWS_VARIATIONS: NotificationPayload[] = [
   {
     heading: 'The rap game wont be the same',
     content: 'Nipsey Hussle shot dead in his own hometown!',
-    largeIcon: 'https://pbs.twimg.com/profile_images/719602655337656321/kQUzR2Es_400x400.jpg',
-    bigPicture: 'https://lab.fm/wp-content/uploads/2019/04/nipsey-hussle-cipriani-diamond-ball-2018-nyc-credit-jstone-shutterstock@1800x1013.jpg',
+    largeIcon:
+      'https://pbs.twimg.com/profile_images/719602655337656321/kQUzR2Es_400x400.jpg',
+    bigPicture:
+      'https://lab.fm/wp-content/uploads/2019/04/nipsey-hussle-cipriani-diamond-ball-2018-nyc-credit-jstone-shutterstock@1800x1013.jpg',
     buttons: [
       { id: 'view', text: 'View', icon: 'ic_menu_view' },
       { id: 'save', text: 'Save', icon: 'ic_menu_save' },
@@ -123,8 +127,10 @@ const BREAKING_NEWS_VARIATIONS: NotificationPayload[] = [
   },
   {
     heading: 'CNN being bought by Fox?',
-    content: 'Fox has shown an increasing interest in purchasing Fox and because of some other deals this year it could actually happen!',
-    largeIcon: 'https://www.thewrap.com/sites/default/wp-content/uploads/files/2013/Jul/08/101771/gallupinside.png',
+    content:
+      'Fox has shown an increasing interest in purchasing Fox and because of some other deals this year it could actually happen!',
+    largeIcon:
+      'https://www.thewrap.com/sites/default/wp-content/uploads/files/2013/Jul/08/101771/gallupinside.png',
     bigPicture: 'https://i.ytimg.com/vi/C8YBKBuX43Q/maxresdefault.jpg',
     buttons: [
       { id: 'view', text: 'View', icon: 'ic_menu_view' },
@@ -135,8 +141,10 @@ const BREAKING_NEWS_VARIATIONS: NotificationPayload[] = [
   {
     heading: 'Teslas next venture!',
     content: 'Tesla releasing fully autonomous driving service!',
-    largeIcon: 'https://i.etsystatic.com/13567406/r/il/6657a5/1083941709/il_794xN.1083941709_k3vi.jpg',
-    bigPicture: 'https://electrek.co/wp-content/uploads/sites/3/2018/01/screen-shot-2018-01-04-at-12-59-25-pm.jpg?quality=82&strip=all&w=1600',
+    largeIcon:
+      'https://i.etsystatic.com/13567406/r/il/6657a5/1083941709/il_794xN.1083941709_k3vi.jpg',
+    bigPicture:
+      'https://electrek.co/wp-content/uploads/sites/3/2018/01/screen-shot-2018-01-04-at-12-59-25-pm.jpg?quality=82&strip=all&w=1600',
     buttons: [
       { id: 'view', text: 'View', icon: 'ic_menu_view' },
       { id: 'save', text: 'Save', icon: 'ic_menu_save' },

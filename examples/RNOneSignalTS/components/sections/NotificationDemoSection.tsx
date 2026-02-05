@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { SectionHeader } from '../common/SectionHeader';
 import { NotificationTypes } from '../../constants/NotificationTemplates';
 import { Colors } from '../../constants/Colors';
@@ -13,7 +19,9 @@ interface NotificationDemoSectionProps {
 export function NotificationDemoSection({
   loggingFunction,
 }: NotificationDemoSectionProps) {
-  const [sendingNotification, setSendingNotification] = useState<string | null>(null);
+  const [sendingNotification, setSendingNotification] = useState<string | null>(
+    null,
+  );
 
   const handleNotificationDemo = async (type: string, title: string) => {
     setSendingNotification(type);
@@ -21,22 +29,24 @@ export function NotificationDemoSection({
 
     try {
       // Get template for this notification type
-      const template = NotificationTemplates.find(t => t.id === type);
+      const template = NotificationTemplates.find((t) => t.id === type);
       if (!template) {
         throw new Error(`Template not found for ${type}`);
       }
 
       // Pick a random variation (Android uses random selection)
-      const variation = template.variations[
-        Math.floor(Math.random() * template.variations.length)
-      ];
+      const variation =
+        template.variations[
+          Math.floor(Math.random() * template.variations.length)
+        ];
 
       // Send notification
       await sendNotification(variation);
 
       loggingFunction(`✓ ${title} notification sent successfully!`);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       loggingFunction(`✗ Failed to send ${title}: ${errorMessage}`);
     } finally {
       setSendingNotification(null);
@@ -52,7 +62,7 @@ export function NotificationDemoSection({
             key={type.id}
             style={[
               styles.gridItem,
-              sendingNotification === type.id && styles.gridItemLoading
+              sendingNotification === type.id && styles.gridItemLoading,
             ]}
             onPress={() => handleNotificationDemo(type.id, type.title)}
             disabled={sendingNotification !== null}

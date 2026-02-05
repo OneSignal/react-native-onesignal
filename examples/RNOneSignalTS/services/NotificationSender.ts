@@ -50,13 +50,18 @@ async function getPushSubscriptionId(): Promise<string | null> {
     const playerId = await OneSignal.User.pushSubscription.getIdAsync();
 
     if (!playerId) {
-      console.warn('[NotificationSender] No push subscription ID found. User may not be subscribed.');
+      console.warn(
+        '[NotificationSender] No push subscription ID found. User may not be subscribed.',
+      );
       return null;
     }
 
     return playerId;
   } catch (error) {
-    console.error('[NotificationSender] Error getting push subscription ID:', error);
+    console.error(
+      '[NotificationSender] Error getting push subscription ID:',
+      error,
+    );
     return null;
   }
 }
@@ -85,7 +90,7 @@ async function isUserOptedIn(): Promise<boolean> {
  */
 function buildNotificationPayload(
   template: NotificationPayload,
-  playerId: string
+  playerId: string,
 ): OneSignalAPIPayload {
   const payload: OneSignalAPIPayload = {
     app_id: APP_ID,
@@ -137,11 +142,13 @@ function buildNotificationPayload(
  * @param template The notification payload template to send
  * @throws Error if user is not subscribed, API key is missing, or API call fails
  */
-export async function sendNotification(template: NotificationPayload): Promise<void> {
+export async function sendNotification(
+  template: NotificationPayload,
+): Promise<void> {
   // Validate REST API key is configured
   if (!REST_API_KEY || REST_API_KEY === 'YOUR_REST_API_KEY_HERE') {
     throw new Error(
-      'REST API Key not configured. Please add your OneSignal REST API Key to constants/Config.ts'
+      'REST API Key not configured. Please add your OneSignal REST API Key to constants/Config.ts',
     );
   }
 
@@ -149,7 +156,7 @@ export async function sendNotification(template: NotificationPayload): Promise<v
   const optedIn = await isUserOptedIn();
   if (!optedIn) {
     throw new Error(
-      'User is not opted in to push notifications. Please enable notifications in settings.'
+      'User is not opted in to push notifications. Please enable notifications in settings.',
     );
   }
 
@@ -157,16 +164,22 @@ export async function sendNotification(template: NotificationPayload): Promise<v
   const playerId = await getPushSubscriptionId();
   if (!playerId) {
     throw new Error(
-      'No push subscription ID found. User may not be properly subscribed to push notifications.'
+      'No push subscription ID found. User may not be properly subscribed to push notifications.',
     );
   }
 
-  console.log('[NotificationSender] Sending notification to player ID:', playerId);
+  console.log(
+    '[NotificationSender] Sending notification to player ID:',
+    playerId,
+  );
 
   // Build the API payload
   const payload = buildNotificationPayload(template, playerId);
 
-  console.log('[NotificationSender] Notification payload:', JSON.stringify(payload, null, 2));
+  console.log(
+    '[NotificationSender] Notification payload:',
+    JSON.stringify(payload, null, 2),
+  );
 
   try {
     // Make HTTP POST request to OneSignal API
@@ -174,7 +187,7 @@ export async function sendNotification(template: NotificationPayload): Promise<v
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${REST_API_KEY}`,
+        Authorization: `Basic ${REST_API_KEY}`,
       },
       body: JSON.stringify(payload),
     });
@@ -189,7 +202,9 @@ export async function sendNotification(template: NotificationPayload): Promise<v
       } else if (response.status === 401) {
         throw new Error('Invalid REST API Key. Check your Config.ts file.');
       } else {
-        throw new Error(`OneSignal API error (${response.status}): ${errorText}`);
+        throw new Error(
+          `OneSignal API error (${response.status}): ${errorText}`,
+        );
       }
     }
 
@@ -199,12 +214,17 @@ export async function sendNotification(template: NotificationPayload): Promise<v
 
     // Check if notification was actually sent
     if (result.recipients === 0) {
-      console.warn('[NotificationSender] Warning: Notification sent but no recipients received it.');
+      console.warn(
+        '[NotificationSender] Warning: Notification sent but no recipients received it.',
+      );
     }
   } catch (error) {
     // Re-throw with more context
     if (error instanceof Error) {
-      console.error('[NotificationSender] Failed to send notification:', error.message);
+      console.error(
+        '[NotificationSender] Failed to send notification:',
+        error.message,
+      );
       throw error;
     } else {
       console.error('[NotificationSender] Unknown error:', error);
