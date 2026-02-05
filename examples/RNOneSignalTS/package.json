@@ -9,7 +9,8 @@
     "preios": "bun run setup && bun run update:pod",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start"
+    "start": "react-native start",
+    "start:fresh": "react-native start --reset-cache"
   },
   "dependencies": {
     "@react-native/new-app-screen": "0.82.1",
@@ -34,6 +35,7 @@
     "@types/react": "^19.2.7",
     "@types/react-test-renderer": "^19.1.0",
     "prettier": "3.7.4",
+    "react-native-dotenv": "^3.4.11",
     "react-test-renderer": "19.2.1",
     "typescript": "^5.9.3"
   }
