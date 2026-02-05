@@ -114,10 +114,7 @@ const DetailsScreen: React.FC = () => {
           </View>
         </Card>
 
-        <TouchableOpacity
-          style={styles.refreshButton}
-          onPress={loadUserInfo}
-        >
+        <TouchableOpacity style={styles.refreshButton} onPress={loadUserInfo}>
           <Text style={styles.refreshButtonText}>Refresh</Text>
         </TouchableOpacity>
       </ScrollView>

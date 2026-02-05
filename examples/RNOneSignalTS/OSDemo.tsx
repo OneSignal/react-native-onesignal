@@ -260,7 +260,10 @@ const OSDemo: React.FC = () => {
 
   return (
     <AppStateProvider>
-      <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      <SafeAreaView
+        style={styles.container}
+        edges={['bottom', 'left', 'right']}
+      >
         <View style={styles.header}>
           <Text style={styles.title}>OneSignal</Text>
           <OSConsole value={consoleValue} />
@@ -292,7 +295,10 @@ const OSDemo: React.FC = () => {
           <InAppMessagingSection loggingFunction={OSLog} />
           <TriggersSection loggingFunction={OSLog} />
           <LocationSection loggingFunction={OSLog} />
-          <LiveActivitiesSection loggingFunction={OSLog} inputValue={inputValue} />
+          <LiveActivitiesSection
+            loggingFunction={OSLog}
+            inputValue={inputValue}
+          />
           <NotificationDemoSection loggingFunction={OSLog} />
           <IamDemoSection loggingFunction={OSLog} />
           <NavigationSection />

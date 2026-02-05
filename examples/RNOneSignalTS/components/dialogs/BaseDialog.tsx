@@ -42,7 +42,10 @@ export function BaseDialog({
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.centeredView}
         >
-          <Pressable style={styles.container} onPress={(e) => e.stopPropagation()}>
+          <Pressable
+            style={styles.container}
+            onPress={(e) => e.stopPropagation()}
+          >
             <Text style={styles.title}>{title}</Text>
             <View style={styles.content}>{children}</View>
             <View style={styles.buttonRow}>
@@ -54,10 +57,12 @@ export function BaseDialog({
                 onPress={onConfirm}
                 disabled={confirmDisabled}
               >
-                <Text style={[
-                  styles.confirmButtonText,
-                  confirmDisabled && styles.confirmButtonTextDisabled,
-                ]}>
+                <Text
+                  style={[
+                    styles.confirmButtonText,
+                    confirmDisabled && styles.confirmButtonTextDisabled,
+                  ]}
+                >
                   {confirmText.toUpperCase()}
                 </Text>
               </TouchableOpacity>

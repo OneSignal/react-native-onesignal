@@ -1,5 +1,5 @@
 export const Colors = {
-  primary: '#E9444E',           // OneSignal Red
+  primary: '#E9444E', // OneSignal Red
   primaryDark: '#A12F36',
   accent: '#303030',
   background: '#ECECEC',
