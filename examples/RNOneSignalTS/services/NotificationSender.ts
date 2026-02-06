@@ -183,7 +183,7 @@ export async function sendNotification(
 
       if (response.status === 400) {
         throw new Error(`Invalid request: ${errorText}`);
-      } else       if (response.status === 401) {
+      } else if (response.status === 401) {
         throw new Error('OneSignal API returned 401 Unauthorized.');
       } else {
         throw new Error(
