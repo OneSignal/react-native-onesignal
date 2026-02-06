@@ -1,22 +1,14 @@
 /**
  * OneSignal Notification Sender Service
  *
- * Sends push notifications via OneSignal REST API.
+ * Sends push notifications via OneSignal REST API using only app_id and
+ * the current device's push subscription ID (include_player_ids).
  * Ported from Android SDK demo app's OneSignalNotificationSender.java
- *
- * WARNING: This implementation sends notifications directly from the client app
- * using the REST API key. This is NOT SAFE for production use. In production apps,
- * API calls should be made from a secure backend server.
- *
- * This approach is acceptable for:
- * - Demo and example applications
- * - Internal testing and development
- * - Educational purposes
  */
 
 import { OneSignal } from 'react-native-onesignal';
 import { NotificationPayload } from '../constants/NotificationPayloads';
-import { APP_ID, REST_API_KEY, ONESIGNAL_API_URL } from '../constants/Config';
+import { APP_ID, ONESIGNAL_API_URL } from '../constants/Config';
 import { Platform } from 'react-native';
 
 /**
@@ -140,18 +132,11 @@ function buildNotificationPayload(
  * Sends a push notification to the current device via OneSignal REST API
  *
  * @param template The notification payload template to send
- * @throws Error if user is not subscribed, API key is missing, or API call fails
+ * @throws Error if user is not subscribed or API call fails
  */
 export async function sendNotification(
   template: NotificationPayload,
 ): Promise<void> {
-  // Validate REST API key is configured
-  if (!REST_API_KEY || REST_API_KEY === 'YOUR_REST_API_KEY_HERE') {
-    throw new Error(
-      'REST API Key not configured. Please add your OneSignal REST API Key to constants/Config.ts',
-    );
-  }
-
   // Check if user is opted in
   const optedIn = await isUserOptedIn();
   if (!optedIn) {
@@ -187,7 +172,6 @@ export async function sendNotification(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Basic ${REST_API_KEY}`,
       },
       body: JSON.stringify(payload),
     });
@@ -199,8 +183,8 @@ export async function sendNotification(
 
       if (response.status === 400) {
         throw new Error(`Invalid request: ${errorText}`);
-      } else if (response.status === 401) {
-        throw new Error('Invalid REST API Key. Check your Config.ts file.');
+      } else       if (response.status === 401) {
+        throw new Error('OneSignal API returned 401 Unauthorized.');
       } else {
         throw new Error(
           `OneSignal API error (${response.status}): ${errorText}`,
