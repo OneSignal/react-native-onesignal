@@ -19,16 +19,36 @@ export function PushSubscriptionSection({
   const [subscriptionId, setSubscriptionId] = useState('');
 
   useEffect(() => {
-    // Load initial subscription ID
-    const loadSubscriptionId = async () => {
+    // Load initial subscription ID and permission status
+    const loadInitialState = async () => {
       const id = await OneSignal.User.pushSubscription.getIdAsync();
       if (id) {
         setSubscriptionId(id);
         dispatch({ type: 'SET_PUSH_SUBSCRIPTION_ID', payload: id });
       }
+
+      // Check current permission status
+      const hasPermission = await OneSignal.Notifications.getPermissionAsync();
+      dispatch({ type: 'SET_PERMISSION_GRANTED', payload: hasPermission });
+
+      // Check opt-in status
+      const optedIn = await OneSignal.User.pushSubscription.getOptedInAsync();
+      dispatch({ type: 'SET_PUSH_ENABLED', payload: optedIn });
     };
-    loadSubscriptionId();
-  }, [dispatch]);
+    loadInitialState();
+
+    // Auto-request permission on mount (as per Android V2 spec)
+    const requestPermissionOnMount = async () => {
+      const hasPermission = await OneSignal.Notifications.getPermissionAsync();
+      if (!hasPermission) {
+        loggingFunction('Auto-requesting notification permission');
+        const granted = await OneSignal.Notifications.requestPermission(false);
+        dispatch({ type: 'SET_PERMISSION_GRANTED', payload: granted });
+        loggingFunction(`Notification permission granted: ${granted}`);
+      }
+    };
+    requestPermissionOnMount();
+  }, [dispatch, loggingFunction]);
 
   const handleTogglePush = async (enabled: boolean) => {
     if (enabled) {
@@ -44,30 +64,35 @@ export function PushSubscriptionSection({
   const handleRequestPermission = async () => {
     loggingFunction('Requesting notification permission');
     const granted = await OneSignal.Notifications.requestPermission(false);
+    dispatch({ type: 'SET_PERMISSION_GRANTED', payload: granted });
     loggingFunction(`Notification permission granted: ${granted}`);
   };
 
   return (
     <Card>
-      <SectionHeader title="Push Subscription" />
+      <SectionHeader title="Push" />
       {subscriptionId ? (
         <View style={styles.row}>
-          <Text style={styles.label}>Subscription ID:</Text>
+          <Text style={styles.label}>Push Subscription ID:</Text>
           <Text style={styles.value} numberOfLines={1} ellipsizeMode="middle">
             {subscriptionId}
           </Text>
         </View>
       ) : null}
       <ToggleRow
-        label="Push Notifications"
+        label="Enabled"
+        description="Opt in or out of push notifications"
         value={state.pushEnabled}
         onValueChange={handleTogglePush}
       />
-      <ActionButton
-        title="Prompt Permission"
-        onPress={handleRequestPermission}
-        style={styles.button}
-      />
+      {/* Only show Prompt Push button when permission is NOT granted */}
+      {!state.permissionGranted && (
+        <ActionButton
+          title="Prompt Push"
+          onPress={handleRequestPermission}
+          style={styles.button}
+        />
+      )}
     </Card>
   );
 }

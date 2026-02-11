@@ -35,6 +35,15 @@ export function AliasesSection({ loggingFunction }: AliasesSectionProps) {
     dispatch({ type: 'REMOVE_ALIAS', payload: key });
   };
 
+  const handleRemoveAllAliases = () => {
+    if (state.aliases.length === 0) return;
+
+    const aliasLabels = state.aliases.map((alias) => alias.key);
+    loggingFunction('Removing all aliases: ', aliasLabels);
+    OneSignal.User.removeAliases(aliasLabels);
+    dispatch({ type: 'CLEAR_ALL_ALIASES' });
+  };
+
   return (
     <Card>
       <SectionHeader title="Aliases" />
@@ -44,6 +53,7 @@ export function AliasesSection({ loggingFunction }: AliasesSectionProps) {
         <FlatList
           data={state.aliases}
           keyExtractor={(item) => item.key}
+          scrollEnabled={false}
           renderItem={({ item }) => (
             <View style={styles.item}>
               <View style={styles.itemContent}>
@@ -60,11 +70,21 @@ export function AliasesSection({ loggingFunction }: AliasesSectionProps) {
           )}
         />
       )}
-      <ActionButton
-        title="Add Alias"
-        onPress={() => setDialogVisible(true)}
-        style={styles.addButton}
-      />
+      <View style={styles.buttonContainer}>
+        <ActionButton
+          title="Add Alias"
+          onPress={() => setDialogVisible(true)}
+          style={styles.button}
+        />
+        {state.aliases.length > 0 && (
+          <ActionButton
+            title="Remove All"
+            onPress={handleRemoveAllAliases}
+            style={[styles.button, styles.removeAllButton]}
+            textStyle={styles.removeAllButtonText}
+          />
+        )}
+      </View>
       <AddPairDialog
         visible={dialogVisible}
         title="Add Alias"
@@ -106,7 +126,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: Colors.primary,
   },
-  addButton: {
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 8,
     marginTop: 12,
+  },
+  button: {
+    flex: 1,
+  },
+  removeAllButton: {
+    backgroundColor: Colors.primary,
+  },
+  removeAllButtonText: {
+    color: Colors.white,
   },
 });

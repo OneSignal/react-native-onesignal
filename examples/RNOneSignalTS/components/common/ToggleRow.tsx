@@ -4,14 +4,25 @@ import { Colors } from '../../constants/Colors';
 
 interface ToggleRowProps {
   label: string;
+  description?: string;
   value: boolean;
   onValueChange: (value: boolean) => void;
 }
 
-export function ToggleRow({ label, value, onValueChange }: ToggleRowProps) {
+export function ToggleRow({
+  label,
+  description,
+  value,
+  onValueChange,
+}: ToggleRowProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <View style={styles.labelContainer}>
+        <Text style={styles.label}>{label}</Text>
+        {description && (
+          <Text style={styles.description}>{description}</Text>
+        )}
+      </View>
       <Switch
         value={value}
         onValueChange={onValueChange}
@@ -29,8 +40,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
   },
+  labelContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
   label: {
     fontSize: 16,
     color: Colors.darkText,
+  },
+  description: {
+    fontSize: 12,
+    color: Colors.darkText,
+    opacity: 0.7,
+    marginTop: 2,
   },
 });
