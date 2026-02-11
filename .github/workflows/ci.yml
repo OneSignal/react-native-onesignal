@@ -10,4 +10,4 @@ concurrency:
 
 jobs:
   call:
-    uses: OneSignal/sdk-actions/.github/workflows/wrapper-js-ci.yml@main
+    uses: OneSignal/sdk-shared/.github/workflows/wrapper-js-ci.yml@main

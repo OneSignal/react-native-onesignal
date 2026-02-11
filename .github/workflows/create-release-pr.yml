@@ -49,9 +49,9 @@ on:
 
 jobs:
   prep:
-    uses: OneSignal/sdk-actions/.github/workflows/prep-release.yml@main
+    uses: OneSignal/sdk-shared/.github/workflows/prep-release.yml@main
     secrets:
-      # Need this cross-repo token (sdk-actions & this repo) to perform changes
+      # Need this cross-repo token (sdk-shared & this repo) to perform changes
 
       GH_PUSH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
     with:
@@ -71,13 +71,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          # Need repository otherwise caller would set github.repository to the caller itself (e.g. sdk-actions)
+          # Need repository otherwise caller would set github.repository to the caller itself (e.g. sdk-shared)
           repository: OneSignal/react-native-onesignal
           ref: ${{ needs.prep.outputs.release_branch }}
           token: ${{ secrets.GH_PUSH_TOKEN || github.token }}
 
       - name: Setup Git User
-        uses: OneSignal/sdk-actions/.github/actions/setup-git-user@main
+        uses: OneSignal/sdk-shared/.github/actions/setup-git-user@main
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -164,12 +164,12 @@ jobs:
 
   create-pr:
     needs: [prep, update_version]
-    uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
+    uses: OneSignal/sdk-shared/.github/workflows/create-release.yml@main
     secrets:
-      # Need this cross-repo token (sdk-actions & this repo) to perform changes
+      # Need this cross-repo token (sdk-shared & this repo) to perform changes
       GH_PUSH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
     with:
-      # Need target_repo otherwise caller would set github.repository to the caller itself (e.g. sdk-actions)
+      # Need target_repo otherwise caller would set github.repository to the caller itself (e.g. sdk-shared)
       target_repo: OneSignal/react-native-onesignal
       release_branch: ${{ needs.prep.outputs.release_branch }}
       target_branch: ${{ inputs.target_branch }}
