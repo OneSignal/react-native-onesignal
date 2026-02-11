@@ -31,7 +31,7 @@ export function LocationSection({ loggingFunction }: LocationSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="Location" />
+      <SectionHeader title="Location" tooltipKey="location" />
       <ToggleRow
         label="Share Location"
         value={state.locationShared}

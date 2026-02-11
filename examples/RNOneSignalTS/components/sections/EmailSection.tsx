@@ -47,7 +47,7 @@ export function EmailSection({ loggingFunction }: EmailSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="Emails" />
+      <SectionHeader title="Emails" tooltipKey="emails" />
       {state.emails.length === 0 ? (
         <EmptyState message="No Emails Added" />
       ) : (

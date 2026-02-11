@@ -65,7 +65,7 @@ export function AppInfoSection({ loggingFunction }: AppInfoSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="App" />
+      <SectionHeader title="App" tooltipKey="app" />
 
       {/* App ID Display */}
       <View style={styles.row}>

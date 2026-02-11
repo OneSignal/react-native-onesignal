@@ -37,7 +37,7 @@ export function OutcomeSection({ loggingFunction }: OutcomeSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="Outcome Events" />
+      <SectionHeader title="Outcome Events" tooltipKey="outcomes" />
       <ActionButton
         title="Send Outcome"
         onPress={() => setDialogVisible(true)}

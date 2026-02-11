@@ -26,7 +26,7 @@ export function TrackEventSection({ loggingFunction }: TrackEventSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="Track Event" />
+      <SectionHeader title="Track Event" tooltipKey="trackEvent" />
       <ActionButton
         title="Track Event"
         onPress={() => setDialogVisible(true)}

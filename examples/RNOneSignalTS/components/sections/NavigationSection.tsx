@@ -17,7 +17,7 @@ export function NavigationSection() {
 
   return (
     <Card>
-      <SectionHeader title="Navigation" />
+      <SectionHeader title="Navigation" tooltipKey="navigation" />
       <ActionButton title="Go to Details" onPress={handleNavigate} />
     </Card>
   );
