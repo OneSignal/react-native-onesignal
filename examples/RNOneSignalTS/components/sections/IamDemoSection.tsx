@@ -20,7 +20,7 @@ export function IamDemoSection({ loggingFunction }: IamDemoSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="Send In-App Message" />
+      <SectionHeader title="Send In-App Message" tooltipKey="sendInAppMessage" />
       {IamTypes.map((type) => (
         <TouchableOpacity
           key={type.id}

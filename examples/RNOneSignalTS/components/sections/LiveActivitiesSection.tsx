@@ -46,7 +46,7 @@ export function LiveActivitiesSection({
 
   return (
     <Card>
-      <SectionHeader title="Live Activities (iOS)" />
+      <SectionHeader title="Live Activities (iOS)" tooltipKey="liveActivities" />
       <ActionButton
         title="Start Default"
         onPress={handleStartDefault}

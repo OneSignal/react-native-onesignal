@@ -46,7 +46,7 @@ export function TriggersSection({ loggingFunction }: TriggersSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="Triggers" />
+      <SectionHeader title="Triggers" tooltipKey="triggers" />
       {state.triggers.length === 0 ? (
         <EmptyState message="No Triggers Added" />
       ) : (

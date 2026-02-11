@@ -70,7 +70,7 @@ export function PushSubscriptionSection({
 
   return (
     <Card>
-      <SectionHeader title="Push" />
+      <SectionHeader title="Push" tooltipKey="push" />
       {subscriptionId ? (
         <View style={styles.row}>
           <Text style={styles.label}>Push Subscription ID:</Text>

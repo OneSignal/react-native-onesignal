@@ -37,7 +37,7 @@ export function TagsSection({ loggingFunction }: TagsSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="Tags" />
+      <SectionHeader title="Tags" tooltipKey="tags" />
       {state.tags.length === 0 ? (
         <EmptyState message="No Tags Added" />
       ) : (

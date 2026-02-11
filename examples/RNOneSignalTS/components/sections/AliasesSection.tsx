@@ -46,7 +46,7 @@ export function AliasesSection({ loggingFunction }: AliasesSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="Aliases" />
+      <SectionHeader title="Aliases" tooltipKey="aliases" />
       {state.aliases.length === 0 ? (
         <EmptyState message="No Aliases Added" />
       ) : (

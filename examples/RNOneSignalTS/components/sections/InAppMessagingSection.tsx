@@ -22,7 +22,7 @@ export function InAppMessagingSection({
 
   return (
     <Card>
-      <SectionHeader title="In-App Messaging" />
+      <SectionHeader title="In-App Messaging" tooltipKey="inAppMessaging" />
       <ToggleRow
         label="Pause IAM"
         value={state.iamPaused}

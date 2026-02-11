@@ -103,7 +103,7 @@ export function NotificationDemoSection({
 
   return (
     <Card>
-      <SectionHeader title="Send Push Notification" />
+      <SectionHeader title="Send Push Notification" tooltipKey="sendPushNotification" />
       <View style={styles.buttonContainer}>
         <ActionButton
           title="Simple"
