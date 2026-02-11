@@ -1,6 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,26 +17,31 @@ import {
 } from 'react-native-onesignal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OSConsole from './OSConsole';
-import { AppStateProvider } from './context/AppStateContext';
+import { AppStateProvider, useAppState } from './context/AppStateContext';
 import { Colors } from './constants/Colors';
 import { APP_ID } from './constants/Config';
-import { PrivacyConsentSection } from './components/sections/PrivacyConsentSection';
+import { fetchUserData } from './services/OneSignalService';
 import { AppInfoSection } from './components/sections/AppInfoSection';
+import { PushSubscriptionSection } from './components/sections/PushSubscriptionSection';
+import { NotificationDemoSection } from './components/sections/NotificationDemoSection';
+import { InAppMessagingSection } from './components/sections/InAppMessagingSection';
+import { IamDemoSection } from './components/sections/IamDemoSection';
 import { AliasesSection } from './components/sections/AliasesSection';
 import { EmailSection } from './components/sections/EmailSection';
 import { SmsSection } from './components/sections/SmsSection';
 import { TagsSection } from './components/sections/TagsSection';
-import { PushSubscriptionSection } from './components/sections/PushSubscriptionSection';
 import { OutcomeSection } from './components/sections/OutcomeSection';
-import { InAppMessagingSection } from './components/sections/InAppMessagingSection';
 import { TriggersSection } from './components/sections/TriggersSection';
+import { TrackEventSection } from './components/sections/TrackEventSection';
 import { LocationSection } from './components/sections/LocationSection';
-import { NotificationDemoSection } from './components/sections/NotificationDemoSection';
-import { IamDemoSection } from './components/sections/IamDemoSection';
 import { LiveActivitiesSection } from './components/sections/LiveActivitiesSection';
 import { NavigationSection } from './components/sections/NavigationSection';
 
-const OSDemo: React.FC = () => {
+/**
+ * Inner component that uses the app state context
+ */
+function OSDemoContent() {
+  const { state, dispatch } = useAppState();
   const [consoleValue, setConsoleValue] = useState('');
   const [inputValue, setInputValue] = useState('');
 
@@ -55,6 +61,43 @@ const OSDemo: React.FC = () => {
     });
   }, []);
 
+  /**
+   * Fetches user data from REST API and updates state
+   */
+  const fetchAndPopulateUserData = useCallback(async () => {
+    try {
+      const onesignalId = OneSignal.User.onesignalId;
+      if (!onesignalId) {
+        OSLog('No OneSignal ID found, skipping data fetch');
+        return;
+      }
+
+      OSLog('Fetching user data from API...');
+      dispatch({ type: 'SET_LOADING', payload: true });
+
+      const userData = await fetchUserData(onesignalId);
+
+      // Populate state with fetched data
+      dispatch({ type: 'SET_ALL_ALIASES', payload: userData.aliases });
+      dispatch({ type: 'SET_ALL_TAGS', payload: userData.tags });
+      dispatch({ type: 'SET_ALL_EMAILS', payload: userData.emails });
+      dispatch({ type: 'SET_ALL_SMS', payload: userData.smsNumbers });
+
+      if (userData.externalId) {
+        dispatch({ type: 'SET_EXTERNAL_USER_ID', payload: userData.externalId });
+      }
+
+      OSLog('User data loaded successfully');
+
+      // Add 100ms delay to ensure UI has time to render
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    } catch (error) {
+      OSLog('Failed to fetch user data: ', error);
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  }, [dispatch, OSLog]);
+
   const onForegroundWillDisplay = useCallback(
     (event: NotificationWillDisplayEvent) => {
       const notif = event.getNotification();
@@ -66,32 +109,6 @@ const OSDemo: React.FC = () => {
       setTimeout(() => {
         notif.display();
       }, 5000);
-
-      // const cancelButton = {
-      //   text: 'Cancel',
-      //   onPress: () => {
-      //     (event as { preventDefault: () => void }).preventDefault();
-      //   },
-      //   style: 'cancel' as const,
-      // };
-
-      // const completeButton = {
-      //   text: 'Display',
-      //   onPress: () => {
-      //     (event as { getNotification: () => { display: () => void } })
-      //       .getNotification()
-      //       .display();
-      //   },
-      // };
-
-      // Alert.alert(
-      //   'Display notification?',
-      //   notif.title,
-      //   [cancelButton, completeButton],
-      //   {
-      //     cancelable: true,
-      //   },
-      // );
     },
     [OSLog],
   );
@@ -148,23 +165,35 @@ const OSDemo: React.FC = () => {
   );
 
   const onPermissionChange = useCallback(
-    (granted: unknown) => {
+    (granted: boolean) => {
       OSLog('OneSignal: permission changed:', granted);
+      dispatch({ type: 'SET_PERMISSION_GRANTED', payload: granted });
     },
-    [OSLog],
+    [OSLog, dispatch],
   );
 
   const onUserChange = useCallback(
     (event: unknown) => {
       OSLog('OneSignal: user changed: ', event);
+      // Fetch user data when user changes
+      fetchAndPopulateUserData();
     },
-    [OSLog],
+    [OSLog, fetchAndPopulateUserData],
   );
 
   useEffect(() => {
     OneSignal.initialize(APP_ID);
     OneSignal.Debug.setLogLevel(LogLevel.None);
-  }, []);
+
+    // Fetch user data on cold start if OneSignal ID exists
+    const initUserData = async () => {
+      const onesignalId = OneSignal.User.onesignalId;
+      if (onesignalId) {
+        fetchAndPopulateUserData();
+      }
+    };
+    initUserData();
+  }, [fetchAndPopulateUserData]);
 
   useFocusEffect(
     useCallback(() => {
@@ -259,51 +288,63 @@ const OSDemo: React.FC = () => {
   }, []);
 
   return (
-    <AppStateProvider>
-      <SafeAreaView
-        style={styles.container}
-        edges={['bottom', 'left', 'right']}
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>OneSignal</Text>
-          <OSConsole value={consoleValue} />
-          <View style={styles.clearButton}>
-            <TouchableOpacity
-              style={styles.clearButtonTouchable}
-              onPress={() => {
-                setConsoleValue('');
-              }}
-            >
-              <Text style={styles.clearButtonText}>X</Text>
-            </TouchableOpacity>
-          </View>
-          <TextInput
-            style={styles.input}
-            placeholder="Input"
-            onChangeText={inputChange}
-          />
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      <View style={styles.header}>
+        <Text style={styles.title}>OneSignal</Text>
+        <OSConsole value={consoleValue} />
+        <View style={styles.clearButton}>
+          <TouchableOpacity
+            style={styles.clearButtonTouchable}
+            onPress={() => {
+              setConsoleValue('');
+            }}
+          >
+            <Text style={styles.clearButtonText}>X</Text>
+          </TouchableOpacity>
         </View>
-        <ScrollView style={styles.scrollView}>
-          <PrivacyConsentSection loggingFunction={OSLog} />
-          <AppInfoSection loggingFunction={OSLog} />
-          <AliasesSection loggingFunction={OSLog} />
-          <EmailSection loggingFunction={OSLog} />
-          <SmsSection loggingFunction={OSLog} />
-          <TagsSection loggingFunction={OSLog} />
-          <PushSubscriptionSection loggingFunction={OSLog} />
-          <OutcomeSection loggingFunction={OSLog} />
-          <InAppMessagingSection loggingFunction={OSLog} />
-          <TriggersSection loggingFunction={OSLog} />
-          <LocationSection loggingFunction={OSLog} />
-          <LiveActivitiesSection
-            loggingFunction={OSLog}
-            inputValue={inputValue}
-          />
-          <NotificationDemoSection loggingFunction={OSLog} />
-          <IamDemoSection loggingFunction={OSLog} />
-          <NavigationSection />
-        </ScrollView>
-      </SafeAreaView>
+        <TextInput
+          style={styles.input}
+          placeholder="Input"
+          onChangeText={inputChange}
+        />
+      </View>
+      <ScrollView style={styles.scrollView}>
+        {/* Section Order matching Android V2 */}
+        <AppInfoSection loggingFunction={OSLog} />
+        <PushSubscriptionSection loggingFunction={OSLog} />
+        <NotificationDemoSection loggingFunction={OSLog} />
+        <InAppMessagingSection loggingFunction={OSLog} />
+        <IamDemoSection loggingFunction={OSLog} />
+        <AliasesSection loggingFunction={OSLog} />
+        <EmailSection loggingFunction={OSLog} />
+        <SmsSection loggingFunction={OSLog} />
+        <TagsSection loggingFunction={OSLog} />
+        <OutcomeSection loggingFunction={OSLog} />
+        <TriggersSection loggingFunction={OSLog} />
+        <TrackEventSection loggingFunction={OSLog} />
+        <LocationSection loggingFunction={OSLog} />
+        <LiveActivitiesSection loggingFunction={OSLog} inputValue={inputValue} />
+        <NavigationSection />
+      </ScrollView>
+
+      {/* Loading Overlay */}
+      {state.isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      )}
+    </SafeAreaView>
+  );
+}
+
+/**
+ * Main OSDemo component wrapped with AppStateProvider
+ */
+const OSDemo: React.FC = () => {
+  return (
+    <AppStateProvider>
+      <OSDemoContent />
     </AppStateProvider>
   );
 };
@@ -354,6 +395,23 @@ const styles = StyleSheet.create({
   },
   input: {
     marginTop: 10,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: Colors.white,
+    fontWeight: '600',
   },
 });
 
