@@ -15,6 +15,8 @@ import { AddSmsDialog } from '../dialogs/AddSmsDialog';
 import { useAppState } from '../../context/AppStateContext';
 import { Colors } from '../../constants/Colors';
 
+const COLLAPSE_THRESHOLD = 5;
+
 interface SmsSectionProps {
   loggingFunction: (message: string, optionalArg?: unknown) => void;
 }
@@ -22,6 +24,7 @@ interface SmsSectionProps {
 export function SmsSection({ loggingFunction }: SmsSectionProps) {
   const { state, dispatch } = useAppState();
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const handleAddSms = (phone: string) => {
     loggingFunction('Attempting to set SMS number: ', phone);
@@ -35,30 +38,58 @@ export function SmsSection({ loggingFunction }: SmsSectionProps) {
     dispatch({ type: 'REMOVE_SMS', payload: phone });
   };
 
+  const shouldCollapse = state.smsNumbers.length > COLLAPSE_THRESHOLD;
+  const displayedNumbers =
+    shouldCollapse && !expanded
+      ? state.smsNumbers.slice(0, COLLAPSE_THRESHOLD)
+      : state.smsNumbers;
+  const hiddenCount = state.smsNumbers.length - COLLAPSE_THRESHOLD;
+
   return (
     <Card>
-      <SectionHeader title="SMS" />
+      <SectionHeader title="SMSs" />
       {state.smsNumbers.length === 0 ? (
-        <EmptyState message="No SMS Numbers Added" />
+        <EmptyState message="No SMSs Added" />
       ) : (
-        <FlatList
-          data={state.smsNumbers}
-          keyExtractor={(item, index) => `${item}-${index}`}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              <Text style={styles.itemText}>{item}</Text>
-              <TouchableOpacity
-                onPress={() => handleRemoveSms(item)}
-                style={styles.deleteButton}
-              >
-                <Text style={styles.deleteText}>✕</Text>
-              </TouchableOpacity>
-            </View>
+        <>
+          <FlatList
+            data={displayedNumbers}
+            keyExtractor={(item, index) => `${item}-${index}`}
+            scrollEnabled={false}
+            renderItem={({ item }) => (
+              <View style={styles.item}>
+                <Text style={styles.itemText}>{item}</Text>
+                <TouchableOpacity
+                  onPress={() => handleRemoveSms(item)}
+                  style={styles.deleteButton}
+                >
+                  <Text style={styles.deleteText}>✕</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+          {shouldCollapse && !expanded && (
+            <TouchableOpacity
+              onPress={() => setExpanded(true)}
+              style={styles.expandButton}
+            >
+              <Text style={styles.expandText}>
+                {hiddenCount} more available
+              </Text>
+            </TouchableOpacity>
           )}
-        />
+          {shouldCollapse && expanded && (
+            <TouchableOpacity
+              onPress={() => setExpanded(false)}
+              style={styles.expandButton}
+            >
+              <Text style={styles.expandText}>Show less</Text>
+            </TouchableOpacity>
+          )}
+        </>
       )}
       <ActionButton
-        title="Add SMS Number"
+        title="Add SMS"
         onPress={() => setDialogVisible(true)}
         style={styles.addButton}
       />
@@ -94,5 +125,14 @@ const styles = StyleSheet.create({
   },
   addButton: {
     marginTop: 12,
+  },
+  expandButton: {
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  expandText: {
+    fontSize: 14,
+    color: Colors.primary,
+    fontWeight: '600',
   },
 });

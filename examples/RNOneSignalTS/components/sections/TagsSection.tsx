@@ -35,11 +35,6 @@ export function TagsSection({ loggingFunction }: TagsSectionProps) {
     dispatch({ type: 'REMOVE_TAG', payload: key });
   };
 
-  const handleGetTags = async () => {
-    const tags = await OneSignal.User.getTags();
-    loggingFunction('Tags:', tags);
-  };
-
   return (
     <Card>
       <SectionHeader title="Tags" />
@@ -49,6 +44,7 @@ export function TagsSection({ loggingFunction }: TagsSectionProps) {
         <FlatList
           data={state.tags}
           keyExtractor={(item) => item.key}
+          scrollEnabled={false}
           renderItem={({ item }) => (
             <View style={styles.item}>
               <View style={styles.itemContent}>
@@ -65,18 +61,11 @@ export function TagsSection({ loggingFunction }: TagsSectionProps) {
           )}
         />
       )}
-      <View style={styles.buttonContainer}>
-        <ActionButton
-          title="Add Tag"
-          onPress={() => setDialogVisible(true)}
-          style={styles.button}
-        />
-        <ActionButton
-          title="Get Tags"
-          onPress={handleGetTags}
-          style={styles.button}
-        />
-      </View>
+      <ActionButton
+        title="Add Tag"
+        onPress={() => setDialogVisible(true)}
+        style={styles.addButton}
+      />
       <AddPairDialog
         visible={dialogVisible}
         title="Add Tag"
@@ -118,12 +107,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: Colors.primary,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  addButton: {
     marginTop: 12,
-  },
-  button: {
-    flex: 1,
   },
 });
