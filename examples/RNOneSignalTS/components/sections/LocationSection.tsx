@@ -33,12 +33,13 @@ export function LocationSection({ loggingFunction }: LocationSectionProps) {
     <Card>
       <SectionHeader title="Location" tooltipKey="location" />
       <ToggleRow
-        label="Share Location"
+        label="Location Shared:"
+        description="Location will be shared from device"
         value={state.locationShared}
         onValueChange={handleToggleLocation}
       />
       <ActionButton
-        title="Request Permission"
+        title="Prompt Location"
         onPress={handleRequestPermission}
         style={styles.button}
       />

@@ -21,14 +21,17 @@ export const CommonStyles = {
   },
   primaryButton: {
     backgroundColor: Colors.primary,
-    borderRadius: 4,
-    paddingVertical: 12,
+    borderRadius: 6,
+    paddingVertical: 16,
     paddingHorizontal: 16,
     alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    minHeight: 56,
   },
   primaryButtonText: {
     color: Colors.white,
-    fontSize: 16,
+    fontSize: 19,
     fontWeight: 'bold' as const,
+    textTransform: 'uppercase' as const,
   },
 };
