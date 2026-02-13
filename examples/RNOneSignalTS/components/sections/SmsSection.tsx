@@ -47,9 +47,9 @@ export function SmsSection({ loggingFunction }: SmsSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="SMSs" tooltipKey="sms" />
+      <SectionHeader title="SMS" tooltipKey="sms" />
       {state.smsNumbers.length === 0 ? (
-        <EmptyState message="No SMSs Added" />
+        <EmptyState message="No SMS Added" />
       ) : (
         <>
           <FlatList

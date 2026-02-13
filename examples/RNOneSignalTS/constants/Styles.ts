@@ -17,8 +17,6 @@ export const CommonStyles = {
     marginBottom: 6,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.8,
-    paddingHorizontal: 16,
-    paddingTop: 16,
   },
   primaryButton: {
     backgroundColor: Colors.primary,

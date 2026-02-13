@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { showTooltip } from '../../utils/TooltipHelper';
 import { Colors } from '../../constants/Colors';
 
@@ -14,7 +14,9 @@ export function TooltipButton({ tooltipKey }: TooltipButtonProps) {
       onPress={() => showTooltip(tooltipKey)}
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
     >
-      <Text style={styles.icon}>ℹ️</Text>
+      <View style={styles.iconCircle}>
+        <Text style={styles.iconText}>i</Text>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -25,8 +27,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  icon: {
-    fontSize: 16,
-    color: Colors.primary,
+  iconCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: Colors.secondaryText,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  iconText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.secondaryText,
+    fontStyle: 'italic',
   },
 });
