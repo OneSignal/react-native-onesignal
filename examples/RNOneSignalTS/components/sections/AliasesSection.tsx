@@ -78,7 +78,7 @@ export function AliasesSection({ loggingFunction }: AliasesSectionProps) {
         />
         {state.aliases.length > 0 && (
           <ActionButton
-            title="Remove All"
+            title="Remove All Aliases"
             onPress={handleRemoveAllAliases}
             style={[styles.button, styles.removeAllButton]}
             textStyle={styles.removeAllButtonText}
@@ -127,12 +127,12 @@ const styles = StyleSheet.create({
     color: Colors.primary,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     gap: 8,
     marginTop: 12,
   },
   button: {
-    flex: 1,
+    width: '100%',
   },
   removeAllButton: {
     backgroundColor: Colors.primary,

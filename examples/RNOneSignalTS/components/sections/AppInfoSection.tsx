@@ -172,11 +172,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     gap: 8,
     marginTop: 8,
   },
   button: {
-    flex: 1,
+    width: '100%',
   },
 });

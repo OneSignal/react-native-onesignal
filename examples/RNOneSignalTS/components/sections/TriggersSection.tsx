@@ -75,11 +75,6 @@ export function TriggersSection({ loggingFunction }: TriggersSectionProps) {
           onPress={() => setDialogVisible(true)}
           style={styles.button}
         />
-        <ActionButton
-          title="Clear All"
-          onPress={handleClearAll}
-          style={styles.button}
-        />
       </View>
       <AddPairDialog
         visible={dialogVisible}
@@ -123,11 +118,11 @@ const styles = StyleSheet.create({
     color: Colors.primary,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     gap: 8,
     marginTop: 12,
   },
   button: {
-    flex: 1,
+    width: '100%',
   },
 });

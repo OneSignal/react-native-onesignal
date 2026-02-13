@@ -35,7 +35,6 @@ import { TriggersSection } from './components/sections/TriggersSection';
 import { TrackEventSection } from './components/sections/TrackEventSection';
 import { LocationSection } from './components/sections/LocationSection';
 import { LiveActivitiesSection } from './components/sections/LiveActivitiesSection';
-import { NavigationSection } from './components/sections/NavigationSection';
 
 /**
  * Inner component that uses the app state context
@@ -185,12 +184,27 @@ function OSDemoContent() {
     OneSignal.initialize(APP_ID);
     OneSignal.Debug.setLogLevel(LogLevel.None);
 
-    // Fetch user data on cold start if OneSignal ID exists
+    // Fetch user data on cold start with retry mechanism
+    // OneSignal ID might not be available immediately after initialization
     const initUserData = async () => {
-      const onesignalId = OneSignal.User.onesignalId;
-      if (onesignalId) {
-        fetchAndPopulateUserData();
+      // Try up to 5 times with increasing delays
+      const maxRetries = 5;
+      const baseDelay = 500; // Start with 500ms
+
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        const onesignalId = OneSignal.User.onesignalId;
+        if (onesignalId) {
+          fetchAndPopulateUserData();
+          return;
+        }
+
+        // Wait before next attempt (exponential backoff)
+        const delay = baseDelay * Math.pow(2, attempt);
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
+
+      // After all retries, log that we couldn't get the ID
+      console.log('OneSignal ID not available after retries, waiting for user change event');
     };
     initUserData();
   }, [fetchAndPopulateUserData]);
@@ -289,8 +303,12 @@ function OSDemoContent() {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      {/* Red Branded Header Bar */}
+      <View style={styles.brandedHeader}>
+        <Text style={styles.brandedHeaderText}>OneSignal</Text>
+      </View>
+
       <View style={styles.header}>
-        <Text style={styles.title}>OneSignal</Text>
         <OSConsole value={consoleValue} />
         <View style={styles.clearButton}>
           <TouchableOpacity
@@ -324,7 +342,6 @@ function OSDemoContent() {
         <TrackEventSection loggingFunction={OSLog} />
         <LocationSection loggingFunction={OSLog} />
         <LiveActivitiesSection loggingFunction={OSLog} inputValue={inputValue} />
-        <NavigationSection />
       </ScrollView>
 
       {/* Loading Overlay */}
@@ -358,6 +375,17 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     backgroundColor: '#fff',
   },
+  brandedHeader: {
+    backgroundColor: Colors.primary,
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  brandedHeaderText: {
+    color: Colors.white,
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
   header: {
     flex: 0.3,
   },
@@ -365,16 +393,10 @@ const styles = StyleSheet.create({
     flex: 0.7,
     backgroundColor: Colors.background,
   },
-  title: {
-    fontSize: 40,
-    alignSelf: 'center',
-    paddingTop: 4,
-    paddingBottom: 10,
-  },
   clearButton: {
     position: 'absolute',
     right: 10,
-    top: 70,
+    top: 10,
     width: 44,
     height: 44,
     alignItems: 'center',

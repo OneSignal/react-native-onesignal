@@ -106,7 +106,7 @@ export function NotificationDemoSection({
       <SectionHeader title="Send Push Notification" tooltipKey="sendPushNotification" />
       <View style={styles.buttonContainer}>
         <ActionButton
-          title="Simple"
+          title="Simple Notification"
           onPress={handleSendSimple}
           disabled={isLoading}
           style={styles.button}
@@ -120,7 +120,7 @@ export function NotificationDemoSection({
       </View>
       <View style={styles.buttonContainer}>
         <ActionButton
-          title="With Image"
+          title="Notification With Image"
           onPress={handleSendWithImage}
           disabled={isLoading}
           style={styles.button}
@@ -134,7 +134,7 @@ export function NotificationDemoSection({
       </View>
       <View style={styles.buttonContainer}>
         <ActionButton
-          title="Custom"
+          title="Custom Notification"
           onPress={() => setCustomDialogVisible(true)}
           disabled={isLoading}
           style={styles.button}
