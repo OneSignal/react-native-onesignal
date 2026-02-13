@@ -5,7 +5,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -35,6 +34,8 @@ import { TriggersSection } from './components/sections/TriggersSection';
 import { TrackEventSection } from './components/sections/TrackEventSection';
 import { LocationSection } from './components/sections/LocationSection';
 import { LiveActivitiesSection } from './components/sections/LiveActivitiesSection';
+import { UserSection } from './components/sections/UserSection';
+import { ActionButton } from './components/common/ActionButton';
 
 /**
  * Inner component that uses the app state context
@@ -297,38 +298,52 @@ function OSDemoContent() {
     ]),
   );
 
-  const inputChange = useCallback((text: string) => {
-    setInputValue(text);
-  }, []);
+  const logCount = consoleValue ? consoleValue.split('\n').length : 0;
+  const [logsExpanded, setLogsExpanded] = useState(true);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       {/* Red Branded Header Bar */}
       <View style={styles.brandedHeader}>
-        <Text style={styles.brandedHeaderText}>OneSignal</Text>
+        <Text style={styles.brandedHeaderText}>
+          <Text style={styles.brandedHeaderBold}>OneSignal</Text>
+          {'  '}
+          <Text style={styles.brandedHeaderLight}>Sample App</Text>
+        </Text>
       </View>
 
-      <View style={styles.header}>
-        <OSConsole value={consoleValue} />
-        <View style={styles.clearButton}>
-          <TouchableOpacity
-            style={styles.clearButtonTouchable}
-            onPress={() => {
-              setConsoleValue('');
-            }}
-          >
-            <Text style={styles.clearButtonText}>X</Text>
-          </TouchableOpacity>
-        </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Input"
-          onChangeText={inputChange}
-        />
+      {/* Log View - Collapsible */}
+      <View style={styles.logContainer}>
+        <TouchableOpacity
+          style={styles.logHeader}
+          onPress={() => setLogsExpanded(!logsExpanded)}
+        >
+          <Text style={styles.logHeaderText}>
+            LOGS ({logCount})
+          </Text>
+          <View style={styles.logHeaderActions}>
+            <TouchableOpacity
+              onPress={() => setConsoleValue('')}
+              style={styles.logClearButton}
+            >
+              <Text style={styles.logClearText}>🗑</Text>
+            </TouchableOpacity>
+            <Text style={styles.logExpandIcon}>
+              {logsExpanded ? '∧' : '∨'}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        {logsExpanded && (
+          <View style={styles.logContent}>
+            <OSConsole value={consoleValue} />
+          </View>
+        )}
       </View>
+
       <ScrollView style={styles.scrollView}>
         {/* Section Order matching Android V2 */}
         <AppInfoSection loggingFunction={OSLog} />
+        <UserSection loggingFunction={OSLog} />
         <PushSubscriptionSection loggingFunction={OSLog} />
         <NotificationDemoSection loggingFunction={OSLog} />
         <InAppMessagingSection loggingFunction={OSLog} />
@@ -342,6 +357,17 @@ function OSDemoContent() {
         <TrackEventSection loggingFunction={OSLog} />
         <LocationSection loggingFunction={OSLog} />
         <LiveActivitiesSection loggingFunction={OSLog} inputValue={inputValue} />
+
+        {/* Next Activity Button */}
+        <View style={styles.nextActivityContainer}>
+          <ActionButton
+            title="Next Activity"
+            onPress={() => {
+              // Navigate to Details tab
+              OSLog('Navigate to next activity');
+            }}
+          />
+        </View>
       </ScrollView>
 
       {/* Loading Overlay */}
@@ -373,50 +399,71 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background,
   },
   brandedHeader: {
     backgroundColor: Colors.primary,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
   },
   brandedHeaderText: {
     color: Colors.white,
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 18,
   },
-  header: {
-    flex: 0.3,
+  brandedHeaderBold: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  brandedHeaderLight: {
+    fontWeight: '300',
+    fontSize: 16,
+  },
+  logContainer: {
+    backgroundColor: Colors.consoleBackground,
+  },
+  logHeader: {
+    backgroundColor: Colors.consoleHeaderBackground,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  logHeaderText: {
+    color: Colors.white,
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  logHeaderActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  logClearButton: {
+    padding: 4,
+  },
+  logClearText: {
+    color: Colors.white,
+    fontSize: 16,
+  },
+  logExpandIcon: {
+    color: Colors.white,
+    fontSize: 16,
+  },
+  logContent: {
+    height: 100,
   },
   scrollView: {
-    flex: 0.7,
+    flex: 1,
     backgroundColor: Colors.background,
   },
-  clearButton: {
-    position: 'absolute',
-    right: 10,
-    top: 10,
-    width: 44,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  clearButtonTouchable: {
-    width: 44,
-    height: 44,
-    backgroundColor: Colors.primary,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  clearButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  input: {
-    marginTop: 10,
+  nextActivityContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingBottom: 24,
   },
   loadingOverlay: {
     position: 'absolute',

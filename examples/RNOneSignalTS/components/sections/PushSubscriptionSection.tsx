@@ -73,7 +73,7 @@ export function PushSubscriptionSection({
       <SectionHeader title="Push" tooltipKey="push" />
       {subscriptionId ? (
         <View style={styles.row}>
-          <Text style={styles.label}>Push Subscription ID:</Text>
+          <Text style={styles.label}>Push ID</Text>
           <Text style={styles.value} numberOfLines={1} ellipsizeMode="middle">
             {subscriptionId}
           </Text>

@@ -11,6 +11,7 @@ const initialState: AppState = {
   pushEnabled: false,
   iamPaused: false,
   locationShared: false,
+  consentRequired: false,
   consentGiven: false,
   externalUserId: null,
   isLoading: false,
@@ -118,6 +119,11 @@ function appStateReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         locationShared: action.payload,
+      };
+    case 'SET_CONSENT_REQUIRED':
+      return {
+        ...state,
+        consentRequired: action.payload,
       };
     case 'SET_CONSENT_GIVEN':
       return {

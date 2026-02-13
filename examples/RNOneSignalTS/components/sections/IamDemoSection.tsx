@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
-import { Card } from '../common/Card';
 import { SectionHeader } from '../common/SectionHeader';
 import { IamTypes } from '../../constants/IamTemplates';
 import { Colors } from '../../constants/Colors';
@@ -19,7 +18,7 @@ export function IamDemoSection({ loggingFunction }: IamDemoSectionProps) {
   };
 
   return (
-    <Card>
+    <View style={styles.container}>
       <SectionHeader title="Send In-App Message" tooltipKey="sendInAppMessage" />
       {IamTypes.map((type) => (
         <TouchableOpacity
@@ -27,33 +26,36 @@ export function IamDemoSection({ loggingFunction }: IamDemoSectionProps) {
           style={styles.button}
           onPress={() => handleIamDemo(type.id, type.title)}
         >
-          <Text style={styles.buttonText}>{type.title.toUpperCase()}</Text>
           <Text style={styles.icon}>{type.icon}</Text>
+          <Text style={styles.buttonText}>{type.title.toUpperCase()}</Text>
         </TouchableOpacity>
       ))}
-    </Card>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
   button: {
     backgroundColor: Colors.primary,
     borderRadius: 8,
-    padding: 16,
+    height: 44,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 16,
     marginTop: 8,
   },
   buttonText: {
     fontSize: 16,
     color: Colors.white,
     fontWeight: 'bold',
-    flex: 1,
-    textAlign: 'center',
   },
   icon: {
     fontSize: 20,
-    marginLeft: 8,
+    color: Colors.white,
+    marginRight: 8,
   },
 });

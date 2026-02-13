@@ -24,8 +24,8 @@ export function InAppMessagingSection({
     <Card>
       <SectionHeader title="In-App Messaging" tooltipKey="inAppMessaging" />
       <ToggleRow
-        label="Pause In-App Messages:"
-        description="Toggle in-app messages"
+        label="Pause In-App Messages"
+        description="Toggle in-app message display"
         value={state.iamPaused}
         onValueChange={handleTogglePause}
       />

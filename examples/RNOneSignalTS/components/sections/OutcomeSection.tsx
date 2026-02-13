@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
-import { Card } from '../common/Card';
 import { SectionHeader } from '../common/SectionHeader';
 import { ActionButton } from '../common/ActionButton';
 import { SendOutcomeDialog, OutcomeType } from '../dialogs/SendOutcomeDialog';
@@ -36,7 +36,7 @@ export function OutcomeSection({ loggingFunction }: OutcomeSectionProps) {
   };
 
   return (
-    <Card>
+    <View style={styles.container}>
       <SectionHeader title="Outcome Events" tooltipKey="outcomes" />
       <ActionButton
         title="Send Outcome"
@@ -47,6 +47,13 @@ export function OutcomeSection({ loggingFunction }: OutcomeSectionProps) {
         onClose={() => setDialogVisible(false)}
         onConfirm={handleSendOutcome}
       />
-    </Card>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
+});
