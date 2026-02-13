@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Linking,
   StyleSheet,
@@ -9,11 +9,9 @@ import {
 import { OneSignal } from 'react-native-onesignal';
 import { Colors } from '../../constants/Colors';
 import { APP_ID } from '../../constants/Config';
-import { ActionButton } from '../common/ActionButton';
 import { Card } from '../common/Card';
 import { SectionHeader } from '../common/SectionHeader';
 import { ToggleRow } from '../common/ToggleRow';
-import { LoginUserDialog } from '../dialogs/LoginUserDialog';
 import { useAppState } from '../../context/AppStateContext';
 
 interface AppInfoSectionProps {
@@ -22,36 +20,18 @@ interface AppInfoSectionProps {
 
 export function AppInfoSection({ loggingFunction }: AppInfoSectionProps) {
   const { state, dispatch } = useAppState();
-  const [loginDialogVisible, setLoginDialogVisible] = useState(false);
 
-  const handleLogin = async (externalId: string) => {
-    loggingFunction('Attempting to login a user: ', externalId);
-    dispatch({ type: 'SET_LOADING', payload: true });
-    try {
-      await OneSignal.login(externalId);
-      dispatch({ type: 'SET_EXTERNAL_USER_ID', payload: externalId });
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
+  const handleToggleConsentRequired = (required: boolean) => {
+    loggingFunction(`Setting consent required: ${required}`);
+    OneSignal.setConsentRequired(required);
+    dispatch({ type: 'SET_CONSENT_REQUIRED', payload: required });
+    if (!required) {
+      // When disabling consent required, also reset consent given
+      dispatch({ type: 'SET_CONSENT_GIVEN', payload: false });
     }
   };
 
-  const handleLogout = async () => {
-    loggingFunction('Attempting to logout a user');
-    dispatch({ type: 'SET_LOADING', payload: true });
-    try {
-      await OneSignal.logout();
-      dispatch({ type: 'SET_EXTERNAL_USER_ID', payload: null });
-      // Clear user data on logout
-      dispatch({ type: 'CLEAR_ALL_ALIASES' });
-      dispatch({ type: 'SET_ALL_EMAILS', payload: [] });
-      dispatch({ type: 'SET_ALL_SMS', payload: [] });
-      dispatch({ type: 'CLEAR_ALL_TRIGGERS' });
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
-    }
-  };
-
-  const handleToggleConsent = async (granted: boolean) => {
+  const handleToggleConsentGiven = async (granted: boolean) => {
     loggingFunction(`Setting privacy consent: ${granted}`);
     await OneSignal.setConsentGiven(granted);
     dispatch({ type: 'SET_CONSENT_GIVEN', payload: granted });
@@ -60,8 +40,6 @@ export function AppInfoSection({ loggingFunction }: AppInfoSectionProps) {
   const handleOpenOneSignal = () => {
     Linking.openURL('https://onesignal.com');
   };
-
-  const isLoggedIn = state.externalUserId !== null;
 
   return (
     <Card>
@@ -85,41 +63,23 @@ export function AppInfoSection({ loggingFunction }: AppInfoSectionProps) {
         </TouchableOpacity>
       </View>
 
-      {/* Privacy Consent Toggle */}
+      {/* Consent Required Toggle */}
       <ToggleRow
-        label="Privacy Consent"
-        description="Grant or revoke privacy consent"
-        value={state.consentGiven}
-        onValueChange={handleToggleConsent}
+        label="Consent Required"
+        description="Require consent before SDK processes data"
+        value={state.consentRequired}
+        onValueChange={handleToggleConsentRequired}
       />
 
-      {/* Logged In As Display */}
-      {isLoggedIn && (
-        <View style={styles.loggedInCard}>
-          <Text style={styles.loggedInLabel}>Logged in as:</Text>
-          <Text style={styles.loggedInUserId}>{state.externalUserId}</Text>
-        </View>
+      {/* Privacy Consent Toggle - only visible when Consent Required is ON */}
+      {state.consentRequired && (
+        <ToggleRow
+          label="Privacy Consent"
+          description="Consent given for data collection"
+          value={state.consentGiven}
+          onValueChange={handleToggleConsentGiven}
+        />
       )}
-
-      {/* Login/Logout Buttons */}
-      <View style={styles.buttonContainer}>
-        <ActionButton
-          title={isLoggedIn ? 'Switch User' : 'Login User'}
-          onPress={() => setLoginDialogVisible(true)}
-          style={styles.button}
-        />
-        <ActionButton
-          title="Logout User"
-          onPress={handleLogout}
-          style={styles.button}
-        />
-      </View>
-
-      <LoginUserDialog
-        visible={loginDialogVisible}
-        onClose={() => setLoginDialogVisible(false)}
-        onConfirm={handleLogin}
-      />
     </Card>
   );
 }
@@ -153,30 +113,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.primary,
     textDecorationLine: 'underline',
-  },
-  loggedInCard: {
-    backgroundColor: '#E8F5E9',
-    borderRadius: 8,
-    padding: 12,
-    marginVertical: 12,
-    alignItems: 'center',
-  },
-  loggedInLabel: {
-    fontSize: 16,
-    color: Colors.darkText,
-  },
-  loggedInUserId: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginTop: 4,
-  },
-  buttonContainer: {
-    flexDirection: 'column',
-    gap: 8,
-    marginTop: 8,
-  },
-  button: {
-    width: '100%',
   },
 });

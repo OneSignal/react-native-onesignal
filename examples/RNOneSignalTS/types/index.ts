@@ -13,6 +13,7 @@ export interface AppState {
   pushEnabled: boolean;
   iamPaused: boolean;
   locationShared: boolean;
+  consentRequired: boolean;
   consentGiven: boolean;
   externalUserId: string | null;
   isLoading: boolean;
@@ -52,6 +53,7 @@ export type AppAction =
   | { type: 'SET_PUSH_ENABLED'; payload: boolean }
   | { type: 'SET_IAM_PAUSED'; payload: boolean }
   | { type: 'SET_LOCATION_SHARED'; payload: boolean }
+  | { type: 'SET_CONSENT_REQUIRED'; payload: boolean }
   | { type: 'SET_CONSENT_GIVEN'; payload: boolean }
   | { type: 'SET_EXTERNAL_USER_ID'; payload: string | null }
   | { type: 'SET_LOADING'; payload: boolean }

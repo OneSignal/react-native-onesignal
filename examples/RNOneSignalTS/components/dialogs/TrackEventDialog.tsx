@@ -6,7 +6,7 @@ import { Colors } from '../../constants/Colors';
 interface TrackEventDialogProps {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (name: string, value?: string) => void;
+  onConfirm: (name: string, properties?: Record<string, unknown>) => void;
 }
 
 export function TrackEventDialog({
@@ -16,21 +16,47 @@ export function TrackEventDialog({
 }: TrackEventDialogProps) {
   // Empty by default for Appium testing
   const [name, setName] = useState('');
-  const [value, setValue] = useState('');
+  const [propertiesJson, setPropertiesJson] = useState('');
+  const [jsonError, setJsonError] = useState('');
 
   useEffect(() => {
     if (!visible) {
       setName('');
-      setValue('');
+      setPropertiesJson('');
+      setJsonError('');
     }
   }, [visible]);
 
-  const handleConfirm = () => {
-    if (name.trim()) {
-      const eventValue = value.trim() || undefined;
-      onConfirm(name.trim(), eventValue);
-      onClose();
+  const validateJson = (text: string) => {
+    setPropertiesJson(text);
+    if (text.trim() === '') {
+      setJsonError('');
+      return;
     }
+    try {
+      JSON.parse(text);
+      setJsonError('');
+    } catch {
+      setJsonError('Invalid JSON format');
+    }
+  };
+
+  const isValid = name.trim() !== '' && jsonError === '';
+
+  const handleConfirm = () => {
+    if (!isValid) {
+      return;
+    }
+    let properties: Record<string, unknown> | undefined;
+    if (propertiesJson.trim()) {
+      try {
+        properties = JSON.parse(propertiesJson.trim());
+      } catch {
+        return;
+      }
+    }
+    onConfirm(name.trim(), properties);
+    onClose();
   };
 
   return (
@@ -39,24 +65,28 @@ export function TrackEventDialog({
       title="Track Event"
       onClose={onClose}
       onConfirm={handleConfirm}
-      confirmDisabled={!name.trim()}
+      confirmText="Track"
+      confirmDisabled={!isValid}
     >
-      <Text style={styles.label}>Event Name (required)</Text>
+      <Text style={styles.label}>Event Name</Text>
       <TextInput
         style={styles.input}
-        placeholder="Event name"
+        placeholder=""
         value={name}
         onChangeText={setName}
         autoCapitalize="none"
       />
-      <Text style={styles.label}>Event Value (optional)</Text>
+      <Text style={styles.label}>Properties (JSON, optional)</Text>
       <TextInput
-        style={styles.input}
-        placeholder="Event value"
-        value={value}
-        onChangeText={setValue}
+        style={[styles.input, styles.jsonInput, jsonError ? styles.inputError : null]}
+        placeholder='{"key": "value"}'
+        value={propertiesJson}
+        onChangeText={validateJson}
         autoCapitalize="none"
+        multiline
+        numberOfLines={3}
       />
+      {jsonError ? <Text style={styles.errorText}>{jsonError}</Text> : null}
     </BaseDialog>
   );
 }
@@ -70,10 +100,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 12,
   },
+  jsonInput: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  inputError: {
+    borderColor: Colors.primary,
+  },
   label: {
     fontSize: 14,
     color: Colors.darkText,
     marginBottom: 8,
     fontWeight: '600',
+  },
+  errorText: {
+    fontSize: 12,
+    color: Colors.primary,
+    marginTop: -8,
+    marginBottom: 8,
   },
 });

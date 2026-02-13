@@ -4,7 +4,6 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { Card } from '../common/Card';
 import { SectionHeader } from '../common/SectionHeader';
 import { ActionButton } from '../common/ActionButton';
 import { Colors } from '../../constants/Colors';
@@ -102,11 +101,11 @@ export function NotificationDemoSection({
   const isLoading = sendingNotification !== null;
 
   return (
-    <Card>
+    <View style={styles.container}>
       <SectionHeader title="Send Push Notification" tooltipKey="sendPushNotification" />
       <View style={styles.buttonContainer}>
         <ActionButton
-          title="Simple Notification"
+          title="Simple"
           onPress={handleSendSimple}
           disabled={isLoading}
           style={styles.button}
@@ -120,7 +119,7 @@ export function NotificationDemoSection({
       </View>
       <View style={styles.buttonContainer}>
         <ActionButton
-          title="Notification With Image"
+          title="With Image"
           onPress={handleSendWithImage}
           disabled={isLoading}
           style={styles.button}
@@ -134,7 +133,7 @@ export function NotificationDemoSection({
       </View>
       <View style={styles.buttonContainer}>
         <ActionButton
-          title="Custom Notification"
+          title="Custom"
           onPress={() => setCustomDialogVisible(true)}
           disabled={isLoading}
           style={styles.button}
@@ -151,11 +150,15 @@ export function NotificationDemoSection({
         onClose={() => setCustomDialogVisible(false)}
         onConfirm={handleSendCustom}
       />
-    </Card>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
   buttonContainer: {
     position: 'relative',
     marginTop: 8,

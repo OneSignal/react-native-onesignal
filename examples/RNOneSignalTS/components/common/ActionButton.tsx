@@ -14,6 +14,7 @@ interface ActionButtonProps {
   style?: ViewStyle;
   textStyle?: TextStyle;
   disabled?: boolean;
+  variant?: 'primary' | 'outline';
 }
 
 export function ActionButton({
@@ -22,14 +23,24 @@ export function ActionButton({
   style,
   textStyle,
   disabled = false,
+  variant = 'primary',
 }: ActionButtonProps) {
+  const buttonStyle =
+    variant === 'outline'
+      ? CommonStyles.outlineButton
+      : CommonStyles.primaryButton;
+  const buttonTextStyle =
+    variant === 'outline'
+      ? CommonStyles.outlineButtonText
+      : CommonStyles.primaryButtonText;
+
   return (
     <TouchableOpacity
-      style={[CommonStyles.primaryButton, style, disabled && styles.disabled]}
+      style={[buttonStyle, style, disabled && styles.disabled]}
       onPress={onPress}
       disabled={disabled}
     >
-      <Text style={[CommonStyles.primaryButtonText, textStyle]}>{title}</Text>
+      <Text style={[buttonTextStyle, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
 }

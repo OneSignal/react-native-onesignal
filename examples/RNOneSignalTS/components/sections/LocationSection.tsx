@@ -33,8 +33,8 @@ export function LocationSection({ loggingFunction }: LocationSectionProps) {
     <Card>
       <SectionHeader title="Location" tooltipKey="location" />
       <ToggleRow
-        label="Location Shared:"
-        description="Location will be shared from device"
+        label="Location Shared"
+        description="Share device location with OneSignal"
         value={state.locationShared}
         onValueChange={handleToggleLocation}
       />
