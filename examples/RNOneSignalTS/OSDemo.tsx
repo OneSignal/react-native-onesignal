@@ -66,16 +66,29 @@ function OSDemoContent() {
    */
   const fetchAndPopulateUserData = useCallback(async () => {
     try {
-      const onesignalId = OneSignal.User.onesignalId;
+      // Use async getOnesignalId() method (not the non-existent sync property)
+      let onesignalId: string | null = null;
+      try {
+        onesignalId = await OneSignal.User.getOnesignalId();
+      } catch {
+        OSLog('SDK not ready yet, cannot get OneSignal ID');
+        return;
+      }
+
       if (!onesignalId) {
         OSLog('No OneSignal ID found, skipping data fetch');
         return;
       }
 
-      OSLog('Fetching user data from API...');
+      OSLog(`Fetching user data for ID: ${onesignalId}`);
       dispatch({ type: 'SET_LOADING', payload: true });
 
       const userData = await fetchUserData(onesignalId);
+
+      OSLog(
+        `Fetched: ${userData.aliases.length} aliases, ${userData.tags.length} tags, ` +
+        `${userData.emails.length} emails, ${userData.smsNumbers.length} SMS`,
+      );
 
       // Populate state with fetched data
       dispatch({ type: 'SET_ALL_ALIASES', payload: userData.aliases });
@@ -88,9 +101,6 @@ function OSDemoContent() {
       }
 
       OSLog('User data loaded successfully');
-
-      // Add 100ms delay to ensure UI has time to render
-      await new Promise((resolve) => setTimeout(resolve, 100));
     } catch (error) {
       OSLog('Failed to fetch user data: ', error);
     } finally {
@@ -173,10 +183,11 @@ function OSDemoContent() {
   );
 
   const onUserChange = useCallback(
-    (event: unknown) => {
+    async (event: unknown) => {
       OSLog('OneSignal: user changed: ', event);
-      // Fetch user data when user changes
-      fetchAndPopulateUserData();
+      // Small delay to let SDK finalize user state before querying ID
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await fetchAndPopulateUserData();
     },
     [OSLog, fetchAndPopulateUserData],
   );
@@ -185,27 +196,24 @@ function OSDemoContent() {
     OneSignal.initialize(APP_ID);
     OneSignal.Debug.setLogLevel(LogLevel.None);
 
-    // Fetch user data on cold start with retry mechanism
-    // OneSignal ID might not be available immediately after initialization
+    // Wait for SDK native init to complete, then fetch user data if available.
+    // Unlike Flutter's `await OneSignal.initialize()`, RN's initialize() is
+    // fire-and-forget, so we must wait before calling any SDK methods.
     const initUserData = async () => {
-      // Try up to 5 times with increasing delays
-      const maxRetries = 5;
-      const baseDelay = 500; // Start with 500ms
+      // Give the native SDK time to initialize
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        const onesignalId = OneSignal.User.onesignalId;
+      try {
+        const onesignalId = await OneSignal.User.getOnesignalId();
         if (onesignalId) {
-          fetchAndPopulateUserData();
-          return;
+          console.log(`[Init] OneSignal ID found: ${onesignalId}`);
+          await fetchAndPopulateUserData();
+        } else {
+          console.log('[Init] No OneSignal ID yet — will fetch on user change event');
         }
-
-        // Wait before next attempt (exponential backoff)
-        const delay = baseDelay * Math.pow(2, attempt);
-        await new Promise((resolve) => setTimeout(resolve, delay));
+      } catch (e) {
+        console.log('[Init] SDK not ready for getOnesignalId(), will rely on user change event');
       }
-
-      // After all retries, log that we couldn't get the ID
-      console.log('OneSignal ID not available after retries, waiting for user change event');
     };
     initUserData();
   }, [fetchAndPopulateUserData]);
@@ -343,7 +351,7 @@ function OSDemoContent() {
       <ScrollView style={styles.scrollView}>
         {/* Section Order matching Android V2 */}
         <AppInfoSection loggingFunction={OSLog} />
-        <UserSection loggingFunction={OSLog} />
+        <UserSection loggingFunction={OSLog} onUserDataRefresh={fetchAndPopulateUserData} />
         <PushSubscriptionSection loggingFunction={OSLog} />
         <NotificationDemoSection loggingFunction={OSLog} />
         <InAppMessagingSection loggingFunction={OSLog} />

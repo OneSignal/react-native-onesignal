@@ -10,9 +10,10 @@ import { useAppState } from '../../context/AppStateContext';
 
 interface UserSectionProps {
   loggingFunction: (message: string, optionalArg?: unknown) => void;
+  onUserDataRefresh?: () => Promise<void>;
 }
 
-export function UserSection({ loggingFunction }: UserSectionProps) {
+export function UserSection({ loggingFunction, onUserDataRefresh }: UserSectionProps) {
   const { state, dispatch } = useAppState();
   const [loginDialogVisible, setLoginDialogVisible] = useState(false);
 
@@ -24,6 +25,20 @@ export function UserSection({ loggingFunction }: UserSectionProps) {
     try {
       await OneSignal.login(externalId);
       dispatch({ type: 'SET_EXTERNAL_USER_ID', payload: externalId });
+      loggingFunction('Login successful for: ' + externalId);
+
+      // After login, wait for SDK to associate the user, then fetch data.
+      // This mirrors the Flutter demo's approach where the observer
+      // triggers fetchUserDataFromApi() after login.
+      if (onUserDataRefresh) {
+        // Give SDK time to finalize the user identity
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        try {
+          await onUserDataRefresh();
+        } catch (e) {
+          loggingFunction('Data refresh after login failed, will retry on user change event');
+        }
+      }
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -34,11 +49,14 @@ export function UserSection({ loggingFunction }: UserSectionProps) {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       await OneSignal.logout();
+      // Clear all user-specific state (matching Flutter demo behavior)
       dispatch({ type: 'SET_EXTERNAL_USER_ID', payload: null });
       dispatch({ type: 'CLEAR_ALL_ALIASES' });
+      dispatch({ type: 'SET_ALL_TAGS', payload: [] });
       dispatch({ type: 'SET_ALL_EMAILS', payload: [] });
       dispatch({ type: 'SET_ALL_SMS', payload: [] });
       dispatch({ type: 'CLEAR_ALL_TRIGGERS' });
+      loggingFunction('Logged out successfully');
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
