@@ -31,14 +31,15 @@ export function LocationSection({ loggingFunction }: LocationSectionProps) {
 
   return (
     <Card>
-      <SectionHeader title="Location" />
+      <SectionHeader title="Location" tooltipKey="location" />
       <ToggleRow
-        label="Share Location"
+        label="Location Shared"
+        description="Share device location with OneSignal"
         value={state.locationShared}
         onValueChange={handleToggleLocation}
       />
       <ActionButton
-        title="Request Permission"
+        title="Prompt Location"
         onPress={handleRequestPermission}
         style={styles.button}
       />

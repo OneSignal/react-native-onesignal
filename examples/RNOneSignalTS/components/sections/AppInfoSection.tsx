@@ -1,64 +1,85 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import {
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
 import { Colors } from '../../constants/Colors';
 import { APP_ID } from '../../constants/Config';
-import { ActionButton } from '../common/ActionButton';
 import { Card } from '../common/Card';
 import { SectionHeader } from '../common/SectionHeader';
-import { LoginUserDialog } from '../dialogs/LoginUserDialog';
+import { ToggleRow } from '../common/ToggleRow';
+import { useAppState } from '../../context/AppStateContext';
 
 interface AppInfoSectionProps {
   loggingFunction: (message: string, optionalArg?: unknown) => void;
 }
 
 export function AppInfoSection({ loggingFunction }: AppInfoSectionProps) {
-  const [loginDialogVisible, setLoginDialogVisible] = useState(false);
+  const { state, dispatch } = useAppState();
 
-  const handleLogin = (externalId: string) => {
-    loggingFunction('Attempting to login a user: ', externalId);
-    OneSignal.login(externalId);
+  const handleToggleConsentRequired = (required: boolean) => {
+    loggingFunction(`Setting consent required: ${required}`);
+    OneSignal.setConsentRequired(required);
+    dispatch({ type: 'SET_CONSENT_REQUIRED', payload: required });
+    if (!required) {
+      // When disabling consent required, also reset consent given
+      dispatch({ type: 'SET_CONSENT_GIVEN', payload: false });
+    }
   };
 
-  const handleLogout = () => {
-    loggingFunction('Attempting to logout a user');
-    OneSignal.logout();
+  const handleToggleConsentGiven = async (granted: boolean) => {
+    loggingFunction(`Setting privacy consent: ${granted}`);
+    await OneSignal.setConsentGiven(granted);
+    dispatch({ type: 'SET_CONSENT_GIVEN', payload: granted });
   };
 
-  const handleRevokeConsent = async () => {
-    loggingFunction('Revoking privacy consent');
-    await OneSignal.setConsentGiven(false);
+  const handleOpenOneSignal = () => {
+    Linking.openURL('https://onesignal.com');
   };
 
   return (
     <Card>
-      <SectionHeader title="App Info" />
+      <SectionHeader title="App" tooltipKey="app" />
+
+      {/* App ID Display */}
       <View style={styles.row}>
         <Text style={styles.label}>App ID:</Text>
-        <Text style={styles.value}>{APP_ID}</Text>
+        <Text style={styles.value} numberOfLines={1} ellipsizeMode="middle">
+          {APP_ID}
+        </Text>
       </View>
-      <View style={styles.buttonContainer}>
-        <ActionButton
-          title="Login User"
-          onPress={() => setLoginDialogVisible(true)}
-          style={styles.button}
-        />
-        <ActionButton
-          title="Logout User"
-          onPress={handleLogout}
-          style={styles.button}
-        />
+
+      {/* Guidance Banner */}
+      <View style={styles.guidanceBanner}>
+        <Text style={styles.guidanceText}>
+          Add your own App ID, then rebuild to fully test all functionality.
+        </Text>
+        <TouchableOpacity onPress={handleOpenOneSignal}>
+          <Text style={styles.guidanceLink}>Get your keys at onesignal.com</Text>
+        </TouchableOpacity>
       </View>
-      <ActionButton
-        title="Revoke Consent"
-        onPress={handleRevokeConsent}
-        style={styles.revokeButton}
+
+      {/* Consent Required Toggle */}
+      <ToggleRow
+        label="Consent Required"
+        description="Require consent before SDK processes data"
+        value={state.consentRequired}
+        onValueChange={handleToggleConsentRequired}
       />
-      <LoginUserDialog
-        visible={loginDialogVisible}
-        onClose={() => setLoginDialogVisible(false)}
-        onConfirm={handleLogin}
-      />
+
+      {/* Privacy Consent Toggle - only visible when Consent Required is ON */}
+      {state.consentRequired && (
+        <ToggleRow
+          label="Privacy Consent"
+          description="Consent given for data collection"
+          value={state.consentGiven}
+          onValueChange={handleToggleConsentGiven}
+        />
+      )}
     </Card>
   );
 }
@@ -77,15 +98,20 @@ const styles = StyleSheet.create({
     color: Colors.darkText,
     marginTop: 4,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 8,
+  guidanceBanner: {
+    backgroundColor: '#FFF9E6',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
   },
-  button: {
-    flex: 1,
+  guidanceText: {
+    fontSize: 14,
+    color: Colors.darkText,
+    marginBottom: 4,
   },
-  revokeButton: {
-    marginTop: 8,
+  guidanceLink: {
+    fontSize: 14,
+    color: Colors.primary,
+    textDecorationLine: 'underline',
   },
 });

@@ -12,6 +12,8 @@ import { SectionHeader } from '../common/SectionHeader';
 import { EmptyState } from '../common/EmptyState';
 import { ActionButton } from '../common/ActionButton';
 import { AddPairDialog } from '../dialogs/AddPairDialog';
+import { MultiPairInputDialog } from '../dialogs/MultiPairInputDialog';
+import { MultiSelectRemoveDialog } from '../dialogs/MultiSelectRemoveDialog';
 import { useAppState } from '../../context/AppStateContext';
 import { Colors } from '../../constants/Colors';
 
@@ -22,11 +24,21 @@ interface TagsSectionProps {
 export function TagsSection({ loggingFunction }: TagsSectionProps) {
   const { state, dispatch } = useAppState();
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [multiDialogVisible, setMultiDialogVisible] = useState(false);
+  const [removeDialogVisible, setRemoveDialogVisible] = useState(false);
 
   const handleAddTag = (key: string, value: string) => {
     loggingFunction(`Sending tag ${key} with value: `, value);
     OneSignal.User.addTag(key, value);
     dispatch({ type: 'ADD_TAG', payload: { key, value } });
+  };
+
+  const handleAddMultipleTags = (pairs: { key: string; value: string }[]) => {
+    pairs.forEach((pair) => {
+      loggingFunction(`Sending tag ${pair.key} with value: `, pair.value);
+      OneSignal.User.addTag(pair.key, pair.value);
+      dispatch({ type: 'ADD_TAG', payload: { key: pair.key, value: pair.value } });
+    });
   };
 
   const handleRemoveTag = (key: string) => {
@@ -35,20 +47,24 @@ export function TagsSection({ loggingFunction }: TagsSectionProps) {
     dispatch({ type: 'REMOVE_TAG', payload: key });
   };
 
-  const handleGetTags = async () => {
-    const tags = await OneSignal.User.getTags();
-    loggingFunction('Tags:', tags);
+  const handleRemoveSelected = (keys: string[]) => {
+    keys.forEach((key) => {
+      loggingFunction(`Deleting tag with key: ${key}`);
+      OneSignal.User.removeTag(key);
+      dispatch({ type: 'REMOVE_TAG', payload: key });
+    });
   };
 
   return (
     <Card>
-      <SectionHeader title="Tags" />
+      <SectionHeader title="Tags" tooltipKey="tags" />
       {state.tags.length === 0 ? (
         <EmptyState message="No Tags Added" />
       ) : (
         <FlatList
           data={state.tags}
           keyExtractor={(item) => item.key}
+          scrollEnabled={false}
           renderItem={({ item }) => (
             <View style={styles.item}>
               <View style={styles.itemContent}>
@@ -67,15 +83,23 @@ export function TagsSection({ loggingFunction }: TagsSectionProps) {
       )}
       <View style={styles.buttonContainer}>
         <ActionButton
-          title="Add Tag"
+          title="Add"
           onPress={() => setDialogVisible(true)}
           style={styles.button}
         />
         <ActionButton
-          title="Get Tags"
-          onPress={handleGetTags}
+          title="Add Multiple"
+          onPress={() => setMultiDialogVisible(true)}
           style={styles.button}
         />
+        {state.tags.length > 0 && (
+          <ActionButton
+            title="Remove Selected"
+            onPress={() => setRemoveDialogVisible(true)}
+            variant="outline"
+            style={styles.button}
+          />
+        )}
       </View>
       <AddPairDialog
         visible={dialogVisible}
@@ -84,6 +108,21 @@ export function TagsSection({ loggingFunction }: TagsSectionProps) {
         onConfirm={handleAddTag}
         keyPlaceholder="Tag Key"
         valuePlaceholder="Tag Value"
+      />
+      <MultiPairInputDialog
+        visible={multiDialogVisible}
+        title="Add Multiple Tags"
+        onClose={() => setMultiDialogVisible(false)}
+        onConfirm={handleAddMultipleTags}
+        keyPlaceholder="Tag Key"
+        valuePlaceholder="Tag Value"
+      />
+      <MultiSelectRemoveDialog
+        visible={removeDialogVisible}
+        title="Remove Tags"
+        items={state.tags}
+        onClose={() => setRemoveDialogVisible(false)}
+        onConfirm={handleRemoveSelected}
       />
     </Card>
   );
@@ -119,11 +158,11 @@ const styles = StyleSheet.create({
     color: Colors.primary,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     gap: 8,
     marginTop: 12,
   },
   button: {
-    flex: 1,
+    width: '100%',
   },
 });

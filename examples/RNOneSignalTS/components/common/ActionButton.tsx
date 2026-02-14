@@ -1,5 +1,11 @@
 import React from 'react';
-import { TouchableOpacity, Text, ViewStyle, TextStyle } from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  ViewStyle,
+  TextStyle,
+  StyleSheet,
+} from 'react-native';
 import { CommonStyles } from '../../constants/Styles';
 
 interface ActionButtonProps {
@@ -7,6 +13,8 @@ interface ActionButtonProps {
   onPress: () => void;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  disabled?: boolean;
+  variant?: 'primary' | 'outline';
 }
 
 export function ActionButton({
@@ -14,13 +22,31 @@ export function ActionButton({
   onPress,
   style,
   textStyle,
+  disabled = false,
+  variant = 'primary',
 }: ActionButtonProps) {
+  const buttonStyle =
+    variant === 'outline'
+      ? CommonStyles.outlineButton
+      : CommonStyles.primaryButton;
+  const buttonTextStyle =
+    variant === 'outline'
+      ? CommonStyles.outlineButtonText
+      : CommonStyles.primaryButtonText;
+
   return (
     <TouchableOpacity
-      style={[CommonStyles.primaryButton, style]}
+      style={[buttonStyle, style, disabled && styles.disabled]}
       onPress={onPress}
+      disabled={disabled}
     >
-      <Text style={[CommonStyles.primaryButtonText, textStyle]}>{title}</Text>
+      <Text style={[buttonTextStyle, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  disabled: {
+    opacity: 0.5,
+  },
+});

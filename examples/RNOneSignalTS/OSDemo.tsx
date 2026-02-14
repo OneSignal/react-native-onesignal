@@ -1,10 +1,10 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -16,26 +16,32 @@ import {
 } from 'react-native-onesignal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OSConsole from './OSConsole';
-import { AppStateProvider } from './context/AppStateContext';
+import { AppStateProvider, useAppState } from './context/AppStateContext';
 import { Colors } from './constants/Colors';
 import { APP_ID } from './constants/Config';
-import { PrivacyConsentSection } from './components/sections/PrivacyConsentSection';
+import { fetchUserData } from './services/OneSignalService';
 import { AppInfoSection } from './components/sections/AppInfoSection';
+import { PushSubscriptionSection } from './components/sections/PushSubscriptionSection';
+import { NotificationDemoSection } from './components/sections/NotificationDemoSection';
+import { InAppMessagingSection } from './components/sections/InAppMessagingSection';
+import { IamDemoSection } from './components/sections/IamDemoSection';
 import { AliasesSection } from './components/sections/AliasesSection';
 import { EmailSection } from './components/sections/EmailSection';
 import { SmsSection } from './components/sections/SmsSection';
 import { TagsSection } from './components/sections/TagsSection';
-import { PushSubscriptionSection } from './components/sections/PushSubscriptionSection';
 import { OutcomeSection } from './components/sections/OutcomeSection';
-import { InAppMessagingSection } from './components/sections/InAppMessagingSection';
 import { TriggersSection } from './components/sections/TriggersSection';
+import { TrackEventSection } from './components/sections/TrackEventSection';
 import { LocationSection } from './components/sections/LocationSection';
-import { NotificationDemoSection } from './components/sections/NotificationDemoSection';
-import { IamDemoSection } from './components/sections/IamDemoSection';
 import { LiveActivitiesSection } from './components/sections/LiveActivitiesSection';
-import { NavigationSection } from './components/sections/NavigationSection';
+import { UserSection } from './components/sections/UserSection';
+import { ActionButton } from './components/common/ActionButton';
 
-const OSDemo: React.FC = () => {
+/**
+ * Inner component that uses the app state context
+ */
+function OSDemoContent() {
+  const { state, dispatch } = useAppState();
   const [consoleValue, setConsoleValue] = useState('');
   const [inputValue, setInputValue] = useState('');
 
@@ -55,6 +61,53 @@ const OSDemo: React.FC = () => {
     });
   }, []);
 
+  /**
+   * Fetches user data from REST API and updates state
+   */
+  const fetchAndPopulateUserData = useCallback(async () => {
+    try {
+      // Use async getOnesignalId() method (not the non-existent sync property)
+      let onesignalId: string | null = null;
+      try {
+        onesignalId = await OneSignal.User.getOnesignalId();
+      } catch {
+        OSLog('SDK not ready yet, cannot get OneSignal ID');
+        return;
+      }
+
+      if (!onesignalId) {
+        OSLog('No OneSignal ID found, skipping data fetch');
+        return;
+      }
+
+      OSLog(`Fetching user data for ID: ${onesignalId}`);
+      dispatch({ type: 'SET_LOADING', payload: true });
+
+      const userData = await fetchUserData(onesignalId);
+
+      OSLog(
+        `Fetched: ${userData.aliases.length} aliases, ${userData.tags.length} tags, ` +
+        `${userData.emails.length} emails, ${userData.smsNumbers.length} SMS`,
+      );
+
+      // Populate state with fetched data
+      dispatch({ type: 'SET_ALL_ALIASES', payload: userData.aliases });
+      dispatch({ type: 'SET_ALL_TAGS', payload: userData.tags });
+      dispatch({ type: 'SET_ALL_EMAILS', payload: userData.emails });
+      dispatch({ type: 'SET_ALL_SMS', payload: userData.smsNumbers });
+
+      if (userData.externalId) {
+        dispatch({ type: 'SET_EXTERNAL_USER_ID', payload: userData.externalId });
+      }
+
+      OSLog('User data loaded successfully');
+    } catch (error) {
+      OSLog('Failed to fetch user data: ', error);
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  }, [dispatch, OSLog]);
+
   const onForegroundWillDisplay = useCallback(
     (event: NotificationWillDisplayEvent) => {
       const notif = event.getNotification();
@@ -66,32 +119,6 @@ const OSDemo: React.FC = () => {
       setTimeout(() => {
         notif.display();
       }, 5000);
-
-      // const cancelButton = {
-      //   text: 'Cancel',
-      //   onPress: () => {
-      //     (event as { preventDefault: () => void }).preventDefault();
-      //   },
-      //   style: 'cancel' as const,
-      // };
-
-      // const completeButton = {
-      //   text: 'Display',
-      //   onPress: () => {
-      //     (event as { getNotification: () => { display: () => void } })
-      //       .getNotification()
-      //       .display();
-      //   },
-      // };
-
-      // Alert.alert(
-      //   'Display notification?',
-      //   notif.title,
-      //   [cancelButton, completeButton],
-      //   {
-      //     cancelable: true,
-      //   },
-      // );
     },
     [OSLog],
   );
@@ -148,23 +175,48 @@ const OSDemo: React.FC = () => {
   );
 
   const onPermissionChange = useCallback(
-    (granted: unknown) => {
+    (granted: boolean) => {
       OSLog('OneSignal: permission changed:', granted);
+      dispatch({ type: 'SET_PERMISSION_GRANTED', payload: granted });
     },
-    [OSLog],
+    [OSLog, dispatch],
   );
 
   const onUserChange = useCallback(
-    (event: unknown) => {
+    async (event: unknown) => {
       OSLog('OneSignal: user changed: ', event);
+      // Small delay to let SDK finalize user state before querying ID
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await fetchAndPopulateUserData();
     },
-    [OSLog],
+    [OSLog, fetchAndPopulateUserData],
   );
 
   useEffect(() => {
     OneSignal.initialize(APP_ID);
     OneSignal.Debug.setLogLevel(LogLevel.None);
-  }, []);
+
+    // Wait for SDK native init to complete, then fetch user data if available.
+    // Unlike Flutter's `await OneSignal.initialize()`, RN's initialize() is
+    // fire-and-forget, so we must wait before calling any SDK methods.
+    const initUserData = async () => {
+      // Give the native SDK time to initialize
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      try {
+        const onesignalId = await OneSignal.User.getOnesignalId();
+        if (onesignalId) {
+          console.log(`[Init] OneSignal ID found: ${onesignalId}`);
+          await fetchAndPopulateUserData();
+        } else {
+          console.log('[Init] No OneSignal ID yet — will fetch on user change event');
+        }
+      } catch (e) {
+        console.log('[Init] SDK not ready for getOnesignalId(), will rely on user change event');
+      }
+    };
+    initUserData();
+  }, [fetchAndPopulateUserData]);
 
   useFocusEffect(
     useCallback(() => {
@@ -254,56 +306,96 @@ const OSDemo: React.FC = () => {
     ]),
   );
 
-  const inputChange = useCallback((text: string) => {
-    setInputValue(text);
-  }, []);
+  const logCount = consoleValue ? consoleValue.split('\n').length : 0;
+  const [logsExpanded, setLogsExpanded] = useState(true);
 
   return (
-    <AppStateProvider>
-      <SafeAreaView
-        style={styles.container}
-        edges={['bottom', 'left', 'right']}
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>OneSignal</Text>
-          <OSConsole value={consoleValue} />
-          <View style={styles.clearButton}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      {/* Red Branded Header Bar */}
+      <View style={styles.brandedHeader}>
+        <Text style={styles.brandedHeaderText}>
+          <Text style={styles.brandedHeaderBold}>OneSignal</Text>
+          {'  '}
+          <Text style={styles.brandedHeaderLight}>Sample App</Text>
+        </Text>
+      </View>
+
+      {/* Log View - Collapsible */}
+      <View style={styles.logContainer}>
+        <TouchableOpacity
+          style={styles.logHeader}
+          onPress={() => setLogsExpanded(!logsExpanded)}
+        >
+          <Text style={styles.logHeaderText}>
+            LOGS ({logCount})
+          </Text>
+          <View style={styles.logHeaderActions}>
             <TouchableOpacity
-              style={styles.clearButtonTouchable}
-              onPress={() => {
-                setConsoleValue('');
-              }}
+              onPress={() => setConsoleValue('')}
+              style={styles.logClearButton}
             >
-              <Text style={styles.clearButtonText}>X</Text>
+              <Text style={styles.logClearText}>🗑</Text>
             </TouchableOpacity>
+            <Text style={styles.logExpandIcon}>
+              {logsExpanded ? '∧' : '∨'}
+            </Text>
           </View>
-          <TextInput
-            style={styles.input}
-            placeholder="Input"
-            onChangeText={inputChange}
+        </TouchableOpacity>
+        {logsExpanded && (
+          <View style={styles.logContent}>
+            <OSConsole value={consoleValue} />
+          </View>
+        )}
+      </View>
+
+      <ScrollView style={styles.scrollView}>
+        {/* Section Order matching Android V2 */}
+        <AppInfoSection loggingFunction={OSLog} />
+        <UserSection loggingFunction={OSLog} onUserDataRefresh={fetchAndPopulateUserData} />
+        <PushSubscriptionSection loggingFunction={OSLog} />
+        <NotificationDemoSection loggingFunction={OSLog} />
+        <InAppMessagingSection loggingFunction={OSLog} />
+        <IamDemoSection loggingFunction={OSLog} />
+        <AliasesSection loggingFunction={OSLog} />
+        <EmailSection loggingFunction={OSLog} />
+        <SmsSection loggingFunction={OSLog} />
+        <TagsSection loggingFunction={OSLog} />
+        <OutcomeSection loggingFunction={OSLog} />
+        <TriggersSection loggingFunction={OSLog} />
+        <TrackEventSection loggingFunction={OSLog} />
+        <LocationSection loggingFunction={OSLog} />
+        <LiveActivitiesSection loggingFunction={OSLog} inputValue={inputValue} />
+
+        {/* Next Activity Button */}
+        <View style={styles.nextActivityContainer}>
+          <ActionButton
+            title="Next Activity"
+            onPress={() => {
+              // Navigate to Details tab
+              OSLog('Navigate to next activity');
+            }}
           />
         </View>
-        <ScrollView style={styles.scrollView}>
-          <PrivacyConsentSection loggingFunction={OSLog} />
-          <AppInfoSection loggingFunction={OSLog} />
-          <AliasesSection loggingFunction={OSLog} />
-          <EmailSection loggingFunction={OSLog} />
-          <SmsSection loggingFunction={OSLog} />
-          <TagsSection loggingFunction={OSLog} />
-          <PushSubscriptionSection loggingFunction={OSLog} />
-          <OutcomeSection loggingFunction={OSLog} />
-          <InAppMessagingSection loggingFunction={OSLog} />
-          <TriggersSection loggingFunction={OSLog} />
-          <LocationSection loggingFunction={OSLog} />
-          <LiveActivitiesSection
-            loggingFunction={OSLog}
-            inputValue={inputValue}
-          />
-          <NotificationDemoSection loggingFunction={OSLog} />
-          <IamDemoSection loggingFunction={OSLog} />
-          <NavigationSection />
-        </ScrollView>
-      </SafeAreaView>
+      </ScrollView>
+
+      {/* Loading Overlay */}
+      {state.isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      )}
+    </SafeAreaView>
+  );
+}
+
+/**
+ * Main OSDemo component wrapped with AppStateProvider
+ */
+const OSDemo: React.FC = () => {
+  return (
+    <AppStateProvider>
+      <OSDemoContent />
     </AppStateProvider>
   );
 };
@@ -315,45 +407,88 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    backgroundColor: '#fff',
-  },
-  header: {
-    flex: 0.3,
-  },
-  scrollView: {
-    flex: 0.7,
     backgroundColor: Colors.background,
   },
-  title: {
-    fontSize: 40,
-    alignSelf: 'center',
-    paddingTop: 4,
-    paddingBottom: 10,
-  },
-  clearButton: {
-    position: 'absolute',
-    right: 10,
-    top: 70,
-    width: 44,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  clearButtonTouchable: {
-    width: 44,
-    height: 44,
+  brandedHeader: {
     backgroundColor: Colors.primary,
-    borderRadius: 8,
-    alignItems: 'center',
+    height: 56,
     justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
-  clearButtonText: {
-    color: 'white',
+  brandedHeaderText: {
+    color: Colors.white,
     fontSize: 18,
-    fontWeight: '600',
   },
-  input: {
-    marginTop: 10,
+  brandedHeaderBold: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  brandedHeaderLight: {
+    fontWeight: '300',
+    fontSize: 16,
+  },
+  logContainer: {
+    backgroundColor: Colors.consoleBackground,
+  },
+  logHeader: {
+    backgroundColor: Colors.consoleHeaderBackground,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  logHeaderText: {
+    color: Colors.white,
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  logHeaderActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  logClearButton: {
+    padding: 4,
+  },
+  logClearText: {
+    color: Colors.white,
+    fontSize: 16,
+  },
+  logExpandIcon: {
+    color: Colors.white,
+    fontSize: 16,
+  },
+  logContent: {
+    height: 100,
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  nextActivityContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingBottom: 24,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: Colors.white,
+    fontWeight: '600',
   },
 });
 

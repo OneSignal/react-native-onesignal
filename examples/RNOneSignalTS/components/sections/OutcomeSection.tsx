@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
-import { Card } from '../common/Card';
 import { SectionHeader } from '../common/SectionHeader';
 import { ActionButton } from '../common/ActionButton';
-import { SendOutcomeDialog } from '../dialogs/SendOutcomeDialog';
+import { SendOutcomeDialog, OutcomeType } from '../dialogs/SendOutcomeDialog';
 
 interface OutcomeSectionProps {
   loggingFunction: (message: string, optionalArg?: unknown) => void;
@@ -12,19 +12,32 @@ interface OutcomeSectionProps {
 export function OutcomeSection({ loggingFunction }: OutcomeSectionProps) {
   const [dialogVisible, setDialogVisible] = useState(false);
 
-  const handleSendOutcome = (name: string, value?: number) => {
-    if (value !== undefined) {
-      loggingFunction(`Sending outcome ${name} with value: `, value);
-      OneSignal.Session.addOutcomeWithValue(name, value);
-    } else {
-      loggingFunction('Sending outcome: ', name);
-      OneSignal.Session.addOutcome(name);
+  const handleSendOutcome = (
+    type: OutcomeType,
+    name: string,
+    value?: number,
+  ) => {
+    switch (type) {
+      case 'normal':
+        loggingFunction('Sending normal outcome: ', name);
+        OneSignal.Session.addOutcome(name);
+        break;
+      case 'unique':
+        loggingFunction('Sending unique outcome: ', name);
+        OneSignal.Session.addUniqueOutcome(name);
+        break;
+      case 'withValue':
+        loggingFunction(`Sending outcome ${name} with value: `, value);
+        if (value !== undefined) {
+          OneSignal.Session.addOutcomeWithValue(name, value);
+        }
+        break;
     }
   };
 
   return (
-    <Card>
-      <SectionHeader title="Outcomes" />
+    <View style={styles.container}>
+      <SectionHeader title="Outcome Events" tooltipKey="outcomes" />
       <ActionButton
         title="Send Outcome"
         onPress={() => setDialogVisible(true)}
@@ -34,6 +47,13 @@ export function OutcomeSection({ loggingFunction }: OutcomeSectionProps) {
         onClose={() => setDialogVisible(false)}
         onConfirm={handleSendOutcome}
       />
-    </Card>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
+});

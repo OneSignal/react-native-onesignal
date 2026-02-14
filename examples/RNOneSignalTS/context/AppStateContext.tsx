@@ -11,7 +11,11 @@ const initialState: AppState = {
   pushEnabled: false,
   iamPaused: false,
   locationShared: false,
+  consentRequired: false,
   consentGiven: false,
+  externalUserId: null,
+  isLoading: false,
+  permissionGranted: false,
 };
 
 function appStateReducer(state: AppState, action: AppAction): AppState {
@@ -26,6 +30,16 @@ function appStateReducer(state: AppState, action: AppAction): AppState {
         ...state,
         aliases: state.aliases.filter((a) => a.key !== action.payload),
       };
+    case 'CLEAR_ALL_ALIASES':
+      return {
+        ...state,
+        aliases: [],
+      };
+    case 'SET_ALL_ALIASES':
+      return {
+        ...state,
+        aliases: action.payload,
+      };
     case 'ADD_TAG':
       return {
         ...state,
@@ -35,6 +49,11 @@ function appStateReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         tags: state.tags.filter((t) => t.key !== action.payload),
+      };
+    case 'SET_ALL_TAGS':
+      return {
+        ...state,
+        tags: action.payload,
       };
     case 'ADD_TRIGGER':
       return {
@@ -46,6 +65,11 @@ function appStateReducer(state: AppState, action: AppAction): AppState {
         ...state,
         triggers: state.triggers.filter((t) => t.key !== action.payload),
       };
+    case 'CLEAR_ALL_TRIGGERS':
+      return {
+        ...state,
+        triggers: [],
+      };
     case 'ADD_EMAIL':
       return {
         ...state,
@@ -56,6 +80,11 @@ function appStateReducer(state: AppState, action: AppAction): AppState {
         ...state,
         emails: state.emails.filter((e) => e !== action.payload),
       };
+    case 'SET_ALL_EMAILS':
+      return {
+        ...state,
+        emails: action.payload,
+      };
     case 'ADD_SMS':
       return {
         ...state,
@@ -65,6 +94,11 @@ function appStateReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         smsNumbers: state.smsNumbers.filter((s) => s !== action.payload),
+      };
+    case 'SET_ALL_SMS':
+      return {
+        ...state,
+        smsNumbers: action.payload,
       };
     case 'SET_PUSH_SUBSCRIPTION_ID':
       return {
@@ -86,10 +120,30 @@ function appStateReducer(state: AppState, action: AppAction): AppState {
         ...state,
         locationShared: action.payload,
       };
+    case 'SET_CONSENT_REQUIRED':
+      return {
+        ...state,
+        consentRequired: action.payload,
+      };
     case 'SET_CONSENT_GIVEN':
       return {
         ...state,
         consentGiven: action.payload,
+      };
+    case 'SET_EXTERNAL_USER_ID':
+      return {
+        ...state,
+        externalUserId: action.payload,
+      };
+    case 'SET_LOADING':
+      return {
+        ...state,
+        isLoading: action.payload,
+      };
+    case 'SET_PERMISSION_GRANTED':
+      return {
+        ...state,
+        permissionGranted: action.payload,
       };
     default:
       return state;
