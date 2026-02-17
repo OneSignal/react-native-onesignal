@@ -631,11 +631,11 @@ Note: REST API key is NOT required for fetchUser endpoint.
 
 ```typescript
 interface UserData {
-  aliases: KeyValuePair[];    // From identity object (filter out external_id, onesignal_id)
-  tags: KeyValuePair[];       // From properties.tags object
-  emails: string[];           // From subscriptions where type="Email" -> token
-  smsNumbers: string[];       // From subscriptions where type="SMS" -> token
-  externalId: string | null;  // From identity.external_id
+  aliases: KeyValuePair[]; // From identity object (filter out external_id, onesignal_id)
+  tags: KeyValuePair[]; // From properties.tags object
+  emails: string[]; // From subscriptions where type="Email" -> token
+  smsNumbers: string[]; // From subscriptions where type="SMS" -> token
+  externalId: string | null; // From identity.external_id
 }
 
 interface KeyValuePair {
@@ -1001,7 +1001,7 @@ All Toast messages are also logged via OSLog().
 ## Key Files Structure
 
 ```
-examples/RNOneSignalTS/
+examples/demo/
 ├── components/
 │   ├── common/
 │   │   ├── ActionButton.tsx         # Primary/Outline buttons
