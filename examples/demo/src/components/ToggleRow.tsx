@@ -7,10 +7,18 @@ interface Props {
   description?: string;
   value: boolean;
   onValueChange: (value: boolean) => void;
+  disabled?: boolean;
   testID?: string;
 }
 
-export default function ToggleRow({ label, description, value, onValueChange, testID }: Props) {
+export default function ToggleRow({
+  label,
+  description,
+  value,
+  onValueChange,
+  disabled = false,
+  testID,
+}: Props) {
   return (
     <View style={styles.row}>
       <View style={styles.textContainer}>
@@ -20,6 +28,7 @@ export default function ToggleRow({ label, description, value, onValueChange, te
       <Switch
         value={value}
         onValueChange={onValueChange}
+        disabled={disabled}
         trackColor={{ false: '#E0E0E0', true: Colors.oneSignalRed }}
         thumbColor={Colors.white}
         testID={testID}

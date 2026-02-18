@@ -367,6 +367,7 @@ Push Section:
 - Section title: "Push" with info icon for tooltip
 - Push Subscription ID display (readonly)
 - Enabled toggle switch (controls optIn/optOut)
+  - Disabled when notification permission is NOT granted
 - Notification permission is automatically requested when home screen loads
 - PROMPT PUSH button:
   - Only visible when notification permission is NOT granted (fallback if user denied)
@@ -795,6 +796,7 @@ Notification permission is automatically requested when the home screen loads:
 - This ensures prompt appears after user sees the app UI
 - PROMPT PUSH button remains as fallback if user initially denied
 - Button hidden once permission is granted
+- Keep Push "Enabled" toggle disabled until permission is granted
 ```
 
 ---

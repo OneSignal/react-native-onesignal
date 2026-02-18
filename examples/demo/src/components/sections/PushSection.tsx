@@ -36,6 +36,7 @@ export default function PushSection({
           label="Enabled"
           value={isPushEnabled}
           onValueChange={onSetPushEnabled}
+          disabled={!hasNotificationPermission}
           testID="push_enabled_toggle"
         />
       </View>
