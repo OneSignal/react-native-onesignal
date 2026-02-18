@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
 import ActionButton from '../ActionButton';
-import { Colors, AppTheme } from '../../theme';
+import { Colors, AppTheme, Spacing } from '../../theme';
 
 interface Props {
   pushSubscriptionId: string | undefined;
@@ -41,11 +41,13 @@ export default function PushSection({
         />
       </View>
       {!hasNotificationPermission && (
-        <ActionButton
-          label="PROMPT PUSH"
-          onPress={onPromptPush}
-          testID="prompt_push_button"
-        />
+        <View style={styles.promptButtonWrap}>
+          <ActionButton
+            label="PROMPT PUSH"
+            onPress={onPromptPush}
+            testID="prompt_push_button"
+          />
+        </View>
       )}
     </SectionCard>
   );
@@ -74,5 +76,8 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: Colors.dividerColor,
     marginVertical: 8,
+  },
+  promptButtonWrap: {
+    marginTop: Spacing.cardGap,
   },
 });
