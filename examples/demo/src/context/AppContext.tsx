@@ -516,6 +516,7 @@ export function AppContextProvider({ children }: Props) {
 
   const sendIamTrigger = useCallback((iamType: string) => {
     repository.addTrigger('iam_type', iamType);
+    dispatch({ type: 'ADD_TRIGGER', payload: { key: 'iam_type', value: iamType } });
     const msg = `Sent In-App Message: ${iamType}`;
     log.i(TAG, msg);
     Toast.show({ type: 'info', text1: msg });

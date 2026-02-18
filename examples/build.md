@@ -418,6 +418,7 @@ Send In-App Message Section (placed right after In-App Messaging):
   - Left-aligned text and icon content (not centered)
   - UPPERCASE button text
 - On tap: adds trigger and shows Toast "Sent In-App Message: {type}"
+  - Also upserts `iam_type` in the Triggers list immediately so UI reflects the sent IAM type
 
 Use react-native-vector-icons (MaterialCommunityIcons or MaterialIcons) for icons.
 Tooltip should explain each IAM type.
@@ -506,6 +507,7 @@ Triggers Section:
 
 IMPORTANT: Triggers are stored IN MEMORY ONLY during the app session.
 - triggersList is a [string, string][] array in the app state
+- Sending an IAM button also updates the same list by setting `iam_type`
 - Triggers are NOT persisted to AsyncStorage
 - Triggers are cleared when the app is killed/restarted
 - This is intentional - triggers are transient test data for IAM testing
