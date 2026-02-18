@@ -1010,6 +1010,7 @@ All user actions should display Toast messages via react-native-toast-message:
 
 Implementation:
 - Place <Toast /> at the root of App.tsx (outside NavigationContainer children)
+- Show at the bottom of the screen: <Toast position="bottom" bottomOffset={20} />
 - Call Toast.show({ type: 'info', text1: message }) from action handlers
 - All Toast messages are also logged via LogManager.getInstance().i()
 - Hide previous toast before showing new one via Toast.hide() if needed

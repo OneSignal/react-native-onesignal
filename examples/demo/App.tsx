@@ -129,7 +129,7 @@ function App() {
           </Stack.Navigator>
         </NavigationContainer>
       </AppContextProvider>
-      <Toast />
+      <Toast position="bottom" bottomOffset={20} />
     </SafeAreaProvider>
   );
 }
