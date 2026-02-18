@@ -61,23 +61,25 @@ export default function PairInputModal({
       >
         <View style={styles.container}>
           <Text style={styles.title}>{title}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder={keyPlaceholder}
-            placeholderTextColor="#9E9E9E"
-            value={keyValue}
-            onChangeText={setKeyValue}
-            autoFocus
-            testID={keyTestID}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder={valuePlaceholder}
-            placeholderTextColor="#9E9E9E"
-            value={val}
-            onChangeText={setVal}
-            testID={valueTestID}
-          />
+          <View style={styles.row}>
+            <TextInput
+              style={[styles.input, styles.halfInput]}
+              placeholder={keyPlaceholder}
+              placeholderTextColor="#9E9E9E"
+              value={keyValue}
+              onChangeText={setKeyValue}
+              autoFocus
+              testID={keyTestID}
+            />
+            <TextInput
+              style={[styles.input, styles.halfInput]}
+              placeholder={valuePlaceholder}
+              placeholderTextColor="#9E9E9E"
+              value={val}
+              onChangeText={setVal}
+              testID={valueTestID}
+            />
+          </View>
           <View style={styles.buttons}>
             <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
               <Text style={styles.cancelText}>CANCEL</Text>
@@ -124,6 +126,13 @@ const styles = StyleSheet.create({
     color: '#212121',
     marginBottom: 12,
   },
+  row: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  halfInput: {
+    flex: 1,
+  },
   buttons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -140,15 +149,13 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   confirmBtn: {
-    backgroundColor: Colors.oneSignalRed,
-    borderRadius: 8,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
   },
   confirmText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.oneSignalRed,
   },
   disabled: {
     opacity: 0.5,

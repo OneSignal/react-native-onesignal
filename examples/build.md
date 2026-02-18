@@ -432,7 +432,7 @@ Aliases Section (placed after Send In-App Message):
 - Each item shows: Label | ID
 - Filter out "external_id" and "onesignal_id" from display (these are special)
 - "No Aliases Added" text when empty
-- ADD button -> PairInputModal with empty Label and ID fields (single add)
+- ADD button -> PairInputModal with empty Label and ID fields on the same row (single add)
 - ADD MULTIPLE button -> MultiPairInputModal (dynamic rows, add/remove)
 - No remove/delete functionality (aliases are add-only from the UI)
 ```
@@ -867,7 +867,7 @@ LogView.tsx:
 Modals (src/components/modals/):
 - All modals use a full-width Modal component with padding: 16 and width: '100%' inner container
 - SingleInputModal (one TextInput)
-- PairInputModal (key-value TextInputs, single pair)
+- PairInputModal (key-value TextInputs on the same row, single pair)
 - MultiPairInputModal (dynamic rows with dividers, X icon to delete a row, full-width, batch submit)
 - MultiSelectRemoveModal (Checkbox per item for batch remove)
 - LoginModal, OutcomeModal, TrackEventModal

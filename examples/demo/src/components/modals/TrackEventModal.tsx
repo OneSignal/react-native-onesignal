@@ -177,15 +177,13 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   confirmBtn: {
-    backgroundColor: Colors.oneSignalRed,
-    borderRadius: 8,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
   },
   confirmText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.oneSignalRed,
   },
   disabled: {
     opacity: 0.5,

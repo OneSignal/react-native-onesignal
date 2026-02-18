@@ -35,7 +35,7 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
             ))}
           </ScrollView>
           <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-            <Text style={styles.closeBtnText}>CLOSE</Text>
+            <Text style={styles.closeBtnText}>OK</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -84,15 +84,14 @@ const styles = StyleSheet.create({
   },
   closeBtn: {
     marginTop: 16,
-    backgroundColor: Colors.oneSignalRed,
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
+    alignSelf: 'flex-end',
+    paddingVertical: 8,
+    paddingHorizontal: 4,
   },
   closeBtnText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.oneSignalRed,
     letterSpacing: 0.5,
   },
 });
