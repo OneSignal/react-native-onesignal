@@ -6,7 +6,7 @@
     "setup": "../setup.sh",
     "preandroid": "bun run setup",
     "preios": "bun run setup",
-    "android": "react-native run-android",
+    "android": "bash ../android.sh",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
