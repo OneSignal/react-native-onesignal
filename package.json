@@ -20,7 +20,7 @@
     "format:check:prettier": "prettier --check \"**/*.{ts,tsx}\" --ignore-path .gitignore",
     "format:check": "concurrently \"bun run format:check:spotless\" \"bun run format:check:prettier\"",
     "lint": "oxlint src examples && bun run format:check",
-    "lint:fix": "oxlint src examples --fix && bun run format",
+    "lint:fix": "oxlint src examples --fix; bun run format",
     "test": "vitest",
     "test:coverage": "vitest run --coverage"
   },
