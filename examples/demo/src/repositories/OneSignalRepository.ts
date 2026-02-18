@@ -100,8 +100,17 @@ class OneSignalRepository {
     return id || undefined;
   }
 
+  async getPushSubscriptionIdAsync(): Promise<string | undefined> {
+    const id = await OneSignal.User.pushSubscription.getIdAsync();
+    return id ?? undefined;
+  }
+
   isPushOptedIn(): boolean {
     return OneSignal.User.pushSubscription.getOptedIn();
+  }
+
+  async isPushOptedInAsync(): Promise<boolean> {
+    return OneSignal.User.pushSubscription.getOptedInAsync();
   }
 
   optInPush(): void {
@@ -157,7 +166,7 @@ class OneSignalRepository {
 
   // Notification sending (via REST API)
   async sendNotification(type: NotificationType): Promise<boolean> {
-    const subscriptionId = this.getPushSubscriptionId();
+    const subscriptionId = await this.getPushSubscriptionIdAsync();
     if (!subscriptionId) {
       return false;
     }
@@ -165,7 +174,7 @@ class OneSignalRepository {
   }
 
   async sendCustomNotification(title: string, body: string): Promise<boolean> {
-    const subscriptionId = this.getPushSubscriptionId();
+    const subscriptionId = await this.getPushSubscriptionIdAsync();
     if (!subscriptionId) {
       return false;
     }

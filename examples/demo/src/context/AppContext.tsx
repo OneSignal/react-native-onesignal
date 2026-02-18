@@ -341,8 +341,10 @@ export function AppContextProvider({ children }: Props) {
       OneSignalApiService.getInstance().setAppId(appId);
 
       const externalId = await repository.getExternalId();
-      const pushId = repository.getPushSubscriptionId();
-      const pushOptedIn = repository.isPushOptedIn();
+      const [pushId, pushOptedIn] = await Promise.all([
+        repository.getPushSubscriptionIdAsync(),
+        repository.isPushOptedInAsync(),
+      ]);
       const hasPerm = repository.hasPermission();
 
       if (!mountedRef.current) {
@@ -384,15 +386,22 @@ export function AppContextProvider({ children }: Props) {
   }, [fetchUserDataFromApi]);
 
   useEffect(() => {
-    const pushSubHandler = () => {
+    const pushSubHandler = async () => {
+      if (!mountedRef.current) {
+        return;
+      }
+      const [id, optedIn] = await Promise.all([
+        repository.getPushSubscriptionIdAsync(),
+        repository.isPushOptedInAsync(),
+      ]);
       if (!mountedRef.current) {
         return;
       }
       dispatch({
         type: 'SET_PUSH_SUBSCRIPTION',
         payload: {
-          id: repository.getPushSubscriptionId(),
-          optedIn: repository.isPushOptedIn(),
+          id,
+          optedIn,
         },
       });
     };
