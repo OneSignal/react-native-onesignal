@@ -43,7 +43,11 @@ export default function TriggersSection({
         </View>
       ) : (
         <View style={styles.listCard}>
-          <PairList items={triggers} />
+          <PairList
+            items={triggers}
+            layout="stacked"
+            onDelete={(key) => onRemoveSelected([key])}
+          />
         </View>
       )}
       <ActionButton
