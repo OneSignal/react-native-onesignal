@@ -1,40 +1,34 @@
-# iOS Setup: Push Notifications + Live Activities
+# iOS Setup (React Native): Push Notifications + Live Activities
 
-Configure the demo Flutter iOS project (`com.onesignal.example`) for OneSignal push notifications and live activities. All paths below are relative to the `ios/` directory.
+Configure the React Native demo iOS project for OneSignal push notifications and live activities. All paths below are relative to `examples/demo/ios/` unless stated otherwise.
 
 ---
 
 ## 1. Podfile
 
-Open `ios/Podfile` and make the following changes.
+Open `Podfile` and keep the main React Native target (`target 'demo' do ... end`) as-is.
 
-**Uncomment the platform line** (or add it if missing):
-
-```ruby
-platform :ios, '13.0'
-```
-
-**Add two new targets** after the `Runner` target block and before `post_install`:
+Add two extension targets after the `demo` target block:
 
 ```ruby
 target 'OneSignalNotificationServiceExtension' do
-  use_frameworks!
+  use_frameworks! :linkage => :static
   pod 'OneSignalXCFramework', '>= 5.0.0', '< 6.0'
 end
 
 target 'OneSignalWidgetExtension' do
-  use_frameworks!
+  use_frameworks! :linkage => :static
   pod 'OneSignalXCFramework', '>= 5.0.0', '< 6.0'
 end
 ```
 
 ---
 
-## 2. Runner: entitlements + Info.plist
+## 2. App target: entitlements + Info.plist
 
-### Runner.entitlements
+### `demo/demo.entitlements`
 
-Create `Runner/Runner.entitlements`:
+Create `demo/demo.entitlements`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -55,7 +49,7 @@ This enables push notifications (`aps-environment`) and an App Group shared with
 
 ### Info.plist
 
-In `Runner/Info.plist`, add the `UIBackgroundModes` array inside the top-level `<dict>`:
+In `demo/Info.plist`, add `UIBackgroundModes` inside the top-level `<dict>`:
 
 ```xml
 <key>UIBackgroundModes</key>
@@ -68,7 +62,7 @@ In `Runner/Info.plist`, add the `UIBackgroundModes` array inside the top-level `
 
 ## 3. Notification Service Extension
 
-Allows OneSignal to process notifications before display (rich media, badges, etc). Create the `OneSignalNotificationServiceExtension/` folder with three files.
+Allows OneSignal to process notifications before display (rich media, badges, attachments). Create the `OneSignalNotificationServiceExtension/` folder with three files.
 
 ### NotificationService.swift
 
@@ -138,7 +132,7 @@ All standard `CFBundle*` keys are required for the simulator to install the exte
 
 ### OneSignalNotificationServiceExtension.entitlements
 
-The App Group must match the one in `Runner.entitlements`.
+The App Group must match the one in `demo/demo.entitlements`.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -266,23 +260,26 @@ struct OneSignalWidgetBundle: WidgetBundle {
 
 ---
 
-## 5. project.pbxproj
+## 5. Xcode project settings (`demo.xcodeproj/project.pbxproj`)
 
-The `project.pbxproj` needs native target entries for both extensions. These are complex (UUIDs, build phases, configuration lists) and are best done by opening the `.xcodeproj` in Xcode. The key requirements:
+The `project.pbxproj` needs native target entries for both extensions. These are UUID-heavy and easiest to configure in Xcode (`demo.xcodeproj`). Key requirements:
 
-**Runner target changes:**
-- Add `CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements` to all Runner build configurations (Debug/Release/Profile)
-- Add an `Embed Foundation Extensions` copy-files phase (`dstSubfolderSpec = 13`) embedding both `.appex` products. This phase must appear **before** the `Thin Binary` script phase to avoid a build cycle.
-- Add target dependencies from Runner to both extension targets
+**`demo` target changes:**
+
+- Add `CODE_SIGN_ENTITLEMENTS = demo/demo.entitlements` to all app build configurations
+- Add an `Embed Foundation Extensions` copy-files phase (`dstSubfolderSpec = 13`) embedding both `.appex` products
+- Add target dependencies from `demo` to both extension targets
 
 **OneSignalNotificationServiceExtension target** (`com.apple.product-type.app-extension`):
+
 - Sources, Frameworks, Resources build phases
-- `PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalNotificationServiceExtension` (must be prefixed with parent app's bundle ID)
+- `PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalNotificationServiceExtension` (must be prefixed with the parent app bundle ID)
 - `CODE_SIGN_ENTITLEMENTS = OneSignalNotificationServiceExtension/OneSignalNotificationServiceExtension.entitlements`
 - `INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist`
 - `SKIP_INSTALL = YES`, `SWIFT_VERSION = 5.0`, `IPHONEOS_DEPLOYMENT_TARGET = 13.0`
 
 **OneSignalWidgetExtension target** (`com.apple.product-type.app-extension`):
+
 - Sources, Frameworks (linking WidgetKit.framework and SwiftUI.framework), Resources build phases
 - `PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalWidgetExtension`
 - `INFOPLIST_FILE = OneSignalWidget/Info.plist` (note: folder is `OneSignalWidget`, not `OneSignalWidgetExtension`)
@@ -292,13 +289,13 @@ The `project.pbxproj` needs native target entries for both extensions. These are
 
 ## 6. Install dependencies
 
-Run `flutter pub get` first (the Podfile reads `Generated.xcconfig` which this creates), then `pod install`:
+From `examples/demo/`, install JavaScript dependencies, then install iOS pods:
 
 ```sh
-flutter pub get
-cd ios && pod install
+bun install
+cd ios && bundle exec pod install
 ```
 
-This generates the Pods workspace, xcconfig files, and CocoaPods build phases (`[CP] Check Pods Manifest.lock`, `[CP] Embed Pods Frameworks`). Open the `.xcworkspace` file (not `.xcodeproj`) going forward.
+This generates the Pods workspace, xcconfig files, and CocoaPods build phases (`[CP] Check Pods Manifest.lock`, `[CP] Embed Pods Frameworks`). Open `demo.xcworkspace` (not `demo.xcodeproj`) going forward.
 
-Note: avoid setting `CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER` in extension build configurations since CocoaPods provides it via xcconfig.
+Note: avoid setting `CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER` directly in extension build settings since CocoaPods provides it via xcconfig.
