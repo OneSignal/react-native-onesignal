@@ -7,6 +7,7 @@ export default defineConfig({
     globals: true,
     clearMocks: true,
     include: ['**/*.test.ts', '**/*.test.tsx'],
+    exclude: ['examples/**'],
     coverage: {
       exclude: ['__mocks__'],
       enabled: true,

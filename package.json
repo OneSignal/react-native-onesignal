@@ -13,10 +13,10 @@
   "scripts": {
     "prepare": "bun run build",
     "build": "tsc --noEmit && vite build",
-    "format:spotless": "./examples/RNOneSignalTS/android/gradlew spotlessApply",
+    "format:spotless": "./examples/demo/android/gradlew spotlessApply",
     "format:prettier": "prettier --write \"**/*.{ts,tsx}\" --ignore-path .gitignore",
     "format": "concurrently \"bun run format:spotless\" \"bun run format:prettier\"",
-    "format:check:spotless": "./examples/RNOneSignalTS/android/gradlew spotlessCheck",
+    "format:check:spotless": "./examples/demo/android/gradlew spotlessCheck",
     "format:check:prettier": "prettier --check \"**/*.{ts,tsx}\" --ignore-path .gitignore",
     "format:check": "concurrently \"bun run format:check:spotless\" \"bun run format:check:prettier\"",
     "lint": "oxlint src examples && bun run format:check",
