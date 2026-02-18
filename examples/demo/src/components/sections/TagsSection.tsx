@@ -35,7 +35,11 @@ export default function TagsSection({
         </View>
       ) : (
         <View style={styles.listCard}>
-          <PairList items={tags} />
+          <PairList
+            items={tags}
+            layout="stacked"
+            onDelete={(key) => onRemoveSelected([key])}
+          />
         </View>
       )}
       <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_tag_button" />

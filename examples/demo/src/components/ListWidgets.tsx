@@ -7,16 +7,32 @@ import { Colors, AppTheme } from '../theme';
 interface PairItemProps {
   itemKey: string;
   itemValue: string;
+  layout?: 'inline' | 'stacked';
   onDelete?: () => void;
   testID?: string;
 }
 
-export function PairItem({ itemKey, itemValue, onDelete, testID }: PairItemProps) {
+export function PairItem({
+  itemKey,
+  itemValue,
+  layout = 'inline',
+  onDelete,
+  testID,
+}: PairItemProps) {
   return (
     <View style={styles.pairRow} testID={testID}>
-      <Text style={styles.pairKey} numberOfLines={1}>{itemKey}</Text>
-      <Text style={styles.pairSeparator}>|</Text>
-      <Text style={styles.pairValue} numberOfLines={1}>{itemValue}</Text>
+      {layout === 'stacked' ? (
+        <View style={styles.pairStackedContent}>
+          <Text style={styles.pairStackedKey} numberOfLines={1}>{itemKey}</Text>
+          <Text style={styles.pairStackedValue} numberOfLines={1}>{itemValue}</Text>
+        </View>
+      ) : (
+        <>
+          <Text style={styles.pairKey} numberOfLines={1}>{itemKey}</Text>
+          <Text style={styles.pairSeparator}>|</Text>
+          <Text style={styles.pairValue} numberOfLines={1}>{itemValue}</Text>
+        </>
+      )}
       {onDelete && (
         <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Icon name="close" size={18} color={Colors.textSecondary} />
@@ -63,11 +79,12 @@ export function EmptyState({ message, testID }: EmptyStateProps) {
 // PairList (simple, no collapse)
 interface PairListProps {
   items: [string, string][];
+  layout?: 'inline' | 'stacked';
   onDelete?: (key: string) => void;
   filterKeys?: string[];
 }
 
-export function PairList({ items, onDelete, filterKeys }: PairListProps) {
+export function PairList({ items, layout = 'inline', onDelete, filterKeys }: PairListProps) {
   const filtered = filterKeys
     ? items.filter(([k]) => !filterKeys.includes(k))
     : items;
@@ -84,6 +101,7 @@ export function PairList({ items, onDelete, filterKeys }: PairListProps) {
           <PairItem
             itemKey={k}
             itemValue={v}
+            layout={layout}
             onDelete={onDelete ? () => onDelete(k) : undefined}
             testID={`pair_item_${idx}`}
           />
@@ -142,6 +160,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 8,
+  },
+  pairStackedContent: {
+    flex: 1,
+    marginRight: 8,
+  },
+  pairStackedKey: {
+    fontSize: 15,
+    color: Colors.textPrimary,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  pairStackedValue: {
+    fontSize: 14,
+    color: Colors.textSecondary,
   },
   pairKey: {
     flex: 1,

@@ -470,7 +470,7 @@ SMS Section:
 Tags Section:
 - Section title: "Tags" with info icon for tooltip
 - List showing key-value pairs
-- Each item shows: Key | Value with an X icon (remove action)
+- Each item shows key above value (stacked layout) with an X icon on the right (remove action)
 - "No Tags Added" text when empty
 - ADD button -> PairInputModal with empty Key and Value fields (single add)
 - ADD MULTIPLE button -> MultiPairInputModal (dynamic rows)
