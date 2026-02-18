@@ -19,7 +19,7 @@ export function PairItem({ itemKey, itemValue, onDelete, testID }: PairItemProps
       <Text style={styles.pairValue} numberOfLines={1}>{itemValue}</Text>
       {onDelete && (
         <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Icon name="delete" size={18} color={Colors.textSecondary} />
+          <Icon name="close" size={18} color={Colors.textSecondary} />
         </TouchableOpacity>
       )}
     </View>
@@ -39,7 +39,7 @@ export function SingleItem({ value, onDelete, testID }: SingleItemProps) {
       <Text style={styles.singleValue} numberOfLines={1}>{value}</Text>
       {onDelete && (
         <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Icon name="delete" size={18} color={Colors.textSecondary} />
+          <Icon name="close" size={18} color={Colors.textSecondary} />
         </TouchableOpacity>
       )}
     </View>

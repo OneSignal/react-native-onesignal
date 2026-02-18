@@ -443,7 +443,7 @@ Aliases Section (placed after Send In-App Message):
 Emails Section:
 - Section title: "Emails" with info icon for tooltip
 - List showing email addresses
-- Each item shows email with delete icon
+- Each item shows email with an X icon (remove action)
 - "No Emails Added" text when empty
 - ADD EMAIL button -> modal with empty email field
 - Collapse behavior when >5 items:
@@ -458,7 +458,7 @@ Emails Section:
 SMS Section:
 - Section title: "SMS" with info icon for tooltip
 - List showing phone numbers
-- Each item shows phone number with delete icon
+- Each item shows phone number with an X icon (remove action)
 - "No SMS Added" text when empty
 - ADD SMS button -> modal with empty SMS field
 - Collapse behavior when >5 items (same as Emails)
@@ -470,7 +470,7 @@ SMS Section:
 Tags Section:
 - Section title: "Tags" with info icon for tooltip
 - List showing key-value pairs
-- Each item shows: Key | Value with delete icon
+- Each item shows: Key | Value with an X icon (remove action)
 - "No Tags Added" text when empty
 - ADD button -> PairInputModal with empty Key and Value fields (single add)
 - ADD MULTIPLE button -> MultiPairInputModal (dynamic rows)
@@ -496,7 +496,7 @@ Outcome Events Section:
 Triggers Section:
 - Section title: "Triggers" with info icon for tooltip
 - List showing key-value pairs
-- Each item shows: Key | Value with delete icon
+- Each item shows: Key | Value with an X icon (remove action)
 - "No Triggers Added" text when empty
 - ADD button -> PairInputModal with empty Key and Value fields (single add)
 - ADD MULTIPLE button -> MultiPairInputModal (dynamic rows)
@@ -841,8 +841,8 @@ ActionButton.tsx:
 - Full-width buttons with width: '100%'
 
 ListWidgets.tsx:
-- PairItem (key-value with optional delete TouchableOpacity)
-- SingleItem (single value with delete TouchableOpacity)
+- PairItem (key-value with optional X-icon remove TouchableOpacity)
+- SingleItem (single value with optional X-icon remove TouchableOpacity)
 - EmptyState (centered "No items" Text)
 - CollapsibleList (shows 5 items, expandable)
 - PairList (simple list of key-value pairs)
