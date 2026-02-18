@@ -117,9 +117,7 @@ Save it to the demo project at assets/onesignal_logo.svg and use it for the head
 Download the padded app icon PNG from:
   https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo_icon_padded.png
 Save it to assets/onesignal_logo_icon_padded.png, generate all platform app icons using:
-  npx @bam.tech/react-native-make set-icon --path assets/onesignal_logo_icon_padded.png
-Then delete the downloaded file:
-  rm assets/onesignal_logo_icon_padded.png
+  bunx react-native-make set-icon --path assets/onesignal_logo_icon_padded.png
 
 Reference the OneSignal React Native SDK from the parent repo using a local file dependency:
   "react-native-onesignal": "file:../../"

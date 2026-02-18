@@ -77,9 +77,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.demo"
+    namespace "com.onesignal.example"
     defaultConfig {
-        applicationId "com.demo"
+        applicationId "com.onesignal.example"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -106,6 +106,8 @@ android {
         }
     }
 }
+
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
