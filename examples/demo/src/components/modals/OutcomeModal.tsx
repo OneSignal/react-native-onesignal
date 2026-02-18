@@ -34,7 +34,8 @@ export default function OutcomeModal({
 
   const canSubmit =
     name.trim() &&
-    (outcomeType !== 'withValue' || (value.trim() && !isNaN(parseFloat(value))));
+    (outcomeType !== 'withValue' ||
+      (value.trim() && !isNaN(parseFloat(value))));
 
   const handleSend = () => {
     if (!canSubmit) {
@@ -80,7 +81,12 @@ export default function OutcomeModal({
   );
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleClose}
+    >
       <KeyboardAvoidingView
         style={styles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}

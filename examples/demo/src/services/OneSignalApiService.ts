@@ -81,14 +81,17 @@ class OneSignalApiService {
         ...extra,
       };
 
-      const response = await fetch('https://onesignal.com/api/v1/notifications', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/vnd.onesignal.v1+json',
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        'https://onesignal.com/api/v1/notifications',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/vnd.onesignal.v1+json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
         },
-        body: JSON.stringify(body),
-      });
+      );
 
       if (!response.ok) {
         const text = await response.text();
@@ -98,7 +101,10 @@ class OneSignalApiService {
 
       return true;
     } catch (err) {
-      LogManager.getInstance().e(TAG, `Send notification error: ${String(err)}`);
+      LogManager.getInstance().e(
+        TAG,
+        `Send notification error: ${String(err)}`,
+      );
       return false;
     }
   }

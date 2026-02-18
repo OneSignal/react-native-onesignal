@@ -35,16 +35,15 @@ export default function ActionButton({
     variant === 'primary'
       ? Colors.oneSignalRed
       : variant === 'destructive'
-      ? Colors.destructiveRed
-      : 'transparent';
+        ? Colors.destructiveRed
+        : 'transparent';
 
   const borderStyle =
     variant === 'outlined'
       ? { borderWidth: 1, borderColor: Colors.oneSignalRed }
       : {};
 
-  const textColor =
-    variant === 'outlined' ? Colors.oneSignalRed : Colors.white;
+  const textColor = variant === 'outlined' ? Colors.oneSignalRed : Colors.white;
 
   return (
     <TouchableOpacity
@@ -63,9 +62,13 @@ export default function ActionButton({
         <ActivityIndicator color={textColor} />
       ) : (
         <View style={[styles.inner, leftAligned && styles.leftAligned]}>
-          {icon && iconPosition === 'left' && <View style={styles.iconLeft}>{icon}</View>}
+          {icon && iconPosition === 'left' && (
+            <View style={styles.iconLeft}>{icon}</View>
+          )}
           <Text style={[styles.text, { color: textColor }]}>{label}</Text>
-          {icon && iconPosition === 'right' && <View style={styles.iconRight}>{icon}</View>}
+          {icon && iconPosition === 'right' && (
+            <View style={styles.iconRight}>{icon}</View>
+          )}
         </View>
       )}
     </TouchableOpacity>

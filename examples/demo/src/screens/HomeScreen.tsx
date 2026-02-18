@@ -39,7 +39,7 @@ export default function HomeScreen() {
   // Auto-request push permission on load
   useEffect(() => {
     app.promptPush();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const showTooltipModal = (key: string) => {
@@ -74,7 +74,9 @@ export default function HomeScreen() {
           <View style={[AppTheme.card, styles.userCard]}>
             <View style={styles.statusRow}>
               <Text style={styles.statusLabel}>Status</Text>
-              <Text style={[styles.statusValue, isLoggedIn && styles.loggedInText]}>
+              <Text
+                style={[styles.statusValue, isLoggedIn && styles.loggedInText]}
+              >
                 {isLoggedIn ? 'Logged In' : 'Anonymous'}
               </Text>
             </View>

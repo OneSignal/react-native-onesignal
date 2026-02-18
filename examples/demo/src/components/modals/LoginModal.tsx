@@ -18,7 +18,12 @@ interface Props {
   onClose: () => void;
 }
 
-export default function LoginModal({ visible, isLoggedIn, onConfirm, onClose }: Props) {
+export default function LoginModal({
+  visible,
+  isLoggedIn,
+  onConfirm,
+  onClose,
+}: Props) {
   const [userId, setUserId] = useState('');
 
   const handleConfirm = () => {
@@ -36,13 +41,20 @@ export default function LoginModal({ visible, isLoggedIn, onConfirm, onClose }: 
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleClose}
+    >
       <KeyboardAvoidingView
         style={styles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.container}>
-          <Text style={styles.title}>{isLoggedIn ? 'Switch User' : 'Login User'}</Text>
+          <Text style={styles.title}>
+            {isLoggedIn ? 'Switch User' : 'Login User'}
+          </Text>
           <Text style={styles.label}>External User Id</Text>
           <TextInput
             style={styles.input}

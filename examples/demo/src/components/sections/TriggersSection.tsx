@@ -46,7 +46,7 @@ export default function TriggersSection({
           <PairList
             items={triggers}
             layout="stacked"
-            onDelete={(key) => onRemoveSelected([key])}
+            onDelete={key => onRemoveSelected([key])}
           />
         </View>
       )}

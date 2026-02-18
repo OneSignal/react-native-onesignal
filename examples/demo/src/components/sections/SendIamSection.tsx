@@ -2,7 +2,11 @@ import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SectionCard from '../SectionCard';
-import { InAppMessageType, iamTypeLabel, iamTypeIcon } from '../../models/InAppMessageType';
+import {
+  InAppMessageType,
+  iamTypeLabel,
+  iamTypeIcon,
+} from '../../models/InAppMessageType';
 import { Colors, Spacing } from '../../theme';
 
 interface Props {

@@ -17,7 +17,11 @@ interface Props {
   onClose: () => void;
 }
 
-export default function CustomNotificationModal({ visible, onConfirm, onClose }: Props) {
+export default function CustomNotificationModal({
+  visible,
+  onConfirm,
+  onClose,
+}: Props) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
 
@@ -38,7 +42,12 @@ export default function CustomNotificationModal({ visible, onConfirm, onClose }:
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleClose}
+    >
       <KeyboardAvoidingView
         style={styles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}

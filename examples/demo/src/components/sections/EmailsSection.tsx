@@ -13,7 +13,12 @@ interface Props {
   onInfoTap?: () => void;
 }
 
-export default function EmailsSection({ emails, onAdd, onRemove, onInfoTap }: Props) {
+export default function EmailsSection({
+  emails,
+  onAdd,
+  onRemove,
+  onInfoTap,
+}: Props) {
   const [addVisible, setAddVisible] = useState(false);
 
   return (

@@ -38,11 +38,15 @@ export default function TagsSection({
           <PairList
             items={tags}
             layout="stacked"
-            onDelete={(key) => onRemoveSelected([key])}
+            onDelete={key => onRemoveSelected([key])}
           />
         </View>
       )}
-      <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_tag_button" />
+      <ActionButton
+        label="ADD"
+        onPress={() => setAddVisible(true)}
+        testID="add_tag_button"
+      />
       <ActionButton
         label="ADD MULTIPLE"
         onPress={() => setAddMultipleVisible(true)}

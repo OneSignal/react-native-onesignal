@@ -17,7 +17,11 @@ interface Props {
   onClose: () => void;
 }
 
-export default function TrackEventModal({ visible, onConfirm, onClose }: Props) {
+export default function TrackEventModal({
+  visible,
+  onConfirm,
+  onClose,
+}: Props) {
   const [name, setName] = useState('');
   const [propertiesText, setPropertiesText] = useState('');
   const [jsonError, setJsonError] = useState('');
@@ -46,7 +50,10 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
     }
   };
 
-  const canSubmit = name.trim() && !jsonError && (propertiesText.trim() === '' || !!propertiesText.trim());
+  const canSubmit =
+    name.trim() &&
+    !jsonError &&
+    (propertiesText.trim() === '' || !!propertiesText.trim());
 
   const handleConfirm = () => {
     if (!name.trim()) {
@@ -71,7 +78,12 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleClose}
+    >
       <KeyboardAvoidingView
         style={styles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}

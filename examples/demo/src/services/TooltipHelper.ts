@@ -34,7 +34,7 @@ class TooltipHelper {
         const json = await response.json();
         this.tooltips = json as Record<string, TooltipData>;
       }
-    } catch (_) {
+    } catch {
       // Tooltips are non-critical; silently ignore failures
     }
     this.initialized = true;

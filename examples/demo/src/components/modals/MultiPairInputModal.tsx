@@ -43,9 +43,14 @@ export default function MultiPairInputModal({
 
   const allFilled = rows.every(r => r.key.trim() && r.value.trim());
 
-  const updateRow = useCallback((id: number, field: 'key' | 'value', text: string) => {
-    setRows(prev => prev.map(r => (r.id === id ? { ...r, [field]: text } : r)));
-  }, []);
+  const updateRow = useCallback(
+    (id: number, field: 'key' | 'value', text: string) => {
+      setRows(prev =>
+        prev.map(r => (r.id === id ? { ...r, [field]: text } : r)),
+      );
+    },
+    [],
+  );
 
   const addRow = useCallback(() => {
     setRows(prev => [...prev, makeRow()]);
@@ -78,7 +83,12 @@ export default function MultiPairInputModal({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleClose}
+    >
       <KeyboardAvoidingView
         style={styles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -112,7 +122,11 @@ export default function MultiPairInputModal({
                       onPress={() => removeRow(row.id)}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
-                      <Icon name="close" size={20} color={Colors.textSecondary} />
+                      <Icon
+                        name="close"
+                        size={20}
+                        color={Colors.textSecondary}
+                      />
                     </TouchableOpacity>
                   )}
                 </View>

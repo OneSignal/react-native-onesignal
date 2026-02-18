@@ -21,8 +21,17 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
     return null;
   }
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <TouchableOpacity
+        style={styles.backdrop}
+        activeOpacity={1}
+        onPress={onClose}
+      >
         <View style={styles.container}>
           <Text style={styles.title}>{tooltip.title}</Text>
           <ScrollView>

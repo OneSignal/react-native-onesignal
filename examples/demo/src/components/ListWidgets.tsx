@@ -23,18 +23,29 @@ export function PairItem({
     <View style={styles.pairRow} testID={testID}>
       {layout === 'stacked' ? (
         <View style={styles.pairStackedContent}>
-          <Text style={styles.pairStackedKey} numberOfLines={1}>{itemKey}</Text>
-          <Text style={styles.pairStackedValue} numberOfLines={1}>{itemValue}</Text>
+          <Text style={styles.pairStackedKey} numberOfLines={1}>
+            {itemKey}
+          </Text>
+          <Text style={styles.pairStackedValue} numberOfLines={1}>
+            {itemValue}
+          </Text>
         </View>
       ) : (
         <>
-          <Text style={styles.pairKey} numberOfLines={1}>{itemKey}</Text>
+          <Text style={styles.pairKey} numberOfLines={1}>
+            {itemKey}
+          </Text>
           <Text style={styles.pairSeparator}>|</Text>
-          <Text style={styles.pairValue} numberOfLines={1}>{itemValue}</Text>
+          <Text style={styles.pairValue} numberOfLines={1}>
+            {itemValue}
+          </Text>
         </>
       )}
       {onDelete && (
-        <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity
+          onPress={onDelete}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
           <Icon name="close" size={18} color={Colors.textSecondary} />
         </TouchableOpacity>
       )}
@@ -52,9 +63,14 @@ interface SingleItemProps {
 export function SingleItem({ value, onDelete, testID }: SingleItemProps) {
   return (
     <View style={styles.singleRow} testID={testID}>
-      <Text style={styles.singleValue} numberOfLines={1}>{value}</Text>
+      <Text style={styles.singleValue} numberOfLines={1}>
+        {value}
+      </Text>
       {onDelete && (
-        <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity
+          onPress={onDelete}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
           <Icon name="close" size={18} color={Colors.textSecondary} />
         </TouchableOpacity>
       )}
@@ -84,7 +100,12 @@ interface PairListProps {
   filterKeys?: string[];
 }
 
-export function PairList({ items, layout = 'inline', onDelete, filterKeys }: PairListProps) {
+export function PairList({
+  items,
+  layout = 'inline',
+  onDelete,
+  filterKeys,
+}: PairListProps) {
   const filtered = filterKeys
     ? items.filter(([k]) => !filterKeys.includes(k))
     : items;
@@ -120,7 +141,11 @@ interface CollapsibleSingleListProps {
   emptyMessage: string;
 }
 
-export function CollapsibleSingleList({ items, onDelete, emptyMessage }: CollapsibleSingleListProps) {
+export function CollapsibleSingleList({
+  items,
+  onDelete,
+  emptyMessage,
+}: CollapsibleSingleListProps) {
   const [expanded, setExpanded] = useState(false);
   const showAll = expanded || items.length <= COLLAPSE_THRESHOLD;
   const displayItems = showAll ? items : items.slice(0, COLLAPSE_THRESHOLD);
@@ -147,7 +172,10 @@ export function CollapsibleSingleList({ items, onDelete, emptyMessage }: Collaps
         </React.Fragment>
       ))}
       {!showAll && hiddenCount > 0 && (
-        <TouchableOpacity onPress={() => setExpanded(true)} style={styles.moreButton}>
+        <TouchableOpacity
+          onPress={() => setExpanded(true)}
+          style={styles.moreButton}
+        >
           <Text style={styles.moreText}>{hiddenCount} more</Text>
         </TouchableOpacity>
       )}

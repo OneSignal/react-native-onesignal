@@ -16,7 +16,12 @@ interface Props {
   onInfoTap?: () => void;
 }
 
-export default function AliasesSection({ aliases, onAdd, onAddMultiple, onInfoTap }: Props) {
+export default function AliasesSection({
+  aliases,
+  onAdd,
+  onAddMultiple,
+  onInfoTap,
+}: Props) {
   const [addVisible, setAddVisible] = useState(false);
   const [addMultipleVisible, setAddMultipleVisible] = useState(false);
 
@@ -33,7 +38,11 @@ export default function AliasesSection({ aliases, onAdd, onAddMultiple, onInfoTa
           <PairList items={filtered} />
         </View>
       )}
-      <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_alias_button" />
+      <ActionButton
+        label="ADD"
+        onPress={() => setAddVisible(true)}
+        testID="add_alias_button"
+      />
       <ActionButton
         label="ADD MULTIPLE"
         onPress={() => setAddMultipleVisible(true)}

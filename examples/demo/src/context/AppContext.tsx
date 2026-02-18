@@ -83,7 +83,10 @@ type AppAction =
     }
   | { type: 'SET_USER_DATA'; payload: UserDataPayload }
   | { type: 'CLEAR_USER_DATA' }
-  | { type: 'SET_PUSH_SUBSCRIPTION'; payload: { id: string | undefined; optedIn: boolean } }
+  | {
+      type: 'SET_PUSH_SUBSCRIPTION';
+      payload: { id: string | undefined; optedIn: boolean };
+    }
   | { type: 'SET_HAS_NOTIFICATION_PERMISSION'; payload: boolean }
   | { type: 'SET_CONSENT_REQUIRED'; payload: boolean }
   | { type: 'SET_PRIVACY_CONSENT_GIVEN'; payload: boolean }
@@ -143,7 +146,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'ADD_ALIAS':
       return {
         ...state,
-        aliasesList: [...state.aliasesList, [action.payload.label, action.payload.id]],
+        aliasesList: [
+          ...state.aliasesList,
+          [action.payload.label, action.payload.id],
+        ],
       };
     case 'ADD_ALIASES':
       return {
@@ -158,14 +164,21 @@ function appReducer(state: AppState, action: AppAction): AppState {
         emailsList: state.emailsList.filter(email => email !== action.payload),
       };
     case 'ADD_SMS':
-      return { ...state, smsNumbersList: [...state.smsNumbersList, action.payload] };
+      return {
+        ...state,
+        smsNumbersList: [...state.smsNumbersList, action.payload],
+      };
     case 'REMOVE_SMS':
       return {
         ...state,
-        smsNumbersList: state.smsNumbersList.filter(sms => sms !== action.payload),
+        smsNumbersList: state.smsNumbersList.filter(
+          sms => sms !== action.payload,
+        ),
       };
     case 'ADD_TAG': {
-      const filtered = state.tagsList.filter(([key]) => key !== action.payload.key);
+      const filtered = state.tagsList.filter(
+        ([key]) => key !== action.payload.key,
+      );
       return {
         ...state,
         tagsList: [...filtered, [action.payload.key, action.payload.value]],
@@ -189,7 +202,9 @@ function appReducer(state: AppState, action: AppAction): AppState {
       };
     }
     case 'ADD_TRIGGER': {
-      const filtered = state.triggersList.filter(([key]) => key !== action.payload.key);
+      const filtered = state.triggersList.filter(
+        ([key]) => key !== action.payload.key,
+      );
       return {
         ...state,
         triggersList: [...filtered, [action.payload.key, action.payload.value]],
@@ -426,12 +441,21 @@ export function AppContextProvider({ children }: Props) {
     };
 
     OneSignal.User.pushSubscription.addEventListener('change', pushSubHandler);
-    OneSignal.Notifications.addEventListener('permissionChange', permissionHandler);
+    OneSignal.Notifications.addEventListener(
+      'permissionChange',
+      permissionHandler,
+    );
     OneSignal.User.addEventListener('change', userChangeHandler);
 
     return () => {
-      OneSignal.User.pushSubscription.removeEventListener('change', pushSubHandler);
-      OneSignal.Notifications.removeEventListener('permissionChange', permissionHandler);
+      OneSignal.User.pushSubscription.removeEventListener(
+        'change',
+        pushSubHandler,
+      );
+      OneSignal.Notifications.removeEventListener(
+        'permissionChange',
+        permissionHandler,
+      );
       OneSignal.User.removeEventListener('change', userChangeHandler);
     };
   }, [fetchUserDataFromApi]);
@@ -502,17 +526,24 @@ export function AppContextProvider({ children }: Props) {
 
   const sendNotification = useCallback(async (type: NotificationType) => {
     const success = await repository.sendNotification(type);
-    const msg = success ? `Notification sent: ${type}` : 'Failed to send notification';
+    const msg = success
+      ? `Notification sent: ${type}`
+      : 'Failed to send notification';
     log.i(TAG, msg);
     Toast.show({ type: success ? 'info' : 'error', text1: msg });
   }, []);
 
-  const sendCustomNotification = useCallback(async (title: string, body: string) => {
-    const success = await repository.sendCustomNotification(title, body);
-    const msg = success ? `Notification sent: ${title}` : 'Failed to send notification';
-    log.i(TAG, msg);
-    Toast.show({ type: success ? 'info' : 'error', text1: msg });
-  }, []);
+  const sendCustomNotification = useCallback(
+    async (title: string, body: string) => {
+      const success = await repository.sendCustomNotification(title, body);
+      const msg = success
+        ? `Notification sent: ${title}`
+        : 'Failed to send notification';
+      log.i(TAG, msg);
+      Toast.show({ type: success ? 'info' : 'error', text1: msg });
+    },
+    [],
+  );
 
   const setIamPaused = useCallback(async (paused: boolean) => {
     dispatch({ type: 'SET_IAM_PAUSED', payload: paused });
@@ -525,7 +556,10 @@ export function AppContextProvider({ children }: Props) {
 
   const sendIamTrigger = useCallback((iamType: string) => {
     repository.addTrigger('iam_type', iamType);
-    dispatch({ type: 'ADD_TRIGGER', payload: { key: 'iam_type', value: iamType } });
+    dispatch({
+      type: 'ADD_TRIGGER',
+      payload: { key: 'iam_type', value: iamType },
+    });
     const msg = `Sent In-App Message: ${iamType}`;
     log.i(TAG, msg);
     Toast.show({ type: 'info', text1: msg });
@@ -652,17 +686,22 @@ export function AppContextProvider({ children }: Props) {
     Toast.show({ type: 'info', text1: 'All triggers cleared' });
   }, []);
 
-  const trackEvent = useCallback((name: string, properties?: Record<string, unknown>) => {
-    repository.trackEvent(name, properties);
-    log.i(TAG, `Event tracked: ${name}`);
-    Toast.show({ type: 'info', text1: `Event tracked: ${name}` });
-  }, []);
+  const trackEvent = useCallback(
+    (name: string, properties?: Record<string, unknown>) => {
+      repository.trackEvent(name, properties);
+      log.i(TAG, `Event tracked: ${name}`);
+      Toast.show({ type: 'info', text1: `Event tracked: ${name}` });
+    },
+    [],
+  );
 
   const setLocationShared = useCallback(async (shared: boolean) => {
     dispatch({ type: 'SET_LOCATION_SHARED', payload: shared });
     repository.setLocationShared(shared);
     await preferences.setLocationShared(shared);
-    const msg = shared ? 'Location sharing enabled' : 'Location sharing disabled';
+    const msg = shared
+      ? 'Location sharing enabled'
+      : 'Location sharing disabled';
     log.i(TAG, msg);
     Toast.show({ type: 'info', text1: msg });
   }, []);
@@ -671,74 +710,75 @@ export function AppContextProvider({ children }: Props) {
     repository.requestLocationPermission();
   }, []);
 
-  const contextValue = useMemo<AppContextValue>(() => ({
-    state,
-    loginUser,
-    logoutUser,
-    setConsentRequired,
-    setConsentGiven,
-    promptPush,
-    setPushEnabled,
-    sendNotification,
-    sendCustomNotification,
-    setIamPaused,
-    sendIamTrigger,
-    addAlias,
-    addAliases,
-    addEmail,
-    removeEmail,
-    addSms,
-    removeSms,
-    addTag,
-    addTags,
-    removeSelectedTags,
-    sendOutcome,
-    sendUniqueOutcome,
-    sendOutcomeWithValue,
-    addTrigger,
-    addTriggers,
-    removeSelectedTriggers,
-    clearTriggers,
-    trackEvent,
-    setLocationShared,
-    requestLocationPermission,
-  }), [
-    state,
-    loginUser,
-    logoutUser,
-    setConsentRequired,
-    setConsentGiven,
-    promptPush,
-    setPushEnabled,
-    sendNotification,
-    sendCustomNotification,
-    setIamPaused,
-    sendIamTrigger,
-    addAlias,
-    addAliases,
-    addEmail,
-    removeEmail,
-    addSms,
-    removeSms,
-    addTag,
-    addTags,
-    removeSelectedTags,
-    sendOutcome,
-    sendUniqueOutcome,
-    sendOutcomeWithValue,
-    addTrigger,
-    addTriggers,
-    removeSelectedTriggers,
-    clearTriggers,
-    trackEvent,
-    setLocationShared,
-    requestLocationPermission,
-  ]);
+  const contextValue = useMemo<AppContextValue>(
+    () => ({
+      state,
+      loginUser,
+      logoutUser,
+      setConsentRequired,
+      setConsentGiven,
+      promptPush,
+      setPushEnabled,
+      sendNotification,
+      sendCustomNotification,
+      setIamPaused,
+      sendIamTrigger,
+      addAlias,
+      addAliases,
+      addEmail,
+      removeEmail,
+      addSms,
+      removeSms,
+      addTag,
+      addTags,
+      removeSelectedTags,
+      sendOutcome,
+      sendUniqueOutcome,
+      sendOutcomeWithValue,
+      addTrigger,
+      addTriggers,
+      removeSelectedTriggers,
+      clearTriggers,
+      trackEvent,
+      setLocationShared,
+      requestLocationPermission,
+    }),
+    [
+      state,
+      loginUser,
+      logoutUser,
+      setConsentRequired,
+      setConsentGiven,
+      promptPush,
+      setPushEnabled,
+      sendNotification,
+      sendCustomNotification,
+      setIamPaused,
+      sendIamTrigger,
+      addAlias,
+      addAliases,
+      addEmail,
+      removeEmail,
+      addSms,
+      removeSms,
+      addTag,
+      addTags,
+      removeSelectedTags,
+      sendOutcome,
+      sendUniqueOutcome,
+      sendOutcomeWithValue,
+      addTrigger,
+      addTriggers,
+      removeSelectedTriggers,
+      clearTriggers,
+      trackEvent,
+      setLocationShared,
+      requestLocationPermission,
+    ],
+  );
 
   return (
-    <AppContext.Provider value={contextValue}>
-      {children}
-    </AppContext.Provider>
+    <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
   );
 }
 

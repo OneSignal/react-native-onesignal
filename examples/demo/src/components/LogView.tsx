@@ -39,7 +39,10 @@ export default function LogView() {
   const clearLogs = () => LogManager.getInstance().clear();
 
   return (
-    <View style={[styles.container, { height: expanded ? 200 : 36 }]} testID="log_view_container">
+    <View
+      style={[styles.container, { height: expanded ? 200 : 36 }]}
+      testID="log_view_container"
+    >
       {/* Header */}
       <TouchableOpacity
         style={styles.header}
@@ -47,8 +50,7 @@ export default function LogView() {
         testID="log_view_header"
       >
         <Text style={styles.headerText}>
-          LOGS{' '}
-          <Text testID="log_view_count">({entries.length})</Text>
+          LOGS <Text testID="log_view_count">({entries.length})</Text>
         </Text>
         <View style={styles.headerRight}>
           <TouchableOpacity
@@ -89,7 +91,11 @@ export default function LogView() {
               </Text>
             ) : (
               entries.map((entry, index) => (
-                <View key={index} style={styles.logRow} testID={`log_entry_${index}`}>
+                <View
+                  key={index}
+                  style={styles.logRow}
+                  testID={`log_entry_${index}`}
+                >
                   <Text
                     style={styles.timestamp}
                     testID={`log_entry_${index}_timestamp`}

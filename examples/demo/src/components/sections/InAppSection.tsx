@@ -10,7 +10,11 @@ interface Props {
   onInfoTap?: () => void;
 }
 
-export default function InAppSection({ inAppMessagesPaused, onSetPaused, onInfoTap }: Props) {
+export default function InAppSection({
+  inAppMessagesPaused,
+  onSetPaused,
+  onInfoTap,
+}: Props) {
   return (
     <SectionCard title="In-App Messaging" onInfoTap={onInfoTap}>
       <View style={AppTheme.card}>

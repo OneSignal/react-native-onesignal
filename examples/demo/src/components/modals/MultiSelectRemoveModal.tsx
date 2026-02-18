@@ -53,7 +53,12 @@ export default function MultiSelectRemoveModal({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleClose}
+    >
       <KeyboardAvoidingView
         style={styles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -72,7 +77,9 @@ export default function MultiSelectRemoveModal({
                   <Icon
                     name={isChecked ? 'check-box' : 'check-box-outline-blank'}
                     size={22}
-                    color={isChecked ? Colors.oneSignalRed : Colors.textSecondary}
+                    color={
+                      isChecked ? Colors.oneSignalRed : Colors.textSecondary
+                    }
                   />
                   <Text style={styles.itemKey}>{key}</Text>
                 </TouchableOpacity>
@@ -84,7 +91,10 @@ export default function MultiSelectRemoveModal({
               <Text style={styles.cancelText}>CANCEL</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.confirmBtn, selected.size === 0 && styles.disabled]}
+              style={[
+                styles.confirmBtn,
+                selected.size === 0 && styles.disabled,
+              ]}
               onPress={handleConfirm}
               disabled={selected.size === 0}
             >
