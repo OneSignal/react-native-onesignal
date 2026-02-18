@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useAppViewModel } from '../hooks/useAppViewModel';
+import { useAppContext } from '../context/AppContext';
 import { InAppMessageType } from '../models/InAppMessageType';
 import TooltipHelper, { TooltipData } from '../services/TooltipHelper';
 import LogView from '../components/LogView';
@@ -27,8 +27,8 @@ import { AppTheme, Colors, Spacing } from '../theme';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  const vm = useAppViewModel();
-  const { state } = vm;
+  const app = useAppContext();
+  const { state } = app;
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<TooltipData | null>(null);
@@ -38,7 +38,7 @@ export default function HomeScreen() {
 
   // Auto-request push permission on load
   useEffect(() => {
-    vm.promptPush();
+    app.promptPush();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -66,8 +66,8 @@ export default function HomeScreen() {
           appId={state.appId}
           consentRequired={state.consentRequired}
           privacyConsentGiven={state.privacyConsentGiven}
-          onSetConsentRequired={vm.setConsentRequired}
-          onSetConsentGiven={vm.setConsentGiven}
+          onSetConsentRequired={app.setConsentRequired}
+          onSetConsentGiven={app.setConsentGiven}
         />
 
         <SectionCard title="User">
@@ -94,7 +94,7 @@ export default function HomeScreen() {
           {isLoggedIn && (
             <ActionButton
               label="LOGOUT USER"
-              onPress={vm.logoutUser}
+              onPress={app.logoutUser}
               variant="outlined"
               testID="logout_user_button"
             />
@@ -102,7 +102,7 @@ export default function HomeScreen() {
           <LoginModal
             visible={loginVisible}
             isLoggedIn={isLoggedIn}
-            onConfirm={vm.loginUser}
+            onConfirm={app.loginUser}
             onClose={() => setLoginVisible(false)}
           />
         </SectionCard>
@@ -111,82 +111,82 @@ export default function HomeScreen() {
           pushSubscriptionId={state.pushSubscriptionId}
           isPushEnabled={state.isPushEnabled}
           hasNotificationPermission={state.hasNotificationPermission}
-          onSetPushEnabled={vm.setPushEnabled}
-          onPromptPush={vm.promptPush}
+          onSetPushEnabled={app.setPushEnabled}
+          onPromptPush={app.promptPush}
           onInfoTap={() => showTooltipModal('push')}
         />
 
         <SendPushSection
-          onSendNotification={vm.sendNotification}
-          onSendCustomNotification={vm.sendCustomNotification}
+          onSendNotification={app.sendNotification}
+          onSendCustomNotification={app.sendCustomNotification}
           onInfoTap={() => showTooltipModal('send_push')}
         />
 
         <InAppSection
           inAppMessagesPaused={state.inAppMessagesPaused}
-          onSetPaused={vm.setIamPaused}
+          onSetPaused={app.setIamPaused}
           onInfoTap={() => showTooltipModal('in_app_messaging')}
         />
 
         <SendIamSection
-          onSendIam={(type: InAppMessageType) => vm.sendIamTrigger(type)}
+          onSendIam={(type: InAppMessageType) => app.sendIamTrigger(type)}
           onInfoTap={() => showTooltipModal('send_iam')}
         />
 
         <AliasesSection
           aliases={state.aliasesList}
-          onAdd={vm.addAlias}
-          onAddMultiple={vm.addAliases}
+          onAdd={app.addAlias}
+          onAddMultiple={app.addAliases}
           onInfoTap={() => showTooltipModal('aliases')}
         />
 
         <EmailsSection
           emails={state.emailsList}
-          onAdd={vm.addEmail}
-          onRemove={vm.removeEmail}
+          onAdd={app.addEmail}
+          onRemove={app.removeEmail}
           onInfoTap={() => showTooltipModal('emails')}
         />
 
         <SmsSection
           smsNumbers={state.smsNumbersList}
-          onAdd={vm.addSms}
-          onRemove={vm.removeSms}
+          onAdd={app.addSms}
+          onRemove={app.removeSms}
           onInfoTap={() => showTooltipModal('sms')}
         />
 
         <TagsSection
           tags={state.tagsList}
-          onAdd={vm.addTag}
-          onAddMultiple={vm.addTags}
-          onRemoveSelected={vm.removeSelectedTags}
+          onAdd={app.addTag}
+          onAddMultiple={app.addTags}
+          onRemoveSelected={app.removeSelectedTags}
           onInfoTap={() => showTooltipModal('tags')}
         />
 
         <OutcomesSection
-          onSendNormal={vm.sendOutcome}
-          onSendUnique={vm.sendUniqueOutcome}
-          onSendWithValue={vm.sendOutcomeWithValue}
+          onSendNormal={app.sendOutcome}
+          onSendUnique={app.sendUniqueOutcome}
+          onSendWithValue={app.sendOutcomeWithValue}
           onInfoTap={() => showTooltipModal('outcome_events')}
         />
 
         <TriggersSection
           triggers={state.triggersList}
-          onAdd={vm.addTrigger}
-          onAddMultiple={vm.addTriggers}
-          onRemoveSelected={vm.removeSelectedTriggers}
-          onClearAll={vm.clearTriggers}
+          onAdd={app.addTrigger}
+          onAddMultiple={app.addTriggers}
+          onRemoveSelected={app.removeSelectedTriggers}
+          onClearAll={app.clearTriggers}
           onInfoTap={() => showTooltipModal('triggers')}
         />
 
         <TrackEventSection
-          onTrackEvent={vm.trackEvent}
+          onTrackEvent={app.trackEvent}
           onInfoTap={() => showTooltipModal('track_event')}
         />
 
         <LocationSection
           locationShared={state.locationShared}
-          onSetLocationShared={vm.setLocationShared}
-          onRequestLocationPermission={vm.requestLocationPermission}
+          onSetLocationShared={app.setLocationShared}
+          onRequestLocationPermission={app.requestLocationPermission}
           onInfoTap={() => showTooltipModal('location')}
         />
 

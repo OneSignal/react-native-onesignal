@@ -55,16 +55,8 @@ class OneSignalRepository {
     OneSignal.User.addTags(tags);
   }
 
-  removeTag(key: string): void {
-    OneSignal.User.removeTag(key);
-  }
-
   removeTags(keys: string[]): void {
     OneSignal.User.removeTags(keys);
-  }
-
-  async getTags(): Promise<Record<string, string>> {
-    return OneSignal.User.getTags();
   }
 
   // Triggers
@@ -74,10 +66,6 @@ class OneSignalRepository {
 
   addTriggers(triggers: Record<string, string>): void {
     OneSignal.InAppMessages.addTriggers(triggers);
-  }
-
-  removeTrigger(key: string): void {
-    OneSignal.InAppMessages.removeTrigger(key);
   }
 
   removeTriggers(keys: string[]): void {
@@ -138,17 +126,9 @@ class OneSignalRepository {
     OneSignal.InAppMessages.setPaused(paused);
   }
 
-  async arePaused(): Promise<boolean> {
-    return OneSignal.InAppMessages.getPaused();
-  }
-
   // Location
   setLocationShared(shared: boolean): void {
     OneSignal.Location.setShared(shared);
-  }
-
-  async isLocationShared(): Promise<boolean> {
-    return OneSignal.Location.isShared();
   }
 
   requestLocationPermission(): void {

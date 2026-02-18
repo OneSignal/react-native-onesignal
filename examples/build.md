@@ -100,7 +100,7 @@ using the TypeScript template:
   mv demo examples/demo
 
 Build the app with:
-- Clean architecture: repository pattern with React Context + hooks-based state management
+- Clean architecture: repository pattern with React Context + reducer-based state management
 - TypeScript with strict mode enabled
 - OneSignal brand colors and a consistent stylesheet-based theme
 - App name: "OneSignal Demo"
@@ -166,7 +166,7 @@ For react-native-vector-icons on Android, add to android/app/build.gradle:
 
 ```
 Create a OneSignalRepository class that centralizes all OneSignal SDK calls.
-This is a plain TypeScript class (not a Context) injected into the ViewModel hook.
+This is a plain TypeScript class (not a Context) used inside AppContextProvider.
 
 User operations:
 - loginUser(externalUserId: string): Promise<void>
@@ -187,14 +187,11 @@ SMS operations:
 Tag operations:
 - addTag(key: string, value: string): void
 - addTags(tags: Record<string, string>): void
-- removeTag(key: string): void
 - removeTags(keys: string[]): void
-- getTags(): Promise<Record<string, string>>
 
 Trigger operations (via OneSignal.InAppMessages):
 - addTrigger(key: string, value: string): void
 - addTriggers(triggers: Record<string, string>): void
-- removeTrigger(key: string): void
 - removeTriggers(keys: string[]): void
 - clearTriggers(): void
 
@@ -218,11 +215,9 @@ Notifications:
 
 In-App Messages:
 - setPaused(paused: boolean): void
-- arePaused(): Promise<boolean>
 
 Location:
 - setLocationShared(shared: boolean): void
-- isLocationShared(): Promise<boolean>
 - requestLocationPermission(): void
 
 Privacy consent:
@@ -290,7 +285,7 @@ After initialization, restore cached SDK states from AsyncStorage:
 - OneSignal.InAppMessages.setPaused(cachedPausedStatus)
 - OneSignal.Location.setShared(cachedLocationShared)
 
-In the useAppViewModel hook, register observers:
+In AppContextProvider, register observers:
 - OneSignal.User.pushSubscription.addEventListener('change', handler) - react to push subscription changes
 - OneSignal.Notifications.addEventListener('permissionChange', handler) - react to permission changes
 - OneSignal.User.addEventListener('change', handler) - call fetchUserDataFromApi() when user changes
@@ -715,18 +710,18 @@ On app startup, state is restored in two layers:
    - OneSignal.Location.setShared(cachedLocationShared)
    This ensures consent settings are in place before the SDK initializes.
 
-2. useAppViewModel hook's loadInitialState() reads UI state from the SDK (not AsyncStorage):
+2. AppContextProvider initialization restores UI state:
    - consentRequired from cached prefs (no SDK getter)
    - privacyConsentGiven from cached prefs (no SDK getter)
-   - inAppMessagesPaused from OneSignal.InAppMessages.arePaused()
-   - locationShared from OneSignal.Location.isShared()
+   - inAppMessagesPaused from cached prefs
+   - locationShared from cached prefs
    - externalUserId from OneSignal.User.getExternalId()
    - appId from PreferencesService (app-level config)
 
 This two-layer approach ensures:
 - The SDK is configured with the user's last preferences before anything else runs
-- The hook reads the SDK's actual state as the source of truth for the UI
-- The UI always reflects what the SDK reports, not stale cache values
+- AppContextProvider exposes one state object and action API for screens
+- Reducer transitions keep state updates predictable
 ```
 
 ### What is NOT Persisted (In-Memory Only)
@@ -796,7 +791,7 @@ Aliases are managed with a hybrid approach:
 
 ```
 Notification permission is automatically requested when the home screen loads:
-- Call viewModel.promptPush() in a useEffect with an empty dependency array in HomeScreen
+- Call appContext.promptPush() in a useEffect with an empty dependency array in HomeScreen
 - This ensures prompt appears after user sees the app UI
 - PROMPT PUSH button remains as fallback if user initially denied
 - Button hidden once permission is granted
@@ -806,21 +801,21 @@ Notification permission is automatically requested when the home screen loads:
 
 ## Phase 8: React Native Architecture
 
-### Prompt 8.1 - State Management with Context + Hooks
+### Prompt 8.1 - State Management with Context + Reducer
 
 ```
-Use React Context for dependency injection and useReducer/useState for state management.
+Use React Context for dependency injection and useReducer for state management.
 
 App.tsx:
 - AppContext.Provider at the root of the component tree
 - Initialize OneSignal SDK before rendering (outside component or in early useEffect)
 - Fetch tooltips in the background (non-blocking)
 
-useAppViewModel custom hook:
-- Holds all UI state as local state with useState/useReducer
-- Exposes action functions that update state and trigger re-renders
-- Receives OneSignalRepository via parameter or context
-- Receives PreferencesService via parameter or context
+AppContextProvider:
+- Holds all UI state with useReducer
+- Exposes state and action functions through useAppContext
+- Uses OneSignalRepository and PreferencesService internally
+- Handles observer lifecycle and initialization effects
 ```
 
 ### Prompt 8.2 - Reusable Components
@@ -1038,8 +1033,6 @@ examples/demo/
 │   │   └── OneSignalRepository.ts           # Centralized SDK calls
 │   ├── context/
 │   │   └── AppContext.tsx                   # React Context + useReducer state
-│   ├── hooks/
-│   │   └── useAppViewModel.ts               # Custom hook exposing state + actions
 │   ├── screens/
 │   │   ├── HomeScreen.tsx                   # Main ScrollView screen (includes LogView)
 │   │   └── SecondaryScreen.tsx              # "Secondary Activity" screen
