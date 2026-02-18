@@ -457,19 +457,19 @@ export function AppContextProvider({ children }: Props) {
   }, []);
 
   const setConsentRequired = useCallback(async (required: boolean) => {
-    repository.setConsentRequired(required);
-    await preferences.setConsentRequired(required);
     if (mountedRef.current) {
       dispatch({ type: 'SET_CONSENT_REQUIRED', payload: required });
     }
+    repository.setConsentRequired(required);
+    await preferences.setConsentRequired(required);
   }, []);
 
   const setConsentGiven = useCallback(async (granted: boolean) => {
-    repository.setConsentGiven(granted);
-    await preferences.setPrivacyConsent(granted);
     if (mountedRef.current) {
       dispatch({ type: 'SET_PRIVACY_CONSENT_GIVEN', payload: granted });
     }
+    repository.setConsentGiven(granted);
+    await preferences.setPrivacyConsent(granted);
   }, []);
 
   const promptPush = useCallback(async () => {
@@ -506,9 +506,9 @@ export function AppContextProvider({ children }: Props) {
   }, []);
 
   const setIamPaused = useCallback(async (paused: boolean) => {
+    dispatch({ type: 'SET_IAM_PAUSED', payload: paused });
     repository.setPaused(paused);
     await preferences.setIamPaused(paused);
-    dispatch({ type: 'SET_IAM_PAUSED', payload: paused });
     const msg = paused ? 'In-app messages paused' : 'In-app messages resumed';
     log.i(TAG, msg);
     Toast.show({ type: 'info', text1: msg });
@@ -649,9 +649,9 @@ export function AppContextProvider({ children }: Props) {
   }, []);
 
   const setLocationShared = useCallback(async (shared: boolean) => {
+    dispatch({ type: 'SET_LOCATION_SHARED', payload: shared });
     repository.setLocationShared(shared);
     await preferences.setLocationShared(shared);
-    dispatch({ type: 'SET_LOCATION_SHARED', payload: shared });
     const msg = shared ? 'Location sharing enabled' : 'Location sharing disabled';
     log.i(TAG, msg);
     Toast.show({ type: 'info', text1: msg });
