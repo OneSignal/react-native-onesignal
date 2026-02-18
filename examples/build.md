@@ -119,8 +119,14 @@ Download the padded app icon PNG from:
 Save it to assets/onesignal_logo_icon_padded.png, generate all platform app icons using:
   bunx react-native-make set-icon --path assets/onesignal_logo_icon_padded.png
 
-Reference the OneSignal React Native SDK from the parent repo using a local file dependency:
-  "react-native-onesignal": "file:../../"
+Reference the OneSignal React Native SDK from the parent repo using a packed tarball:
+  "react-native-onesignal": "file:../../react-native-onesignal.tgz"
+
+A setup.sh script in examples/ handles building, packing, and installing automatically.
+Add/verify the following scripts in package.json:
+  "setup": "../setup.sh",
+  "preandroid": "bun run setup",
+  "preios": "bun run setup",
 ```
 
 ### Prompt 1.2 - Dependencies (package.json)
