@@ -13,13 +13,19 @@ Before building anything, an Android emulator MUST be running with the
 reference OneSignal demo app installed. These screenshots are the source
 of truth for the UI you are building. Do NOT proceed to Phase 1 without them.
 
-Check for a connected emulator:
+Check for connected emulators:
   adb devices
 
 If no device is listed, stop and ask the user to start one.
 
+Identify which emulator has com.onesignal.sdktest installed by checking each listed device, e.g.:
+  adb -s emulator-5554 shell pm list packages 2>/dev/null | grep -i onesignal
+  adb -s emulator-5556 shell pm list packages 2>/dev/null | grep -i onesignal
+
+Use that emulator's serial (e.g. emulator-5556) for all subsequent adb commands via the -s flag.
+
 Launch the reference app:
-  adb shell am start -n com.onesignal.sdktest/.ui.main.MainActivity
+  adb -s <emulator-serial> shell am start -n com.onesignal.sdktest/.ui.main.MainActivity
 
 Dismiss any in-app messages that appear on launch. Tap the X or
 click-through button on each IAM until the main UI is fully visible
