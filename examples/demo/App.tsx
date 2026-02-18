@@ -73,6 +73,9 @@ function App() {
         OneSignal.Notifications.addEventListener('click', (e: NotificationClickEvent) => {
           log.i(TAG, `Notification click: ${e.notification.title ?? ''}`);
         });
+        OneSignal.Notifications.addEventListener('permissionChange', (granted: boolean) => {
+          log.i(TAG, `Permission changed: ${granted}`);
+        });
         OneSignal.Notifications.addEventListener('foregroundWillDisplay', (e: NotificationWillDisplayEvent) => {
           log.i(TAG, `Notification foregroundWillDisplay: ${e.getNotification().title ?? ''}`);
           e.preventDefault();
