@@ -1140,6 +1140,18 @@ The identifiers MUST be `com.onesignal.example` to work with the existing:
 
 If you change the identifier, you must also update these files with your own Firebase/Huawei project configuration.
 
+### Android Manifest Permissions
+
+The demo Android manifest should include:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+```
+
+Without the location permissions above, tapping the location prompt button will not show the Android runtime location dialog.
+
 ---
 
 ## React Native Best Practices Applied
