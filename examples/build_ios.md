@@ -1,6 +1,6 @@
 # iOS Setup (React Native): Push Notifications + Live Activities
 
-Configure the React Native demo iOS project for OneSignal push notifications and live activities. All paths below are relative to `examples/demo/ios/` unless stated otherwise.
+Configure the React Native demo iOS project for OneSignal push notifications and live activities. Set the iOS app bundle id to `com.onesignal.example` before completing the steps below. All paths below are relative to `examples/demo/ios/` unless stated otherwise.
 
 ---
 
@@ -12,12 +12,10 @@ Add two extension targets after the `demo` target block:
 
 ```ruby
 target 'OneSignalNotificationServiceExtension' do
-  use_frameworks! :linkage => :static
   pod 'OneSignalXCFramework', '>= 5.0.0', '< 6.0'
 end
 
 target 'OneSignalWidgetExtension' do
-  use_frameworks! :linkage => :static
   pod 'OneSignalXCFramework', '>= 5.0.0', '< 6.0'
 end
 ```
@@ -49,13 +47,15 @@ This enables push notifications (`aps-environment`) and an App Group shared with
 
 ### Info.plist
 
-In `demo/Info.plist`, add `UIBackgroundModes` inside the top-level `<dict>`:
+In `demo/Info.plist`, add `UIBackgroundModes` and `NSSupportsLiveActivities` inside the top-level `<dict>`:
 
 ```xml
 <key>UIBackgroundModes</key>
 <array>
     <string>remote-notification</string>
 </array>
+<key>NSSupportsLiveActivities</key>
+<true/>
 ```
 
 ---
@@ -157,7 +157,7 @@ Note: the on-disk folder is `OneSignalWidget` but the Xcode target name is `OneS
 
 ### Info.plist
 
-Same standard `CFBundle*` keys as the NSE, plus `NSSupportsLiveActivities`.
+Same standard `CFBundle*` keys as the NSE.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -180,8 +180,6 @@ Same standard `CFBundle*` keys as the NSE, plus `NSSupportsLiveActivities`.
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionPointIdentifier</key>
@@ -273,7 +271,7 @@ The `project.pbxproj` needs native target entries for both extensions. These are
 **OneSignalNotificationServiceExtension target** (`com.apple.product-type.app-extension`):
 
 - Sources, Frameworks, Resources build phases
-- `PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalNotificationServiceExtension` (must be prefixed with the parent app bundle ID)
+- `PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalNotificationServiceExtensionRN` (must be prefixed with the parent app bundle ID)
 - `CODE_SIGN_ENTITLEMENTS = OneSignalNotificationServiceExtension/OneSignalNotificationServiceExtension.entitlements`
 - `INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist`
 - `SKIP_INSTALL = YES`, `SWIFT_VERSION = 5.0`, `IPHONEOS_DEPLOYMENT_TARGET = 13.0`
