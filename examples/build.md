@@ -118,7 +118,7 @@ Save it to the demo project at assets/onesignal_logo.svg and use it for the head
 Download the padded app icon PNG from:
   https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo_icon_padded.png
 Save it to assets/onesignal_logo_icon_padded.png, generate all platform app icons using:
-  bunx react-native-make set-icon --path assets/onesignal_logo_icon_padded.png
+  bun examples/generate-icons.ts
 
 Reference the OneSignal React Native SDK from the parent repo using a packed tarball:
   "react-native-onesignal": "file:../../react-native-onesignal.tgz"
@@ -151,7 +151,6 @@ devDependencies:
   @typescript-eslint/eslint-plugin: ^7.0.0
   @typescript-eslint/parser: ^7.0.0
   eslint: ^8.57.0
-  @bam.tech/react-native-make: ^4.0.0         # App icon generation
 
 After installing, run pod install for iOS:
   cd ios && pod install && cd ..
