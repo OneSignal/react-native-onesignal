@@ -113,7 +113,11 @@ Build the app with:
 
 Download the app bar logo SVG from:
   https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo.svg
-Save it to the demo project at assets/onesignal_logo.svg and use it for the header logo via react-native-svg.
+Save it to the demo project at assets/onesignal_logo.svg and render it in the header by importing the SVG component directly:
+  import OneSignalLogo from './assets/onesignal_logo.svg'
+  <OneSignalLogo width={99} height={22} />
+Use the logo as the "OneSignal" wordmark in the header and show only a separate "Sample App" text label next to it.
+Do not inline long SVG path strings in App.tsx.
 
 Download the padded app icon PNG from:
   https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo_icon_padded.png
@@ -138,7 +142,7 @@ Add these dependencies to package.json:
 dependencies:
   react-native-onesignal: file:../../           # OneSignal SDK (local path)
   @react-native-async-storage/async-storage: ^2.1.0  # Local persistence
-  react-native-svg: ^15.8.0                    # SVG rendering (header logo)
+  react-native-svg: ^15.8.0                    # SVG runtime primitives
   react-native-vector-icons: ^10.2.0           # Material icons
   @react-navigation/native: ^6.1.0             # Navigation
   @react-navigation/native-stack: ^6.11.0      # Stack navigator
@@ -147,10 +151,34 @@ dependencies:
   react-native-toast-message: ^2.2.0          # Toast/SnackBar equivalent
 
 devDependencies:
+  react-native-svg-transformer: ^1.5.3         # Import .svg files as RN components
   @types/react-native-vector-icons: ^6.4.18
   @typescript-eslint/eslint-plugin: ^7.0.0
   @typescript-eslint/parser: ^7.0.0
   eslint: ^8.57.0
+
+Configure Metro to transform SVG files:
+  // metro.config.js
+  const defaultConfig = getDefaultConfig(__dirname);
+  const { assetExts, sourceExts } = defaultConfig.resolver;
+  module.exports = mergeConfig(defaultConfig, {
+    transformer: {
+      babelTransformerPath: require.resolve('react-native-svg-transformer/react-native'),
+    },
+    resolver: {
+      assetExts: assetExts.filter(ext => ext !== 'svg'),
+      sourceExts: [...sourceExts, 'svg'],
+    },
+  });
+
+Add a TypeScript module declaration for SVG imports:
+  // types/svg.d.ts
+  declare module '*.svg' {
+    import type { FunctionComponent } from 'react';
+    import type { SvgProps } from 'react-native-svg';
+    const content: FunctionComponent<SvgProps>;
+    export default content;
+  }
 
 After installing, run pod install for iOS:
   cd ios && pod install && cd ..
