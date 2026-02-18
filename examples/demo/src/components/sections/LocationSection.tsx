@@ -1,9 +1,9 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
 import ActionButton from '../ActionButton';
-import { AppTheme } from '../../theme';
+import { AppTheme, Spacing } from '../../theme';
 
 interface Props {
   locationShared: boolean;
@@ -20,7 +20,7 @@ export default function LocationSection({
 }: Props) {
   return (
     <SectionCard title="Location" onInfoTap={onInfoTap}>
-      <View style={AppTheme.card}>
+      <View style={[AppTheme.card, styles.locationCard]}>
         <ToggleRow
           label="Location Shared"
           description="Share device location with OneSignal"
@@ -37,3 +37,9 @@ export default function LocationSection({
     </SectionCard>
   );
 }
+
+const styles = StyleSheet.create({
+  locationCard: {
+    marginBottom: Spacing.cardGap,
+  },
+});

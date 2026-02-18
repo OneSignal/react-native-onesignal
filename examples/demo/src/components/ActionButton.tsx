@@ -6,7 +6,7 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
-import { Colors } from '../theme';
+import { Colors, Spacing } from '../theme';
 
 interface Props {
   label: string;
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     width: '100%',
-    marginBottom: 8,
+    marginBottom: Spacing.cardGap,
   },
   inner: {
     flexDirection: 'row',

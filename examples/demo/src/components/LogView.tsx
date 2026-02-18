@@ -39,7 +39,7 @@ export default function LogView() {
   const clearLogs = () => LogManager.getInstance().clear();
 
   return (
-    <View style={styles.container} testID="log_view_container">
+    <View style={[styles.container, { height: expanded ? 200 : 36 }]} testID="log_view_container">
       {/* Header */}
       <TouchableOpacity
         style={styles.header}
@@ -126,7 +126,6 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     backgroundColor: '#1A1B1E',
-    maxHeight: 100,
   },
   header: {
     flexDirection: 'row',

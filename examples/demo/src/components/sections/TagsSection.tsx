@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import SectionCard from '../SectionCard';
 import ActionButton from '../ActionButton';
 import PairInputModal from '../modals/PairInputModal';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import MultiSelectRemoveModal from '../modals/MultiSelectRemoveModal';
 import { PairList, EmptyState } from '../ListWidgets';
-import { AppTheme } from '../../theme';
+import { AppTheme, Spacing } from '../../theme';
 
 interface Props {
   tags: [string, string][];
@@ -30,11 +30,13 @@ export default function TagsSection({
   return (
     <SectionCard title="Tags" onInfoTap={onInfoTap}>
       {tags.length === 0 ? (
-        <View style={AppTheme.card}>
+        <View style={[AppTheme.card, styles.listCard]}>
           <EmptyState message="No tags added" testID="tags_empty" />
         </View>
       ) : (
-        <PairList items={tags} />
+        <View style={styles.listCard}>
+          <PairList items={tags} />
+        </View>
       )}
       <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_tag_button" />
       <ActionButton
@@ -76,3 +78,9 @@ export default function TagsSection({
     </SectionCard>
   );
 }
+
+const styles = StyleSheet.create({
+  listCard: {
+    marginBottom: Spacing.cardGap,
+  },
+});

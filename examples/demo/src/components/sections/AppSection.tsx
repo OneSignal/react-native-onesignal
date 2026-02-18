@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -8,40 +8,27 @@ import {
 } from 'react-native';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
-import ActionButton from '../ActionButton';
-import LoginModal from '../modals/LoginModal';
-import { Colors, AppTheme } from '../../theme';
+import { Colors, AppTheme, Spacing } from '../../theme';
 
 interface Props {
   appId: string;
   consentRequired: boolean;
   privacyConsentGiven: boolean;
-  externalUserId: string | undefined;
   onSetConsentRequired: (value: boolean) => void;
   onSetConsentGiven: (value: boolean) => void;
-  onLogin: (userId: string) => void;
-  onLogout: () => void;
-  onInfoTap?: () => void;
 }
 
 export default function AppSection({
   appId,
   consentRequired,
   privacyConsentGiven,
-  externalUserId,
   onSetConsentRequired,
   onSetConsentGiven,
-  onLogin,
-  onLogout,
-  onInfoTap,
 }: Props) {
-  const [loginVisible, setLoginVisible] = useState(false);
-  const isLoggedIn = !!externalUserId;
-
   return (
-    <SectionCard title="App" onInfoTap={onInfoTap}>
+    <SectionCard title="App">
       {/* App ID display */}
-      <View style={AppTheme.card}>
+      <View style={[AppTheme.card, styles.appIdCard]}>
         <View style={styles.idRow}>
           <Text style={styles.idLabel}>App ID</Text>
           <Text style={styles.idValue} numberOfLines={1} ellipsizeMode="middle">
@@ -71,7 +58,7 @@ export default function AppSection({
         />
         {consentRequired && (
           <>
-            <View style={styles.divider} />
+            <View style={AppTheme.divider} />
             <ToggleRow
               label="Privacy Consent"
               description="Consent given for data collection"
@@ -83,49 +70,14 @@ export default function AppSection({
         )}
       </View>
 
-      {/* User Status Card */}
-      <View style={[AppTheme.card, styles.userCard]}>
-        <View style={styles.statusRow}>
-          <Text style={styles.statusLabel}>Status</Text>
-          <Text style={[styles.statusValue, isLoggedIn && styles.loggedInText]}>
-            {isLoggedIn ? 'Logged In' : 'Anonymous'}
-          </Text>
-        </View>
-        <View style={styles.divider} />
-        <View style={styles.statusRow}>
-          <Text style={styles.statusLabel}>External ID</Text>
-          <Text style={styles.statusValue} numberOfLines={1}>
-            {externalUserId ?? '–'}
-          </Text>
-        </View>
-      </View>
-
-      {/* Login/Logout Buttons */}
-      <ActionButton
-        label={isLoggedIn ? 'SWITCH USER' : 'LOGIN USER'}
-        onPress={() => setLoginVisible(true)}
-        testID="login_user_button"
-      />
-      {isLoggedIn && (
-        <ActionButton
-          label="LOGOUT USER"
-          onPress={onLogout}
-          variant="outlined"
-          testID="logout_user_button"
-        />
-      )}
-
-      <LoginModal
-        visible={loginVisible}
-        isLoggedIn={isLoggedIn}
-        onConfirm={onLogin}
-        onClose={() => setLoginVisible(false)}
-      />
     </SectionCard>
   );
 }
 
 const styles = StyleSheet.create({
+  appIdCard: {
+    marginBottom: Spacing.cardGap,
+  },
   idRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -147,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.warningBackground,
     borderRadius: 8,
     padding: 12,
-    marginBottom: 8,
+    marginBottom: Spacing.cardGap,
   },
   bannerText: {
     fontSize: 13,
@@ -158,31 +110,5 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.oneSignalRed,
     fontWeight: '500',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: Colors.dividerColor,
-    marginVertical: 8,
-  },
-  userCard: {
-    marginBottom: 8,
-  },
-  statusRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 4,
-  },
-  statusLabel: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  statusValue: {
-    fontSize: 14,
-    color: Colors.textPrimary,
-    fontWeight: '500',
-  },
-  loggedInText: {
-    color: '#2E7D32',
   },
 });

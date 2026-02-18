@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import SectionCard from '../SectionCard';
 import ActionButton from '../ActionButton';
 import SingleInputModal from '../modals/SingleInputModal';
 import { CollapsibleSingleList } from '../ListWidgets';
+import { Spacing } from '../../theme';
 
 interface Props {
   emails: string[];
@@ -16,11 +18,13 @@ export default function EmailsSection({ emails, onAdd, onRemove, onInfoTap }: Pr
 
   return (
     <SectionCard title="Emails" onInfoTap={onInfoTap}>
-      <CollapsibleSingleList
-        items={emails}
-        onDelete={onRemove}
-        emptyMessage="No emails added"
-      />
+      <View style={styles.listCard}>
+        <CollapsibleSingleList
+          items={emails}
+          onDelete={onRemove}
+          emptyMessage="No emails added"
+        />
+      </View>
       <ActionButton
         label="ADD EMAIL"
         onPress={() => setAddVisible(true)}
@@ -38,3 +42,9 @@ export default function EmailsSection({ emails, onAdd, onRemove, onInfoTap }: Pr
     </SectionCard>
   );
 }
+
+const styles = StyleSheet.create({
+  listCard: {
+    marginBottom: Spacing.cardGap,
+  },
+});

@@ -51,6 +51,7 @@ Pay close attention to:
   - List item layout (stacked vs inline key-value)
   - Icon choices (delete, close, info, etc.)
   - Typography, spacing, and colors
+  - Spacing: 12px gap between sections, 8px gap between cards/buttons within a section
 
 You can also interact with the reference app to observe specific flows:
 
@@ -934,13 +935,17 @@ Colors:
 - dividerColor = '#E8EAED'
 - warningBackground = '#FFF8E1'
 
+Spacing constants:
+- cardGap = 8    // gap between a card/banner and its action buttons within a section
+- sectionGap = 12 // gap between sections (SectionCard wrapper marginBottom)
+
 AppTheme object with:
 - Reusable StyleSheet base styles for cards (borderRadius: 12, backgroundColor: cardBackground)
 - Reusable button style with borderRadius: 8
 - Consistent font sizes, weights, and colors exported as constants
 - Shadow/elevation styles for card depth
 
-Apply theme colors consistently across all components using StyleSheet.create.
+Apply theme colors and Spacing constants consistently across all components using StyleSheet.create.
 ```
 
 ### Prompt 8.6 - Log View (Appium-Ready)

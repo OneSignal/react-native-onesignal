@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import SectionCard from '../SectionCard';
 import ActionButton from '../ActionButton';
 import PairInputModal from '../modals/PairInputModal';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import { PairList, EmptyState } from '../ListWidgets';
-import { AppTheme } from '../../theme';
+import { AppTheme, Spacing } from '../../theme';
 
 const FILTERED_KEYS = ['external_id', 'onesignal_id'];
 
@@ -25,11 +25,13 @@ export default function AliasesSection({ aliases, onAdd, onAddMultiple, onInfoTa
   return (
     <SectionCard title="Aliases" onInfoTap={onInfoTap}>
       {filtered.length === 0 ? (
-        <View style={AppTheme.card}>
+        <View style={[AppTheme.card, styles.listCard]}>
           <EmptyState message="No aliases added" testID="aliases_empty" />
         </View>
       ) : (
-        <PairList items={filtered} />
+        <View style={styles.listCard}>
+          <PairList items={filtered} />
+        </View>
       )}
       <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_alias_button" />
       <ActionButton
@@ -58,3 +60,9 @@ export default function AliasesSection({ aliases, onAdd, onAddMultiple, onInfoTa
     </SectionCard>
   );
 }
+
+const styles = StyleSheet.create({
+  listCard: {
+    marginBottom: Spacing.cardGap,
+  },
+});

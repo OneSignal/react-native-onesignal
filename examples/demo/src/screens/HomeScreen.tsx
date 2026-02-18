@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAppViewModel } from '../hooks/useAppViewModel';
 import { InAppMessageType } from '../models/InAppMessageType';
@@ -7,7 +7,9 @@ import TooltipHelper, { TooltipData } from '../services/TooltipHelper';
 import LogView from '../components/LogView';
 import LoadingOverlay from '../components/LoadingOverlay';
 import ActionButton from '../components/ActionButton';
+import SectionCard from '../components/SectionCard';
 import TooltipModal from '../components/modals/TooltipModal';
+import LoginModal from '../components/modals/LoginModal';
 import AppSection from '../components/sections/AppSection';
 import PushSection from '../components/sections/PushSection';
 import SendPushSection from '../components/sections/SendPushSection';
@@ -21,7 +23,7 @@ import OutcomesSection from '../components/sections/OutcomesSection';
 import TriggersSection from '../components/sections/TriggersSection';
 import TrackEventSection from '../components/sections/TrackEventSection';
 import LocationSection from '../components/sections/LocationSection';
-import { Colors } from '../theme';
+import { AppTheme, Colors, Spacing } from '../theme';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -30,6 +32,9 @@ export default function HomeScreen() {
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<TooltipData | null>(null);
+  const [loginVisible, setLoginVisible] = useState(false);
+
+  const isLoggedIn = !!state.externalUserId;
 
   // Auto-request push permission on load
   useEffect(() => {
@@ -61,13 +66,46 @@ export default function HomeScreen() {
           appId={state.appId}
           consentRequired={state.consentRequired}
           privacyConsentGiven={state.privacyConsentGiven}
-          externalUserId={state.externalUserId}
           onSetConsentRequired={vm.setConsentRequired}
           onSetConsentGiven={vm.setConsentGiven}
-          onLogin={vm.loginUser}
-          onLogout={vm.logoutUser}
-          onInfoTap={() => showTooltipModal('app')}
         />
+
+        <SectionCard title="User">
+          <View style={[AppTheme.card, styles.userCard]}>
+            <View style={styles.statusRow}>
+              <Text style={styles.statusLabel}>Status</Text>
+              <Text style={[styles.statusValue, isLoggedIn && styles.loggedInText]}>
+                {isLoggedIn ? 'Logged In' : 'Anonymous'}
+              </Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.statusRow}>
+              <Text style={styles.statusLabel}>External ID</Text>
+              <Text style={styles.statusValue} numberOfLines={1}>
+                {state.externalUserId ?? '–'}
+              </Text>
+            </View>
+          </View>
+          <ActionButton
+            label={isLoggedIn ? 'SWITCH USER' : 'LOGIN USER'}
+            onPress={() => setLoginVisible(true)}
+            testID="login_user_button"
+          />
+          {isLoggedIn && (
+            <ActionButton
+              label="LOGOUT USER"
+              onPress={vm.logoutUser}
+              variant="outlined"
+              testID="logout_user_button"
+            />
+          )}
+          <LoginModal
+            visible={loginVisible}
+            isLoggedIn={isLoggedIn}
+            onConfirm={vm.loginUser}
+            onClose={() => setLoginVisible(false)}
+          />
+        </SectionCard>
 
         <PushSection
           pushSubscriptionId={state.pushSubscriptionId}
@@ -195,5 +233,31 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 32,
+  },
+  userCard: {
+    marginBottom: Spacing.cardGap,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  statusLabel: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  statusValue: {
+    fontSize: 14,
+    color: Colors.textPrimary,
+    fontWeight: '500',
+  },
+  loggedInText: {
+    color: '#2E7D32',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.dividerColor,
+    marginVertical: 8,
   },
 });

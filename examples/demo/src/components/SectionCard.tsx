@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { Colors, AppTheme } from '../theme';
+import { Colors, AppTheme, Spacing } from '../theme';
 
 interface Props {
   title: string;
@@ -33,13 +33,13 @@ export default function SectionCard({ title, children, onInfoTap, style }: Props
 const styles = StyleSheet.create({
   wrapper: {
     marginHorizontal: 16,
-    marginBottom: 8,
+    marginBottom: Spacing.sectionGap,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: Spacing.cardGap,
     paddingHorizontal: 4,
   },
   title: {

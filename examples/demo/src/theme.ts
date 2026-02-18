@@ -1,5 +1,10 @@
 import { StyleSheet } from 'react-native';
 
+export const Spacing = {
+  cardGap: 8,
+  sectionGap: 12,
+} as const;
+
 export const Colors = {
   oneSignalRed: '#E54B4D',
   oneSignalGreen: '#34A853',

@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Colors } from '../../theme';
+import { Colors, Spacing } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -158,8 +158,8 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: Colors.oneSignalRed,
-    marginBottom: 8,
-    marginTop: -8,
+    marginBottom: Spacing.cardGap,
+    marginTop: -Spacing.cardGap,
   },
   buttons: {
     flexDirection: 'row',

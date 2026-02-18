@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import SectionCard from '../SectionCard';
 import ActionButton from '../ActionButton';
 import PairInputModal from '../modals/PairInputModal';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import MultiSelectRemoveModal from '../modals/MultiSelectRemoveModal';
 import { PairList, EmptyState } from '../ListWidgets';
-import { AppTheme } from '../../theme';
+import { AppTheme, Spacing } from '../../theme';
+
+const styles = StyleSheet.create({
+  listCard: {
+    marginBottom: Spacing.cardGap,
+  },
+});
 
 interface Props {
   triggers: [string, string][];
@@ -32,11 +38,13 @@ export default function TriggersSection({
   return (
     <SectionCard title="Triggers" onInfoTap={onInfoTap}>
       {triggers.length === 0 ? (
-        <View style={AppTheme.card}>
+        <View style={[AppTheme.card, styles.listCard]}>
           <EmptyState message="No triggers added" testID="triggers_empty" />
         </View>
       ) : (
-        <PairList items={triggers} />
+        <View style={styles.listCard}>
+          <PairList items={triggers} />
+        </View>
       )}
       <ActionButton
         label="ADD"

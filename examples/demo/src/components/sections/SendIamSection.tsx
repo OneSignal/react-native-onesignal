@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SectionCard from '../SectionCard';
 import { InAppMessageType, iamTypeLabel, iamTypeIcon } from '../../models/InAppMessageType';
-import { Colors } from '../../theme';
+import { Colors, Spacing } from '../../theme';
 
 interface Props {
   onSendIam: (type: InAppMessageType) => void;
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    marginBottom: 8,
+    marginBottom: Spacing.cardGap,
   },
   inner: {
     flexDirection: 'row',
