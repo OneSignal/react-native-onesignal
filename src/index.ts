@@ -136,6 +136,15 @@ export namespace OneSignal {
     RNOneSignal.setPrivacyConsentGiven(granted);
   }
 
+  /**
+   * Ultility function to set badge count manually
+   */
+  export function setBadgeCount(count: number) {
+    if (!isNativeModuleLoaded(RNOneSignal)) return;
+    
+    RNOneSignal.setBadgeCount(count);
+  }
+
   export namespace Debug {
     /**
      * Enable logging to help debug if you run into an issue setting up OneSignal.

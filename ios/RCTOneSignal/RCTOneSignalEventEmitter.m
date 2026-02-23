@@ -244,6 +244,25 @@ RCT_EXPORT_METHOD(setPrivacyConsentRequired : (BOOL)required) {
   [OneSignal setConsentRequired:required];
 }
 
+RCT_EXPORT_METHOD(setBadgeCount:(double)count) {
+  if (@available(iOS 16.0, macOS 10.13, macCatalyst 16.0, tvOS 16.0, visionOS 1.0, *)) {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center setBadgeCount:count
+        withCompletionHandler:^(NSError *error) {
+          if (error) {
+            NSLog(@"OneSignal: Could not setBadgeCount: %@", error);
+          }
+        }];
+    return;
+  } else {
+    // If count is 0, set to -1 instead to avoid notifications in tray being cleared
+    // this breaks in iOS 18, but at that point we're using the new setBadge API
+    NSInteger newCount = count == 0 ? -1 : count;
+    UIApplication *application = RCTSharedApplication();
+    [application setApplicationIconBadgeNumber:newCount];
+  }
+}
+
 // OneSignal.Debug namespace methods
 RCT_EXPORT_METHOD(setLogLevel : (int)logLevel) {
   [OneSignal.Debug setLogLevel:logLevel];
