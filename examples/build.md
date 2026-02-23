@@ -8,7 +8,6 @@ This document contains all the prompts and requirements needed to build the OneS
 
 ### Prompt 0.1 - Capture Reference UI
 
-```
 Before building anything, an Android emulator MUST be running with the
 reference OneSignal demo app installed. These screenshots are the source
 of truth for the UI you are building. Do NOT proceed to Phase 1 without them.
@@ -51,7 +50,6 @@ Pay close attention to:
   - List item layout (stacked vs inline key-value)
   - Icon choices (delete, close, info, etc.)
   - Typography, spacing, and colors
-  - Spacing: 12px gap between sections, 8px gap between cards/buttons within a section
 
 You can also interact with the reference app to observe specific flows:
 
@@ -84,7 +82,6 @@ button placement, spacing, and validation behavior.
 Refer back to these screenshots throughout all remaining phases whenever
 you need to decide on layout, spacing, section order, dialog flows, or
 overall look and feel.
-```
 
 ---
 
@@ -92,17 +89,19 @@ overall look and feel.
 
 ### Prompt 1.1 - Project Foundation
 
-```
 Create a new React Native project at examples/demo/ (relative to the SDK repo root)
 using the TypeScript template:
 
+```bash
   npx @react-native-community/cli init demo --template react-native-template-typescript
   mv demo examples/demo
+```
 
 Build the app with:
+
 - Clean architecture: repository pattern with React Context + reducer-based state management
 - TypeScript with strict mode enabled
-- OneSignal brand colors and a consistent stylesheet-based theme
+- Consistent theme using shared style reference (see Prompt 8.5)
 - App name: "OneSignal Demo"
 - Top navigation header: centered title with OneSignal logo SVG + "Sample App" text
 - Support for both Android and iOS
@@ -112,165 +111,182 @@ Build the app with:
 - Separate component files per section to keep files focused and readable
 
 Download the app bar logo SVG from:
-  https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo.svg
+https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo.svg
 Save it to the demo project at assets/onesignal_logo.svg and render it in the header by importing the SVG component directly:
-  import OneSignalLogo from './assets/onesignal_logo.svg'
-  <OneSignalLogo width={99} height={22} />
+
+```tsx
+import OneSignalLogo from './assets/onesignal_logo.svg';
+<OneSignalLogo width={99} height={22} />;
+```
+
 Use the logo as the "OneSignal" wordmark in the header and show only a separate "Sample App" text label next to it.
 Do not inline long SVG path strings in App.tsx.
 
 Download the padded app icon PNG from:
-  https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo_icon_padded.png
-Save it to assets/onesignal_logo_icon_padded.png, generate all platform app icons using:
-  bun examples/generate-icons.ts
+https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo_icon_padded.png
+Save it to assets/onesignal_logo_icon_padded.png, generate all platform app icons using: `bun examples/generate-icons.ts`
 
 Reference the OneSignal React Native SDK from the parent repo using a packed tarball:
-  "react-native-onesignal": "file:../../react-native-onesignal.tgz"
+"react-native-onesignal": "file:../../react-native-onesignal.tgz"
 
 A setup.sh script in examples/ handles building, packing, and installing automatically.
 Add/verify the following scripts in package.json:
-  "setup": "../setup.sh",
-  "preandroid": "bun run setup",
-  "preios": "bun run setup",
+
+```json
+"setup": "../setup.sh",
+"preandroid": "bun run setup",
+"preios": "bun run setup",
 ```
 
 ### Prompt 1.2 - Dependencies (package.json)
 
-```
 Add these dependencies to package.json:
 
 dependencies:
-  react-native-onesignal: file:../../           # OneSignal SDK (local path)
-  @react-native-async-storage/async-storage: ^2.1.0  # Local persistence
-  react-native-svg: ^15.8.0                    # SVG runtime primitives
-  react-native-vector-icons: ^10.2.0           # Material icons
-  @react-navigation/native: ^6.1.0             # Navigation
-  @react-navigation/native-stack: ^6.11.0      # Stack navigator
-  react-native-screens: ^3.29.0               # Navigation peer dep
-  react-native-safe-area-context: ^4.10.0     # Safe area handling
-  react-native-toast-message: ^2.2.0          # Toast/SnackBar equivalent
+react-native-onesignal: file:../../ # OneSignal SDK (local path)
+@react-native-async-storage/async-storage: ^2.1.0 # Local persistence
+react-native-svg: ^15.8.0 # SVG runtime primitives
+react-native-vector-icons: ^10.2.0 # Material icons
+@react-navigation/native: ^6.1.0 # Navigation
+@react-navigation/native-stack: ^6.11.0 # Stack navigator
+react-native-screens: ^3.29.0 # Navigation peer dep
+react-native-safe-area-context: ^4.10.0 # Safe area handling
+react-native-toast-message: ^2.2.0 # Toast/SnackBar equivalent
 
 devDependencies:
-  react-native-svg-transformer: ^1.5.3         # Import .svg files as RN components
-  @types/react-native-vector-icons: ^6.4.18
-  @typescript-eslint/eslint-plugin: ^7.0.0
-  @typescript-eslint/parser: ^7.0.0
-  eslint: ^8.57.0
+react-native-svg-transformer: ^1.5.3 # Import .svg files as RN components
+@types/react-native-vector-icons: ^6.4.18
+@typescript-eslint/eslint-plugin: ^7.0.0
+@typescript-eslint/parser: ^7.0.0
+eslint: ^8.57.0
 
 Configure Metro to transform SVG files:
-  // metro.config.js
-  const defaultConfig = getDefaultConfig(__dirname);
-  const { assetExts, sourceExts } = defaultConfig.resolver;
-  module.exports = mergeConfig(defaultConfig, {
-    transformer: {
-      babelTransformerPath: require.resolve('react-native-svg-transformer/react-native'),
-    },
-    resolver: {
-      assetExts: assetExts.filter(ext => ext !== 'svg'),
-      sourceExts: [...sourceExts, 'svg'],
-    },
-  });
+// metro.config.js
+const defaultConfig = getDefaultConfig(\_\_dirname);
+const { assetExts, sourceExts } = defaultConfig.resolver;
+module.exports = mergeConfig(defaultConfig, {
+transformer: {
+babelTransformerPath: require.resolve('react-native-svg-transformer/react-native'),
+},
+resolver: {
+assetExts: assetExts.filter(ext => ext !== 'svg'),
+sourceExts: [...sourceExts, 'svg'],
+},
+});
 
 Add a TypeScript module declaration for SVG imports:
-  // types/svg.d.ts
-  declare module '*.svg' {
-    import type { FunctionComponent } from 'react';
-    import type { SvgProps } from 'react-native-svg';
-    const content: FunctionComponent<SvgProps>;
-    export default content;
-  }
+// types/svg.d.ts
+declare module '\*.svg' {
+import type { FunctionComponent } from 'react';
+import type { SvgProps } from 'react-native-svg';
+const content: FunctionComponent<SvgProps>;
+export default content;
+}
 
 After installing, run pod install for iOS:
-  cd ios && pod install && cd ..
+cd ios && pod install && cd ..
 
 For react-native-vector-icons on iOS, add to ios/Podfile:
-  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
 For react-native-vector-icons on Android, add to android/app/build.gradle:
-  apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
-```
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 ### Prompt 1.3 - OneSignal Repository
 
-```
 Create a OneSignalRepository class that centralizes all OneSignal SDK calls.
 This is a plain TypeScript class (not a Context) used inside AppContextProvider.
 
 User operations:
+
 - loginUser(externalUserId: string): Promise<void>
 - logoutUser(): Promise<void>
 
 Alias operations:
+
 - addAlias(label: string, id: string): void
 - addAliases(aliases: Record<string, string>): void
 
 Email operations:
+
 - addEmail(email: string): void
 - removeEmail(email: string): void
 
 SMS operations:
+
 - addSms(smsNumber: string): void
 - removeSms(smsNumber: string): void
 
 Tag operations:
+
 - addTag(key: string, value: string): void
 - addTags(tags: Record<string, string>): void
 - removeTags(keys: string[]): void
 
 Trigger operations (via OneSignal.InAppMessages):
+
 - addTrigger(key: string, value: string): void
 - addTriggers(triggers: Record<string, string>): void
 - removeTriggers(keys: string[]): void
 - clearTriggers(): void
 
 Outcome operations (via OneSignal.Session):
+
 - sendOutcome(name: string): void
 - sendUniqueOutcome(name: string): void
 - sendOutcomeWithValue(name: string, value: number): void
 
 Track Event:
+
 - trackEvent(name: string, properties?: Record<string, unknown>): void
 
 Push subscription:
+
 - getPushSubscriptionId(): string | undefined
 - isPushOptedIn(): boolean | undefined
 - optInPush(): void
 - optOutPush(): void
 
 Notifications:
+
 - hasPermission(): boolean
 - requestPermission(fallbackToSettings: boolean): Promise<boolean>
 
 In-App Messages:
+
 - setPaused(paused: boolean): void
 
 Location:
+
 - setLocationShared(shared: boolean): void
 - requestLocationPermission(): void
 
 Privacy consent:
+
 - setConsentRequired(required: boolean): void
 - setConsentGiven(granted: boolean): void
 
 User IDs:
+
 - getExternalId(): string | undefined
 - getOnesignalId(): string | undefined
 
 Notification sending (via REST API, delegated to OneSignalApiService):
+
 - sendNotification(type: NotificationType): Promise<boolean>
 - sendCustomNotification(title: string, body: string): Promise<boolean>
 - fetchUser(onesignalId: string): Promise<UserData | null>
-```
 
 ### Prompt 1.4 - OneSignalApiService (REST API Client)
 
-```
 Create OneSignalApiService class for REST API calls using the built-in fetch API:
 
 Properties:
-- _appId: string (set during initialization)
+
+- \_appId: string (set during initialization)
 
 Methods:
+
 - setAppId(appId: string): void
 - getAppId(): string
 - sendNotification(type: NotificationType, subscriptionId: string): Promise<boolean>
@@ -278,6 +294,7 @@ Methods:
 - fetchUser(onesignalId: string): Promise<UserData | null>
 
 sendNotification endpoint:
+
 - POST https://onesignal.com/api/v1/notifications
 - Accept header: "application/vnd.onesignal.v1+json"
 - Uses include_subscription_ids (not include_player_ids)
@@ -285,14 +302,13 @@ sendNotification endpoint:
 - Includes ios_attachments for iOS image notifications (needed for the NSE to download and attach images)
 
 fetchUser endpoint:
+
 - GET https://api.onesignal.com/apps/{app_id}/users/by/onesignal_id/{onesignal_id}
 - NO Authorization header needed (public endpoint)
 - Returns UserData with aliases, tags, emails, smsNumbers, externalId
-```
 
 ### Prompt 1.5 - SDK Observers
 
-```
 In App.tsx, set up OneSignal initialization and listeners before rendering:
 
 OneSignal.Debug.setLogLevel(LogLevel.Verbose);
@@ -301,6 +317,7 @@ OneSignal.setConsentGiven(cachedPrivacyConsent);
 OneSignal.initialize(appId);
 
 Then register listeners:
+
 - OneSignal.InAppMessages.addEventListener('willDisplay', handler)
 - OneSignal.InAppMessages.addEventListener('didDisplay', handler)
 - OneSignal.InAppMessages.addEventListener('willDismiss', handler)
@@ -310,19 +327,21 @@ Then register listeners:
 - OneSignal.Notifications.addEventListener('foregroundWillDisplay', handler)
 
 After initialization, restore cached SDK states from AsyncStorage:
+
 - OneSignal.InAppMessages.setPaused(cachedPausedStatus)
 - OneSignal.Location.setShared(cachedLocationShared)
 
 In AppContextProvider, register observers:
+
 - OneSignal.User.pushSubscription.addEventListener('change', handler) - react to push subscription changes
 - OneSignal.Notifications.addEventListener('permissionChange', handler) - react to permission changes
 - OneSignal.User.addEventListener('change', handler) - call fetchUserDataFromApi() when user changes
 
 Always remove listeners on cleanup (useEffect return function):
+
 - OneSignal.User.pushSubscription.removeEventListener('change', handler)
 - OneSignal.Notifications.removeEventListener('permissionChange', handler)
 - OneSignal.User.removeEventListener('change', handler)
-```
 
 ---
 
@@ -347,7 +366,6 @@ Always remove listeners on cleanup (useEffect return function):
 
 ### Prompt 2.1 - App Section
 
-```
 App Section layout:
 
 1. App ID display (readonly Text showing the OneSignal App ID)
@@ -355,18 +373,18 @@ App Section layout:
 2. Sticky guidance banner below App ID:
    - Text: "Add your own App ID, then rebuild to fully test all functionality."
    - Link text: "Get your keys at onesignal.com" (clickable, opens browser via Linking.openURL)
-   - Light background color to stand out
+   - Distinct background color to stand out
 
 3. Consent card with up to two toggles:
    a. "Consent Required" toggle (always visible):
-      - Label: "Consent Required"
-      - Description: "Require consent before SDK processes data"
-      - Calls OneSignal.setConsentRequired(value)
-   b. "Privacy Consent" toggle (only visible when Consent Required is ON):
-      - Label: "Privacy Consent"
-      - Description: "Consent given for data collection"
-      - Calls OneSignal.setConsentGiven(value)
-      - Separated from the above toggle by a horizontal divider
+   - Label: "Consent Required"
+   - Description: "Require consent before SDK processes data"
+   - Calls OneSignal.setConsentRequired(value)
+     b. "Privacy Consent" toggle (only visible when Consent Required is ON):
+   - Label: "Privacy Consent"
+   - Description: "Consent given for data collection"
+   - Calls OneSignal.setConsentGiven(value)
+   - Separated from the above toggle by a horizontal divider
    - NOT a blocking overlay - user can interact with app regardless of state
 
 4. User status card (always visible, ABOVE the login/logout buttons):
@@ -377,7 +395,7 @@ App Section layout:
      - Status shows "Anonymous"
      - External ID shows "–" (dash)
    - When logged in:
-     - Status shows "Logged In" with green styling (#2E7D32)
+     - Status shows "Logged In" with success styling
      - External ID shows the actual external user ID
 
 5. LOGIN USER button:
@@ -386,12 +404,11 @@ App Section layout:
    - Opens modal with empty "External User Id" field
 
 6. LOGOUT USER button (only visible when a user is logged in)
-```
 
 ### Prompt 2.2 - Push Section
 
-```
 Push Section:
+
 - Section title: "Push" with info icon for tooltip
 - Push Subscription ID display (readonly)
 - Enabled toggle switch (controls optIn/optOut)
@@ -401,12 +418,11 @@ Push Section:
   - Only visible when notification permission is NOT granted (fallback if user denied)
   - Requests notification permission when clicked
   - Hidden once permission is granted
-```
 
 ### Prompt 2.3 - Send Push Notification Section
 
-```
 Send Push Notification Section (placed right after Push Section):
+
 - Section title: "Send Push Notification" with info icon for tooltip
 - Three buttons:
   1. SIMPLE - title: "Simple Notification", body: "This is a simple push notification"
@@ -416,22 +432,20 @@ Send Push Notification Section (placed right after Push Section):
   3. CUSTOM - opens modal for custom title and body
 
 Tooltip should explain each button type.
-```
 
 ### Prompt 2.4 - In-App Messaging Section
 
-```
 In-App Messaging Section (placed right after Send Push):
+
 - Section title: "In-App Messaging" with info icon for tooltip
 - Pause In-App Messages toggle switch:
   - Label: "Pause In-App Messages"
   - Description: "Toggle in-app message display"
-```
 
 ### Prompt 2.5 - Send In-App Message Section
 
-```
 Send In-App Message Section (placed right after In-App Messaging):
+
 - Section title: "Send In-App Message" with info icon for tooltip
 - Four FULL-WIDTH buttons (not a grid):
   1. TOP BANNER - icon: arrow-up-bold-box-outline, trigger: "iam_type" = "top_banner"
@@ -439,8 +453,7 @@ Send In-App Message Section (placed right after In-App Messaging):
   3. CENTER MODAL - icon: crop-square, trigger: "iam_type" = "center_modal"
   4. FULL SCREEN - icon: fullscreen, trigger: "iam_type" = "full_screen"
 - Button styling:
-  - RED background color (#E9444E)
-  - WHITE text
+  - Primary/red background, white text
   - Type-specific icon on LEFT side only (no right side icon)
   - Full width of the card
   - Left-aligned text and icon content (not centered)
@@ -450,12 +463,11 @@ Send In-App Message Section (placed right after In-App Messaging):
 
 Use react-native-vector-icons (MaterialCommunityIcons or MaterialIcons) for icons.
 Tooltip should explain each IAM type.
-```
 
 ### Prompt 2.6 - Aliases Section
 
-```
 Aliases Section (placed after Send In-App Message):
+
 - Section title: "Aliases" with info icon for tooltip
 - List showing key-value pairs (read-only, no delete icons)
 - Each item shows: Label | ID
@@ -464,12 +476,11 @@ Aliases Section (placed after Send In-App Message):
 - ADD button -> PairInputModal with empty Label and ID fields on the same row (single add)
 - ADD MULTIPLE button -> MultiPairInputModal (dynamic rows, add/remove)
 - No remove/delete functionality (aliases are add-only from the UI)
-```
 
 ### Prompt 2.7 - Emails Section
 
-```
 Emails Section:
+
 - Section title: "Emails" with info icon for tooltip
 - List showing email addresses
 - Each item shows email with an X icon (remove action)
@@ -479,24 +490,22 @@ Emails Section:
   - Show first 5 items
   - Show "X more" text (tappable)
   - Expand to show all when tapped
-```
 
 ### Prompt 2.8 - SMS Section
 
-```
 SMS Section:
+
 - Section title: "SMS" with info icon for tooltip
 - List showing phone numbers
 - Each item shows phone number with an X icon (remove action)
 - "No SMS Added" text when empty
 - ADD SMS button -> modal with empty SMS field
 - Collapse behavior when >5 items (same as Emails)
-```
 
 ### Prompt 2.9 - Tags Section
 
-```
 Tags Section:
+
 - Section title: "Tags" with info icon for tooltip
 - List showing key-value pairs
 - Each item shows key above value (stacked layout) with an X icon on the right (remove action)
@@ -506,23 +515,21 @@ Tags Section:
 - REMOVE SELECTED button:
   - Only visible when at least one tag exists
   - Opens MultiSelectRemoveModal with checkboxes
-```
 
 ### Prompt 2.10 - Outcome Events Section
 
-```
 Outcome Events Section:
+
 - Section title: "Outcome Events" with info icon for tooltip
 - SEND OUTCOME button -> opens modal with 3 radio options:
   1. Normal Outcome -> shows name input field
   2. Unique Outcome -> shows name input field
   3. Outcome with Value -> shows name and value (number) input fields
-```
 
 ### Prompt 2.11 - Triggers Section (IN MEMORY ONLY)
 
-```
 Triggers Section:
+
 - Section title: "Triggers" with info icon for tooltip
 - List showing key-value pairs
 - Each item shows key above value (stacked layout) with an X icon on the right (remove action)
@@ -534,17 +541,17 @@ Triggers Section:
   - CLEAR ALL -> Removes all triggers at once
 
 IMPORTANT: Triggers are stored IN MEMORY ONLY during the app session.
+
 - triggersList is a [string, string][] array in the app state
 - Sending an IAM button also updates the same list by setting `iam_type`
 - Triggers are NOT persisted to AsyncStorage
 - Triggers are cleared when the app is killed/restarted
 - This is intentional - triggers are transient test data for IAM testing
-```
 
 ### Prompt 2.12 - Track Event Section
 
-```
 Track Event Section:
+
 - Section title: "Track Event" with info icon for tooltip
 - TRACK EVENT button -> opens TrackEventModal with:
   - "Event Name" label + empty TextInput (required, shows error if empty on submit)
@@ -554,27 +561,24 @@ Track Event Section:
     - If empty, passes undefined
   - TRACK button disabled until name is filled AND JSON is valid (or empty)
 - Calls OneSignal.User.trackEvent(name, properties)
-```
 
 ### Prompt 2.13 - Location Section
 
-```
 Location Section:
+
 - Section title: "Location" with info icon for tooltip
 - Location Shared toggle switch:
   - Label: "Location Shared"
   - Description: "Share device location with OneSignal"
 - PROMPT LOCATION button
-```
 
 ### Prompt 2.14 - Secondary Screen
 
-```
 Secondary Screen (launched by "Next Activity" button at bottom of main screen):
+
 - Screen title: "Secondary Activity" (set via React Navigation header options)
 - Screen content: centered text "Secondary Activity" using a large font style
 - Simple screen, no additional functionality needed
-```
 
 ---
 
@@ -582,8 +586,8 @@ Secondary Screen (launched by "Next Activity" button at bottom of main screen):
 
 ### Prompt 3.1 - Data Loading Flow
 
-```
 Loading indicator overlay:
+
 - Full-screen semi-transparent overlay with centered ActivityIndicator
 - isLoading flag in app state
 - Show/hide via absolute positioned View based on isLoading state
@@ -592,11 +596,13 @@ Loading indicator overlay:
   - Use await new Promise(resolve => setTimeout(resolve, 100)) after setting state
 
 On cold start:
+
 - Check if OneSignal onesignalId is not undefined (via OneSignal.User.getOnesignalId())
 - If exists: show loading -> call fetchUserDataFromApi() -> populate UI -> delay 100ms -> hide loading
 - If null: just show empty state (no loading indicator)
 
 On login (LOGIN USER / SWITCH USER):
+
 - Show loading indicator immediately
 - Call OneSignal.login(externalUserId)
 - Clear old user data (aliases, emails, sms, triggers)
@@ -605,17 +611,18 @@ On login (LOGIN USER / SWITCH USER):
 - fetchUserDataFromApi() populates UI, delays 100ms, then hides loading
 
 On logout:
+
 - Show loading indicator
 - Call OneSignal.logout()
 - Clear local lists (aliases, emails, sms, triggers)
 - Hide loading indicator
 
 On onUserStateChange callback:
+
 - Call fetchUserDataFromApi() to sync with server state
 - Update UI with new data (aliases, tags, emails, sms)
 
 Note: REST API key is NOT required for fetchUser endpoint.
-```
 
 ### Prompt 3.2 - UserData Model
 
@@ -637,14 +644,12 @@ function userDataFromJson(json: Record<string, unknown>): UserData { ... }
 
 ### Prompt 4.1 - Tooltip Content (Remote)
 
-```
 Tooltip content is fetched at runtime from the sdk-shared repo. Do NOT bundle a local copy.
 
 URL:
 https://raw.githubusercontent.com/OneSignal/sdk-shared/main/demo/tooltip_content.json
 
 This file is maintained in the sdk-shared repo and shared across all platform demo apps.
-```
 
 ### Prompt 4.2 - Tooltip Helper
 
@@ -690,7 +695,6 @@ interface TooltipOption {
 
 ### Prompt 4.3 - Tooltip UI Integration
 
-```
 For each section, pass an onInfoTap callback to SectionCard:
 - SectionCard has an optional info icon that calls onInfoTap when tapped
 - In HomeScreen, wire onInfoTap to show a TooltipModal
@@ -709,7 +713,6 @@ function showTooltipModal(key: string) {
         setTooltipVisible(true);
     }
 }
-```
 
 ---
 
@@ -717,7 +720,6 @@ function showTooltipModal(key: string) {
 
 ### What IS Persisted (AsyncStorage)
 
-```
 PreferencesService stores:
 - OneSignal App ID
 - Consent required status
@@ -725,11 +727,9 @@ PreferencesService stores:
 - External user ID (for login state restoration)
 - Location shared status
 - In-app messaging paused status
-```
 
 ### Initialization Flow
 
-```
 On app startup, state is restored in two layers:
 
 1. App.tsx restores SDK state from AsyncStorage cache BEFORE initialize:
@@ -753,11 +753,9 @@ This two-layer approach ensures:
 - The SDK is configured with the user's last preferences before anything else runs
 - AppContextProvider exposes one state object and action API for screens
 - Reducer transitions keep state updates predictable
-```
 
 ### What is NOT Persisted (In-Memory Only)
 
-```
 App state holds in memory:
 - triggersList: [string, string][]
   - Triggers are session-only
@@ -777,13 +775,11 @@ App state holds in memory:
 - tagsList:
   - Can be read from SDK via getTags()
   - Also fetched from API for consistency
-```
 
 ---
 
 ## Phase 6: Testing Values (Appium Compatibility)
 
-```
 All modal input fields should be EMPTY by default.
 The test automation framework (Appium) will enter these values:
 
@@ -799,7 +795,6 @@ The test automation framework (Appium) will enter these values:
 - Outcome Modal: Name = "test_outcome", Value = "1.5"
 - Track Event Modal: Name = "test_event", Properties = "{\"key\": \"value\"}"
 - Custom Notification Modal: Title = "Test Title", Body = "Test Body"
-```
 
 ---
 
@@ -807,7 +802,6 @@ The test automation framework (Appium) will enter these values:
 
 ### Alias Management
 
-```
 Aliases are managed with a hybrid approach:
 
 1. On app start/login: Fetched from REST API via fetchUserDataFromApi()
@@ -816,18 +810,15 @@ Aliases are managed with a hybrid approach:
    - Immediately add to local aliasesList (don't wait for API)
    - This ensures instant UI feedback while SDK syncs in background
 3. On next app launch: Fresh data from API includes the synced alias
-```
 
 ### Notification Permission
 
-```
 Notification permission is automatically requested when the home screen loads:
 - Call appContext.promptPush() in a useEffect with an empty dependency array in HomeScreen
 - This ensures prompt appears after user sees the app UI
 - PROMPT PUSH button remains as fallback if user initially denied
 - Button hidden once permission is granted
 - Keep Push "Enabled" toggle disabled until permission is granted
-```
 
 ---
 
@@ -835,7 +826,6 @@ Notification permission is automatically requested when the home screen loads:
 
 ### Prompt 8.1 - State Management with Context + Reducer
 
-```
 Use React Context for dependency injection and useReducer for state management.
 
 App.tsx:
@@ -848,26 +838,24 @@ AppContextProvider:
 - Exposes state and action functions through useAppContext
 - Uses OneSignalRepository and PreferencesService internally
 - Handles observer lifecycle and initialization effects
-```
 
 ### Prompt 8.2 - Reusable Components
 
-```
 Create reusable components in src/components/:
 
 SectionCard.tsx:
 - Card View with title Text and optional info TouchableOpacity
 - Children slot
 - onInfoTap callback for tooltips
-- Consistent padding and styling via StyleSheet
+- Uses theme styles
 
 ToggleRow.tsx:
 - Label, optional description, Switch
 - Row layout with justifyContent: 'space-between'
 
 ActionButton.tsx:
-- PrimaryButton (filled, primary color background, TouchableOpacity)
-- DestructiveButton (outlined, red accent, TouchableOpacity)
+- PrimaryButton (filled, TouchableOpacity)
+- DestructiveButton (outlined, TouchableOpacity)
 - Full-width buttons with width: '100%'
 
 ListWidgets.tsx:
@@ -885,7 +873,6 @@ LoadingOverlay.tsx:
 LogView.tsx:
 - Sticky at the top of the screen (always visible while ScrollView content scrolls below)
 - Full width, no horizontal margin, no rounded corners, no top margin (touches header)
-- Background color: #1A1B1E
 - Single horizontal ScrollView on the entire log list (not per-row), no text truncation
 - Use onLayout + minWidth so content is at least screen-wide
 - Vertical ScrollView + mapped entries instead of FlatList (100dp container is small)
@@ -902,11 +889,9 @@ Modals (src/components/modals/):
 - MultiSelectRemoveModal (Checkbox per item for batch remove)
 - LoginModal, OutcomeModal, TrackEventModal
 - CustomNotificationModal, TooltipModal
-```
 
 ### Prompt 8.3 - Reusable Multi-Pair Modal
 
-```
 Tags, Aliases, and Triggers all share a reusable MultiPairInputModal component
 for adding multiple key-value pairs at once.
 
@@ -926,11 +911,9 @@ Used by:
 - ADD MULTIPLE button (Aliases section) -> calls viewModel.addAliases(pairs)
 - ADD MULTIPLE button (Tags section) -> calls viewModel.addTags(pairs)
 - ADD MULTIPLE button (Triggers section) -> calls viewModel.addTriggers(pairs)
-```
 
 ### Prompt 8.4 - Reusable Remove Multi Modal
 
-```
 Tags and Triggers share a reusable MultiSelectRemoveModal component
 for selectively removing items from the current list.
 
@@ -945,38 +928,22 @@ Behavior:
 Used by:
 - REMOVE SELECTED button (Tags section) -> calls viewModel.removeSelectedTags(keys)
 - REMOVE SELECTED button (Triggers section) -> calls viewModel.removeSelectedTriggers(keys)
-```
 
 ### Prompt 8.5 - Theme
 
-```
-Create OneSignal theme in src/theme.ts:
+Create OneSignal theme in src/theme.ts.
 
-Colors:
-- oneSignalRed = '#E54B4D' (primary)
-- oneSignalGreen = '#34A853' (success)
-- oneSignalGreenLight = '#E6F4EA' (success background)
-- lightBackground = '#F8F9FA'
-- cardBackground = '#FFFFFF'
-- dividerColor = '#E8EAED'
-- warningBackground = '#FFF8E1'
+All colors, spacing, typography, button styles, card styles, and component
+specs are defined in the shared style reference:
+  https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/demo/styles.md
 
-Spacing constants:
-- cardGap = 8    // gap between a card/banner and its action buttons within a section
-- sectionGap = 12 // gap between sections (SectionCard wrapper marginBottom)
-
-AppTheme object with:
-- Reusable StyleSheet base styles for cards (borderRadius: 12, backgroundColor: cardBackground)
-- Reusable button style with borderRadius: 8
-- Consistent font sizes, weights, and colors exported as constants
-- Shadow/elevation styles for card depth
-
-Apply theme colors and Spacing constants consistently across all components using StyleSheet.create.
-```
+Export AppColors and AppSpacing objects that expose the tokens from styles.md
+as typed constants. Export an AppTheme object with reusable StyleSheet base
+styles (cards, buttons, typography, shadows) mapped from the style reference
+values for use throughout the app.
 
 ### Prompt 8.6 - Log View (Appium-Ready)
 
-```
 Add collapsible log view at top of screen for debugging and Appium testing.
 
 Files:
@@ -991,7 +958,6 @@ LogManager Features:
 LogView Features:
 - STICKY at the top of the screen (always visible while ScrollView content scrolls below)
 - Full width, no horizontal margin, no rounded corners, no top margin (touches header)
-- Background color: #1A1B1E
 - Single horizontal ScrollView on the entire log list (not per-row), no text truncation
 - Use onLayout + minWidth so content is at least screen-wide
 - Vertical ScrollView + mapped entries instead of FlatList (100dp container is small)
@@ -1016,11 +982,9 @@ Appium testID Labels:
 
 Use the testID prop for Appium accessibility:
 <Text testID={`log_entry_${index}_message`}>{entry.message}</Text>
-```
 
 ### Prompt 8.7 - Toast Messages
 
-```
 All user actions should display Toast messages via react-native-toast-message:
 
 - Login: "Logged in as: {userId}"
@@ -1041,7 +1005,6 @@ Implementation:
 - Call Toast.show({ type: 'info', text1: message }) from action handlers
 - All Toast messages are also logged via LogManager.getInstance().i()
 - Hide previous toast before showing new one via Toast.hide() if needed
-```
 
 ---
 
@@ -1051,7 +1014,7 @@ Implementation:
 examples/demo/
 ├── src/
 │   ├── App.tsx                              # App entry, SDK init, Context setup
-│   ├── theme.ts                             # OneSignal theme (colors, StyleSheet constants)
+│   ├── theme.ts                             # OneSignal theme (shared style reference)
 │   ├── models/
 │   │   ├── UserData.ts                      # UserData interface from API
 │   │   ├── NotificationType.ts              # Enum with bigPicture and iosAttachments
@@ -1164,7 +1127,7 @@ Without the location permissions above, tapping the location prompt button will 
 - **testID** props on interactive elements for Appium test automation
 - **async/await** over raw Promise chaining for readability
 - **Immutable state** updates using spread/map/filter rather than direct mutation
-- **Consistent theming** via a shared theme.ts with StyleSheet constants
+- **Consistent theming** via theme.ts using the shared style reference
 - **Minimal re-renders** by splitting context or using useMemo/useCallback where appropriate
 - **Error handling** with try/catch on all network and SDK async calls
 - **No native modules beyond SDK** since the OneSignal React Native SDK handles all bridging
