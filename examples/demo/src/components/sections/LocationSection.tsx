@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
 import ActionButton from '../ActionButton';
-import { AppTheme, Spacing } from '../../theme';
+import { AppTheme, AppSpacing } from '../../theme';
 
 interface Props {
   locationShared: boolean;
@@ -40,6 +40,6 @@ export default function LocationSection({
 
 const styles = StyleSheet.create({
   locationCard: {
-    marginBottom: Spacing.cardGap,
+    marginBottom: AppSpacing.gap,
   },
 });

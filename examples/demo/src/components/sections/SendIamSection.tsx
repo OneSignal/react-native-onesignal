@@ -7,7 +7,7 @@ import {
   iamTypeLabel,
   iamTypeIcon,
 } from '../../models/InAppMessageType';
-import { Colors, Spacing } from '../../theme';
+import { AppColors, AppSpacing } from '../../theme';
 
 interface Props {
   onSendIam: (type: InAppMessageType) => void;
@@ -36,7 +36,7 @@ export default function SendIamSection({ onSendIam, onInfoTap }: Props) {
             <Icon
               name={iamTypeIcon[type]}
               size={20}
-              color={Colors.white}
+              color={AppColors.white}
               style={styles.icon}
             />
             <Text style={styles.label}>{iamTypeLabel[type]}</Text>
@@ -49,11 +49,11 @@ export default function SendIamSection({ onSendIam, onInfoTap }: Props) {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: Colors.destructiveRed,
+    backgroundColor: AppColors.osPrimary,
     borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    marginBottom: Spacing.cardGap,
+    marginBottom: AppSpacing.gap,
   },
   inner: {
     flexDirection: 'row',
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.white,
+    color: AppColors.white,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },

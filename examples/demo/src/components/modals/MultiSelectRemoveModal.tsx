@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Colors } from '../../theme';
+import { AppColors } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -78,7 +78,7 @@ export default function MultiSelectRemoveModal({
                     name={isChecked ? 'check-box' : 'check-box-outline-blank'}
                     size={22}
                     color={
-                      isChecked ? Colors.oneSignalRed : Colors.textSecondary
+                      isChecked ? AppColors.osPrimary : AppColors.osGrey600
                     }
                   />
                   <Text style={styles.itemKey}>{key}</Text>
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.textSecondary,
+    color: AppColors.osGrey600,
   },
   confirmBtn: {
     paddingVertical: 10,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   confirmText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.oneSignalRed,
+    color: AppColors.osPrimary,
   },
   disabled: {
     opacity: 0.5,

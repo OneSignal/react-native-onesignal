@@ -103,7 +103,7 @@ Build the app with:
 - TypeScript with strict mode enabled
 - Consistent theme using shared style reference (see Prompt 8.5)
 - App name: "OneSignal Demo"
-- Top navigation header: centered title with OneSignal logo SVG + "Sample App" text
+- Top navigation header: centered title with OneSignal logo SVG + "React Native" text
 - Support for both Android and iOS
 - Android package name: com.onesignal.example
 - iOS bundle identifier: com.onesignal.example
@@ -448,8 +448,8 @@ Send In-App Message Section (placed right after In-App Messaging):
 
 - Section title: "Send In-App Message" with info icon for tooltip
 - Four FULL-WIDTH buttons (not a grid):
-  1. TOP BANNER - icon: arrow-up-bold-box-outline, trigger: "iam_type" = "top_banner"
-  2. BOTTOM BANNER - icon: arrow-down-bold-box-outline, trigger: "iam_type" = "bottom_banner"
+  1. TOP BANNER - icon: format-vertical-align-top, trigger: "iam_type" = "top_banner"
+  2. BOTTOM BANNER - icon: format-vertical-align-bottom, trigger: "iam_type" = "bottom_banner"
   3. CENTER MODAL - icon: crop-square, trigger: "iam_type" = "center_modal"
   4. FULL SCREEN - icon: fullscreen, trigger: "iam_type" = "full_screen"
 - Button styling:

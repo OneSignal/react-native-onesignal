@@ -8,12 +8,13 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import LogManager, { LogEntry } from '../services/LogManager';
+import { AppColors } from '../theme';
 
 const LEVEL_COLORS: Record<string, string> = {
-  D: '#9E9E9E',
-  I: '#64B5F6',
-  W: '#FFB74D',
-  E: '#EF5350',
+  D: AppColors.osLogDebug,
+  I: AppColors.osLogInfo,
+  W: AppColors.osLogWarn,
+  E: AppColors.osLogError,
 };
 
 export default function LogView() {
@@ -28,7 +29,6 @@ export default function LogView() {
   useEffect(() => {
     const unsub = LogManager.getInstance().subscribe(updated => {
       setEntries(updated);
-      // auto-scroll to end
       setTimeout(() => {
         vertScrollRef.current?.scrollToEnd({ animated: false });
       }, 50);
@@ -40,30 +40,32 @@ export default function LogView() {
 
   return (
     <View
-      style={[styles.container, { height: expanded ? 200 : 36 }]}
+      style={[styles.container, { height: expanded ? 100 : 36 }]}
       testID="log_view_container"
     >
-      {/* Header */}
       <TouchableOpacity
         style={styles.header}
         onPress={() => setExpanded(prev => !prev)}
         testID="log_view_header"
       >
-        <Text style={styles.headerText}>
-          LOGS <Text testID="log_view_count">({entries.length})</Text>
-        </Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerText}>LOGS</Text>
+          <Text style={styles.countText} testID="log_view_count">
+            ({entries.length})
+          </Text>
+        </View>
         <View style={styles.headerRight}>
           <TouchableOpacity
             onPress={clearLogs}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             testID="log_view_clear_button"
           >
-            <Icon name="delete" size={18} color="#9E9E9E" />
+            <Icon name="delete" size={18} color={AppColors.osGrey500} />
           </TouchableOpacity>
           <Icon
             name={expanded ? 'expand-less' : 'expand-more'}
             size={18}
-            color="#9E9E9E"
+            color={AppColors.osGrey500}
             style={styles.expandIcon}
           />
         </View>
@@ -105,7 +107,7 @@ export default function LogView() {
                   <Text
                     style={[
                       styles.level,
-                      { color: LEVEL_COLORS[entry.level] ?? '#9E9E9E' },
+                      { color: LEVEL_COLORS[entry.level] ?? AppColors.osGrey500 },
                     ]}
                     testID={`log_entry_${index}_level`}
                   >
@@ -131,20 +133,29 @@ export default function LogView() {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    backgroundColor: '#1A1B1E',
+    backgroundColor: AppColors.osLogBackground,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerText: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#9E9E9E',
+    fontWeight: '700',
+    color: AppColors.white,
     letterSpacing: 0.8,
+  },
+  countText: {
+    fontSize: 11,
+    color: AppColors.osGrey500,
+    marginLeft: 8,
   },
   headerRight: {
     flexDirection: 'row',
@@ -166,7 +177,7 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     fontSize: 11,
-    color: '#757575',
+    color: AppColors.osLogTimestamp,
     fontFamily: 'monospace',
   },
   level: {
@@ -176,12 +187,12 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: 11,
-    color: '#E0E0E0',
+    color: AppColors.white,
     fontFamily: 'monospace',
   },
   emptyText: {
     fontSize: 11,
-    color: '#757575',
+    color: AppColors.osGrey500,
     fontStyle: 'italic',
     paddingVertical: 4,
   },

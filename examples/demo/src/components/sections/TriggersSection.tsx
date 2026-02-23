@@ -6,11 +6,11 @@ import PairInputModal from '../modals/PairInputModal';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import MultiSelectRemoveModal from '../modals/MultiSelectRemoveModal';
 import { PairList, EmptyState } from '../ListWidgets';
-import { AppTheme, Spacing } from '../../theme';
+import { AppTheme, AppSpacing } from '../../theme';
 
 const styles = StyleSheet.create({
   listCard: {
-    marginBottom: Spacing.cardGap,
+    marginBottom: AppSpacing.gap,
   },
 });
 

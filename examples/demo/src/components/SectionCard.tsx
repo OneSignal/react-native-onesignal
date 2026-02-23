@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Colors, AppTheme, Spacing } from '../theme';
+import { AppColors, AppTheme, AppSpacing } from '../theme';
 
 interface Props {
   title: string;
@@ -36,25 +36,25 @@ export default function SectionCard({
 const styles = StyleSheet.create({
   wrapper: {
     marginHorizontal: 16,
-    marginBottom: Spacing.sectionGap,
+    marginBottom: AppSpacing.sectionVertical,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.cardGap,
+    marginBottom: AppSpacing.gap,
     paddingHorizontal: 4,
   },
   title: {
     fontSize: 12,
-    fontWeight: '600',
-    color: Colors.textSecondary,
-    letterSpacing: 0.8,
+    fontWeight: '700',
+    color: AppColors.osGrey700,
+    letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
   infoIcon: {
-    fontSize: 16,
-    color: Colors.textSecondary,
+    fontSize: 18,
+    color: AppColors.osGrey500,
   },
   card: {
     ...AppTheme.card,

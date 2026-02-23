@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Colors } from '../../theme';
+import { AppColors } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: Colors.dividerColor,
+    borderColor: AppColors.osDivider,
     borderRadius: 8,
     padding: 12,
     fontSize: 14,
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.textSecondary,
+    color: AppColors.osGrey600,
   },
   confirmBtn: {
     paddingVertical: 10,
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   confirmText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.oneSignalRed,
+    color: AppColors.osPrimary,
   },
   disabled: {
     opacity: 0.5,

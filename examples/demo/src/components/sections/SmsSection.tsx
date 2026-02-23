@@ -4,7 +4,7 @@ import SectionCard from '../SectionCard';
 import ActionButton from '../ActionButton';
 import SingleInputModal from '../modals/SingleInputModal';
 import { CollapsibleSingleList } from '../ListWidgets';
-import { Spacing } from '../../theme';
+import { AppSpacing } from '../../theme';
 
 interface Props {
   smsNumbers: string[];
@@ -50,6 +50,6 @@ export default function SmsSection({
 
 const styles = StyleSheet.create({
   listCard: {
-    marginBottom: Spacing.cardGap,
+    marginBottom: AppSpacing.gap,
   },
 });

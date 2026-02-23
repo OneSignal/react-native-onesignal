@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Colors } from '../../theme';
+import { AppColors } from '../../theme';
 
 interface Row {
   id: number;
@@ -125,7 +125,7 @@ export default function MultiPairInputModal({
                       <Icon
                         name="close"
                         size={20}
-                        color={Colors.textSecondary}
+                        color={AppColors.osGrey600}
                       />
                     </TouchableOpacity>
                   )}
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: Colors.dividerColor,
+    borderColor: AppColors.osDivider,
     borderRadius: 8,
     padding: 10,
     fontSize: 14,
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.dividerColor,
+    backgroundColor: AppColors.osDivider,
     marginVertical: 8,
   },
   addRowBtn: {
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addRowText: {
-    color: Colors.oneSignalRed,
+    color: AppColors.osPrimary,
     fontSize: 14,
     fontWeight: '500',
   },
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.textSecondary,
+    color: AppColors.osGrey600,
   },
   confirmBtn: {
     paddingVertical: 10,
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   confirmText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.oneSignalRed,
+    color: AppColors.osPrimary,
   },
   disabled: {
     opacity: 0.5,

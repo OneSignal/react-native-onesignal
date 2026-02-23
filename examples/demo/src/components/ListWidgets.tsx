@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Colors, AppTheme } from '../theme';
+import { AppColors, AppTheme } from '../theme';
 
 // PairItem
 interface PairItemProps {
@@ -46,7 +46,7 @@ export function PairItem({
           onPress={onDelete}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Icon name="close" size={18} color={Colors.textSecondary} />
+          <Icon name="close" size={18} color={AppColors.osPrimary} />
         </TouchableOpacity>
       )}
     </View>
@@ -71,7 +71,7 @@ export function SingleItem({ value, onDelete, testID }: SingleItemProps) {
           onPress={onDelete}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Icon name="close" size={18} color={Colors.textSecondary} />
+          <Icon name="close" size={18} color={AppColors.osPrimary} />
         </TouchableOpacity>
       )}
     </View>
@@ -195,28 +195,28 @@ const styles = StyleSheet.create({
   },
   pairStackedKey: {
     fontSize: 15,
-    color: Colors.textPrimary,
+    color: AppColors.osGrey700,
     fontWeight: '500',
     marginBottom: 2,
   },
   pairStackedValue: {
     fontSize: 14,
-    color: Colors.textSecondary,
+    color: AppColors.osGrey600,
   },
   pairKey: {
     flex: 1,
     fontSize: 14,
-    color: Colors.textSecondary,
+    color: AppColors.osGrey600,
   },
   pairSeparator: {
     fontSize: 14,
-    color: Colors.dividerColor,
+    color: AppColors.osDivider,
     marginHorizontal: 8,
   },
   pairValue: {
     flex: 1,
     fontSize: 14,
-    color: Colors.textPrimary,
+    color: AppColors.osGrey700,
     textAlign: 'right',
     marginRight: 8,
   },
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   singleValue: {
     flex: 1,
     fontSize: 14,
-    color: Colors.textPrimary,
+    color: AppColors.osGrey700,
   },
   emptyContainer: {
     paddingVertical: 8,
@@ -236,12 +236,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    color: Colors.textSecondary,
+    color: AppColors.osGrey600,
     fontStyle: 'italic',
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.dividerColor,
+    backgroundColor: AppColors.osDivider,
   },
   moreButton: {
     paddingVertical: 8,
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
   moreText: {
     fontSize: 13,
-    color: Colors.oneSignalRed,
+    color: AppColors.osPrimary,
     fontWeight: '500',
   },
 });

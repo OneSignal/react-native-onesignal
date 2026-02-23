@@ -23,7 +23,7 @@ import OutcomesSection from '../components/sections/OutcomesSection';
 import TriggersSection from '../components/sections/TriggersSection';
 import TrackEventSection from '../components/sections/TrackEventSection';
 import LocationSection from '../components/sections/LocationSection';
-import { AppTheme, Colors, Spacing } from '../theme';
+import { AppTheme, AppColors, AppSpacing } from '../theme';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -121,18 +121,18 @@ export default function HomeScreen() {
         <SendPushSection
           onSendNotification={app.sendNotification}
           onSendCustomNotification={app.sendCustomNotification}
-          onInfoTap={() => showTooltipModal('send_push')}
+          onInfoTap={() => showTooltipModal('sendPushNotification')}
         />
 
         <InAppSection
           inAppMessagesPaused={state.inAppMessagesPaused}
           onSetPaused={app.setIamPaused}
-          onInfoTap={() => showTooltipModal('in_app_messaging')}
+          onInfoTap={() => showTooltipModal('inAppMessaging')}
         />
 
         <SendIamSection
           onSendIam={(type: InAppMessageType) => app.sendIamTrigger(type)}
-          onInfoTap={() => showTooltipModal('send_iam')}
+          onInfoTap={() => showTooltipModal('sendInAppMessage')}
         />
 
         <AliasesSection
@@ -168,7 +168,7 @@ export default function HomeScreen() {
           onSendNormal={app.sendOutcome}
           onSendUnique={app.sendUniqueOutcome}
           onSendWithValue={app.sendOutcomeWithValue}
-          onInfoTap={() => showTooltipModal('outcome_events')}
+          onInfoTap={() => showTooltipModal('outcomes')}
         />
 
         <TriggersSection
@@ -182,7 +182,7 @@ export default function HomeScreen() {
 
         <TrackEventSection
           onTrackEvent={app.trackEvent}
-          onInfoTap={() => showTooltipModal('track_event')}
+          onInfoTap={() => showTooltipModal('trackEvent')}
         />
 
         <LocationSection
@@ -218,7 +218,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: Colors.lightBackground,
+    backgroundColor: AppColors.osLightBackground,
   },
   scroll: {
     flex: 1,
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     height: 32,
   },
   userCard: {
-    marginBottom: Spacing.cardGap,
+    marginBottom: AppSpacing.gap,
   },
   statusRow: {
     flexDirection: 'row',
@@ -247,19 +247,19 @@ const styles = StyleSheet.create({
   },
   statusLabel: {
     fontSize: 14,
-    color: Colors.textSecondary,
+    color: AppColors.osGrey600,
   },
   statusValue: {
     fontSize: 14,
-    color: Colors.textPrimary,
+    color: AppColors.osGrey700,
     fontWeight: '500',
   },
   loggedInText: {
-    color: '#2E7D32',
+    color: AppColors.osSuccess,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.dividerColor,
+    backgroundColor: AppColors.osDivider,
     marginVertical: 8,
   },
 });

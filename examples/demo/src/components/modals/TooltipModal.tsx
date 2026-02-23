@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { TooltipData } from '../../services/TooltipHelper';
-import { Colors } from '../../theme';
+import { AppColors } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: Colors.textSecondary,
+    color: AppColors.osGrey600,
     lineHeight: 20,
     marginBottom: 12,
   },
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   optionDescription: {
     fontSize: 13,
-    color: Colors.textSecondary,
+    color: AppColors.osGrey600,
   },
   closeBtn: {
     marginTop: 16,
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   closeBtnText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.oneSignalRed,
+    color: AppColors.osPrimary,
     letterSpacing: 0.5,
   },
 });

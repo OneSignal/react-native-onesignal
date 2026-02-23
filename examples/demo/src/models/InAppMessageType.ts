@@ -13,8 +13,8 @@ export const iamTypeLabel: Record<InAppMessageType, string> = {
 };
 
 export const iamTypeIcon: Record<InAppMessageType, string> = {
-  [InAppMessageType.TopBanner]: 'arrow-up-bold-box-outline',
-  [InAppMessageType.BottomBanner]: 'arrow-down-bold-box-outline',
+  [InAppMessageType.TopBanner]: 'format-vertical-align-top',
+  [InAppMessageType.BottomBanner]: 'format-vertical-align-bottom',
   [InAppMessageType.CenterModal]: 'crop-square',
   [InAppMessageType.FullScreen]: 'fullscreen',
 };

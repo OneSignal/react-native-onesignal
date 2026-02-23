@@ -6,7 +6,7 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
-import { Colors, Spacing } from '../theme';
+import { AppColors, AppSpacing } from '../theme';
 
 interface Props {
   label: string;
@@ -33,17 +33,17 @@ export default function ActionButton({
 }: Props) {
   const bgColor =
     variant === 'primary'
-      ? Colors.oneSignalRed
+      ? AppColors.osPrimary
       : variant === 'destructive'
-        ? Colors.destructiveRed
+        ? AppColors.osPrimary
         : 'transparent';
 
   const borderStyle =
     variant === 'outlined'
-      ? { borderWidth: 1, borderColor: Colors.oneSignalRed }
+      ? { borderWidth: 1, borderColor: AppColors.osPrimary }
       : {};
 
-  const textColor = variant === 'outlined' ? Colors.oneSignalRed : Colors.white;
+  const textColor = variant === 'outlined' ? AppColors.osPrimary : AppColors.white;
 
   return (
     <TouchableOpacity
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     width: '100%',
-    marginBottom: Spacing.cardGap,
+    marginBottom: AppSpacing.gap,
   },
   inner: {
     flexDirection: 'row',
