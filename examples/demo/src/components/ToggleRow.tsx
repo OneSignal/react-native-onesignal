@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Switch, StyleSheet } from 'react-native';
-import { AppColors } from '../theme';
+import { AppColors, AppTextStyles } from '../theme';
 
 interface Props {
   label: string;
@@ -49,12 +49,11 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   label: {
-    fontSize: 15,
+    ...AppTextStyles.bodyMedium,
     color: '#212121',
-    fontWeight: '500',
   },
   description: {
-    fontSize: 12,
+    ...AppTextStyles.bodySmall,
     color: AppColors.osGrey600,
     marginTop: 2,
   },

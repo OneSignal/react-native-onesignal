@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { AppColors, AppTheme } from '../theme';
+import { AppColors, AppTextStyles, AppTheme } from '../theme';
 
 // PairItem
 interface PairItemProps {
@@ -187,25 +187,24 @@ const styles = StyleSheet.create({
   pairRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 4,
   },
   pairStackedContent: {
     flex: 1,
     marginRight: 8,
   },
   pairStackedKey: {
-    fontSize: 15,
-    color: AppColors.osGrey700,
-    fontWeight: '500',
+    ...AppTextStyles.bodyMedium,
     marginBottom: 2,
   },
   pairStackedValue: {
-    fontSize: 14,
+    ...AppTextStyles.bodySmall,
     color: AppColors.osGrey600,
   },
   pairKey: {
+    ...AppTextStyles.bodyMedium,
     flex: 1,
-    fontSize: 14,
     color: AppColors.osGrey600,
   },
   pairSeparator: {
@@ -214,8 +213,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   pairValue: {
+    ...AppTextStyles.bodyMedium,
     flex: 1,
-    fontSize: 14,
     color: AppColors.osGrey700,
     textAlign: 'right',
     marginRight: 8,
@@ -223,32 +222,32 @@ const styles = StyleSheet.create({
   singleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 4,
   },
   singleValue: {
+    ...AppTextStyles.bodyMedium,
     flex: 1,
-    fontSize: 14,
     color: AppColors.osGrey700,
   },
   emptyContainer: {
-    paddingVertical: 8,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 14,
+    ...AppTextStyles.bodyMedium,
     color: AppColors.osGrey600,
-    fontStyle: 'italic',
   },
   divider: {
     height: 1,
     backgroundColor: AppColors.osDivider,
   },
   moreButton: {
-    paddingVertical: 8,
+    paddingVertical: 4,
     alignItems: 'center',
   },
   moreText: {
-    fontSize: 13,
+    fontSize: 14,
     color: AppColors.osPrimary,
     fontWeight: '500',
   },

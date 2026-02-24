@@ -146,6 +146,7 @@ function App() {
               headerStyle: { backgroundColor: AppColors.osPrimary },
               headerTintColor: AppColors.white,
               headerTitleAlign: 'center',
+              headerShadowVisible: false,
             }}
           >
             <Stack.Screen
@@ -189,7 +190,6 @@ const headerStyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     color: AppColors.white,
-    opacity: 0.9,
   },
 });
 

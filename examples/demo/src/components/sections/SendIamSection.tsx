@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   icon: {
-    marginRight: 10,
+    marginRight: 8,
   },
   label: {
     fontSize: 14,

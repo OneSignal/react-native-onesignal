@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { TooltipData } from '../../services/TooltipHelper';
-import { AppColors } from '../../theme';
+import { AppColors, AppTextStyles, AppDialogStyles } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -28,12 +28,12 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
       onRequestClose={onClose}
     >
       <TouchableOpacity
-        style={styles.backdrop}
+        style={AppDialogStyles.backdrop}
         activeOpacity={1}
         onPress={onClose}
       >
-        <View style={styles.container}>
-          <Text style={styles.title}>{tooltip.title}</Text>
+        <View style={[AppDialogStyles.container, styles.containerMaxHeight]}>
+          <Text style={AppDialogStyles.title}>{tooltip.title}</Text>
           <ScrollView>
             <Text style={styles.description}>{tooltip.description}</Text>
             {tooltip.options?.map(opt => (
@@ -43,9 +43,14 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
               </View>
             ))}
           </ScrollView>
-          <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-            <Text style={styles.closeBtnText}>OK</Text>
-          </TouchableOpacity>
+          <View style={AppDialogStyles.actions}>
+            <TouchableOpacity
+              style={AppDialogStyles.actionBtn}
+              onPress={onClose}
+            >
+              <Text style={AppDialogStyles.actionText}>Ok</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </TouchableOpacity>
     </Modal>
@@ -53,27 +58,11 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    width: '100%',
+  containerMaxHeight: {
     maxHeight: '70%',
   },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#212121',
-    marginBottom: 12,
-  },
   description: {
-    fontSize: 14,
+    ...AppTextStyles.bodyMedium,
     color: AppColors.osGrey600,
     lineHeight: 20,
     marginBottom: 12,
@@ -90,17 +79,5 @@ const styles = StyleSheet.create({
   optionDescription: {
     fontSize: 13,
     color: AppColors.osGrey600,
-  },
-  closeBtn: {
-    marginTop: 16,
-    alignSelf: 'flex-end',
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-  },
-  closeBtnText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: AppColors.osPrimary,
-    letterSpacing: 0.5,
   },
 });

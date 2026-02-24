@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import LogManager, { LogEntry } from '../services/LogManager';
-import { AppColors } from '../theme';
+import { AppColors, AppTextStyles } from '../theme';
 
 const LEVEL_COLORS: Record<string, string> = {
   D: AppColors.osLogDebug,
@@ -142,13 +142,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerText: {
-    fontSize: 11,
+    ...AppTextStyles.labelSmall,
     fontWeight: '700',
     color: AppColors.white,
     letterSpacing: 0.8,
   },
   countText: {
-    fontSize: 11,
+    ...AppTextStyles.labelSmall,
     color: AppColors.osGrey500,
     marginLeft: 8,
   },
@@ -172,22 +172,22 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   timestamp: {
-    fontSize: 11,
+    ...AppTextStyles.labelSmall,
     color: AppColors.osLogTimestamp,
     fontFamily: 'monospace',
   },
   level: {
-    fontSize: 11,
+    ...AppTextStyles.labelSmall,
     fontWeight: '700',
     fontFamily: 'monospace',
   },
   message: {
-    fontSize: 11,
+    ...AppTextStyles.labelSmall,
     color: AppColors.white,
     fontFamily: 'monospace',
   },
   emptyText: {
-    fontSize: 11,
+    ...AppTextStyles.labelSmall,
     color: AppColors.osGrey500,
     paddingVertical: 12,
     textAlign: 'center',

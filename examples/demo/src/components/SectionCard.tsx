@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { AppColors, AppTheme, AppSpacing } from '../theme';
+import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../theme';
 
 interface Props {
   title: string;
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   title: {
-    fontSize: 12,
+    ...AppTextStyles.bodySmall,
     fontWeight: '700',
     color: AppColors.osGrey700,
     letterSpacing: 0.5,

@@ -353,20 +353,21 @@ Always remove listeners on cleanup (useEffect return function):
 
 ### Section Order (top to bottom)
 
-1. **App Section** (App ID, Guidance Banner, Consent Toggle, Logged-in-as display, Login/Logout)
-2. **Push Section** (Push ID, Enabled Toggle, Auto-prompts permission on load)
-3. **Send Push Notification Section** (Simple, With Image, Custom buttons)
-4. **In-App Messaging Section** (Pause toggle)
-5. **Send In-App Message Section** (Top Banner, Bottom Banner, Center Modal, Full Screen - with icons)
-6. **Aliases Section** (Add/Add Multiple, read-only list)
-7. **Emails Section** (Collapsible list >5 items)
-8. **SMS Section** (Collapsible list >5 items)
-9. **Tags Section** (Add/Add Multiple/Remove Selected)
-10. **Outcome Events Section** (Send Outcome dialog with type selection)
-11. **Triggers Section** (Add/Add Multiple/Remove Selected/Clear All - IN MEMORY ONLY)
-12. **Track Event Section** (Track Event with JSON validation)
-13. **Location Section** (Location Shared toggle, Prompt Location button)
-14. **Next Page Button**
+1. **App Section** (App ID, Guidance Banner, Consent Toggle)
+2. **User Section** (Status display, Login/Logout)
+3. **Push Section** (Push ID, Enabled Toggle, Auto-prompts permission on load)
+4. **Send Push Notification Section** (Simple, With Image, Custom buttons)
+5. **In-App Messaging Section** (Pause toggle)
+6. **Send In-App Message Section** (Top Banner, Bottom Banner, Center Modal, Full Screen - with icons)
+7. **Aliases Section** (Add/Add Multiple, read-only list)
+8. **Emails Section** (Collapsible list >5 items)
+9. **SMS Section** (Collapsible list >5 items)
+10. **Tags Section** (Add/Add Multiple/Remove Selected)
+11. **Outcome Events Section** (Send Outcome dialog with type selection)
+12. **Triggers Section** (Add/Add Multiple/Remove Selected/Clear All - IN MEMORY ONLY)
+13. **Track Event Section** (Track Event with JSON validation)
+14. **Location Section** (Location Shared toggle, Prompt Location button)
+15. **Next Page Button**
 
 ### Prompt 2.1 - App Section
 
@@ -391,7 +392,11 @@ App Section layout:
    - Separated from the above toggle by a horizontal divider
    - NOT a blocking overlay - user can interact with app regardless of state
 
-4. User status card (always visible, ABOVE the login/logout buttons):
+### Prompt 2.1b - User Section
+
+User Section layout (separate section from App, placed directly below it):
+
+1. User status card (always visible, ABOVE the login/logout buttons):
    - Card with two rows separated by a divider
    - Row 1: "Status" label on the left, value on the right
    - Row 2: "External ID" label on the left, value on the right
@@ -402,12 +407,12 @@ App Section layout:
      - Status shows "Logged In" with success styling
      - External ID shows the actual external user ID
 
-5. LOGIN USER button:
+2. LOGIN USER button:
    - Shows "LOGIN USER" when no user is logged in
    - Shows "SWITCH USER" when a user is logged in
-   - Opens modal with empty "External User Id" field
+   - Opens "Login User" modal with empty `External User Id` field
 
-6. LOGOUT USER button (only visible when a user is logged in)
+3. LOGOUT USER button (only visible when a user is logged in)
 
 ### Prompt 2.2 - Push Section
 
@@ -473,8 +478,8 @@ Tooltip should explain each IAM type.
 Aliases Section (placed after Send In-App Message):
 
 - Section title: "Aliases" with info icon for tooltip
-- List showing key-value pairs (read-only, no delete icons)
-- Each item shows: Label | ID
+- Stacked key-value list (read-only, no delete icons)
+- Each item shows Label on top, ID below (see styles.md "Stacked" list layout)
 - Filter out "external_id" and "onesignal_id" from display (these are special)
 - "No Aliases Added" text when empty
 - ADD button -> PairInputModal with empty Label and ID fields on the same row (single add)
@@ -1059,7 +1064,8 @@ examples/demo/
 │       │   ├── CustomNotificationModal.tsx
 │       │   └── TooltipModal.tsx
 │       └── sections/
-│           ├── AppSection.tsx               # App ID, consent, login/logout
+│           ├── AppSection.tsx               # App ID, guidance banner, consent
+│           ├── UserSection.tsx              # User status, login/logout
 │           ├── PushSection.tsx              # Push subscription controls
 │           ├── SendPushSection.tsx          # Send notification buttons
 │           ├── InAppSection.tsx             # IAM pause toggle

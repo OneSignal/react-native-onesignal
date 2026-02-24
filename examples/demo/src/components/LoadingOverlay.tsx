@@ -20,7 +20,7 @@ export default function LoadingOverlay({ visible }: Props) {
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: AppColors.osOverlayScrim,
+    backgroundColor: AppColors.osBackdrop,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 999,

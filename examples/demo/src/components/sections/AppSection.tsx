@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
-import { AppColors, AppTheme, AppSpacing } from '../../theme';
+import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 
 interface Props {
   appId: string;
@@ -85,11 +85,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   idLabel: {
-    fontSize: 14,
+    ...AppTextStyles.bodyMedium,
     color: AppColors.osGrey600,
   },
   idValue: {
-    fontSize: 13,
+    ...AppTextStyles.bodySmall,
     color: AppColors.osGrey700,
     flex: 1,
     textAlign: 'right',
@@ -97,19 +97,17 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
   },
   banner: {
+    ...AppTheme.card,
     backgroundColor: AppColors.osWarningBackground,
-    borderRadius: 8,
-    padding: 12,
     marginBottom: AppSpacing.gap,
   },
   bannerText: {
-    fontSize: 13,
+    ...AppTextStyles.bodySmall,
     color: AppColors.osGrey700,
-    marginBottom: 4,
   },
   bannerLink: {
-    fontSize: 13,
+    ...AppTextStyles.bodySmall,
     color: AppColors.osPrimary,
-    fontWeight: '500',
+    fontWeight: '600',
   },
 });

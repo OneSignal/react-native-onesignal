@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { AppColors } from '../../theme';
+import { AppColors, AppDialogStyles } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -54,31 +54,41 @@ export default function SingleInputModal({
       onRequestClose={handleClose}
     >
       <KeyboardAvoidingView
-        style={styles.backdrop}
+        style={AppDialogStyles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.container}>
-          <Text style={styles.title}>{title}</Text>
+        <View style={AppDialogStyles.container}>
+          <Text style={AppDialogStyles.title}>{title}</Text>
           <TextInput
-            style={styles.input}
+            style={[AppDialogStyles.input, styles.inputSpacing]}
             placeholder={placeholder}
-            placeholderTextColor="#9E9E9E"
+            placeholderTextColor={AppColors.osGrey600}
             value={value}
             onChangeText={setValue}
             keyboardType={keyboardType}
             autoFocus
             testID={testID}
           />
-          <View style={styles.buttons}>
-            <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
-              <Text style={styles.cancelText}>CANCEL</Text>
+          <View style={AppDialogStyles.actions}>
+            <TouchableOpacity
+              style={AppDialogStyles.actionBtn}
+              onPress={handleClose}
+            >
+              <Text style={AppDialogStyles.actionText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.confirmBtn, !value.trim() && styles.disabled]}
+              style={AppDialogStyles.actionBtn}
               onPress={handleConfirm}
               disabled={!value.trim()}
             >
-              <Text style={styles.confirmText}>ADD</Text>
+              <Text
+                style={[
+                  AppDialogStyles.actionText,
+                  !value.trim() && AppDialogStyles.actionTextDisabled,
+                ]}
+              >
+                Add
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -88,57 +98,7 @@ export default function SingleInputModal({
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    width: '100%',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#212121',
+  inputSpacing: {
     marginBottom: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: AppColors.osDivider,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 14,
-    color: '#212121',
-    marginBottom: 16,
-  },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 12,
-  },
-  cancelBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  cancelText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: AppColors.osGrey600,
-  },
-  confirmBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  confirmText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: AppColors.osPrimary,
-  },
-  disabled: {
-    opacity: 0.5,
   },
 });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAppContext } from '../context/AppContext';
 import { InAppMessageType } from '../models/InAppMessageType';
@@ -7,10 +7,9 @@ import TooltipHelper, { TooltipData } from '../services/TooltipHelper';
 import LogView from '../components/LogView';
 import LoadingOverlay from '../components/LoadingOverlay';
 import ActionButton from '../components/ActionButton';
-import SectionCard from '../components/SectionCard';
 import TooltipModal from '../components/modals/TooltipModal';
-import LoginModal from '../components/modals/LoginModal';
 import AppSection from '../components/sections/AppSection';
+import UserSection from '../components/sections/UserSection';
 import PushSection from '../components/sections/PushSection';
 import SendPushSection from '../components/sections/SendPushSection';
 import InAppSection from '../components/sections/InAppSection';
@@ -23,7 +22,7 @@ import OutcomesSection from '../components/sections/OutcomesSection';
 import TriggersSection from '../components/sections/TriggersSection';
 import TrackEventSection from '../components/sections/TrackEventSection';
 import LocationSection from '../components/sections/LocationSection';
-import { AppTheme, AppColors, AppSpacing } from '../theme';
+import { AppColors } from '../theme';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -32,9 +31,6 @@ export default function HomeScreen() {
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<TooltipData | null>(null);
-  const [loginVisible, setLoginVisible] = useState(false);
-
-  const isLoggedIn = !!state.externalUserId;
 
   // Auto-request push permission on load
   useEffect(() => {
@@ -70,44 +66,11 @@ export default function HomeScreen() {
           onSetConsentGiven={app.setConsentGiven}
         />
 
-        <SectionCard title="User">
-          <View style={[AppTheme.card, styles.userCard]}>
-            <View style={styles.statusRow}>
-              <Text style={styles.statusLabel}>Status</Text>
-              <Text
-                style={[styles.statusValue, isLoggedIn && styles.loggedInText]}
-              >
-                {isLoggedIn ? 'Logged In' : 'Anonymous'}
-              </Text>
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.statusRow}>
-              <Text style={styles.statusLabel}>External ID</Text>
-              <Text style={styles.statusValue} numberOfLines={1}>
-                {state.externalUserId ?? '–'}
-              </Text>
-            </View>
-          </View>
-          <ActionButton
-            label={isLoggedIn ? 'SWITCH USER' : 'LOGIN USER'}
-            onPress={() => setLoginVisible(true)}
-            testID="login_user_button"
-          />
-          {isLoggedIn && (
-            <ActionButton
-              label="LOGOUT USER"
-              onPress={app.logoutUser}
-              variant="outlined"
-              testID="logout_user_button"
-            />
-          )}
-          <LoginModal
-            visible={loginVisible}
-            isLoggedIn={isLoggedIn}
-            onConfirm={app.loginUser}
-            onClose={() => setLoginVisible(false)}
-          />
-        </SectionCard>
+        <UserSection
+          externalUserId={state.externalUserId}
+          onLogin={app.loginUser}
+          onLogout={app.logoutUser}
+        />
 
         <PushSection
           pushSubscriptionId={state.pushSubscriptionId}
@@ -224,7 +187,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingBottom: 16,
+    paddingBottom: 24,
   },
   spacer: {
     height: 16,
@@ -235,31 +198,5 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 32,
-  },
-  userCard: {
-    marginBottom: AppSpacing.gap,
-  },
-  statusRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 4,
-  },
-  statusLabel: {
-    fontSize: 14,
-    color: AppColors.osGrey600,
-  },
-  statusValue: {
-    fontSize: 14,
-    color: AppColors.osGrey700,
-    fontWeight: '500',
-  },
-  loggedInText: {
-    color: AppColors.osSuccess,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: AppColors.osDivider,
-    marginVertical: 8,
   },
 });

@@ -35,7 +35,7 @@ export default function AliasesSection({
         </View>
       ) : (
         <View style={styles.listCard}>
-          <PairList items={filtered} />
+          <PairList items={filtered} layout="stacked" />
         </View>
       )}
       <ActionButton

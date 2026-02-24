@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { AppColors } from '../../theme';
+import { AppColors, AppDialogStyles } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -61,40 +61,50 @@ export default function PairInputModal({
       onRequestClose={handleClose}
     >
       <KeyboardAvoidingView
-        style={styles.backdrop}
+        style={AppDialogStyles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.container}>
-          <Text style={styles.title}>{title}</Text>
+        <View style={AppDialogStyles.container}>
+          <Text style={AppDialogStyles.title}>{title}</Text>
           <View style={styles.row}>
             <TextInput
-              style={[styles.input, styles.halfInput]}
+              style={[AppDialogStyles.input, styles.halfInput, styles.inputSpacing]}
               placeholder={keyPlaceholder}
-              placeholderTextColor="#9E9E9E"
+              placeholderTextColor={AppColors.osGrey600}
               value={keyValue}
               onChangeText={setKeyValue}
               autoFocus
               testID={keyTestID}
             />
             <TextInput
-              style={[styles.input, styles.halfInput]}
+              style={[AppDialogStyles.input, styles.halfInput, styles.inputSpacing]}
               placeholder={valuePlaceholder}
-              placeholderTextColor="#9E9E9E"
+              placeholderTextColor={AppColors.osGrey600}
               value={val}
               onChangeText={setVal}
               testID={valueTestID}
             />
           </View>
-          <View style={styles.buttons}>
-            <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
-              <Text style={styles.cancelText}>CANCEL</Text>
+          <View style={AppDialogStyles.actions}>
+            <TouchableOpacity
+              style={AppDialogStyles.actionBtn}
+              onPress={handleClose}
+            >
+              <Text style={AppDialogStyles.actionText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.confirmBtn, !canSubmit && styles.disabled]}
+              style={AppDialogStyles.actionBtn}
               onPress={handleConfirm}
               disabled={!canSubmit}
             >
-              <Text style={styles.confirmText}>ADD</Text>
+              <Text
+                style={[
+                  AppDialogStyles.actionText,
+                  !canSubmit && AppDialogStyles.actionTextDisabled,
+                ]}
+              >
+                Add
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -104,33 +114,6 @@ export default function PairInputModal({
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    width: '100%',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#212121',
-    marginBottom: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: AppColors.osDivider,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 14,
-    color: '#212121',
-    marginBottom: 12,
-  },
   row: {
     flexDirection: 'row',
     gap: 8,
@@ -138,31 +121,7 @@ const styles = StyleSheet.create({
   halfInput: {
     flex: 1,
   },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 12,
-    marginTop: 4,
-  },
-  cancelBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  cancelText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: AppColors.osGrey600,
-  },
-  confirmBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  confirmText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: AppColors.osPrimary,
-  },
-  disabled: {
-    opacity: 0.5,
+  inputSpacing: {
+    marginBottom: 12,
   },
 });

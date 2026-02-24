@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { AppColors } from '../../theme';
+import { AppColors, AppDialogStyles } from '../../theme';
 
 interface Row {
   id: number;
@@ -90,29 +90,29 @@ export default function MultiPairInputModal({
       onRequestClose={handleClose}
     >
       <KeyboardAvoidingView
-        style={styles.backdrop}
+        style={AppDialogStyles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.container}>
-          <Text style={styles.title}>{title}</Text>
+        <View style={[AppDialogStyles.container, styles.containerMaxHeight]}>
+          <Text style={AppDialogStyles.title}>{title}</Text>
           <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
             {rows.map((row, idx) => (
               <View key={row.id}>
                 {idx > 0 && <View style={styles.divider} />}
                 <View style={styles.rowContainer}>
                   <TextInput
-                    style={[styles.input, styles.halfInput]}
+                    style={[AppDialogStyles.input, styles.halfInput]}
                     placeholder={keyPlaceholder}
-                    placeholderTextColor="#9E9E9E"
+                    placeholderTextColor={AppColors.osGrey600}
                     value={row.key}
                     onChangeText={t => updateRow(row.id, 'key', t)}
                     autoFocus={idx === 0}
                     testID={idx === 0 ? 'multi_pair_key_0' : undefined}
                   />
                   <TextInput
-                    style={[styles.input, styles.halfInput]}
+                    style={[AppDialogStyles.input, styles.halfInput]}
                     placeholder={valuePlaceholder}
-                    placeholderTextColor="#9E9E9E"
+                    placeholderTextColor={AppColors.osGrey600}
                     value={row.value}
                     onChangeText={t => updateRow(row.id, 'value', t)}
                     testID={idx === 0 ? 'multi_pair_value_0' : undefined}
@@ -136,16 +136,26 @@ export default function MultiPairInputModal({
               <Text style={styles.addRowText}>+ Add Row</Text>
             </TouchableOpacity>
           </ScrollView>
-          <View style={styles.buttons}>
-            <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
-              <Text style={styles.cancelText}>CANCEL</Text>
+          <View style={AppDialogStyles.actions}>
+            <TouchableOpacity
+              style={AppDialogStyles.actionBtn}
+              onPress={handleClose}
+            >
+              <Text style={AppDialogStyles.actionText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.confirmBtn, !allFilled && styles.disabled]}
+              style={AppDialogStyles.actionBtn}
               onPress={handleConfirm}
               disabled={!allFilled}
             >
-              <Text style={styles.confirmText}>ADD ALL</Text>
+              <Text
+                style={[
+                  AppDialogStyles.actionText,
+                  !allFilled && AppDialogStyles.actionTextDisabled,
+                ]}
+              >
+                Add All
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -155,24 +165,8 @@ export default function MultiPairInputModal({
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    width: '100%',
+  containerMaxHeight: {
     maxHeight: '80%',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#212121',
-    marginBottom: 16,
   },
   scroll: {
     maxHeight: 300,
@@ -185,14 +179,6 @@ const styles = StyleSheet.create({
   },
   halfInput: {
     flex: 1,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: AppColors.osDivider,
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 14,
-    color: '#212121',
   },
   divider: {
     height: 1,
@@ -207,32 +193,5 @@ const styles = StyleSheet.create({
     color: AppColors.osPrimary,
     fontSize: 14,
     fontWeight: '500',
-  },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 12,
-    marginTop: 12,
-  },
-  cancelBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  cancelText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: AppColors.osGrey600,
-  },
-  confirmBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  confirmText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: AppColors.osPrimary,
-  },
-  disabled: {
-    opacity: 0.5,
   },
 });

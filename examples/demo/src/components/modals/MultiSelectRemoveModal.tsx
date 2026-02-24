@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { AppColors } from '../../theme';
+import { AppColors, AppTextStyles, AppDialogStyles } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -60,11 +60,11 @@ export default function MultiSelectRemoveModal({
       onRequestClose={handleClose}
     >
       <KeyboardAvoidingView
-        style={styles.backdrop}
+        style={AppDialogStyles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.container}>
-          <Text style={styles.title}>{title}</Text>
+        <View style={[AppDialogStyles.container, styles.containerMaxHeight]}>
+          <Text style={AppDialogStyles.title}>{title}</Text>
           <ScrollView style={styles.scroll}>
             {items.map(([key]) => {
               const isChecked = selected.has(key);
@@ -86,19 +86,26 @@ export default function MultiSelectRemoveModal({
               );
             })}
           </ScrollView>
-          <View style={styles.buttons}>
-            <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
-              <Text style={styles.cancelText}>CANCEL</Text>
+          <View style={AppDialogStyles.actions}>
+            <TouchableOpacity
+              style={AppDialogStyles.actionBtn}
+              onPress={handleClose}
+            >
+              <Text style={AppDialogStyles.actionText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[
-                styles.confirmBtn,
-                selected.size === 0 && styles.disabled,
-              ]}
+              style={AppDialogStyles.actionBtn}
               onPress={handleConfirm}
               disabled={selected.size === 0}
             >
-              <Text style={styles.confirmText}>REMOVE ({selected.size})</Text>
+              <Text
+                style={[
+                  AppDialogStyles.actionText,
+                  selected.size === 0 && AppDialogStyles.actionTextDisabled,
+                ]}
+              >
+                Remove ({selected.size})
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -108,24 +115,8 @@ export default function MultiSelectRemoveModal({
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    width: '100%',
+  containerMaxHeight: {
     maxHeight: '70%',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#212121',
-    marginBottom: 16,
   },
   scroll: {
     maxHeight: 300,
@@ -137,34 +128,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   itemKey: {
-    fontSize: 14,
+    ...AppTextStyles.bodyLarge,
     color: '#212121',
-  },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 12,
-    marginTop: 16,
-  },
-  cancelBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  cancelText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: AppColors.osGrey600,
-  },
-  confirmBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  confirmText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: AppColors.osPrimary,
-  },
-  disabled: {
-    opacity: 0.5,
   },
 });

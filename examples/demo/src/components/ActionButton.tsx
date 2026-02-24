@@ -32,18 +32,17 @@ export default function ActionButton({
   leftAligned,
 }: Props) {
   const bgColor =
-    variant === 'primary'
-      ? AppColors.osPrimary
-      : variant === 'destructive'
-        ? AppColors.osPrimary
-        : 'transparent';
+    variant === 'primary' ? AppColors.osPrimary : 'transparent';
 
   const borderStyle =
-    variant === 'outlined'
+    variant === 'outlined' || variant === 'destructive'
       ? { borderWidth: 1, borderColor: AppColors.osPrimary }
       : {};
 
-  const textColor = variant === 'outlined' ? AppColors.osPrimary : AppColors.white;
+  const textColor =
+    variant === 'outlined' || variant === 'destructive'
+      ? AppColors.osPrimary
+      : AppColors.white;
 
   return (
     <TouchableOpacity
@@ -78,7 +77,8 @@ export default function ActionButton({
 const styles = StyleSheet.create({
   button: {
     borderRadius: 8,
-    paddingVertical: 14,
+    height: 48,
+    justifyContent: 'center',
     paddingHorizontal: 16,
     width: '100%',
     marginBottom: AppSpacing.gap,
@@ -94,8 +94,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     fontWeight: '600',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
   },
   iconLeft: {
     marginRight: 8,

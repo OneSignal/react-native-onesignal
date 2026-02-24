@@ -460,23 +460,27 @@ export function AppContextProvider({ children }: Props) {
     };
   }, [fetchUserDataFromApi]);
 
-  const loginUser = useCallback(async (externalUserId: string) => {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    try {
-      repository.loginUser(externalUserId);
-      await preferences.setExternalUserId(externalUserId);
-      if (mountedRef.current) {
-        dispatch({ type: 'CLEAR_USER_DATA' });
+  const loginUser = useCallback(
+    async (externalUserId: string) => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      try {
+        repository.loginUser(externalUserId);
+        await preferences.setExternalUserId(externalUserId);
+        if (mountedRef.current) {
+          dispatch({ type: 'CLEAR_USER_DATA' });
+        }
+        log.i(TAG, `Logged in as: ${externalUserId}`);
+        Toast.show({ type: 'info', text1: `Logged in as: ${externalUserId}` });
+        await fetchUserDataFromApi();
+      } catch (err) {
+        log.e(TAG, `Login error: ${String(err)}`);
+        if (mountedRef.current) {
+          dispatch({ type: 'SET_LOADING', payload: false });
+        }
       }
-      log.i(TAG, `Logged in as: ${externalUserId}`);
-      Toast.show({ type: 'info', text1: `Logged in as: ${externalUserId}` });
-    } catch (err) {
-      log.e(TAG, `Login error: ${String(err)}`);
-      if (mountedRef.current) {
-        dispatch({ type: 'SET_LOADING', payload: false });
-      }
-    }
-  }, []);
+    },
+    [fetchUserDataFromApi],
+  );
 
   const logoutUser = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
