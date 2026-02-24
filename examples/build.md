@@ -13,71 +13,75 @@ reference OneSignal demo app installed. These screenshots are the source
 of truth for the UI you are building. Do NOT proceed to Phase 1 without them.
 
 Check for connected emulators:
-  adb devices
+adb devices
 
 If no device is listed, stop and ask the user to start one.
 
 Identify which emulator has com.onesignal.sdktest installed by checking each listed device, e.g.:
-  adb -s emulator-5554 shell pm list packages 2>/dev/null | grep -i onesignal
-  adb -s emulator-5556 shell pm list packages 2>/dev/null | grep -i onesignal
+adb -s emulator-5554 shell pm list packages 2>/dev/null | grep -i onesignal
+adb -s emulator-5556 shell pm list packages 2>/dev/null | grep -i onesignal
 
 Use that emulator's serial (e.g. emulator-5556) for all subsequent adb commands via the -s flag.
 
 Launch the reference app:
-  adb -s <emulator-serial> shell am start -n com.onesignal.sdktest/.ui.main.MainActivity
+adb -s <emulator-serial> shell am start -n com.onesignal.sdktest/.ui.main.MainActivity
 
 Dismiss any in-app messages that appear on launch. Tap the X or
 click-through button on each IAM until the main UI is fully visible
 with no overlays.
 
 Create an output directory:
-  mkdir -p /tmp/onesignal_reference
+mkdir -p /tmp/onesignal_reference
 
 Capture screenshots by scrolling through the full UI:
+
 1. Take a screenshot from the top of the screen:
-     adb shell screencap -p /sdcard/ref_01.png && adb pull /sdcard/ref_01.png /tmp/onesignal_reference/ref_01.png
+   adb shell screencap -p /sdcard/ref_01.png && adb pull /sdcard/ref_01.png /tmp/onesignal_reference/ref_01.png
 2. Scroll down by roughly one viewport height:
-     adb shell input swipe 500 1500 500 500
+   adb shell input swipe 500 1500 500 500
 3. Take the next screenshot (ref_02.png, ref_03.png, etc.)
 4. Repeat until you've reached the bottom of the scrollable content
 
 You MUST read each captured screenshot image so you can see the actual UI.
 These images define the visual target for every section you build later.
 Pay close attention to:
-  - Section header style and casing
-  - Card vs non-card content grouping
-  - Button placement (inside vs outside cards)
-  - List item layout (stacked vs inline key-value)
-  - Icon choices (delete, close, info, etc.)
-  - Typography, spacing, and colors
+
+- Section header style and casing
+- Card vs non-card content grouping
+- Button placement (inside vs outside cards)
+- List item layout (stacked vs inline key-value)
+- Icon choices (delete, close, info, etc.)
+- Typography, spacing, and colors
 
 You can also interact with the reference app to observe specific flows:
 
 Dump the UI hierarchy to find elements by resource-id, text, or content-desc:
-  adb shell uiautomator dump /sdcard/ui.xml && adb pull /sdcard/ui.xml /tmp/onesignal_reference/ui.xml
+adb shell uiautomator dump /sdcard/ui.xml && adb pull /sdcard/ui.xml /tmp/onesignal_reference/ui.xml
 
 Parse the XML to find an element's bounds, then tap it:
-  adb shell input tap <centerX> <centerY>
+adb shell input tap <centerX> <centerY>
 
 Type into a focused text field:
-  adb shell input text "test"
+adb shell input text "test"
 
 Example flow to observe "Add Tag" behavior:
-  1. Dump UI -> find the ADD button bounds -> tap it
-  2. Dump UI -> find the Key and Value fields -> tap and type into them
-  3. Tap the confirm button -> screenshot the result
-  4. Compare the tag list state before and after
+
+1. Dump UI -> find the ADD button bounds -> tap it
+2. Dump UI -> find the Key and Value fields -> tap and type into them
+3. Tap the confirm button -> screenshot the result
+4. Compare the tag list state before and after
 
 Also capture screenshots of key dialogs to match their layout:
-  - Add Alias (single pair input)
-  - Add Multiple Aliases/Tags (dynamic rows with add/remove)
-  - Remove Selected Tags (checkbox multi-select)
-  - Login User
-  - Send Outcome (radio options)
-  - Track Event (with JSON properties field)
-  - Custom Notification (title + body)
-These dialog screenshots are important for matching field layout,
-button placement, spacing, and validation behavior.
+
+- Add Alias (single pair input)
+- Add Multiple Aliases/Tags (dynamic rows with add/remove)
+- Remove Selected Tags (checkbox multi-select)
+- Login User
+- Send Outcome (radio options)
+- Track Event (with JSON properties field)
+- Custom Notification (title + body)
+  These dialog screenshots are important for matching field layout,
+  button placement, spacing, and validation behavior.
 
 Refer back to these screenshots throughout all remaining phases whenever
 you need to decide on layout, spacing, section order, dialog flows, or
@@ -696,22 +700,23 @@ interface TooltipOption {
 ### Prompt 4.3 - Tooltip UI Integration
 
 For each section, pass an onInfoTap callback to SectionCard:
+
 - SectionCard has an optional info icon that calls onInfoTap when tapped
 - In HomeScreen, wire onInfoTap to show a TooltipModal
 - TooltipModal displays title, description, and options (if present)
 
 Example in HomeScreen:
 <AliasesSection
-    ...
-    onInfoTap={() => showTooltipModal('aliases')}
+...
+onInfoTap={() => showTooltipModal('aliases')}
 />
 
 function showTooltipModal(key: string) {
-    const tooltip = TooltipHelper.getInstance().getTooltip(key);
-    if (tooltip) {
-        setActiveTooltip(tooltip);
-        setTooltipVisible(true);
-    }
+const tooltip = TooltipHelper.getInstance().getTooltip(key);
+if (tooltip) {
+setActiveTooltip(tooltip);
+setTooltipVisible(true);
+}
 }
 
 ---
@@ -721,6 +726,7 @@ function showTooltipModal(key: string) {
 ### What IS Persisted (AsyncStorage)
 
 PreferencesService stores:
+
 - OneSignal App ID
 - Consent required status
 - Privacy consent status
@@ -736,10 +742,10 @@ On app startup, state is restored in two layers:
    - OneSignal.setConsentRequired(cachedConsentRequired)
    - OneSignal.setConsentGiven(cachedPrivacyConsent)
    - OneSignal.initialize(appId)
-   Then AFTER initialize, restores remaining SDK state:
+     Then AFTER initialize, restores remaining SDK state:
    - OneSignal.InAppMessages.setPaused(cachedPausedStatus)
    - OneSignal.Location.setShared(cachedLocationShared)
-   This ensures consent settings are in place before the SDK initializes.
+     This ensures consent settings are in place before the SDK initializes.
 
 2. AppContextProvider initialization restores UI state:
    - consentRequired from cached prefs (no SDK getter)
@@ -750,6 +756,7 @@ On app startup, state is restored in two layers:
    - appId from PreferencesService (app-level config)
 
 This two-layer approach ensures:
+
 - The SDK is configured with the user's last preferences before anything else runs
 - AppContextProvider exposes one state object and action API for screens
 - Reducer transitions keep state updates predictable
@@ -757,6 +764,7 @@ This two-layer approach ensures:
 ### What is NOT Persisted (In-Memory Only)
 
 App state holds in memory:
+
 - triggersList: [string, string][]
   - Triggers are session-only
   - Cleared on app restart
@@ -814,6 +822,7 @@ Aliases are managed with a hybrid approach:
 ### Notification Permission
 
 Notification permission is automatically requested when the home screen loads:
+
 - Call appContext.promptPush() in a useEffect with an empty dependency array in HomeScreen
 - This ensures prompt appears after user sees the app UI
 - PROMPT PUSH button remains as fallback if user initially denied
@@ -829,11 +838,13 @@ Notification permission is automatically requested when the home screen loads:
 Use React Context for dependency injection and useReducer for state management.
 
 App.tsx:
+
 - AppContext.Provider at the root of the component tree
 - Initialize OneSignal SDK before rendering (outside component or in early useEffect)
 - Fetch tooltips in the background (non-blocking)
 
 AppContextProvider:
+
 - Holds all UI state with useReducer
 - Exposes state and action functions through useAppContext
 - Uses OneSignalRepository and PreferencesService internally
@@ -844,21 +855,25 @@ AppContextProvider:
 Create reusable components in src/components/:
 
 SectionCard.tsx:
+
 - Card View with title Text and optional info TouchableOpacity
 - Children slot
 - onInfoTap callback for tooltips
 - Uses theme styles
 
 ToggleRow.tsx:
+
 - Label, optional description, Switch
 - Row layout with justifyContent: 'space-between'
 
 ActionButton.tsx:
+
 - PrimaryButton (filled, TouchableOpacity)
 - DestructiveButton (outlined, TouchableOpacity)
 - Full-width buttons with width: '100%'
 
 ListWidgets.tsx:
+
 - PairItem (key-value with optional X-icon remove TouchableOpacity)
 - SingleItem (single value with optional X-icon remove TouchableOpacity)
 - EmptyState (centered "No items" Text)
@@ -866,22 +881,13 @@ ListWidgets.tsx:
 - PairList (simple list of key-value pairs)
 
 LoadingOverlay.tsx:
+
 - Semi-transparent full-screen overlay using absolute positioned View + StyleSheet
 - Centered ActivityIndicator
 - Shown via isLoading state from app context
 
-LogView.tsx:
-- Sticky at the top of the screen (always visible while ScrollView content scrolls below)
-- Full width, no horizontal margin, no rounded corners, no top margin (touches header)
-- Single horizontal ScrollView on the entire log list (not per-row), no text truncation
-- Use onLayout + minWidth so content is at least screen-wide
-- Vertical ScrollView + mapped entries instead of FlatList (100dp container is small)
-- Fixed 100dp height
-- Default expanded
-- Trash icon button (delete icon from react-native-vector-icons) for clearing logs
-- Auto-scroll to newest using scrollToEnd on ScrollView ref
-
 Modals (src/components/modals/):
+
 - All modals use a full-width Modal component with padding: 16 and width: '100%' inner container
 - SingleInputModal (one TextInput)
 - PairInputModal (key-value TextInputs on the same row, single pair)
@@ -896,6 +902,7 @@ Tags, Aliases, and Triggers all share a reusable MultiPairInputModal component
 for adding multiple key-value pairs at once.
 
 Behavior:
+
 - Modal opens full-width (width: '100%' with horizontal padding 16)
 - Starts with one empty key-value row (Key and Value TextInputs side by side)
 - "Add Row" TextButton below the rows adds another empty row
@@ -908,6 +915,7 @@ Behavior:
 - State is managed with useState inside the modal component
 
 Used by:
+
 - ADD MULTIPLE button (Aliases section) -> calls viewModel.addAliases(pairs)
 - ADD MULTIPLE button (Tags section) -> calls viewModel.addTags(pairs)
 - ADD MULTIPLE button (Triggers section) -> calls viewModel.addTriggers(pairs)
@@ -918,6 +926,7 @@ Tags and Triggers share a reusable MultiSelectRemoveModal component
 for selectively removing items from the current list.
 
 Behavior:
+
 - Accepts the current list of items as [string, string][]
 - Renders one checkbox per item on the left with just the key as the label (not "key: value")
 - Use a custom checkbox row with TouchableOpacity + icon since RN has no built-in Checkbox on both platforms
@@ -926,6 +935,7 @@ Behavior:
 - On confirm, checked items' keys are collected as string[] and passed to the callback
 
 Used by:
+
 - REMOVE SELECTED button (Tags section) -> calls viewModel.removeSelectedTags(keys)
 - REMOVE SELECTED button (Triggers section) -> calls viewModel.removeSelectedTriggers(keys)
 
@@ -935,7 +945,7 @@ Create OneSignal theme in src/theme.ts.
 
 All colors, spacing, typography, button styles, card styles, and component
 specs are defined in the shared style reference:
-  https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/demo/styles.md
+https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/demo/styles.md
 
 Export AppColors and AppSpacing objects that expose the tokens from styles.md
 as typed constants. Export an AppTheme object with reusable StyleSheet base
@@ -947,38 +957,37 @@ values for use throughout the app.
 Add collapsible log view at top of screen for debugging and Appium testing.
 
 Files:
+
 - src/services/LogManager.ts - Singleton logger with listener callbacks
 - src/components/LogView.tsx - Log viewer component with testID labels
 
 LogManager Features:
+
 - Singleton with subscriber callbacks for reactive UI updates
 - API: LogManager.getInstance().d(tag, message), .i(), .w(), .e() mimics debugPrint levels
 - Also prints to console via console.log/warn/error for development
+- Notifies listeners with new entry only (null on clear)
 
 LogView Features:
-- STICKY at the top of the screen (always visible while ScrollView content scrolls below)
-- Full width, no horizontal margin, no rounded corners, no top margin (touches header)
-- Single horizontal ScrollView on the entire log list (not per-row), no text truncation
-- Use onLayout + minWidth so content is at least screen-wide
-- Vertical ScrollView + mapped entries instead of FlatList (100dp container is small)
-- Fixed 100dp height
-- Default expanded
-- Trash icon button (delete icon) for clearing logs, not a text button
-- Auto-scroll to newest using scrollToEnd on ScrollView ref
+
+- Refer to the Logs View section of the shared style reference for layout, colors, and typography
+- Header sits above the list; 100dp height applies to the list area only
+- Newest entries at the top (prepend to state on each log)
+- Trash icon only visible when entries exist
 
 Appium testID Labels:
-| testID                  | Description                        |
+| testID | Description |
 |-------------------------|------------------------------------|
-| log_view_container      | Main container View                |
-| log_view_header         | Tappable expand/collapse row       |
-| log_view_count          | Shows "(N)" log count Text         |
-| log_view_clear_button   | Clear all logs TouchableOpacity    |
-| log_view_list           | Scrollable ScrollView              |
-| log_view_empty          | "No logs yet" Text                 |
-| log_entry_{N}           | Each log row View (N=index)        |
-| log_entry_{N}_timestamp | Timestamp Text                     |
-| log_entry_{N}_level     | D/I/W/E indicator Text             |
-| log_entry_{N}_message   | Log message Text                   |
+| log*view_container | Main container View |
+| log_view_header | Tappable expand/collapse row |
+| log_view_count | Shows "(N)" log count Text |
+| log_view_clear_button | Clear all logs TouchableOpacity |
+| log_view_list | Scrollable ScrollView |
+| log_view_empty | "No logs yet" Text |
+| log_entry*{N} | Each log row View (N=index) |
+| log*entry*{N}_timestamp | Timestamp Text |
+| log_entry_{N}_level | D/I/W/E indicator Text |
+| log_entry_{N}\_message | Log message Text |
 
 Use the testID prop for Appium accessibility:
 <Text testID={`log_entry_${index}_message`}>{entry.message}</Text>
@@ -1000,6 +1009,7 @@ All user actions should display Toast messages via react-native-toast-message:
 - Push: "Push enabled/disabled"
 
 Implementation:
+
 - Place <Toast /> at the root of App.tsx (outside NavigationContainer children)
 - Show at the bottom of the screen: <Toast position="bottom" bottomOffset={20} />
 - Call Toast.show({ type: 'info', text1: message }) from action handlers

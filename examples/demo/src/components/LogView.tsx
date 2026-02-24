@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import LogManager, { LogEntry } from '../services/LogManager';
@@ -18,20 +18,17 @@ const LEVEL_COLORS: Record<string, string> = {
 };
 
 export default function LogView() {
-  const [entries, setEntries] = useState<LogEntry[]>(() =>
-    LogManager.getInstance().getEntries(),
-  );
+  const [entries, setEntries] = useState<LogEntry[]>([]);
   const [expanded, setExpanded] = useState(true);
   const [containerWidth, setContainerWidth] = useState(0);
-  const vertScrollRef = useRef<ScrollView>(null);
-  const horizScrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    const unsub = LogManager.getInstance().subscribe(updated => {
-      setEntries(updated);
-      setTimeout(() => {
-        vertScrollRef.current?.scrollToEnd({ animated: false });
-      }, 50);
+    const unsub = LogManager.getInstance().subscribe(entry => {
+      if (entry) {
+        setEntries(prev => [entry, ...prev]);
+      } else {
+        setEntries([]);
+      }
     });
     return unsub;
   }, []);
@@ -39,10 +36,7 @@ export default function LogView() {
   const clearLogs = () => LogManager.getInstance().clear();
 
   return (
-    <View
-      style={[styles.container, { height: expanded ? 100 : 36 }]}
-      testID="log_view_container"
-    >
+    <View style={styles.container} testID="log_view_container">
       <TouchableOpacity
         style={styles.header}
         onPress={() => setExpanded(prev => !prev)}
@@ -55,13 +49,15 @@ export default function LogView() {
           </Text>
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity
-            onPress={clearLogs}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            testID="log_view_clear_button"
-          >
-            <Icon name="delete" size={18} color={AppColors.osGrey500} />
-          </TouchableOpacity>
+          {entries.length > 0 && (
+            <TouchableOpacity
+              onPress={clearLogs}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              testID="log_view_clear_button"
+            >
+              <Icon name="delete" size={18} color={AppColors.osGrey500} />
+            </TouchableOpacity>
+          )}
           <Icon
             name={expanded ? 'expand-less' : 'expand-more'}
             size={18}
@@ -72,59 +68,58 @@ export default function LogView() {
       </TouchableOpacity>
 
       {expanded && (
-        <ScrollView
-          ref={horizScrollRef}
-          horizontal
-          testID="log_view_list"
-          style={styles.horizScroll}
-          onLayout={e => setContainerWidth(e.nativeEvent.layout.width)}
-        >
+        <View style={styles.listContainer}>
           <ScrollView
-            ref={vertScrollRef}
-            style={[styles.vertScroll, { minWidth: containerWidth }]}
-            showsVerticalScrollIndicator={false}
-            onContentSizeChange={() =>
-              vertScrollRef.current?.scrollToEnd({ animated: false })
-            }
+            horizontal
+            testID="log_view_list"
+            onLayout={e => setContainerWidth(e.nativeEvent.layout.width)}
           >
-            {entries.length === 0 ? (
-              <Text style={styles.emptyText} testID="log_view_empty">
-                No logs yet
-              </Text>
-            ) : (
-              entries.map((entry, index) => (
-                <View
-                  key={index}
-                  style={styles.logRow}
-                  testID={`log_entry_${index}`}
-                >
-                  <Text
-                    style={styles.timestamp}
-                    testID={`log_entry_${index}_timestamp`}
+            <ScrollView
+              style={{ minWidth: containerWidth }}
+              contentContainerStyle={styles.vertContent}
+              showsVerticalScrollIndicator={false}
+            >
+              {entries.length === 0 ? (
+                <Text style={styles.emptyText} testID="log_view_empty">
+                  No logs yet
+                </Text>
+              ) : (
+                entries.map((entry, index) => (
+                  <View
+                    key={index}
+                    style={styles.logRow}
+                    testID={`log_entry_${index}`}
                   >
-                    {entry.timestamp}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.level,
-                      { color: LEVEL_COLORS[entry.level] ?? AppColors.osGrey500 },
-                    ]}
-                    testID={`log_entry_${index}_level`}
-                  >
-                    {' '}
-                    {entry.level}{' '}
-                  </Text>
-                  <Text
-                    style={styles.message}
-                    testID={`log_entry_${index}_message`}
-                  >
-                    [{entry.tag}] {entry.message}
-                  </Text>
-                </View>
-              ))
-            )}
+                    <Text
+                      style={styles.timestamp}
+                      testID={`log_entry_${index}_timestamp`}
+                    >
+                      {entry.timestamp}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.level,
+                        {
+                          color:
+                            LEVEL_COLORS[entry.level] ?? AppColors.osGrey500,
+                        },
+                      ]}
+                      testID={`log_entry_${index}_level`}
+                    >
+                      {entry.level}
+                    </Text>
+                    <Text
+                      style={styles.message}
+                      testID={`log_entry_${index}_message`}
+                    >
+                      {entry.tag}: {entry.message}
+                    </Text>
+                  </View>
+                ))
+              )}
+            </ScrollView>
           </ScrollView>
-        </ScrollView>
+        </View>
       )}
     </View>
   );
@@ -164,16 +159,17 @@ const styles = StyleSheet.create({
   expandIcon: {
     marginLeft: 8,
   },
-  horizScroll: {
-    flex: 1,
+  listContainer: {
+    height: 100,
   },
-  vertScroll: {
+  vertContent: {
     paddingHorizontal: 12,
     paddingBottom: 4,
   },
   logRow: {
     flexDirection: 'row',
     paddingVertical: 1,
+    gap: 4,
   },
   timestamp: {
     fontSize: 11,
@@ -193,7 +189,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 11,
     color: AppColors.osGrey500,
-    fontStyle: 'italic',
-    paddingVertical: 4,
+    paddingVertical: 12,
+    textAlign: 'center',
   },
 });
