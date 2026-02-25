@@ -304,14 +304,14 @@ export namespace OneSignal {
       }
 
       /**
-       * @deprecated This method is deprecated. It has been replaced by {@link getIdAsync}.
+       * @deprecated getPushSubscriptionId is deprecated. It has been replaced by {@link getIdAsync}.
        */
       export function getPushSubscriptionId(): string {
         if (!isNativeModuleLoaded(RNOneSignal)) {
           return '';
         }
         console.warn(
-          'OneSignal: This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
+          'OneSignal: The method getPushSubscriptionId has been deprecated. Use getIdAsync instead for getting push subscription id.',
         );
 
         return pushSub.id ? pushSub.id : '';
@@ -328,14 +328,14 @@ export namespace OneSignal {
       }
 
       /**
-       * @deprecated This method is deprecated. It has been replaced by {@link getTokenAsync}.
+       * @deprecated getPushSubscriptionToken is deprecated. It has been replaced by {@link getTokenAsync}.
        */
       export function getPushSubscriptionToken(): string {
         if (!isNativeModuleLoaded(RNOneSignal)) {
           return '';
         }
         console.warn(
-          'OneSignal: This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
+          'OneSignal: The method getPushSubscriptionToken has been deprecated. Use getTokenAsync instead for getting push subscription token.',
         );
 
         return pushSub.token ? pushSub.token : '';
@@ -353,14 +353,14 @@ export namespace OneSignal {
       }
 
       /**
-       * @deprecated This method is deprecated. It has been replaced by {@link getOptedInAsync}.
+       * @deprecated getOptedIn is deprecated. It has been replaced by {@link getOptedInAsync}.
        */
       export function getOptedIn(): boolean {
         if (!isNativeModuleLoaded(RNOneSignal)) {
           return false;
         }
         console.warn(
-          'OneSignal: This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
+          'OneSignal: The method getOptedIn has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
         );
 
         return pushSub.optedIn ?? false;
