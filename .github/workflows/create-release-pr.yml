@@ -85,10 +85,7 @@ jobs:
           bun-version: latest
 
       - name: Install
-        run: |
-          bun install --frozen-lockfile
-          cd examples/demo
-          bun run setup
+        run: bun install --frozen-lockfile
 
       - name: Get current native SDK versions from target branch
         id: current_versions
