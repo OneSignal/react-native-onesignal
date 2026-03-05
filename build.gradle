@@ -17,9 +17,9 @@ apply plugin: 'com.diffplug.spotless'
 
 spotless {
   java {
-    target 'android/**/*.java', 'examples/RNOneSignalTS/android/app/src/**/*.java'
+    target 'android/**/*.java', 'examples/demo/android/app/src/**/*.java'
     targetExclude '**/build/**'
-    palantirJavaFormat('2.28.0')
+    palantirJavaFormat('2.85.0')
     removeUnusedImports()
     trimTrailingWhitespace()
     endWithNewline()
