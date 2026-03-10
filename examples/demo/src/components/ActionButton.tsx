@@ -31,8 +31,7 @@ export default function ActionButton({
   iconPosition = 'left',
   leftAligned,
 }: Props) {
-  const bgColor =
-    variant === 'primary' ? AppColors.osPrimary : 'transparent';
+  const bgColor = variant === 'primary' ? AppColors.osPrimary : 'transparent';
 
   const borderStyle =
     variant === 'outlined' || variant === 'destructive'

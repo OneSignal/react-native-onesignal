@@ -56,11 +56,10 @@ static void injectSelector(Class newClass, SEL newSel, Class addToClass,
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     Class delegateClass = [delegate class];
-    injectSelector(self.class,
-                   @selector(oneSignalApplication:
-                       didFinishLaunchingWithOptions:),
-                   delegateClass,
-                   @selector(application:didFinishLaunchingWithOptions:));
+    injectSelector(
+        self.class,
+        @selector(oneSignalApplication:didFinishLaunchingWithOptions:),
+        delegateClass, @selector(application:didFinishLaunchingWithOptions:));
     [self setOneSignalReactNativeDelegate:delegate];
   });
 }
@@ -68,8 +67,8 @@ static void injectSelector(Class newClass, SEL newSel, Class addToClass,
 - (BOOL)oneSignalApplication:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   [[RCTOneSignal sharedInstance] initOneSignal:launchOptions];
-  if ([self respondsToSelector:@selector(oneSignalApplication:
-                                   didFinishLaunchingWithOptions:)])
+  if ([self respondsToSelector:
+                @selector(oneSignalApplication:didFinishLaunchingWithOptions:)])
     return [self oneSignalApplication:application
         didFinishLaunchingWithOptions:launchOptions];
   return YES;
