@@ -7,12 +7,14 @@ import { NotificationType } from '../../models/NotificationType';
 interface Props {
   onSendNotification: (type: NotificationType) => void;
   onSendCustomNotification: (title: string, body: string) => void;
+  onClearAll: () => void;
   onInfoTap?: () => void;
 }
 
 export default function SendPushSection({
   onSendNotification,
   onSendCustomNotification,
+  onClearAll,
   onInfoTap,
 }: Props) {
   const [customVisible, setCustomVisible] = useState(false);
@@ -33,6 +35,12 @@ export default function SendPushSection({
         label="CUSTOM"
         onPress={() => setCustomVisible(true)}
         testID="send_custom_push_button"
+      />
+      <ActionButton
+        label="CLEAR ALL"
+        variant="outlined"
+        onPress={onClearAll}
+        testID="clear_all_notifications_button"
       />
       <CustomNotificationModal
         visible={customVisible}

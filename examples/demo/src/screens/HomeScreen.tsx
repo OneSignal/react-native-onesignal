@@ -84,6 +84,7 @@ export default function HomeScreen() {
         <SendPushSection
           onSendNotification={app.sendNotification}
           onSendCustomNotification={app.sendCustomNotification}
+          onClearAll={app.clearAllNotifications}
           onInfoTap={() => showTooltipModal('sendPushNotification')}
         />
 

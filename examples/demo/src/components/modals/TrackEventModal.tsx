@@ -9,7 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { AppColors, AppTextStyles, AppSpacing, AppDialogStyles } from '../../theme';
+import {
+  AppColors,
+  AppTextStyles,
+  AppSpacing,
+  AppDialogStyles,
+} from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -102,7 +107,11 @@ export default function TrackEventModal({
           />
           <Text style={styles.label}>Properties (optional, JSON)</Text>
           <TextInput
-            style={[AppDialogStyles.input, styles.inputSpacing, styles.jsonInput]}
+            style={[
+              AppDialogStyles.input,
+              styles.inputSpacing,
+              styles.jsonInput,
+            ]}
             placeholder={'{"key": "value"}'}
             placeholderTextColor={AppColors.osGrey600}
             value={propertiesText}

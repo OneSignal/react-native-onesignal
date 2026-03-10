@@ -17,11 +17,7 @@ interface Props {
   onClose: () => void;
 }
 
-export default function LoginModal({
-  visible,
-  onConfirm,
-  onClose,
-}: Props) {
+export default function LoginModal({ visible, onConfirm, onClose }: Props) {
   const [userId, setUserId] = useState('');
 
   const handleConfirm = () => {
@@ -50,9 +46,7 @@ export default function LoginModal({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={AppDialogStyles.container}>
-          <Text style={AppDialogStyles.title}>
-            Login User
-          </Text>
+          <Text style={AppDialogStyles.title}>Login User</Text>
           <Text style={styles.label}>External User Id</Text>
           <TextInput
             style={[AppDialogStyles.input, styles.inputSpacing]}

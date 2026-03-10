@@ -130,6 +130,10 @@ class OneSignalRepository {
     return OneSignal.Notifications.requestPermission(fallbackToSettings);
   }
 
+  clearAllNotifications(): void {
+    OneSignal.Notifications.clearAll();
+  }
+
   // In-App Messages
   setPaused(paused: boolean): void {
     OneSignal.InAppMessages.setPaused(paused);
