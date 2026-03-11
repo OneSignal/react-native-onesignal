@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../theme';
 
 interface Props {
@@ -16,8 +17,8 @@ export default function SectionCard({
   style,
 }: Props) {
   return (
-    <View style={[styles.wrapper, style]}>
-      <View style={styles.header}>
+    <Animated.View entering={FadeInDown.duration(400)} style={[styles.wrapper, style]}>
+      <Animated.View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
         {onInfoTap && (
           <TouchableOpacity
@@ -27,9 +28,9 @@ export default function SectionCard({
             <Text style={styles.infoIcon}>ⓘ</Text>
           </TouchableOpacity>
         )}
-      </View>
+      </Animated.View>
       {children}
-    </View>
+    </Animated.View>
   );
 }
 
