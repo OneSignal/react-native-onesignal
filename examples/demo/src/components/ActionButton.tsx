@@ -1,12 +1,19 @@
 import React from 'react';
 import {
-  TouchableOpacity,
+  Pressable,
   Text,
   StyleSheet,
   View,
   ActivityIndicator,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { AppColors, AppSpacing } from '../theme';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface Props {
   label: string;
@@ -31,6 +38,12 @@ export default function ActionButton({
   iconPosition = 'left',
   leftAligned,
 }: Props) {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
   const bgColor = variant === 'primary' ? AppColors.osPrimary : 'transparent';
 
   const borderStyle =
@@ -44,8 +57,10 @@ export default function ActionButton({
       : AppColors.white;
 
   return (
-    <TouchableOpacity
+    <AnimatedPressable
       onPress={onPress}
+      onPressIn={() => { scale.value = withSpring(0.96); }}
+      onPressOut={() => { scale.value = withSpring(1); }}
       disabled={disabled || loading}
       testID={testID}
       style={[
@@ -53,8 +68,8 @@ export default function ActionButton({
         { backgroundColor: bgColor },
         borderStyle,
         (disabled || loading) && styles.disabled,
+        animatedStyle,
       ]}
-      activeOpacity={0.8}
     >
       {loading ? (
         <ActivityIndicator color={textColor} />
@@ -69,7 +84,7 @@ export default function ActionButton({
           )}
         </View>
       )}
-    </TouchableOpacity>
+    </AnimatedPressable>
   );
 }
 
