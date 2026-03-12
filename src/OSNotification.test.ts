@@ -1,7 +1,8 @@
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+
+import { mockRNOneSignal } from '../__mocks__/react-native';
 import OSNotification, { type BaseNotificationData } from './OSNotification';
 
-const mockRNOneSignal = NativeModules.OneSignal;
 const mockPlatform = Platform;
 
 describe('OSNotification', () => {

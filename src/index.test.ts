@@ -1,5 +1,6 @@
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
+import { mockRNOneSignal } from '../__mocks__/react-native';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -16,7 +17,6 @@ import EventManager, { type EventListenerMap } from './events/EventManager';
 import * as helpers from './helpers';
 import { LogLevel, OneSignal, OSNotificationPermission } from './index';
 
-const mockRNOneSignal = NativeModules.OneSignal;
 const mockPlatform = Platform;
 
 const APP_ID = 'test-app-id';
