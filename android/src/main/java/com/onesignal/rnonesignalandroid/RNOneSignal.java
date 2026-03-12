@@ -42,12 +42,10 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.onesignal.Continue;
 import com.onesignal.OneSignal;
 import com.onesignal.common.OneSignalWrapper;
@@ -84,7 +82,6 @@ public class RNOneSignal extends NativeOneSignalSpec
     public static final String NAME = "OneSignal";
 
     private ReactApplicationContext mReactApplicationContext;
-    private ReactContext mReactContext;
 
     private boolean oneSignalInitDone;
     private boolean hasSetPermissionObserver = false;
@@ -106,8 +103,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         @Override
         public void onClick(IInAppMessageClickEvent event) {
             try {
-                sendEvent(
-                        "OneSignal-inAppMessageClicked",
+                emitOnInAppMessageClicked(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageClickEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -119,8 +115,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         @Override
         public void onWillDisplay(IInAppMessageWillDisplayEvent event) {
             try {
-                sendEvent(
-                        "OneSignal-inAppMessageWillDisplay",
+                emitOnInAppMessageWillDisplay(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageWillDisplayEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -130,8 +125,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         @Override
         public void onDidDisplay(IInAppMessageDidDisplayEvent event) {
             try {
-                sendEvent(
-                        "OneSignal-inAppMessageDidDisplay",
+                emitOnInAppMessageDidDisplay(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageDidDisplayEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -141,8 +135,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         @Override
         public void onWillDismiss(IInAppMessageWillDismissEvent event) {
             try {
-                sendEvent(
-                        "OneSignal-inAppMessageWillDismiss",
+                emitOnInAppMessageWillDismiss(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageWillDismissEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -152,8 +145,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         @Override
         public void onDidDismiss(IInAppMessageDidDismissEvent event) {
             try {
-                sendEvent(
-                        "OneSignal-inAppMessageDidDismiss",
+                emitOnInAppMessageDidDismiss(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageDidDismissEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -165,8 +157,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         @Override
         public void onClick(INotificationClickEvent event) {
             try {
-                sendEvent(
-                        "OneSignal-notificationClicked",
+                emitOnNotificationClicked(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertNotificationClickEventToMap(event)));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -202,17 +193,10 @@ public class RNOneSignal extends NativeOneSignalSpec
         }
     }
 
-    private void sendEvent(String eventName, Object params) {
-        mReactContext
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit(eventName, params);
-    }
-
     public RNOneSignal(ReactApplicationContext reactContext) {
         super(reactContext);
         mReactApplicationContext = reactContext;
-        mReactContext = reactContext;
-        mReactContext.addLifecycleEventListener(this);
+        mReactApplicationContext.addLifecycleEventListener(this);
         notificationWillDisplayCache = new HashMap<String, INotificationWillDisplayEvent>();
         preventDefaultCache = new HashMap<String, INotificationWillDisplayEvent>();
 
@@ -383,8 +367,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         event.preventDefault();
 
         try {
-            sendEvent(
-                    "OneSignal-notificationWillDisplayInForeground",
+            emitOnNotificationWillDisplay(
                     RNUtils.convertHashMapToWritableMap(RNUtils.convertNotificationToMap(notification)));
 
             try {
@@ -442,8 +425,7 @@ public class RNOneSignal extends NativeOneSignalSpec
     @Override
     public void onNotificationPermissionChange(boolean permission) {
         try {
-            sendEvent(
-                    "OneSignal-permissionChanged",
+            emitOnPermissionChanged(
                     RNUtils.convertHashMapToWritableMap(RNUtils.convertPermissionToMap(permission)));
             Logging.debug("Sending permission change event", null);
         } catch (JSONException e) {
@@ -588,8 +570,7 @@ public class RNOneSignal extends NativeOneSignalSpec
     @Override
     public void onPushSubscriptionChange(PushSubscriptionChangedState pushSubscriptionChangedState) {
         try {
-            sendEvent(
-                    "OneSignal-subscriptionChanged",
+            emitOnSubscriptionChanged(
                     RNUtils.convertHashMapToWritableMap(
                             RNUtils.convertPushSubscriptionChangedStateToMap(pushSubscriptionChangedState)));
             Logging.debug("Sending subscription change event", null);
@@ -734,8 +715,7 @@ public class RNOneSignal extends NativeOneSignalSpec
     @Override
     public void onUserStateChange(UserChangedState state) {
         try {
-            sendEvent(
-                    "OneSignal-userStateChanged",
+            emitOnUserStateChanged(
                     RNUtils.convertHashMapToWritableMap(RNUtils.convertUserChangedStateToMap(state)));
             Logging.debug("Sending user state change event", null);
         } catch (JSONException e) {
@@ -748,16 +728,6 @@ public class RNOneSignal extends NativeOneSignalSpec
             OneSignal.getUser().removeObserver(this);
             hasSetUserStateObserver = false;
         }
-    }
-
-    @Override
-    public void addListener(String eventName) {
-        // Required for RN built in Event Emitter Calls.
-    }
-
-    @Override
-    public void removeListeners(double count) {
-        // Required for RN built in Event Emitter Calls.
     }
 
     @Override

@@ -97,7 +97,35 @@ RCT_EXPORT_MODULE(OneSignal)
   if (!_hasListeners)
     return;
 
-  [self sendEventWithName:notification.name body:notification.userInfo];
+  NSString *name = notification.name;
+  NSDictionary *body = notification.userInfo;
+
+#ifdef RCT_NEW_ARCH_ENABLED
+  if ([name isEqualToString:OSEventString(PermissionChanged)]) {
+    [self emitOnPermissionChanged:body];
+  } else if ([name isEqualToString:OSEventString(SubscriptionChanged)]) {
+    [self emitOnSubscriptionChanged:body];
+  } else if ([name isEqualToString:OSEventString(UserStateChanged)]) {
+    [self emitOnUserStateChanged:body];
+  } else if ([name isEqualToString:
+                        OSEventString(NotificationWillDisplayInForeground)]) {
+    [self emitOnNotificationWillDisplay:body];
+  } else if ([name isEqualToString:OSEventString(NotificationClicked)]) {
+    [self emitOnNotificationClicked:body];
+  } else if ([name isEqualToString:OSEventString(InAppMessageClicked)]) {
+    [self emitOnInAppMessageClicked:body];
+  } else if ([name isEqualToString:OSEventString(InAppMessageWillDisplay)]) {
+    [self emitOnInAppMessageWillDisplay:body];
+  } else if ([name isEqualToString:OSEventString(InAppMessageDidDisplay)]) {
+    [self emitOnInAppMessageDidDisplay:body];
+  } else if ([name isEqualToString:OSEventString(InAppMessageWillDismiss)]) {
+    [self emitOnInAppMessageWillDismiss:body];
+  } else if ([name isEqualToString:OSEventString(InAppMessageDidDismiss)]) {
+    [self emitOnInAppMessageDidDismiss:body];
+  }
+#else
+  [self sendEventWithName:name body:body];
+#endif
 }
 
 + (void)sendEventWithName:(NSString *)name withBody:(NSDictionary *)body {
@@ -620,20 +648,5 @@ RCT_EXPORT_METHOD(trackEvent : (NSString *)name
                   properties : (NSDictionary *_Nullable)properties) {
   [OneSignal.User trackEventWithName:name properties:properties];
 }
-
-RCT_EXPORT_METHOD(addListener : (NSString *)eventName) {
-  // Required for NativeEventEmitter under the New Architecture.
-}
-
-RCT_EXPORT_METHOD(removeListeners : (double)count) {
-  // Required for NativeEventEmitter under the New Architecture.
-}
-
-#ifdef RCT_NEW_ARCH_ENABLED
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
-    (const facebook::react::ObjCTurboModule::InitParams &)params {
-  return std::make_shared<facebook::react::NativeOneSignalSpecJSI>(params);
-}
-#endif
 
 @end

@@ -1,5 +1,3 @@
-import { NativeEventEmitter } from 'react-native';
-import { createEmitterSubscriptionMock } from '../../__mocks__/react-native';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -16,92 +14,82 @@ import OSNotification from '../OSNotification';
 import type { NotificationClickEvent } from '../types/notificationEvents';
 import type { PushSubscriptionChangedState } from '../types/subscription';
 import type { UserChangedState } from '../types/user';
-import EventManager, { type RawEventListenerMap } from './EventManager';
+import EventManager from './EventManager';
 import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
+
+function createMockNativeModule() {
+  const callbacks = new Map<string, (payload: unknown) => void>();
+
+  const makeEmitter = (name: string) =>
+    vi.fn((cb: (payload: unknown) => void) => {
+      callbacks.set(name, cb);
+      return { remove: vi.fn() };
+    });
+
+  const module = {
+    onPermissionChanged: makeEmitter('onPermissionChanged'),
+    onSubscriptionChanged: makeEmitter('onSubscriptionChanged'),
+    onUserStateChanged: makeEmitter('onUserStateChanged'),
+    onNotificationWillDisplay: makeEmitter('onNotificationWillDisplay'),
+    onNotificationClicked: makeEmitter('onNotificationClicked'),
+    onInAppMessageClicked: makeEmitter('onInAppMessageClicked'),
+    onInAppMessageWillDisplay: makeEmitter('onInAppMessageWillDisplay'),
+    onInAppMessageDidDisplay: makeEmitter('onInAppMessageDidDisplay'),
+    onInAppMessageWillDismiss: makeEmitter('onInAppMessageWillDismiss'),
+    onInAppMessageDidDismiss: makeEmitter('onInAppMessageDidDismiss'),
+  };
+
+  return { module, callbacks };
+}
 
 describe('EventManager', () => {
   let eventManager: EventManager;
-  let mockNativeModule: any;
-  let eventCallbacks: Map<string, (payload: any) => void>;
-
-  const getCallback = <K extends keyof RawEventListenerMap>(
-    eventName: K,
-  ): RawEventListenerMap[K] | undefined => {
-    return eventCallbacks.get(eventName) as RawEventListenerMap[K] | undefined;
-  };
+  let mockModule: ReturnType<typeof createMockNativeModule>['module'];
+  let callbacks: Map<string, (payload: unknown) => void>;
 
   beforeEach(() => {
-    eventCallbacks = new Map();
-
-    mockNativeModule = {
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-    };
-
-    // Spy on NativeEventEmitter.prototype.addListener to capture callbacks
-    vi.spyOn(NativeEventEmitter.prototype, 'addListener').mockImplementation(
-      (eventName: string, callback: (payload: any) => void) => {
-        eventCallbacks.set(eventName, callback);
-        return createEmitterSubscriptionMock(eventName, callback) as never;
-      },
-    );
-
-    eventManager = new EventManager(mockNativeModule);
+    const mock = createMockNativeModule();
+    mockModule = mock.module;
+    callbacks = mock.callbacks;
+    eventManager = new EventManager(mockModule as never);
   });
 
   describe('constructor', () => {
-    test('should initialize with all required properties and listeners', () => {
+    test('should initialize with all required properties', () => {
       expect(eventManager).toBeDefined();
-      expect(eventManager['RNOneSignal']).toBe(mockNativeModule);
-      expect(eventManager['oneSignalEventEmitter']).toBeDefined();
+      expect(eventManager['RNOneSignal']).toBe(mockModule);
       expect(eventManager['eventListenerArrayMap']).toBeInstanceOf(Map);
-
-      const listeners = eventManager['listeners'];
-      const expectedEvents = [
-        PERMISSION_CHANGED,
-        SUBSCRIPTION_CHANGED,
-        USER_STATE_CHANGED,
-        NOTIFICATION_WILL_DISPLAY,
-        NOTIFICATION_CLICKED,
-        IN_APP_MESSAGE_CLICKED,
-        IN_APP_MESSAGE_WILL_DISPLAY,
-        IN_APP_MESSAGE_WILL_DISMISS,
-        IN_APP_MESSAGE_DID_DISMISS,
-        IN_APP_MESSAGE_DID_DISPLAY,
-      ];
-
-      expectedEvents.forEach((eventName) => {
-        expect(listeners[eventName]).toBeDefined();
-      });
-
-      // Verify that eventCallbacks were populated during setup
-      expect(eventCallbacks.size).toBe(10);
     });
   });
 
   describe('setupListeners', () => {
-    test('should register all event listeners with NativeEventEmitter', () => {
-      const eventList = [
-        PERMISSION_CHANGED,
-        SUBSCRIPTION_CHANGED,
-        USER_STATE_CHANGED,
-        NOTIFICATION_WILL_DISPLAY,
-        NOTIFICATION_CLICKED,
-        IN_APP_MESSAGE_CLICKED,
-        IN_APP_MESSAGE_WILL_DISPLAY,
-        IN_APP_MESSAGE_WILL_DISMISS,
-        IN_APP_MESSAGE_DID_DISMISS,
-        IN_APP_MESSAGE_DID_DISPLAY,
-      ];
+    test('should subscribe to all 10 event emitters', () => {
+      expect(mockModule.onPermissionChanged).toHaveBeenCalledOnce();
+      expect(mockModule.onSubscriptionChanged).toHaveBeenCalledOnce();
+      expect(mockModule.onUserStateChanged).toHaveBeenCalledOnce();
+      expect(mockModule.onNotificationWillDisplay).toHaveBeenCalledOnce();
+      expect(mockModule.onNotificationClicked).toHaveBeenCalledOnce();
+      expect(mockModule.onInAppMessageClicked).toHaveBeenCalledOnce();
+      expect(mockModule.onInAppMessageWillDisplay).toHaveBeenCalledOnce();
+      expect(mockModule.onInAppMessageDidDisplay).toHaveBeenCalledOnce();
+      expect(mockModule.onInAppMessageWillDismiss).toHaveBeenCalledOnce();
+      expect(mockModule.onInAppMessageDidDismiss).toHaveBeenCalledOnce();
 
-      eventList.forEach((eventName) => {
-        expect(eventCallbacks.has(eventName)).toBe(true);
+      expect(callbacks.size).toBe(10);
+    });
+
+    test('should store native subscriptions', () => {
+      const subscriptions = eventManager['nativeSubscriptions'];
+      expect(subscriptions.length).toBe(10);
+      subscriptions.forEach((sub) => {
+        expect(sub.remove).toBeDefined();
       });
     });
 
     test('should not setup listeners if RNOneSignal is null', () => {
-      new EventManager(null as any);
-      expect(mockNativeModule.addListener).not.toHaveBeenCalled();
+      const { module: freshModule } = createMockNativeModule();
+      new EventManager(null as never);
+      expect(freshModule.onPermissionChanged).not.toHaveBeenCalled();
     });
   });
 
@@ -178,7 +166,8 @@ describe('EventManager', () => {
     test('should do nothing if event does not exist', () => {
       const handler = vi.fn();
       expect(() => {
-        eventManager.removeEventListener('non-existent-event' as any, handler);
+        // @ts-expect-error testing invalid event name
+        eventManager.removeEventListener('non-existent-event', handler);
       }).not.toThrow();
     });
 
@@ -199,20 +188,13 @@ describe('EventManager', () => {
     });
   });
 
-  describe('generateEventListener', () => {
-    test('should return an EmitterSubscription', () => {
-      const listener =
-        eventManager['generateEventListener'](PERMISSION_CHANGED);
-      expect(listener).toBeDefined();
-      expect(listener.remove).toBeDefined();
-    });
-
+  describe('event dispatching', () => {
     test('should handle NOTIFICATION_WILL_DISPLAY events', () => {
       const handler = vi.fn();
       eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, handler);
 
-      const callback = getCallback(NOTIFICATION_WILL_DISPLAY);
-      callback!(rawWillDisplayPayload);
+      const emitCallback = callbacks.get('onNotificationWillDisplay')!;
+      emitCallback(rawWillDisplayPayload);
 
       expect(handler).toHaveBeenCalled();
       const receivedEvent = handler.mock.calls[0][0];
@@ -223,20 +205,18 @@ describe('EventManager', () => {
       const handler = vi.fn();
       eventManager.addEventListener(PERMISSION_CHANGED, handler);
 
-      const payload = getRawPermissionChangedPayload(true);
-      const callback = getCallback(PERMISSION_CHANGED);
-      callback!(payload);
+      const emitCallback = callbacks.get('onPermissionChanged')!;
+      emitCallback(getRawPermissionChangedPayload(true));
 
       expect(handler).toHaveBeenCalledWith(true);
     });
 
     test('should handle generic events with object payload', () => {
       const handler = vi.fn();
-
       eventManager.addEventListener(SUBSCRIPTION_CHANGED, handler);
 
-      const callback = getCallback(SUBSCRIPTION_CHANGED);
-      callback!(pushChangedPayload);
+      const emitCallback = callbacks.get('onSubscriptionChanged')!;
+      emitCallback(pushChangedPayload);
 
       expect(handler).toHaveBeenCalledWith(pushChangedPayload);
     });
@@ -250,11 +230,11 @@ describe('EventManager', () => {
       eventManager.addEventListener(USER_STATE_CHANGED, handler2);
       eventManager.addEventListener(USER_STATE_CHANGED, handler3);
 
-      const callback = getCallback(USER_STATE_CHANGED);
+      const emitCallback = callbacks.get('onUserStateChanged')!;
       const payload = {
         current: { onesignalId: '123', externalId: '456' },
       } satisfies UserChangedState;
-      callback!(payload);
+      emitCallback(payload);
 
       expect(handler1).toHaveBeenCalledWith(payload);
       expect(handler2).toHaveBeenCalledWith(payload);
@@ -262,10 +242,10 @@ describe('EventManager', () => {
     });
 
     test('should do nothing if no handlers are registered', () => {
-      const callback = getCallback(IN_APP_MESSAGE_WILL_DISPLAY);
+      const emitCallback = callbacks.get('onInAppMessageWillDisplay')!;
 
       expect(() => {
-        callback!({ message: { messageId: 'msg-123' } });
+        emitCallback({ message: { messageId: 'msg-123' } });
       }).not.toThrow();
     });
 
@@ -278,8 +258,8 @@ describe('EventManager', () => {
 
       eventManager.addEventListener(IN_APP_MESSAGE_CLICKED, handler);
 
-      const callback = getCallback(IN_APP_MESSAGE_CLICKED);
-      callback!(payload);
+      const emitCallback = callbacks.get('onInAppMessageClicked')!;
+      emitCallback(payload);
 
       expect(handler).toHaveBeenCalledWith(payload);
     });
@@ -290,8 +270,8 @@ describe('EventManager', () => {
 
       eventManager.addEventListener(IN_APP_MESSAGE_WILL_DISPLAY, handler);
 
-      const callback = getCallback(IN_APP_MESSAGE_WILL_DISPLAY);
-      callback!(payload);
+      const emitCallback = callbacks.get('onInAppMessageWillDisplay')!;
+      emitCallback(payload);
 
       expect(handler).toHaveBeenCalledWith(payload);
     });
@@ -302,8 +282,8 @@ describe('EventManager', () => {
 
       eventManager.addEventListener(IN_APP_MESSAGE_DID_DISPLAY, handler);
 
-      const callback = getCallback(IN_APP_MESSAGE_DID_DISPLAY);
-      callback!(payload);
+      const emitCallback = callbacks.get('onInAppMessageDidDisplay')!;
+      emitCallback(payload);
 
       expect(handler).toHaveBeenCalledWith(payload);
     });
@@ -314,8 +294,8 @@ describe('EventManager', () => {
 
       eventManager.addEventListener(IN_APP_MESSAGE_WILL_DISMISS, handler);
 
-      const callback = getCallback(IN_APP_MESSAGE_WILL_DISMISS);
-      callback!(payload);
+      const emitCallback = callbacks.get('onInAppMessageWillDismiss')!;
+      emitCallback(payload);
 
       expect(handler).toHaveBeenCalledWith(payload);
     });
@@ -326,8 +306,8 @@ describe('EventManager', () => {
 
       eventManager.addEventListener(IN_APP_MESSAGE_DID_DISMISS, handler);
 
-      const callback = getCallback(IN_APP_MESSAGE_DID_DISMISS);
-      callback!(payload);
+      const emitCallback = callbacks.get('onInAppMessageDidDismiss')!;
+      emitCallback(payload);
 
       expect(handler).toHaveBeenCalledWith(payload);
     });
@@ -345,8 +325,8 @@ describe('EventManager', () => {
 
       eventManager.addEventListener(NOTIFICATION_CLICKED, handler);
 
-      const callback = getCallback(NOTIFICATION_CLICKED);
-      callback!(payload);
+      const emitCallback = callbacks.get('onNotificationClicked')!;
+      emitCallback(payload);
 
       expect(handler).toHaveBeenCalledWith(payload);
     });
@@ -357,27 +337,21 @@ describe('EventManager', () => {
       const handler1 = vi.fn();
       const handler2 = vi.fn();
 
-      // Add handlers
       eventManager.addEventListener(PERMISSION_CHANGED, handler1);
       eventManager.addEventListener(PERMISSION_CHANGED, handler2);
 
-      // Trigger event
-      const callback = getCallback(PERMISSION_CHANGED);
-      const payload = getRawPermissionChangedPayload(true);
-      callback!(payload);
+      const emitCallback = callbacks.get('onPermissionChanged')!;
+      emitCallback(getRawPermissionChangedPayload(true));
 
       expect(handler1).toHaveBeenCalledWith(true);
       expect(handler2).toHaveBeenCalledWith(true);
 
-      // Remove one handler
       eventManager.removeEventListener(PERMISSION_CHANGED, handler1);
 
-      // Reset mocks
       handler1.mockClear();
       handler2.mockClear();
 
-      // Trigger event again
-      callback!(getRawPermissionChangedPayload(false));
+      emitCallback(getRawPermissionChangedPayload(false));
 
       expect(handler1).not.toHaveBeenCalled();
       expect(handler2).toHaveBeenCalledWith(false);
@@ -395,16 +369,11 @@ describe('EventManager', () => {
         notificationWillDisplayHandler,
       );
 
-      // Get callbacks
-      const permissionCallback = getCallback(PERMISSION_CHANGED);
-      const subscriptionCallback = getCallback(SUBSCRIPTION_CHANGED);
-      const notificationCallback = getCallback(NOTIFICATION_WILL_DISPLAY);
-
-      // Trigger different event types
-      const permissionPayload = getRawPermissionChangedPayload(true);
-      permissionCallback!(permissionPayload);
-      subscriptionCallback!(pushChangedPayload);
-      notificationCallback!(rawWillDisplayPayload);
+      callbacks.get('onPermissionChanged')!(
+        getRawPermissionChangedPayload(true),
+      );
+      callbacks.get('onSubscriptionChanged')!(pushChangedPayload);
+      callbacks.get('onNotificationWillDisplay')!(rawWillDisplayPayload);
 
       expect(permissionHandler).toHaveBeenCalledWith(true);
       expect(subscriptionHandler).toHaveBeenCalledWith(pushChangedPayload);
@@ -444,9 +413,9 @@ describe('EventManager', () => {
       eventManager.addEventListener(SUBSCRIPTION_CHANGED, handler2);
       eventManager.addEventListener(SUBSCRIPTION_CHANGED, handler3);
 
-      const callback = getCallback(SUBSCRIPTION_CHANGED);
+      const emitCallback = callbacks.get('onSubscriptionChanged')!;
 
-      callback!(pushChangedPayload);
+      emitCallback(pushChangedPayload);
       expect(handler1).toHaveBeenCalledWith(pushChangedPayload);
       expect(handler2).toHaveBeenCalledWith(pushChangedPayload);
       expect(handler3).toHaveBeenCalledWith(pushChangedPayload);
@@ -456,7 +425,7 @@ describe('EventManager', () => {
       handler2.mockClear();
       handler3.mockClear();
 
-      callback!(pushChangedPayload);
+      emitCallback(pushChangedPayload);
       expect(handler1).toHaveBeenCalledWith(pushChangedPayload);
       expect(handler2).not.toHaveBeenCalled();
       expect(handler3).toHaveBeenCalledWith(pushChangedPayload);
@@ -464,7 +433,6 @@ describe('EventManager', () => {
   });
 });
 
-// helper payloads
 const getRawPermissionChangedPayload = (permission: boolean) => ({
   permission: permission,
 });
