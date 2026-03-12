@@ -1,8 +1,6 @@
-import { NativeModules } from 'react-native';
+import { mockRNOneSignal } from '../../__mocks__/react-native';
 import OSNotification, { type BaseNotificationData } from '../OSNotification';
 import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
-
-const mockRNOneSignal = NativeModules.OneSignal;
 
 describe('NotificationWillDisplayEvent', () => {
   const notificationId = 'test-notification-id';
