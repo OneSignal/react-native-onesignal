@@ -109,6 +109,12 @@ android {
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
+configurations.all {
+    resolutionStrategy {
+        force 'com.squareup.okhttp3:okhttp:4.12.0'
+    }
+}
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
