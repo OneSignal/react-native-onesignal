@@ -94,8 +94,10 @@ RCT_EXPORT_MODULE(OneSignal)
 #pragma mark Send Event Methods
 
 - (void)emitEvent:(NSNotification *)notification {
+#ifndef RCT_NEW_ARCH_ENABLED
   if (!_hasListeners)
     return;
+#endif
 
   NSString *name = notification.name;
   NSDictionary *body = notification.userInfo;
@@ -648,5 +650,12 @@ RCT_EXPORT_METHOD(trackEvent : (NSString *)name
                   properties : (NSDictionary *_Nullable)properties) {
   [OneSignal.User trackEventWithName:name properties:properties];
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeOneSignalSpecJSI>(params);
+}
+#endif
 
 @end
