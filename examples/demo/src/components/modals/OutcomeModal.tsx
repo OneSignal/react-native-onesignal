@@ -9,7 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { AppColors, AppTextStyles, AppDialogStyles } from '../../theme';
+import {
+  AppColors,
+  AppTextStyles,
+  AppDialogStyles,
+  AppInputProps,
+} from '../../theme';
 
 type OutcomeType = 'normal' | 'unique' | 'withValue';
 
@@ -103,6 +108,7 @@ export default function OutcomeModal({
             value={name}
             onChangeText={setName}
             autoFocus
+            {...AppInputProps}
             testID="outcome_name_input"
           />
           {outcomeType === 'withValue' && (
@@ -113,6 +119,7 @@ export default function OutcomeModal({
               value={value}
               onChangeText={setValue}
               keyboardType="numeric"
+              {...AppInputProps}
               testID="outcome_value_input"
             />
           )}

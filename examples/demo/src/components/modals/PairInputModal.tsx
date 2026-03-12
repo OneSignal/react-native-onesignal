@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { AppColors, AppDialogStyles } from '../../theme';
+import { AppColors, AppDialogStyles, AppInputProps } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -78,6 +78,7 @@ export default function PairInputModal({
               value={keyValue}
               onChangeText={setKeyValue}
               autoFocus
+              {...AppInputProps}
               testID={keyTestID}
             />
             <TextInput
@@ -90,6 +91,7 @@ export default function PairInputModal({
               placeholderTextColor={AppColors.osGrey600}
               value={val}
               onChangeText={setVal}
+              {...AppInputProps}
               testID={valueTestID}
             />
           </View>
