@@ -34,9 +34,7 @@ import type {
   NotificationClickEvent,
   NotificationListeners,
 } from './types/notificationEvents';
-import type {
-  PushSubscriptionChangedState,
-} from './types/subscription';
+import type { PushSubscriptionChangedState } from './types/subscription';
 import type { UserChangedState, UserState } from './types/user';
 
 const RNOneSignal = NativeOneSignal;
@@ -140,7 +138,7 @@ export namespace OneSignal {
     export function enter(
       activityId: string,
       token: string,
-      handler: (result: Object) => void = () => {},
+      handler: (result: object) => void = () => {},
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
@@ -158,7 +156,7 @@ export namespace OneSignal {
      **/
     export function exit(
       activityId: string,
-      handler: (result: Object) => void = () => {},
+      handler: (result: object) => void = () => {},
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 

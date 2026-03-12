@@ -1170,7 +1170,10 @@ describe('OneSignal', () => {
       describe('addTrigger', () => {
         test('should add trigger', () => {
           OneSignal.InAppMessages.addTrigger('key', 'value');
-          expect(mockRNOneSignal.addTrigger).toHaveBeenCalledWith('key', 'value');
+          expect(mockRNOneSignal.addTrigger).toHaveBeenCalledWith(
+            'key',
+            'value',
+          );
         });
 
         test('should log error but still call native method if key is missing', () => {

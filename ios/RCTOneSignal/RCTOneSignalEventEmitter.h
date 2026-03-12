@@ -37,7 +37,8 @@ typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
 
 #define OSEventString(enum) [OSNotificationEventTypesArray objectAtIndex:enum]
 
-@interface RCTOneSignalEventEmitter : NativeOneSignalSpecBase <NativeOneSignalSpec>
+@interface RCTOneSignalEventEmitter
+    : NativeOneSignalSpecBase <NativeOneSignalSpec>
 
 + (void)sendEventWithName:(NSString *)name withBody:(NSDictionary *)body;
 

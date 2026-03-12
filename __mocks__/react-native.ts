@@ -1,7 +1,6 @@
 import { vi } from 'vitest';
 
-const createEventEmitterMock = () =>
-  vi.fn(() => ({ remove: vi.fn() }));
+const createEventEmitterMock = () => vi.fn(() => ({ remove: vi.fn() }));
 
 const mockRNOneSignal = {
   initialize: vi.fn(),
