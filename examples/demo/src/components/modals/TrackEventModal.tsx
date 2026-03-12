@@ -14,6 +14,7 @@ import {
   AppTextStyles,
   AppSpacing,
   AppDialogStyles,
+  AppInputProps,
 } from '../../theme';
 
 interface Props {
@@ -103,6 +104,7 @@ export default function TrackEventModal({
             value={name}
             onChangeText={setName}
             autoFocus
+            {...AppInputProps}
             testID="track_event_name_input"
           />
           <Text style={styles.label}>Properties (optional, JSON)</Text>
@@ -117,6 +119,7 @@ export default function TrackEventModal({
             value={propertiesText}
             onChangeText={handlePropertiesChange}
             multiline
+            {...AppInputProps}
             testID="track_event_properties_input"
           />
           {!!jsonError && <Text style={styles.errorText}>{jsonError}</Text>}

@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { AppColors, AppDialogStyles } from '../../theme';
+import { AppColors, AppDialogStyles, AppInputProps } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -67,6 +67,7 @@ export default function SingleInputModal({
             onChangeText={setValue}
             keyboardType={keyboardType}
             autoFocus
+            {...AppInputProps}
             testID={testID}
           />
           <View style={AppDialogStyles.actions}>

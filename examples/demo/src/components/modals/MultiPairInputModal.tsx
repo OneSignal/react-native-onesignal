@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { AppColors, AppDialogStyles } from '../../theme';
+import { AppColors, AppDialogStyles, AppInputProps } from '../../theme';
 
 interface Row {
   id: number;
@@ -107,6 +107,7 @@ export default function MultiPairInputModal({
                     value={row.key}
                     onChangeText={t => updateRow(row.id, 'key', t)}
                     autoFocus={idx === 0}
+                    {...AppInputProps}
                     testID={idx === 0 ? 'multi_pair_key_0' : undefined}
                   />
                   <TextInput
@@ -115,6 +116,7 @@ export default function MultiPairInputModal({
                     placeholderTextColor={AppColors.osGrey600}
                     value={row.value}
                     onChangeText={t => updateRow(row.id, 'value', t)}
+                    {...AppInputProps}
                     testID={idx === 0 ? 'multi_pair_value_0' : undefined}
                   />
                   {rows.length > 1 && (
