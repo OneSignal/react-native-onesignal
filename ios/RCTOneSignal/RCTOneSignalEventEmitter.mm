@@ -6,7 +6,6 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 @implementation RCTOneSignalEventEmitter {
-  BOOL _hasListeners;
   BOOL _hasSetSubscriptionObserver;
   BOOL _hasSetPermissionObserver;
   BOOL _hasSetUserStateObserver;
@@ -18,13 +17,7 @@
   NSMutableDictionary *_notificationWillDisplayCache;
 }
 
-static BOOL _didStartObserving = false;
-// Static reference to track current instance for cleanup on reload
 static RCTOneSignalEventEmitter *_currentInstance = nil;
-
-+ (BOOL)hasSetBridge {
-  return _didStartObserving;
-}
 
 + (BOOL)requiresMainQueueSetup {
   return YES;
@@ -32,14 +25,12 @@ static RCTOneSignalEventEmitter *_currentInstance = nil;
 
 RCT_EXPORT_MODULE(OneSignal)
 
-#pragma mark RCTEventEmitter Subclass Methods
-
 - (instancetype)init {
   if (self = [super init]) {
     _preventDefaultCache = [NSMutableDictionary new];
     _notificationWillDisplayCache = [NSMutableDictionary new];
 
-    for (NSString *eventName in [self supportedEvents])
+    for (NSString *eventName in OSNotificationEventTypesArray)
       [[NSNotificationCenter defaultCenter] addObserver:self
                                                selector:@selector(emitEvent:)
                                                    name:eventName
@@ -56,29 +47,11 @@ RCT_EXPORT_MODULE(OneSignal)
   return self;
 }
 
-- (void)startObserving {
-  _hasListeners = true;
-
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"didSetBridge"
-                                                      object:nil];
-
-  _didStartObserving = true;
-}
-
-- (void)stopObserving {
-  _hasListeners = false;
+- (void)invalidate {
   [self removeHandlers];
   [self removeObservers];
-}
-
-- (NSArray<NSString *> *)supportedEvents {
-  NSMutableArray *events = [NSMutableArray new];
-
-  for (int i = 0; i < OSNotificationEventTypesArray.count; i++) {
-    [events addObject:OSEventString(i)];
-  }
-
-  return events;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [super invalidate];
 }
 
 - (NSArray<NSString *> *)processNSError:(NSError *)error {
@@ -94,15 +67,9 @@ RCT_EXPORT_MODULE(OneSignal)
 #pragma mark Send Event Methods
 
 - (void)emitEvent:(NSNotification *)notification {
-#ifndef RCT_NEW_ARCH_ENABLED
-  if (!_hasListeners)
-    return;
-#endif
-
   NSString *name = notification.name;
   NSDictionary *body = notification.userInfo;
 
-#ifdef RCT_NEW_ARCH_ENABLED
   if ([name isEqualToString:OSEventString(PermissionChanged)]) {
     [self emitOnPermissionChanged:body];
   } else if ([name isEqualToString:OSEventString(SubscriptionChanged)]) {
@@ -125,9 +92,6 @@ RCT_EXPORT_MODULE(OneSignal)
   } else if ([name isEqualToString:OSEventString(InAppMessageDidDismiss)]) {
     [self emitOnInAppMessageDidDismiss:body];
   }
-#else
-  [self sendEventWithName:name body:body];
-#endif
 }
 
 + (void)sendEventWithName:(NSString *)name withBody:(NSDictionary *)body {
@@ -651,11 +615,9 @@ RCT_EXPORT_METHOD(trackEvent : (NSString *)name
   [OneSignal.User trackEventWithName:name properties:properties];
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params {
   return std::make_shared<facebook::react::NativeOneSignalSpecJSI>(params);
 }
-#endif
 
 @end
