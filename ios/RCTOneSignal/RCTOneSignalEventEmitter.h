@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
 #define OSEventString(enum) [OSNotificationEventTypesArray objectAtIndex:enum]
 
 #ifdef RCT_NEW_ARCH_ENABLED
-@interface RCTOneSignalEventEmitter : RCTEventEmitter <NativeOneSignalSpec>
+@interface RCTOneSignalEventEmitter : NativeOneSignalSpecBase <NativeOneSignalSpec>
 #else
 @interface RCTOneSignalEventEmitter : RCTEventEmitter <RCTBridgeModule>
 #endif
