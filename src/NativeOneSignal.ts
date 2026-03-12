@@ -17,19 +17,19 @@ export interface Spec extends TurboModule {
   enterLiveActivity(
     activityId: string,
     token: string,
-    callback: (result: object) => void,
+    callback: (result: Object) => void,
   ): void;
   exitLiveActivity(
     activityId: string,
-    callback: (result: object) => void,
+    callback: (result: Object) => void,
   ): void;
   setPushToStartToken(activityType: string, token: string): void;
   removePushToStartToken(activityType: string): void;
-  setupDefaultLiveActivity(options: object | null): void;
+  setupDefaultLiveActivity(options: Object | null): void;
   startDefaultLiveActivity(
     activityId: string,
-    attributes: object,
-    content: object,
+    attributes: Object,
+    content: Object,
   ): void;
 
   // Push Subscription
@@ -46,7 +46,7 @@ export interface Spec extends TurboModule {
   getExternalId(): Promise<string | null>;
   setLanguage(language: string): void;
   addAlias(label: string, id: string): void;
-  addAliases(aliases: object): void;
+  addAliases(aliases: Object): void;
   removeAlias(label: string): void;
   removeAliases(labels: string[]): void;
   addEmail(email: string): void;
@@ -54,10 +54,10 @@ export interface Spec extends TurboModule {
   addSms(smsNumber: string): void;
   removeSms(smsNumber: string): void;
   addTag(key: string, value: string): void;
-  addTags(tags: object): void;
+  addTags(tags: Object): void;
   removeTags(keys: string[]): void;
-  getTags(): Promise<object>;
-  trackEvent(name: string, properties: object): void;
+  getTags(): Promise<Object>;
+  trackEvent(name: string, properties: Object): void;
 
   // Notifications
   hasNotificationPermission(): Promise<boolean>;
@@ -79,7 +79,7 @@ export interface Spec extends TurboModule {
   // In-App Messages
   addInAppMessageClickListener(): void;
   addInAppMessagesLifecycleListener(): void;
-  addTriggers(triggers: object): void;
+  addTriggers(triggers: Object): void;
   removeTrigger(key: string): void;
   removeTriggers(keys: string[]): void;
   clearTriggers(): void;
