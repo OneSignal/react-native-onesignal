@@ -357,11 +357,11 @@ export function AppContextProvider({ children }: Props) {
       OneSignalApiService.getInstance().setAppId(appId);
 
       const externalId = await repository.getExternalId();
-      const [pushId, pushOptedIn] = await Promise.all([
+      const [pushId, pushOptedIn, hasPerm] = await Promise.all([
         repository.getPushSubscriptionIdAsync(),
         repository.isPushOptedInAsync(),
+        repository.hasPermission(),
       ]);
-      const hasPerm = repository.hasPermission();
 
       if (!mountedRef.current) {
         return;
@@ -422,13 +422,13 @@ export function AppContextProvider({ children }: Props) {
       });
     };
 
-    const permissionHandler = () => {
+    const permissionHandler = async () => {
       if (!mountedRef.current) {
         return;
       }
       dispatch({
         type: 'SET_HAS_NOTIFICATION_PERMISSION',
-        payload: repository.hasPermission(),
+        payload: await repository.hasPermission(),
       });
     };
 
