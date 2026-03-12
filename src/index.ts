@@ -41,7 +41,14 @@ import type {
 import type { UserChangedState, UserState } from './types/user';
 
 const RNOneSignal = NativeOneSignal;
+
+const GLOBAL_KEY = '__oneSignalEventManager';
+const prev = (globalThis as Record<string, unknown>)[GLOBAL_KEY];
+if (prev instanceof EventManager) {
+  prev.clearListeners();
+}
 const eventManager = new EventManager(RNOneSignal);
+(globalThis as Record<string, unknown>)[GLOBAL_KEY] = eventManager;
 
 /// An enum that declares different types of log levels you can use with the OneSignal SDK, going from the least verbose (none) to verbose (print all comments).
 export enum LogLevel {

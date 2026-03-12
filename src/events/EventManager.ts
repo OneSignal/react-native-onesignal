@@ -50,6 +50,12 @@ export default class EventManager {
     this.setupListeners();
   }
 
+  clearListeners() {
+    this.nativeSubscriptions.forEach((sub) => sub.remove());
+    this.nativeSubscriptions = [];
+    this.eventListenerArrayMap.clear();
+  }
+
   setupListeners() {
     if (this.RNOneSignal == null) return;
 
