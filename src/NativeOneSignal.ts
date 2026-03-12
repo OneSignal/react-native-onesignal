@@ -17,19 +17,19 @@ export interface Spec extends TurboModule {
   enterLiveActivity(
     activityId: string,
     token: string,
-    callback: (result: Object) => void,
+    callback: (result: object) => void,
   ): void;
   exitLiveActivity(
     activityId: string,
-    callback: (result: Object) => void,
+    callback: (result: object) => void,
   ): void;
   setPushToStartToken(activityType: string, token: string): void;
   removePushToStartToken(activityType: string): void;
-  setupDefaultLiveActivity(options: Object | null): void;
+  setupDefaultLiveActivity(options: object | null): void;
   startDefaultLiveActivity(
     activityId: string,
-    attributes: Object,
-    content: Object,
+    attributes: object,
+    content: object,
   ): void;
 
   // Push Subscription
@@ -46,7 +46,7 @@ export interface Spec extends TurboModule {
   getExternalId(): Promise<string | null>;
   setLanguage(language: string): void;
   addAlias(label: string, id: string): void;
-  addAliases(aliases: Object): void;
+  addAliases(aliases: object): void;
   removeAlias(label: string): void;
   removeAliases(labels: string[]): void;
   addEmail(email: string): void;
@@ -54,16 +54,14 @@ export interface Spec extends TurboModule {
   addSms(smsNumber: string): void;
   removeSms(smsNumber: string): void;
   addTag(key: string, value: string): void;
-  addTags(tags: Object): void;
+  addTags(tags: object): void;
   removeTags(keys: string[]): void;
-  getTags(): Promise<Object>;
-  trackEvent(name: string, properties: Object): void;
+  getTags(): Promise<object>;
+  trackEvent(name: string, properties: object): void;
 
   // Notifications
   hasNotificationPermission(): Promise<boolean>;
-  requestNotificationPermission(
-    fallbackToSettings: boolean,
-  ): Promise<boolean>;
+  requestNotificationPermission(fallbackToSettings: boolean): Promise<boolean>;
   canRequestNotificationPermission(): Promise<boolean>;
   registerForProvisionalAuthorization(
     callback: (accepted: boolean) => void,
@@ -81,7 +79,7 @@ export interface Spec extends TurboModule {
   // In-App Messages
   addInAppMessageClickListener(): void;
   addInAppMessagesLifecycleListener(): void;
-  addTriggers(triggers: Object): void;
+  addTriggers(triggers: object): void;
   removeTrigger(key: string): void;
   removeTriggers(keys: string[]): void;
   clearTriggers(): void;

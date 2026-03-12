@@ -24,14 +24,9 @@ public class ReactNativeOneSignalPackage extends BaseReactPackage {
             @Override
             public Map<String, ReactModuleInfo> getReactModuleInfos() {
                 Map<String, ReactModuleInfo> map = new HashMap<>();
-                map.put(RNOneSignal.NAME, new ReactModuleInfo(
-                    RNOneSignal.NAME,
-                    RNOneSignal.NAME,
-                    false,
-                    false,
-                    false,
-                    true
-                ));
+                map.put(
+                        RNOneSignal.NAME,
+                        new ReactModuleInfo(RNOneSignal.NAME, RNOneSignal.NAME, false, false, false, true));
                 return map;
             }
         };
