@@ -295,7 +295,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         OneSignal.getInAppMessages().setPaused(pause);
     }
 
-    @ReactMethod
+    @Override
     public void addTrigger(String key, String value) {
         OneSignal.getInAppMessages().addTrigger(key, value);
     }
@@ -621,7 +621,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         OneSignal.getUser().addTag(key, value);
     }
 
-    @ReactMethod
+    @Override
     public void removeTag(String key) {
         OneSignal.getUser().removeTag(key);
     }
