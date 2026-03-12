@@ -1,4 +1,4 @@
-import type { TurboModule } from 'react-native';
+import type { TurboModule, CodegenTypes } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
@@ -96,9 +96,17 @@ export interface Spec extends TurboModule {
   addUniqueOutcome(name: string): void;
   addOutcomeWithValue(name: string, value: number): void;
 
-  // Events (required for NativeEventEmitter)
-  addListener(eventName: string): void;
-  removeListeners(count: number): void;
+  // Events
+  readonly onPermissionChanged: CodegenTypes.EventEmitter<Object>;
+  readonly onSubscriptionChanged: CodegenTypes.EventEmitter<Object>;
+  readonly onUserStateChanged: CodegenTypes.EventEmitter<Object>;
+  readonly onNotificationWillDisplay: CodegenTypes.EventEmitter<Object>;
+  readonly onNotificationClicked: CodegenTypes.EventEmitter<Object>;
+  readonly onInAppMessageClicked: CodegenTypes.EventEmitter<Object>;
+  readonly onInAppMessageWillDisplay: CodegenTypes.EventEmitter<Object>;
+  readonly onInAppMessageDidDisplay: CodegenTypes.EventEmitter<Object>;
+  readonly onInAppMessageWillDismiss: CodegenTypes.EventEmitter<Object>;
+  readonly onInAppMessageDidDismiss: CodegenTypes.EventEmitter<Object>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('OneSignal');
