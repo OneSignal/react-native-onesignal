@@ -128,12 +128,12 @@ Use the `OneSignal` object from `react-native-onesignal`:
 | SendUniqueOutcome(name) | `OneSignal.Session.addUniqueOutcome(name)` |
 | SendOutcomeWithValue(name, value) | `OneSignal.Session.addOutcomeWithValue(name, value)` |
 | TrackEvent(name, properties) | `OneSignal.User.trackEvent(name, properties)` |
-| GetPushSubscriptionId() | `OneSignal.User.pushSubscription.getPushSubscriptionId()` |
-| IsPushOptedIn() | `OneSignal.User.pushSubscription.getOptedIn()` |
+| GetPushSubscriptionId() | `await OneSignal.User.pushSubscription.getIdAsync()` |
+| IsPushOptedIn() | `await OneSignal.User.pushSubscription.getOptedInAsync()` |
 | OptInPush() | `OneSignal.User.pushSubscription.optIn()` |
 | OptOutPush() | `OneSignal.User.pushSubscription.optOut()` |
 | ClearAllNotifications() | `OneSignal.Notifications.clearAll()` |
-| HasPermission() | `OneSignal.Notifications.hasPermission()` |
+| HasPermission() | `await OneSignal.Notifications.getPermissionAsync()` |
 | RequestPermission(fallback) | `OneSignal.Notifications.requestPermission(fallback)` |
 | SetPaused(paused) | `OneSignal.InAppMessages.setPaused(paused)` |
 | SetLocationShared(shared) | `OneSignal.Location.setShared(shared)` |
