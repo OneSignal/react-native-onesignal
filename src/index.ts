@@ -1,4 +1,5 @@
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeOneSignal from './NativeOneSignal';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -39,7 +40,7 @@ import type {
 } from './types/subscription';
 import type { UserChangedState, UserState } from './types/user';
 
-const RNOneSignal = NativeModules.OneSignal;
+const RNOneSignal = NativeOneSignal;
 const eventManager = new EventManager(RNOneSignal);
 
 /// An enum that declares different types of log levels you can use with the OneSignal SDK, going from the least verbose (none) to verbose (print all comments).
@@ -82,8 +83,8 @@ async function _addPushSubscriptionObserver() {
     },
   );
 
-  pushSub.id = await RNOneSignal.getPushSubscriptionId();
-  pushSub.token = await RNOneSignal.getPushSubscriptionToken();
+  pushSub.id = (await RNOneSignal.getPushSubscriptionId()) ?? '';
+  pushSub.token = (await RNOneSignal.getPushSubscriptionToken()) ?? '';
   pushSub.optedIn = await RNOneSignal.getOptedIn();
 }
 
@@ -170,11 +171,10 @@ export namespace OneSignal {
     export function enter(
       activityId: string,
       token: string,
-      handler: Function = () => {},
+      handler: (result: Object) => void = () => {},
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      // Only Available on iOS
       if (Platform.OS === 'ios') {
         RNOneSignal.enterLiveActivity(activityId, token, handler);
       }
@@ -187,7 +187,10 @@ export namespace OneSignal {
      *
      * @param activityId: The activity identifier the live activity on this device will no longer receive updates for.
      **/
-    export function exit(activityId: string, handler: Function = () => {}) {
+    export function exit(
+      activityId: string,
+      handler: (result: Object) => void = () => {},
+    ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
@@ -250,7 +253,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
-        RNOneSignal.setupDefaultLiveActivity(options);
+        RNOneSignal.setupDefaultLiveActivity(options ?? null);
       }
     }
 
@@ -587,12 +590,13 @@ export namespace OneSignal {
     }
 
     /** Returns the local tags for the current user. */
-    export function getTags(): Promise<{ [key: string]: string }> {
+    export async function getTags(): Promise<{ [key: string]: string }> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
       }
 
-      return RNOneSignal.getTags();
+      const tags = await RNOneSignal.getTags();
+      return tags as { [key: string]: string };
     }
 
     /**

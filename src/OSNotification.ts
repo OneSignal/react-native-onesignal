@@ -1,5 +1,6 @@
-import { NativeModules, Platform } from 'react-native';
-const RNOneSignal = NativeModules.OneSignal;
+import { Platform } from 'react-native';
+import NativeOneSignal from './NativeOneSignal';
+const RNOneSignal = NativeOneSignal;
 
 export interface BaseNotificationData {
   body: string;

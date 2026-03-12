@@ -12,6 +12,10 @@
 #import "RCTUtils.h"
 #endif
 
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <RNOneSignalSpec/RNOneSignalSpec.h>
+#endif
+
 typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
   PermissionChanged,
   SubscriptionChanged,
@@ -37,7 +41,11 @@ typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
 
 #define OSEventString(enum) [OSNotificationEventTypesArray objectAtIndex:enum]
 
+#ifdef RCT_NEW_ARCH_ENABLED
+@interface RCTOneSignalEventEmitter : RCTEventEmitter <NativeOneSignalSpec>
+#else
 @interface RCTOneSignalEventEmitter : RCTEventEmitter <RCTBridgeModule>
+#endif
 
 + (void)sendEventWithName:(NSString *)name withBody:(NSDictionary *)body;
 + (BOOL)hasSetBridge;
