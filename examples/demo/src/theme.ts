@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, type TextInputProps } from 'react-native';
 
 export const AppColors = {
   osPrimary: '#E54B4D',
@@ -48,6 +48,12 @@ export const AppTheme = StyleSheet.create({
     marginVertical: 8,
   },
 });
+
+export const AppInputProps: TextInputProps = {
+  autoCorrect: false,
+  autoCapitalize: 'none',
+  autoComplete: 'off',
+};
 
 export const AppDialogStyles = StyleSheet.create({
   backdrop: {
