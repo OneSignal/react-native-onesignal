@@ -319,7 +319,7 @@ describe('OneSignal', () => {
       test('should setup default without options', () => {
         OneSignal.LiveActivities.setupDefault();
         expect(mockRNOneSignal.setupDefaultLiveActivity).toHaveBeenCalledWith(
-          undefined,
+          null,
         );
       });
 
