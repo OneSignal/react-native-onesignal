@@ -252,7 +252,7 @@ RCT_EXPORT_METHOD(paused : (BOOL)pause) {
   [OneSignal.InAppMessages paused:pause];
 }
 
-RCT_EXPORT_METHOD(addTrigger : (NSString *)key withValue : (NSString *)value) {
+RCT_EXPORT_METHOD(addTrigger : (NSString *)key value : (NSString *)value) {
   [OneSignal.InAppMessages addTrigger:key withValue:value];
 }
 
