@@ -54,6 +54,7 @@ export interface Spec extends TurboModule {
   addSms(smsNumber: string): void;
   removeSms(smsNumber: string): void;
   addTag(key: string, value: string): void;
+  removeTag(key: string): void;
   addTags(tags: Object): void;
   removeTags(keys: string[]): void;
   getTags(): Promise<Object>;
@@ -79,6 +80,7 @@ export interface Spec extends TurboModule {
   // In-App Messages
   addInAppMessageClickListener(): void;
   addInAppMessagesLifecycleListener(): void;
+  addTrigger(key: string, value: string): void;
   addTriggers(triggers: Object): void;
   removeTrigger(key: string): void;
   removeTriggers(keys: string[]): void;

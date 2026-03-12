@@ -574,7 +574,7 @@ export namespace OneSignal {
         return;
       }
 
-      RNOneSignal.removeTags([key]);
+      RNOneSignal.removeTag(key);
     }
 
     /** Remove multiple tags with the provided keys from the current user. */
@@ -844,9 +844,7 @@ export namespace OneSignal {
         console.error('OneSignal: addTrigger: must include a key and a value');
       }
 
-      let trigger: { [key: string]: string } = {};
-      trigger[key] = value;
-      RNOneSignal.addTriggers(trigger);
+      RNOneSignal.addTrigger(key, value);
     }
 
     /**
