@@ -171,7 +171,7 @@ export namespace OneSignal {
     export function enter(
       activityId: string,
       token: string,
-      handler: (result: Object) => void = () => {},
+      handler: (result: object) => void = () => {},
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
@@ -189,7 +189,7 @@ export namespace OneSignal {
      **/
     export function exit(
       activityId: string,
-      handler: (result: Object) => void = () => {},
+      handler: (result: object) => void = () => {},
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
