@@ -97,6 +97,10 @@ export const NativeModules = {
   OneSignal: mockRNOneSignal,
 };
 
+export const TurboModuleRegistry = {
+  getEnforcing: (_name: string) => mockRNOneSignal,
+};
+
 export const Platform = mockPlatform;
 
 export { mockPlatform, mockRNOneSignal };

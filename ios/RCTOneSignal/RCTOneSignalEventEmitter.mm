@@ -30,13 +30,7 @@ static RCTOneSignalEventEmitter *_currentInstance = nil;
   return YES;
 }
 
-/*
-     This class acts as the module & event emitter
-     It is initialized automatically by React-Native
-     This subclass handles communication between the SDK and JavaScript
-*/
-
-RCT_EXPORT_MODULE(RCTOneSignal)
+RCT_EXPORT_MODULE(OneSignal)
 
 #pragma mark RCTEventEmitter Subclass Methods
 
@@ -418,6 +412,15 @@ RCT_EXPORT_METHOD(preventDefault : (NSString *)notificationId) {
 
 RCT_EXPORT_METHOD(clearAllNotifications) { [OneSignal.Notifications clearAll]; }
 
+// Android-only stubs
+RCT_EXPORT_METHOD(removeNotification : (double)notificationId) {
+  // Android only, no-op on iOS
+}
+
+RCT_EXPORT_METHOD(removeGroupedNotifications : (NSString *)groupId) {
+  // Android only, no-op on iOS
+}
+
 // OneSignal.Session namespace methods
 RCT_EXPORT_METHOD(addOutcome : (NSString *)name) {
   [OneSignal.Session addOutcome:name];
@@ -503,7 +506,7 @@ RCT_REMAP_METHOD(getOnesignalId,
   NSString *onesignalId = OneSignal.User.onesignalId;
 
   if (onesignalId == nil || [onesignalId length] == 0) {
-    resolve([NSNull null]); // Resolve with null if nil or empty
+    resolve([NSNull null]);
   } else {
     resolve(onesignalId);
   }
@@ -515,7 +518,7 @@ RCT_REMAP_METHOD(getExternalId,
   NSString *externalId = OneSignal.User.externalId;
 
   if (externalId == nil || [externalId length] == 0) {
-    resolve([NSNull null]); // Resolve with null if nil or empty
+    resolve([NSNull null]);
   } else {
     resolve(externalId);
   }
@@ -591,10 +594,6 @@ RCT_EXPORT_METHOD(displayNotification : (NSString *)notificationId) {
   [_notificationWillDisplayCache removeObjectForKey:notificationId];
 }
 
-RCT_EXPORT_METHOD(initInAppMessageClickHandlerParams) {
-  // iOS Stub
-}
-
 - (void)removeObservers {
   [self removePermissionObserver];
   [self removePushSubscriptionObserver];
@@ -632,5 +631,12 @@ RCT_EXPORT_METHOD(trackEvent : (NSString *)name withProperties : (
     NSDictionary *_Nullable)properties) {
   [OneSignal.User trackEventWithName:name properties:properties];
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeOneSignalSpecJSI>(params);
+}
+#endif
 
 @end

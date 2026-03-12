@@ -1,8 +1,5 @@
-import {
-  type EmitterSubscription,
-  NativeEventEmitter,
-  type NativeModule,
-} from 'react-native';
+import { type EmitterSubscription, NativeEventEmitter } from 'react-native';
+import type { Spec } from '../NativeOneSignal';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -67,12 +64,12 @@ const eventList = [
 ] as const;
 
 export default class EventManager {
-  private RNOneSignal: NativeModule;
+  private RNOneSignal: Spec;
   private oneSignalEventEmitter: NativeEventEmitter;
   private eventListenerArrayMap: Map<string, Array<(event: any) => void>>;
   private listeners: { [key: string]: EmitterSubscription };
 
-  constructor(RNOneSignal: NativeModule) {
+  constructor(RNOneSignal: Spec) {
     this.RNOneSignal = RNOneSignal;
     this.oneSignalEventEmitter = new NativeEventEmitter(RNOneSignal);
     this.eventListenerArrayMap = new Map(); // used for adders (multiple callbacks possible)
