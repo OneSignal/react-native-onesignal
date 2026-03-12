@@ -42,7 +42,6 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -425,8 +424,7 @@ public class RNOneSignal extends NativeOneSignalSpec
     @Override
     public void onNotificationPermissionChange(boolean permission) {
         try {
-            emitOnPermissionChanged(
-                    RNUtils.convertHashMapToWritableMap(RNUtils.convertPermissionToMap(permission)));
+            emitOnPermissionChanged(RNUtils.convertHashMapToWritableMap(RNUtils.convertPermissionToMap(permission)));
             Logging.debug("Sending permission change event", null);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -570,9 +568,8 @@ public class RNOneSignal extends NativeOneSignalSpec
     @Override
     public void onPushSubscriptionChange(PushSubscriptionChangedState pushSubscriptionChangedState) {
         try {
-            emitOnSubscriptionChanged(
-                    RNUtils.convertHashMapToWritableMap(
-                            RNUtils.convertPushSubscriptionChangedStateToMap(pushSubscriptionChangedState)));
+            emitOnSubscriptionChanged(RNUtils.convertHashMapToWritableMap(
+                    RNUtils.convertPushSubscriptionChangedStateToMap(pushSubscriptionChangedState)));
             Logging.debug("Sending subscription change event", null);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -715,8 +712,7 @@ public class RNOneSignal extends NativeOneSignalSpec
     @Override
     public void onUserStateChange(UserChangedState state) {
         try {
-            emitOnUserStateChanged(
-                    RNUtils.convertHashMapToWritableMap(RNUtils.convertUserChangedStateToMap(state)));
+            emitOnUserStateChanged(RNUtils.convertHashMapToWritableMap(RNUtils.convertUserChangedStateToMap(state)));
             Logging.debug("Sending user state change event", null);
         } catch (JSONException e) {
             e.printStackTrace();
