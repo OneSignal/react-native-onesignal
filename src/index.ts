@@ -463,7 +463,7 @@ export namespace OneSignal {
     }
 
     /** Set aliases for the current user. If any alias already exists, it will be overwritten to the new values. */
-    export function addAliases(aliases: object) {
+    export function addAliases(aliases: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       RNOneSignal.addAliases(aliases);
@@ -529,14 +529,6 @@ export namespace OneSignal {
         return;
       }
 
-      // forces values to be string types
-      if (typeof value !== 'string') {
-        console.warn(
-          'OneSignal: addTag: tag value must be of type string; attempting to convert',
-        );
-        value = String(value);
-      }
-
       RNOneSignal.addTag(key, value);
     }
 
@@ -545,27 +537,8 @@ export namespace OneSignal {
      * specific users and/or personalizing messages. If the tag key already exists, it will be replaced with
      * the value provided here.
      */
-    export function addTags(tags: object) {
+    export function addTags(tags: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      if (!tags || Object.keys(tags).length === 0) {
-        console.error(
-          'OneSignal: addTags: argument must be of type object of the form { key : "value" }',
-        );
-        return;
-      }
-
-      const convertedTags = tags as { [key: string]: any };
-      Object.keys(tags).forEach(function (key) {
-        if (typeof convertedTags[key] !== 'string') {
-          console.warn(
-            'OneSignal: addTags: tag value for key ' +
-              key +
-              ' must be of type string; attempting to convert',
-          );
-          convertedTags[key] = String(convertedTags[key]);
-        }
-      });
 
       RNOneSignal.addTags(tags);
     }
@@ -574,24 +547,12 @@ export namespace OneSignal {
     export function removeTag(key: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      if (typeof key !== 'string') {
-        console.error(
-          'OneSignal: removeTag: key argument must be of type string',
-        );
-        return;
-      }
-
       RNOneSignal.removeTag(key);
     }
 
     /** Remove multiple tags with the provided keys from the current user. */
     export function removeTags(keys: string[]) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      if (!Array.isArray(keys)) {
-        console.error('OneSignal: removeTags: argument must be of array type');
-        return;
-      }
 
       RNOneSignal.removeTags(keys);
     }
@@ -858,16 +819,8 @@ export namespace OneSignal {
      * Add multiple triggers for the current user. Triggers are currently explicitly used to determine whether a specific IAM should
      * be displayed to the user.
      */
-    export function addTriggers(triggers: { [key: string]: string }) {
+    export function addTriggers(triggers: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      let keys = Object.keys(triggers);
-
-      if (keys.length === 0) {
-        console.error(
-          "OneSignal: addTriggers: argument must be an object of the form { key : 'value' }",
-        );
-      }
 
       RNOneSignal.addTriggers(triggers);
     }
