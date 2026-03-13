@@ -85,8 +85,8 @@ public class RNOneSignal extends NativeOneSignalSpec
     private boolean hasSetPushSubscriptionObserver = false;
     private boolean hasSetUserStateObserver = false;
 
-    private HashMap<String, INotificationWillDisplayEvent> notificationWillDisplayCache;
-    private HashMap<String, INotificationWillDisplayEvent> preventDefaultCache;
+    private final HashMap<String, INotificationWillDisplayEvent> notificationWillDisplayCache = new HashMap<>();
+    private final HashMap<String, INotificationWillDisplayEvent> preventDefaultCache = new HashMap<>();
 
     private boolean hasAddedNotificationForegroundListener = false;
     private boolean hasAddedInAppMessageLifecycleListener = false;
@@ -96,26 +96,26 @@ public class RNOneSignal extends NativeOneSignalSpec
     // Static reference to track current instance for cleanup on reload
     private static RNOneSignal currentInstance = null;
 
-    private IInAppMessageClickListener rnInAppClickListener = new IInAppMessageClickListener() {
+    private final IInAppMessageClickListener rnInAppClickListener = new IInAppMessageClickListener() {
         @Override
         public void onClick(IInAppMessageClickEvent event) {
             try {
                 emitOnInAppMessageClicked(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageClickEventToMap(event)));
             } catch (JSONException e) {
-                e.printStackTrace();
+                logJSONException("onInAppMessageClicked", e);
             }
         }
     };
 
-    private IInAppMessageLifecycleListener rnInAppLifecycleListener = new IInAppMessageLifecycleListener() {
+    private final IInAppMessageLifecycleListener rnInAppLifecycleListener = new IInAppMessageLifecycleListener() {
         @Override
         public void onWillDisplay(IInAppMessageWillDisplayEvent event) {
             try {
                 emitOnInAppMessageWillDisplay(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageWillDisplayEventToMap(event)));
             } catch (JSONException e) {
-                e.printStackTrace();
+                logJSONException("onInAppMessageWillDisplay", e);
             }
         }
 
@@ -125,7 +125,7 @@ public class RNOneSignal extends NativeOneSignalSpec
                 emitOnInAppMessageDidDisplay(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageDidDisplayEventToMap(event)));
             } catch (JSONException e) {
-                e.printStackTrace();
+                logJSONException("onInAppMessageDidDisplay", e);
             }
         }
 
@@ -135,7 +135,7 @@ public class RNOneSignal extends NativeOneSignalSpec
                 emitOnInAppMessageWillDismiss(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageWillDismissEventToMap(event)));
             } catch (JSONException e) {
-                e.printStackTrace();
+                logJSONException("onInAppMessageWillDismiss", e);
             }
         }
 
@@ -145,22 +145,26 @@ public class RNOneSignal extends NativeOneSignalSpec
                 emitOnInAppMessageDidDismiss(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertInAppMessageDidDismissEventToMap(event)));
             } catch (JSONException e) {
-                e.printStackTrace();
+                logJSONException("onInAppMessageDidDismiss", e);
             }
         }
     };
 
-    private INotificationClickListener rnNotificationClickListener = new INotificationClickListener() {
+    private final INotificationClickListener rnNotificationClickListener = new INotificationClickListener() {
         @Override
         public void onClick(INotificationClickEvent event) {
             try {
                 emitOnNotificationClicked(
                         RNUtils.convertHashMapToWritableMap(RNUtils.convertNotificationClickEventToMap(event)));
             } catch (JSONException e) {
-                e.printStackTrace();
+                logJSONException("onNotificationClicked", e);
             }
         }
     };
+
+    private void logJSONException(String eventName, JSONException exception) {
+        Logging.error("Failed to serialize payload for " + eventName, exception);
+    }
 
     private void removeObservers() {
         if (!oneSignalInitDone) {
@@ -193,8 +197,6 @@ public class RNOneSignal extends NativeOneSignalSpec
     public RNOneSignal(ReactApplicationContext reactContext) {
         super(reactContext);
         reactContext.addLifecycleEventListener(this);
-        notificationWillDisplayCache = new HashMap<String, INotificationWillDisplayEvent>();
-        preventDefaultCache = new HashMap<String, INotificationWillDisplayEvent>();
 
         // Clean up previous instance if it exists (handles reload scenario)
         if (currentInstance != null && currentInstance != this) {
@@ -220,8 +222,9 @@ public class RNOneSignal extends NativeOneSignalSpec
     public void onHostResume() {}
 
     @Override
-    public void onCatalystInstanceDestroy() {
+    public void invalidate() {
         removeObservers();
+        super.invalidate();
     }
 
     @Override
@@ -375,7 +378,7 @@ public class RNOneSignal extends NativeOneSignalSpec
                 Logging.error("InterruptedException: " + e.toString(), null);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            logJSONException("onNotificationWillDisplay", e);
         }
     }
 
@@ -410,7 +413,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         }
     }
 
-    public void removePermissionObserver() {
+    private void removePermissionObserver() {
         if (hasSetPermissionObserver) {
             OneSignal.getNotifications().removePermissionObserver(this);
             hasSetPermissionObserver = false;
@@ -423,7 +426,7 @@ public class RNOneSignal extends NativeOneSignalSpec
             emitOnPermissionChanged(RNUtils.convertHashMapToWritableMap(RNUtils.convertPermissionToMap(permission)));
             Logging.debug("Sending permission change event", null);
         } catch (JSONException e) {
-            e.printStackTrace();
+            logJSONException("onPermissionChanged", e);
         }
     }
 
@@ -568,11 +571,11 @@ public class RNOneSignal extends NativeOneSignalSpec
                     RNUtils.convertPushSubscriptionChangedStateToMap(pushSubscriptionChangedState)));
             Logging.debug("Sending subscription change event", null);
         } catch (JSONException e) {
-            e.printStackTrace();
+            logJSONException("onSubscriptionChanged", e);
         }
     }
 
-    public void removePushSubscriptionObserver() {
+    private void removePushSubscriptionObserver() {
         if (hasSetPushSubscriptionObserver) {
             OneSignal.getUser().getPushSubscription().removeObserver(this);
             hasSetPushSubscriptionObserver = false;
@@ -713,11 +716,11 @@ public class RNOneSignal extends NativeOneSignalSpec
             emitOnUserStateChanged(RNUtils.convertHashMapToWritableMap(RNUtils.convertUserChangedStateToMap(state)));
             Logging.debug("Sending user state change event", null);
         } catch (JSONException e) {
-            e.printStackTrace();
+            logJSONException("onUserStateChanged", e);
         }
     }
 
-    public void removeUserStateObserver() {
+    private void removeUserStateObserver() {
         if (hasSetUserStateObserver) {
             OneSignal.getUser().removeObserver(this);
             hasSetUserStateObserver = false;
