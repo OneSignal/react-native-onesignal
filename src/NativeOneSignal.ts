@@ -1,4 +1,5 @@
-import type { TurboModule, CodegenTypes } from 'react-native';
+/* eslint-disable @typescript-eslint/no-wrapper-object-types */
+import type { CodegenTypes, TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
@@ -17,19 +18,19 @@ export interface Spec extends TurboModule {
   enterLiveActivity(
     activityId: string,
     token: string,
-    callback: (result: object) => void,
+    callback: (result: Object) => void,
   ): void;
   exitLiveActivity(
     activityId: string,
-    callback: (result: object) => void,
+    callback: (result: Object) => void,
   ): void;
   setPushToStartToken(activityType: string, token: string): void;
   removePushToStartToken(activityType: string): void;
-  setupDefaultLiveActivity(options: object | null): void;
+  setupDefaultLiveActivity(options: Object | null): void;
   startDefaultLiveActivity(
     activityId: string,
-    attributes: object,
-    content: object,
+    attributes: Object,
+    content: Object,
   ): void;
 
   // Push Subscription
@@ -46,7 +47,7 @@ export interface Spec extends TurboModule {
   getExternalId(): Promise<string | null>;
   setLanguage(language: string): void;
   addAlias(label: string, id: string): void;
-  addAliases(aliases: object): void;
+  addAliases(aliases: Object): void;
   removeAlias(label: string): void;
   removeAliases(labels: string[]): void;
   addEmail(email: string): void;
@@ -55,10 +56,10 @@ export interface Spec extends TurboModule {
   removeSms(smsNumber: string): void;
   addTag(key: string, value: string): void;
   removeTag(key: string): void;
-  addTags(tags: object): void;
+  addTags(tags: Object): void;
   removeTags(keys: string[]): void;
-  getTags(): Promise<object>;
-  trackEvent(name: string, properties: object): void;
+  getTags(): Promise<Object>;
+  trackEvent(name: string, properties: Object | null): void;
 
   // Notifications
   hasNotificationPermission(): Promise<boolean>;
@@ -81,7 +82,7 @@ export interface Spec extends TurboModule {
   addInAppMessageClickListener(): void;
   addInAppMessagesLifecycleListener(): void;
   addTrigger(key: string, value: string): void;
-  addTriggers(triggers: object): void;
+  addTriggers(triggers: Object): void;
   removeTrigger(key: string): void;
   removeTriggers(keys: string[]): void;
   clearTriggers(): void;
@@ -99,16 +100,16 @@ export interface Spec extends TurboModule {
   addOutcomeWithValue(name: string, value: number): void;
 
   // Events
-  readonly onPermissionChanged: CodegenTypes.EventEmitter<object>;
-  readonly onSubscriptionChanged: CodegenTypes.EventEmitter<object>;
-  readonly onUserStateChanged: CodegenTypes.EventEmitter<object>;
-  readonly onNotificationWillDisplay: CodegenTypes.EventEmitter<object>;
-  readonly onNotificationClicked: CodegenTypes.EventEmitter<object>;
-  readonly onInAppMessageClicked: CodegenTypes.EventEmitter<object>;
-  readonly onInAppMessageWillDisplay: CodegenTypes.EventEmitter<object>;
-  readonly onInAppMessageDidDisplay: CodegenTypes.EventEmitter<object>;
-  readonly onInAppMessageWillDismiss: CodegenTypes.EventEmitter<object>;
-  readonly onInAppMessageDidDismiss: CodegenTypes.EventEmitter<object>;
+  readonly onPermissionChanged: CodegenTypes.EventEmitter<Object>;
+  readonly onSubscriptionChanged: CodegenTypes.EventEmitter<Object>;
+  readonly onUserStateChanged: CodegenTypes.EventEmitter<Object>;
+  readonly onNotificationWillDisplay: CodegenTypes.EventEmitter<Object>;
+  readonly onNotificationClicked: CodegenTypes.EventEmitter<Object>;
+  readonly onInAppMessageClicked: CodegenTypes.EventEmitter<Object>;
+  readonly onInAppMessageWillDisplay: CodegenTypes.EventEmitter<Object>;
+  readonly onInAppMessageDidDisplay: CodegenTypes.EventEmitter<Object>;
+  readonly onInAppMessageWillDismiss: CodegenTypes.EventEmitter<Object>;
+  readonly onInAppMessageDidDismiss: CodegenTypes.EventEmitter<Object>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('OneSignal');
