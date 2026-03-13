@@ -69,10 +69,6 @@ RCT_EXPORT_MODULE(OneSignal)
 #pragma mark Send Event Methods
 
 - (void)emitEventWithName:(NSString *)name body:(NSDictionary *)body {
-  if (!_eventEmitterCallback) {
-    return;
-  }
-
   if ([name isEqualToString:OSEventString(PermissionChanged)]) {
     [self emitOnPermissionChanged:body];
   } else if ([name isEqualToString:OSEventString(SubscriptionChanged)]) {
@@ -365,8 +361,7 @@ RCT_EXPORT_METHOD(addNotificationForegroundLifecycleListener) {
   }
 }
 
-RCT_EXPORT_METHOD(onWillDisplayNotification : (OSNotificationWillDisplayEvent *)
-                      event) {
+- (void)onWillDisplayNotification:(OSNotificationWillDisplayEvent *)event {
   _notificationWillDisplayCache[event.notification.notificationId] = event;
   [event preventDefault];
   [RCTOneSignalEventEmitter

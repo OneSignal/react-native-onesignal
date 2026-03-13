@@ -1,13 +1,7 @@
 #if __has_include(<React/RCTBridgeModule.h>)
 #import <React/RCTBridgeModule.h>
-#import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
-#import <React/RCTUtils.h>
 #elif __has_include("RCTBridgeModule.h")
 #import "RCTBridgeModule.h"
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
 #endif
 
 #import <RNOneSignalSpec/RNOneSignalSpec.h>
@@ -40,7 +34,8 @@ typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
 @protocol OSNotificationLifecycleListener;
 
 @interface RCTOneSignalEventEmitter
-    : NativeOneSignalSpecBase <NativeOneSignalSpec, OSNotificationLifecycleListener>
+    : NativeOneSignalSpecBase <NativeOneSignalSpec,
+                               OSNotificationLifecycleListener>
 
 + (void)sendEventWithName:(NSString *)name withBody:(NSDictionary *)body;
 
