@@ -3,8 +3,6 @@
 
 @interface RCTOneSignal
 + (RCTOneSignal *)sharedInstance;
-- (void)initialize:(nonnull NSString *)newAppId
-    withLaunchOptions:(nullable NSDictionary *)launchOptions;
 - (void)initOneSignal:(NSDictionary *)launchOptions;
 @end
 

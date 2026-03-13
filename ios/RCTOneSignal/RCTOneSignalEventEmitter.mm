@@ -6,6 +6,10 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
+@interface RCTOneSignalEventEmitter ()
+- (void)emitEventWithName:(NSString *)name body:(NSDictionary *)body;
+@end
+
 @implementation RCTOneSignalEventEmitter {
   BOOL _hasSetSubscriptionObserver;
   BOOL _hasSetPermissionObserver;
@@ -31,12 +35,6 @@ RCT_EXPORT_MODULE(OneSignal)
     _preventDefaultCache = [NSMutableDictionary new];
     _notificationWillDisplayCache = [NSMutableDictionary new];
 
-    for (NSString *eventName in OSNotificationEventTypesArray)
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(emitEvent:)
-                                                   name:eventName
-                                                 object:nil];
-
     // Clean up previous instance if it exists (handles reload scenario)
     if (_currentInstance != nil && _currentInstance != self) {
       [_currentInstance removeHandlers];
@@ -51,7 +49,11 @@ RCT_EXPORT_MODULE(OneSignal)
 - (void)invalidate {
   [self removeHandlers];
   [self removeObservers];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [_preventDefaultCache removeAllObjects];
+  [_notificationWillDisplayCache removeAllObjects];
+  if (_currentInstance == self) {
+    _currentInstance = nil;
+  }
 }
 
 - (NSArray<NSString *> *)processNSError:(NSError *)error {
@@ -66,13 +68,10 @@ RCT_EXPORT_MODULE(OneSignal)
 
 #pragma mark Send Event Methods
 
-- (void)emitEvent:(NSNotification *)notification {
+- (void)emitEventWithName:(NSString *)name body:(NSDictionary *)body {
   if (!_eventEmitterCallback) {
     return;
   }
-
-  NSString *name = notification.name;
-  NSDictionary *body = notification.userInfo;
 
   if ([name isEqualToString:OSEventString(PermissionChanged)]) {
     [self emitOnPermissionChanged:body];
@@ -99,9 +98,7 @@ RCT_EXPORT_MODULE(OneSignal)
 }
 
 + (void)sendEventWithName:(NSString *)name withBody:(NSDictionary *)body {
-  [[NSNotificationCenter defaultCenter] postNotificationName:name
-                                                      object:nil
-                                                    userInfo:body];
+  [_currentInstance emitEventWithName:name body:body];
 }
 
 #pragma mark Exported Methods
@@ -341,7 +338,7 @@ RCT_EXPORT_METHOD(addPermissionObserver) {
   }
 }
 
-RCT_EXPORT_METHOD(removePermissionObserver) {
+- (void)removePermissionObserver {
   if (_hasSetPermissionObserver) {
     [OneSignal.Notifications
         removePermissionObserver:[RCTOneSignal sharedInstance]];
@@ -370,13 +367,7 @@ RCT_EXPORT_METHOD(addNotificationForegroundLifecycleListener) {
 
 RCT_EXPORT_METHOD(onWillDisplayNotification : (OSNotificationWillDisplayEvent *)
                       event) {
-  __weak RCTOneSignalEventEmitter *weakSelf = self;
-  RCTOneSignalEventEmitter *strongSelf = weakSelf;
-  if (!strongSelf)
-    return;
-
-  strongSelf->_notificationWillDisplayCache[event.notification.notificationId] =
-      event;
+  _notificationWillDisplayCache[event.notification.notificationId] = event;
   [event preventDefault];
   [RCTOneSignalEventEmitter
       sendEventWithName:@"OneSignal-notificationWillDisplayInForeground"
@@ -384,8 +375,6 @@ RCT_EXPORT_METHOD(onWillDisplayNotification : (OSNotificationWillDisplayEvent *)
 }
 
 RCT_EXPORT_METHOD(preventDefault : (NSString *)notificationId) {
-  __weak RCTOneSignalEventEmitter *weakSelf = self;
-  RCTOneSignalEventEmitter *strongSelf = weakSelf;
   OSNotificationWillDisplayEvent *event =
       _notificationWillDisplayCache[notificationId];
   if (!event) {
@@ -398,7 +387,7 @@ RCT_EXPORT_METHOD(preventDefault : (NSString *)notificationId) {
                              notificationId]];
     return;
   }
-  strongSelf->_preventDefaultCache[event.notification.notificationId] = event;
+  _preventDefaultCache[event.notification.notificationId] = event;
   [event preventDefault];
 }
 
@@ -442,7 +431,7 @@ RCT_EXPORT_METHOD(addPushSubscriptionObserver) {
   }
 }
 
-RCT_EXPORT_METHOD(removePushSubscriptionObserver) {
+- (void)removePushSubscriptionObserver {
   if (_hasSetSubscriptionObserver) {
     [OneSignal.User.pushSubscription
         removeObserver:[RCTOneSignal sharedInstance]];
@@ -625,3 +614,5 @@ RCT_EXPORT_METHOD(trackEvent : (NSString *)name
 }
 
 @end
+
+#pragma GCC diagnostic pop
