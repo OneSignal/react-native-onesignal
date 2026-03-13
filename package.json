@@ -67,6 +67,11 @@
     "jsSrcsDir": "src",
     "android": {
       "javaPackageName": "com.onesignal.rnonesignalandroid"
+    },
+    "ios": {
+      "modulesProvider": {
+        "OneSignal": "RCTOneSignalEventEmitter"
+      }
     }
   },
   "peerDependencies": {
