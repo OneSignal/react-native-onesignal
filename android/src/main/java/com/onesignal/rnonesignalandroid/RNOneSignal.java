@@ -80,8 +80,6 @@ public class RNOneSignal extends NativeOneSignalSpec
                 INotificationLifecycleListener {
     public static final String NAME = "OneSignal";
 
-    private ReactApplicationContext mReactApplicationContext;
-
     private boolean oneSignalInitDone;
     private boolean hasSetPermissionObserver = false;
     private boolean hasSetPushSubscriptionObserver = false;
@@ -194,8 +192,7 @@ public class RNOneSignal extends NativeOneSignalSpec
 
     public RNOneSignal(ReactApplicationContext reactContext) {
         super(reactContext);
-        mReactApplicationContext = reactContext;
-        mReactApplicationContext.addLifecycleEventListener(this);
+        reactContext.addLifecycleEventListener(this);
         notificationWillDisplayCache = new HashMap<String, INotificationWillDisplayEvent>();
         preventDefaultCache = new HashMap<String, INotificationWillDisplayEvent>();
 
@@ -229,7 +226,6 @@ public class RNOneSignal extends NativeOneSignalSpec
 
     @Override
     public void initialize(String appId) {
-        Context context = mReactApplicationContext.getCurrentActivity();
         OneSignalWrapper.setSdkType("reactnative");
         OneSignalWrapper.setSdkVersion("050213");
 
@@ -238,10 +234,10 @@ public class RNOneSignal extends NativeOneSignalSpec
             return;
         }
 
+        ReactApplicationContext reactContext = getReactApplicationContext();
+        Context context = reactContext.getCurrentActivity();
         if (context == null) {
-            // in some cases, especially when react-native-navigation is installed,
-            // the activity can be null, so we can initialize with the context instead
-            context = mReactApplicationContext.getApplicationContext();
+            context = reactContext.getApplicationContext();
         }
 
         OneSignal.initWithContext(context, appId);
@@ -362,7 +358,7 @@ public class RNOneSignal extends NativeOneSignalSpec
 
         INotification notification = event.getNotification();
         String notificationId = notification.getNotificationId();
-        notificationWillDisplayCache.put(notificationId, (INotificationWillDisplayEvent) event);
+        notificationWillDisplayCache.put(notificationId, event);
         event.preventDefault();
 
         try {
@@ -686,19 +682,21 @@ public class RNOneSignal extends NativeOneSignalSpec
     @Override
     public void getOnesignalId(Promise promise) {
         String onesignalId = OneSignal.getUser().getOnesignalId();
-        if (onesignalId.isEmpty()) {
-            onesignalId = null;
+        if (onesignalId == null || onesignalId.isEmpty()) {
+            promise.resolve(null);
+        } else {
+            promise.resolve(onesignalId);
         }
-        promise.resolve(onesignalId);
     }
 
     @Override
     public void getExternalId(Promise promise) {
         String externalId = OneSignal.getUser().getExternalId();
-        if (externalId.isEmpty()) {
-            externalId = null;
+        if (externalId == null || externalId.isEmpty()) {
+            promise.resolve(null);
+        } else {
+            promise.resolve(externalId);
         }
-        promise.resolve(externalId);
     }
 
     @Override
