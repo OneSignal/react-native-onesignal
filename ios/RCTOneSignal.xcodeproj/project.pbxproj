@@ -18,7 +18,7 @@
 		CAADD42720B3791A0089D086 /* OneSignal.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = CAADD42520B379060089D086 /* OneSignal.h */; };
 		CACB39D6202D232A00D86CD1 /* RCTOneSignalEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = CACB39D5202D232A00D86CD1 /* RCTOneSignalEventEmitter.m */; };
 		FD2CCC851C772B4200B2B24E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD2CCC841C772B4200B2B24E /* SystemConfiguration.framework */; };
-		FDB40CC41C5E4E5500CBF09B /* RCTOneSignal.m in Sources */ = {isa = PBXBuildFile; fileRef = FDB40CC31C5E4E5500CBF09B /* RCTOneSignal.m */; };
+		FDB40CC41C5E4E5500CBF09B /* RCTOneSignal.mm in Sources */ = {isa = PBXBuildFile; fileRef = FDB40CC31C5E4E5500CBF09B /* RCTOneSignal.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,7 +48,7 @@
 		CACB39D5202D232A00D86CD1 /* RCTOneSignalEventEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTOneSignalEventEmitter.m; sourceTree = "<group>"; };
 		FD2CCC841C772B4200B2B24E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		FDB40CC21C5E4E5500CBF09B /* RCTOneSignal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTOneSignal.h; sourceTree = "<group>"; };
-		FDB40CC31C5E4E5500CBF09B /* RCTOneSignal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTOneSignal.m; sourceTree = "<group>"; };
+		FDB40CC31C5E4E5500CBF09B /* RCTOneSignal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTOneSignal.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,7 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				FDB40CC21C5E4E5500CBF09B /* RCTOneSignal.h */,
-				FDB40CC31C5E4E5500CBF09B /* RCTOneSignal.m */,
+				FDB40CC31C5E4E5500CBF09B /* RCTOneSignal.mm */,
 				CACB39D4202D232A00D86CD1 /* RCTOneSignalEventEmitter.h */,
 				CACB39D5202D232A00D86CD1 /* RCTOneSignalEventEmitter.m */,
 				CA1CC866200FE3C3005B66AA /* RCTOneSignalExtensionService.h */,
@@ -178,7 +178,7 @@
 				CACB39D6202D232A00D86CD1 /* RCTOneSignalEventEmitter.m in Sources */,
 				CA63F32E20ACFD60009AE90F /* UIApplication+RCTOnesignal.m in Sources */,
 				CA1CC868200FE3C3005B66AA /* RCTOneSignalExtensionService.m in Sources */,
-				FDB40CC41C5E4E5500CBF09B /* RCTOneSignal.m in Sources */,
+				FDB40CC41C5E4E5500CBF09B /* RCTOneSignal.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
