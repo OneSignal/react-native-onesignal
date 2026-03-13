@@ -1,3 +1,4 @@
+# DON'T RUN THIS FILE DIRECTLY, USE THE run-ios.sh FILE IN THE DEMO APP
 #!/bin/bash
 set -e
 

@@ -6,8 +6,8 @@
     "setup": "../setup.sh",
     "preandroid": "bun run setup",
     "preios": "bun run setup",
-    "android": "bash ../run-android",
-    "ios": "bash ../run-ios",
+    "android": "bash ../run-android.sh",
+    "ios": "bash ../run-ios.sh",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"
