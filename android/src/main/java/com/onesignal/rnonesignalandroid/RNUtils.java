@@ -171,7 +171,7 @@ public class RNUtils {
         return hash;
     }
 
-    public static HashMap<String, Object> convertPushSubscriptionStateToMap(PushSubscriptionState state) {
+    private static HashMap<String, Object> convertPushSubscriptionStateToMap(PushSubscriptionState state) {
         HashMap<String, Object> hash = new HashMap<>();
         if (state.getToken() != null && !state.getToken().isEmpty()) {
             hash.put("token", state.getToken());
@@ -188,7 +188,7 @@ public class RNUtils {
         return hash;
     }
 
-    public static HashMap<String, Object> convertUserStateToMap(UserState user) {
+    private static HashMap<String, Object> convertUserStateToMap(UserState user) {
         HashMap<String, Object> hash = new HashMap<>();
 
         if (user.getExternalId() != null && !user.getExternalId().isEmpty()) {

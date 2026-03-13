@@ -95,18 +95,9 @@ class OneSignalRepository {
   }
 
   // Push Subscription
-  getPushSubscriptionId(): string | undefined {
-    const id = OneSignal.User.pushSubscription.getPushSubscriptionId();
-    return id || undefined;
-  }
-
   async getPushSubscriptionIdAsync(): Promise<string | undefined> {
     const id = await OneSignal.User.pushSubscription.getIdAsync();
     return id ?? undefined;
-  }
-
-  isPushOptedIn(): boolean {
-    return OneSignal.User.pushSubscription.getOptedIn();
   }
 
   async isPushOptedInAsync(): Promise<boolean> {
@@ -122,8 +113,8 @@ class OneSignalRepository {
   }
 
   // Notifications
-  hasPermission(): boolean {
-    return OneSignal.Notifications.hasPermission();
+  async hasPermission(): Promise<boolean> {
+    return OneSignal.Notifications.getPermissionAsync();
   }
 
   async requestPermission(fallbackToSettings: boolean): Promise<boolean> {

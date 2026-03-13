@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { AppColors, AppDialogStyles } from '../../theme';
+import { AppColors, AppDialogStyles, AppInputProps } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -61,6 +61,7 @@ export default function CustomNotificationModal({
             value={title}
             onChangeText={setTitle}
             autoFocus
+            {...AppInputProps}
             testID="custom_notification_title_input"
           />
           <TextInput
@@ -69,6 +70,7 @@ export default function CustomNotificationModal({
             placeholderTextColor={AppColors.osGrey600}
             value={body}
             onChangeText={setBody}
+            {...AppInputProps}
             testID="custom_notification_body_input"
           />
           <View style={AppDialogStyles.actions}>

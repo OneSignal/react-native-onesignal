@@ -1,27 +1,6 @@
 import { vi } from 'vitest';
 
-export const createEmitterSubscriptionMock = (
-  eventName: string,
-  callback: (payload: unknown) => void,
-) => ({
-  remove: vi.fn(),
-  emitter: {
-    addListener: vi.fn(),
-    removeAllListeners: vi.fn(),
-    listenerCount: vi.fn(() => 1),
-    emit: vi.fn(),
-  },
-  listener: () => callback,
-  context: undefined,
-  eventType: eventName,
-  key: 0,
-  subscriber: {
-    addSubscription: vi.fn(),
-    removeSubscription: vi.fn(),
-    removeAllSubscriptions: vi.fn(),
-    getSubscriptionsForType: vi.fn(),
-  },
-});
+const createEventEmitterMock = () => vi.fn(() => ({ remove: vi.fn() }));
 
 const mockRNOneSignal = {
   initialize: vi.fn(),
@@ -56,6 +35,7 @@ const mockRNOneSignal = {
   addSms: vi.fn(),
   removeSms: vi.fn(),
   addTag: vi.fn(),
+  removeTag: vi.fn(),
   addTags: vi.fn(),
   removeTags: vi.fn(),
   getTags: vi.fn(),
@@ -72,6 +52,7 @@ const mockRNOneSignal = {
   removeGroupedNotifications: vi.fn(),
   addInAppMessageClickListener: vi.fn(),
   addInAppMessagesLifecycleListener: vi.fn(),
+  addTrigger: vi.fn(),
   addTriggers: vi.fn(),
   removeTrigger: vi.fn(),
   removeTriggers: vi.fn(),
@@ -87,32 +68,26 @@ const mockRNOneSignal = {
   displayNotification: vi.fn(),
   preventDefault: vi.fn(),
   trackEvent: vi.fn(),
+  onPermissionChanged: createEventEmitterMock(),
+  onSubscriptionChanged: createEventEmitterMock(),
+  onUserStateChanged: createEventEmitterMock(),
+  onNotificationWillDisplay: createEventEmitterMock(),
+  onNotificationClicked: createEventEmitterMock(),
+  onInAppMessageClicked: createEventEmitterMock(),
+  onInAppMessageWillDisplay: createEventEmitterMock(),
+  onInAppMessageDidDisplay: createEventEmitterMock(),
+  onInAppMessageWillDismiss: createEventEmitterMock(),
+  onInAppMessageDidDismiss: createEventEmitterMock(),
 };
 
 const mockPlatform = {
   OS: 'ios',
 };
 
-export const NativeModules = {
-  OneSignal: mockRNOneSignal,
+export const TurboModuleRegistry = {
+  getEnforcing: (_name: string) => mockRNOneSignal,
 };
 
 export const Platform = mockPlatform;
 
 export { mockPlatform, mockRNOneSignal };
-
-export class NativeEventEmitter {
-  constructor(_nativeModule: typeof mockRNOneSignal) {}
-
-  addListener(eventName: string, callback: (payload: unknown) => void) {
-    return createEmitterSubscriptionMock(eventName, callback);
-  }
-
-  removeListener(_eventName: string, _callback: (payload: unknown) => void) {
-    // Mock implementation
-  }
-
-  removeAllListeners(_eventName: string) {
-    // Mock implementation
-  }
-}

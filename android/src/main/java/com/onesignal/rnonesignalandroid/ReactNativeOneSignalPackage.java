@@ -1,28 +1,34 @@
 package com.onesignal.rnonesignalandroid;
 
-import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.BaseReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ReactNativeOneSignalPackage implements ReactPackage {
+public class ReactNativeOneSignalPackage extends BaseReactPackage {
+
     @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Arrays.asList(new RNOneSignal(reactContext));
-    }
-
-    // Deprecated RN 0.47
-    public List<Class<? extends JavaScriptModule>> createJSModules() {
-        return Collections.emptyList();
+    public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+        if (name.equals(RNOneSignal.NAME)) {
+            return new RNOneSignal(reactContext);
+        }
+        return null;
     }
 
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        return new ArrayList<>();
+    public ReactModuleInfoProvider getReactModuleInfoProvider() {
+        return new ReactModuleInfoProvider() {
+            @Override
+            public Map<String, ReactModuleInfo> getReactModuleInfos() {
+                Map<String, ReactModuleInfo> map = new HashMap<>();
+                map.put(
+                        RNOneSignal.NAME,
+                        new ReactModuleInfo(RNOneSignal.NAME, RNOneSignal.NAME, false, false, false, true));
+                return map;
+            }
+        };
     }
 }

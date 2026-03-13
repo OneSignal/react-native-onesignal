@@ -1,8 +1,5 @@
-import {
-  type EmitterSubscription,
-  NativeEventEmitter,
-  type NativeModule,
-} from 'react-native';
+import type { EventSubscription } from 'react-native';
+import type { Spec } from '../NativeOneSignal';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -41,79 +38,79 @@ export interface EventListenerMap {
   [IN_APP_MESSAGE_DID_DISPLAY]: (event: InAppMessageDidDisplayEvent) => void;
 }
 
-// Internal event listeners that connect to the native modules then get
-// transformed (via generateEventListener) into the EventListenerMap types
-type RawNotificationOverrides = {
-  [PERMISSION_CHANGED]: (payload: { permission: boolean }) => void;
-  [NOTIFICATION_WILL_DISPLAY]: (payload: OSNotification) => void;
-};
-export type RawEventListenerMap = Omit<
-  EventListenerMap,
-  keyof RawNotificationOverrides
-> &
-  RawNotificationOverrides;
-
-const eventList = [
-  PERMISSION_CHANGED,
-  SUBSCRIPTION_CHANGED,
-  USER_STATE_CHANGED,
-  NOTIFICATION_WILL_DISPLAY,
-  NOTIFICATION_CLICKED,
-  IN_APP_MESSAGE_CLICKED,
-  IN_APP_MESSAGE_WILL_DISPLAY,
-  IN_APP_MESSAGE_WILL_DISMISS,
-  IN_APP_MESSAGE_DID_DISMISS,
-  IN_APP_MESSAGE_DID_DISPLAY,
-] as const;
-
 export default class EventManager {
-  private RNOneSignal: NativeModule;
-  private oneSignalEventEmitter: NativeEventEmitter;
-  private eventListenerArrayMap: Map<string, Array<(event: any) => void>>;
-  private listeners: { [key: string]: EmitterSubscription };
+  private RNOneSignal: Spec;
+  private eventListenerArrayMap: Map<string, Array<(event: unknown) => void>>;
+  private nativeSubscriptions: EventSubscription[];
 
-  constructor(RNOneSignal: NativeModule) {
+  constructor(RNOneSignal: Spec) {
     this.RNOneSignal = RNOneSignal;
-    this.oneSignalEventEmitter = new NativeEventEmitter(RNOneSignal);
-    this.eventListenerArrayMap = new Map(); // used for adders (multiple callbacks possible)
-    this.listeners = {};
+    this.eventListenerArrayMap = new Map();
+    this.nativeSubscriptions = [];
     this.setupListeners();
   }
 
-  setupListeners() {
-    // set up the event emitter and listeners
-    if (this.RNOneSignal != null) {
-      for (let i = 0; i < eventList.length; i++) {
-        let eventName = eventList[i];
-        this.listeners[eventName] = this.generateEventListener(eventName);
-      }
-    }
+  clearListeners() {
+    this.nativeSubscriptions.forEach((sub) => sub.remove());
+    this.nativeSubscriptions = [];
+    this.eventListenerArrayMap.clear();
   }
 
-  /**
-   * Adds the event handler to the corresponding handler array on the JS side of the bridge
-   * @param  {string} eventName
-   * @param  {function} handler
-   * @returns void
-   */
+  setupListeners() {
+    if (this.RNOneSignal == null) return;
+
+    this.nativeSubscriptions.push(
+      this.RNOneSignal.onPermissionChanged((payload) => {
+        const typed = payload as { permission: boolean };
+        this.dispatchHandlers(PERMISSION_CHANGED, typed.permission);
+      }),
+      this.RNOneSignal.onSubscriptionChanged((payload) => {
+        this.dispatchHandlers(SUBSCRIPTION_CHANGED, payload);
+      }),
+      this.RNOneSignal.onUserStateChanged((payload) => {
+        this.dispatchHandlers(USER_STATE_CHANGED, payload);
+      }),
+      this.RNOneSignal.onNotificationWillDisplay((payload) => {
+        this.dispatchHandlers(
+          NOTIFICATION_WILL_DISPLAY,
+          new NotificationWillDisplayEvent(payload as OSNotification),
+        );
+      }),
+      this.RNOneSignal.onNotificationClicked((payload) => {
+        this.dispatchHandlers(NOTIFICATION_CLICKED, payload);
+      }),
+      this.RNOneSignal.onInAppMessageClicked((payload) => {
+        this.dispatchHandlers(IN_APP_MESSAGE_CLICKED, payload);
+      }),
+      this.RNOneSignal.onInAppMessageWillDisplay((payload) => {
+        this.dispatchHandlers(IN_APP_MESSAGE_WILL_DISPLAY, payload);
+      }),
+      this.RNOneSignal.onInAppMessageDidDisplay((payload) => {
+        this.dispatchHandlers(IN_APP_MESSAGE_DID_DISPLAY, payload);
+      }),
+      this.RNOneSignal.onInAppMessageWillDismiss((payload) => {
+        this.dispatchHandlers(IN_APP_MESSAGE_WILL_DISMISS, payload);
+      }),
+      this.RNOneSignal.onInAppMessageDidDismiss((payload) => {
+        this.dispatchHandlers(IN_APP_MESSAGE_DID_DISMISS, payload);
+      }),
+    );
+  }
+
   addEventListener<K extends keyof EventListenerMap>(
     eventName: K,
     handler: EventListenerMap[K],
   ) {
-    let handlerArray = this.eventListenerArrayMap.get(eventName);
+    const handlerArray = this.eventListenerArrayMap.get(eventName);
     if (handlerArray && handlerArray.length > 0) {
-      handlerArray.push(handler);
+      handlerArray.push(handler as (event: unknown) => void);
     } else {
-      this.eventListenerArrayMap.set(eventName, [handler]);
+      this.eventListenerArrayMap.set(eventName, [
+        handler as (event: unknown) => void,
+      ]);
     }
   }
 
-  /**
-   * clears the event handler(s) for the event name
-   * @param  {string} eventName
-   * @param  {function} handler
-   * @returns void
-   */
   removeEventListener<K extends keyof EventListenerMap>(
     eventName: K,
     handler: EventListenerMap[K],
@@ -122,7 +119,7 @@ export default class EventManager {
     if (!handlerArray) {
       return;
     }
-    const index = handlerArray.indexOf(handler);
+    const index = handlerArray.indexOf(handler as (event: unknown) => void);
     if (index !== -1) {
       handlerArray.splice(index, 1);
     }
@@ -131,35 +128,12 @@ export default class EventManager {
     }
   }
 
-  // returns an event listener with the js to native mapping
-  generateEventListener<K extends keyof RawEventListenerMap>(
-    eventName: K,
-  ): EmitterSubscription {
-    const addListenerCallback: RawEventListenerMap[K] = (payload: unknown) => {
-      let handlerArray = this.eventListenerArrayMap.get(eventName);
-      if (handlerArray) {
-        if (eventName === NOTIFICATION_WILL_DISPLAY) {
-          handlerArray.forEach((handler) => {
-            handler(
-              new NotificationWillDisplayEvent(payload as OSNotification),
-            );
-          });
-        } else if (eventName === PERMISSION_CHANGED) {
-          const typedPayload = payload as { permission: boolean };
-          handlerArray.forEach((handler) => {
-            handler(typedPayload.permission);
-          });
-        } else {
-          handlerArray.forEach((handler) => {
-            handler(payload as EventListenerMap[K]);
-          });
-        }
-      }
-    };
-
-    return this.oneSignalEventEmitter.addListener(
-      eventName,
-      addListenerCallback,
-    );
+  private dispatchHandlers(eventName: string, payload: unknown) {
+    const handlerArray = this.eventListenerArrayMap.get(eventName);
+    if (handlerArray) {
+      handlerArray.forEach((handler) => {
+        handler(payload);
+      });
+    }
   }
 }
