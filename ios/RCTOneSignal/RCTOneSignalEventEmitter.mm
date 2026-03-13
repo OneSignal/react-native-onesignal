@@ -1,7 +1,8 @@
 #import "RCTOneSignalEventEmitter.h"
-#import "OneSignalLiveActivities/OneSignalLiveActivities-Swift.h"
-#import "RCTOneSignal.h"
 #import <OneSignalFramework/OneSignalFramework.h>
+#import <OneSignalOSCore/OneSignalOSCore-Swift.h>
+#import <OneSignalLiveActivities/OneSignalLiveActivities-Swift.h>
+#import "RCTOneSignal.h"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -51,7 +52,6 @@ RCT_EXPORT_MODULE(OneSignal)
   [self removeHandlers];
   [self removeObservers];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [super invalidate];
 }
 
 - (NSArray<NSString *> *)processNSError:(NSError *)error {
@@ -67,6 +67,10 @@ RCT_EXPORT_MODULE(OneSignal)
 #pragma mark Send Event Methods
 
 - (void)emitEvent:(NSNotification *)notification {
+  if (!_eventEmitterCallback) {
+    return;
+  }
+
   NSString *name = notification.name;
   NSDictionary *body = notification.userInfo;
 
@@ -234,12 +238,12 @@ RCT_EXPORT_METHOD(setPrivacyConsentRequired : (BOOL)required) {
 }
 
 // OneSignal.Debug namespace methods
-RCT_EXPORT_METHOD(setLogLevel : (int)logLevel) {
-  [OneSignal.Debug setLogLevel:logLevel];
+RCT_EXPORT_METHOD(setLogLevel : (double)logLevel) {
+  [OneSignal.Debug setLogLevel:(ONE_S_LOG_LEVEL)(int)logLevel];
 }
 
-RCT_EXPORT_METHOD(setAlertLevel : (int)logLevel) {
-  [OneSignal.Debug setAlertLevel:logLevel];
+RCT_EXPORT_METHOD(setAlertLevel : (double)logLevel) {
+  [OneSignal.Debug setAlertLevel:(ONE_S_LOG_LEVEL)(int)logLevel];
 }
 
 // OneSignal.InAppMessages namespace methods
@@ -419,8 +423,8 @@ RCT_EXPORT_METHOD(addUniqueOutcome : (NSString *)name) {
 }
 
 RCT_EXPORT_METHOD(addOutcomeWithValue : (NSString *)name
-                  value : (NSNumber *_Nonnull)value) {
-  [OneSignal.Session addOutcomeWithValue:name value:value];
+                  value : (double)value) {
+  [OneSignal.Session addOutcomeWithValue:name value:@(value)];
 }
 
 // OneSignal.User namespace methods
