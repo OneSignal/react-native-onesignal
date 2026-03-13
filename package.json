@@ -5,7 +5,9 @@
   "files": [
     "dist",
     "src/NativeOneSignal.ts",
-    "android",
+    "android/src",
+    "android/build.gradle",
+    "android/proguard-rules.pro",
     "ios",
     "react-native-onesignal.podspec"
   ],

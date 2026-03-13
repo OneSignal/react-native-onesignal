@@ -32,6 +32,44 @@ const TAG = 'App';
 
 function App() {
   useEffect(() => {
+    const handleIamWillDisplay = (e: InAppMessageWillDisplayEvent) => {
+      log.i(TAG, `IAM willDisplay: ${e.message.messageId}`);
+    };
+
+    const handleIamDidDisplay = (e: InAppMessageDidDisplayEvent) => {
+      log.i(TAG, `IAM didDisplay: ${e.message.messageId}`);
+    };
+
+    const handleIamWillDismiss = (e: InAppMessageWillDismissEvent) => {
+      log.i(TAG, `IAM willDismiss: ${e.message.messageId}`);
+    };
+
+    const handleIamDidDismiss = (e: InAppMessageDidDismissEvent) => {
+      log.i(TAG, `IAM didDismiss: ${e.message.messageId}`);
+    };
+
+    const handleIamClick = (e: InAppMessageClickEvent) => {
+      log.i(TAG, `IAM click: ${e.result.actionId ?? 'unknown'}`);
+    };
+
+    const handleNotificationClick = (e: NotificationClickEvent) => {
+      log.i(TAG, `Notification click: ${e.notification.title ?? ''}`);
+    };
+
+    const handlePermissionChange = (granted: boolean) => {
+      log.i(TAG, `Permission changed: ${granted}`);
+    };
+
+    const handleForegroundWillDisplay = (e: NotificationWillDisplayEvent) => {
+      log.i(
+        TAG,
+        `Notification foregroundWillDisplay: ${
+          e.getNotification().title ?? ''
+        }`,
+      );
+      e.getNotification().display();
+    };
+
     const init = async () => {
       try {
         const prefs = PreferencesService.getInstance();
@@ -59,66 +97,35 @@ function App() {
         OneSignal.InAppMessages.setPaused(iamPaused);
         OneSignal.Location.setShared(locationShared);
 
-        console.log(
-          'OneSignal.Notifications.getPermissionAsync: ',
-          await OneSignal.Notifications.getPermissionAsync(),
-        );
-
         // Register SDK event listeners for logging
         OneSignal.InAppMessages.addEventListener(
           'willDisplay',
-          (e: InAppMessageWillDisplayEvent) => {
-            log.i(TAG, `IAM willDisplay: ${e.message.messageId}`);
-          },
+          handleIamWillDisplay,
         );
         OneSignal.InAppMessages.addEventListener(
           'didDisplay',
-          (e: InAppMessageDidDisplayEvent) => {
-            log.i(TAG, `IAM didDisplay: ${e.message.messageId}`);
-          },
+          handleIamDidDisplay,
         );
         OneSignal.InAppMessages.addEventListener(
           'willDismiss',
-          (e: InAppMessageWillDismissEvent) => {
-            log.i(TAG, `IAM willDismiss: ${e.message.messageId}`);
-          },
+          handleIamWillDismiss,
         );
         OneSignal.InAppMessages.addEventListener(
           'didDismiss',
-          (e: InAppMessageDidDismissEvent) => {
-            log.i(TAG, `IAM didDismiss: ${e.message.messageId}`);
-          },
+          handleIamDidDismiss,
         );
-        OneSignal.InAppMessages.addEventListener(
-          'click',
-          (e: InAppMessageClickEvent) => {
-            log.i(TAG, `IAM click: ${e.result.actionId ?? 'unknown'}`);
-          },
-        );
+        OneSignal.InAppMessages.addEventListener('click', handleIamClick);
         OneSignal.Notifications.addEventListener(
           'click',
-          (e: NotificationClickEvent) => {
-            log.i(TAG, `Notification click: ${e.notification.title ?? ''}`);
-          },
+          handleNotificationClick,
         );
         OneSignal.Notifications.addEventListener(
           'permissionChange',
-          (granted: boolean) => {
-            log.i(TAG, `Permission changed: ${granted}`);
-          },
+          handlePermissionChange,
         );
         OneSignal.Notifications.addEventListener(
           'foregroundWillDisplay',
-          (e: NotificationWillDisplayEvent) => {
-            log.i(
-              TAG,
-              `Notification foregroundWillDisplay: ${
-                e.getNotification().title ?? ''
-              }`,
-            );
-            e.preventDefault();
-            e.getNotification().display();
-          },
+          handleForegroundWillDisplay,
         );
 
         log.i(TAG, `OneSignal initialized with app ID: ${appId}`);
@@ -127,10 +134,42 @@ function App() {
       }
     };
 
-    init();
+    void init();
 
     // Fetch tooltips in background
-    TooltipHelper.getInstance().init();
+    void TooltipHelper.getInstance().init();
+
+    return () => {
+      OneSignal.InAppMessages.removeEventListener(
+        'willDisplay',
+        handleIamWillDisplay,
+      );
+      OneSignal.InAppMessages.removeEventListener(
+        'didDisplay',
+        handleIamDidDisplay,
+      );
+      OneSignal.InAppMessages.removeEventListener(
+        'willDismiss',
+        handleIamWillDismiss,
+      );
+      OneSignal.InAppMessages.removeEventListener(
+        'didDismiss',
+        handleIamDidDismiss,
+      );
+      OneSignal.InAppMessages.removeEventListener('click', handleIamClick);
+      OneSignal.Notifications.removeEventListener(
+        'click',
+        handleNotificationClick,
+      );
+      OneSignal.Notifications.removeEventListener(
+        'permissionChange',
+        handlePermissionChange,
+      );
+      OneSignal.Notifications.removeEventListener(
+        'foregroundWillDisplay',
+        handleForegroundWillDisplay,
+      );
+    };
   }, []);
 
   return (
