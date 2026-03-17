@@ -18,5 +18,7 @@ jobs:
       github.event.pull_request.merged == true &&
       contains(github.event.pull_request.title, 'chore: Release')
     uses: OneSignal/sdk-shared/.github/workflows/publish-npm-github.yml@main
+    secrets:
+      GH_PUSH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
     with:
       branch: ${{ github.event.pull_request.base.ref }}
