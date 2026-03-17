@@ -1,0 +1,13 @@
+name: Move Linear tickets to Deployed
+
+on:
+  release:
+    types: [published, edited]
+
+jobs:
+  linear-deployed:
+    uses: OneSignal/sdk-shared/.github/workflows/linear-deployed.yml@main
+    with:
+      release_body: ${{ github.event.release.body }}
+    secrets:
+      LINEAR_GITHUB_API_KEY: ${{ secrets.LINEAR_GITHUB_API_KEY }}
