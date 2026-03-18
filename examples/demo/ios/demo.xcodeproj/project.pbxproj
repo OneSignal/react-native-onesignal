@@ -21,6 +21,7 @@
 		A10000000000000000000007 /* libPods-OneSignalWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* libPods-OneSignalWidgetExtension.a */; };
 		A10000000000000000000008 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* WidgetKit.framework */; };
 		A10000000000000000000009 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* SwiftUI.framework */; };
+		B10000000000000000000001 /* vine_boom.wav in Resources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* vine_boom.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		A2000000000000000000000F /* libPods-OneSignalNotificationServiceExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneSignalNotificationServiceExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000010 /* libPods-OneSignalWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneSignalWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000011 /* demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = demo.entitlements; path = demo/demo.entitlements; sourceTree = "<group>"; };
+		B20000000000000000000001 /* vine_boom.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = vine_boom.wav; path = demo/vine_boom.wav; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -124,6 +126,7 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 				A20000000000000000000011 /* demo.entitlements */,
+				B20000000000000000000001 /* vine_boom.wav */,
 			);
 			name = demo;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				5F8F7D5C84F8947D278D5B06 /* PrivacyInfo.xcprivacy in Resources */,
+				B10000000000000000000001 /* vine_boom.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
