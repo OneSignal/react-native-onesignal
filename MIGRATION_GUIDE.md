@@ -2,25 +2,36 @@
 
 # Migration Guide (v5 to v6)
 
+## Before You Upgrade
+
+Upgrade to v6 only if your app is ready for React Native New Architecture.
+
+If any of the following apply, stay on v5 for now:
+
+- Your app is on React Native below `0.76.0`
+- Your app still depends on legacy bridge behavior
+- Your Android toolchain is not ready for Java 11 and `minSdkVersion 21`
+
 ## Requirements
 
-- **React Native 0.76.0 or higher** is now required. The SDK exclusively uses the New Architecture (TurboModules, Fabric, Bridgeless Mode). The legacy Bridge architecture is no longer supported.
+- **React Native `0.76.0` or higher** is now required.
+- The SDK uses New Architecture only (TurboModules/Fabric). Legacy bridge architecture is no longer supported.
 
-## Removed Deprecated Methods
+## Breaking API Changes
 
-The following synchronous methods have been removed. Replace them with their async equivalents:
+The following synchronous methods were removed in v6:
 
 | Removed (v5) | Replacement (v6) |
 |---|---|
-| `pushSubscription.getPushSubscriptionId()` | `await pushSubscription.getIdAsync()` |
-| `pushSubscription.getPushSubscriptionToken()` | `await pushSubscription.getTokenAsync()` |
-| `pushSubscription.getOptedIn()` | `await pushSubscription.getOptedInAsync()` |
-| `Notifications.hasPermission()` | `await Notifications.getPermissionAsync()` |
+| `OneSignal.User.pushSubscription.getPushSubscriptionId()` | `await OneSignal.User.pushSubscription.getIdAsync()` |
+| `OneSignal.User.pushSubscription.getPushSubscriptionToken()` | `await OneSignal.User.pushSubscription.getTokenAsync()` |
+| `OneSignal.User.pushSubscription.getOptedIn()` | `await OneSignal.User.pushSubscription.getOptedInAsync()` |
+| `OneSignal.Notifications.hasPermission()` | `await OneSignal.Notifications.getPermissionAsync()` |
 
-Since the replacements are async, update call sites to use `await`:
+Because replacements are async, update call sites to use `await`:
 
 ```typescript
-// v5 (removed)
+// v5
 const id = OneSignal.User.pushSubscription.getPushSubscriptionId();
 const hasPermission = OneSignal.Notifications.hasPermission();
 
@@ -29,37 +40,41 @@ const id = await OneSignal.User.pushSubscription.getIdAsync();
 const hasPermission = await OneSignal.Notifications.getPermissionAsync();
 ```
 
-## Stricter TypeScript Types
+## TypeScript Changes
 
-Methods that accept key-value objects now use `Record<string, string>` instead of a loosely typed object. This applies to:
+Methods that accept key-value objects now use `Record<string, string>`:
 
 - `OneSignal.User.addTags(tags)`
 - `OneSignal.User.addAliases(aliases)`
 - `OneSignal.InAppMessages.addTriggers(triggers)`
 
-If you were passing non-string values (e.g. numbers), convert them to strings:
+If you previously passed non-string values, convert them before calling:
 
 ```typescript
-// v5 (allowed at runtime, coerced to strings)
+// v5 usage (runtime coercion)
 OneSignal.User.addTags({ score: 100 });
 
-// v6 (TypeScript enforces string values)
+// v6 usage
 OneSignal.User.addTags({ score: '100' });
 ```
 
-## iOS
+## iOS Notes
 
-The podspec now uses `install_modules_dependencies(s)` instead of an explicit `React` dependency. This is handled automatically and requires no action.
+- The iOS implementation moved from `.m` to `.mm` (Objective-C++).
+- If you have custom build scripts referencing `RCTOneSignal.m`, update them to `RCTOneSignal.mm`.
+- The podspec uses `install_modules_dependencies(s)` for React Native dependency wiring.
 
-The iOS implementation file has been renamed from `.m` to `.mm` (Objective-C++). If you have any custom build phase scripts that reference this file, update them accordingly.
+## Android Notes
 
-## Android
+- Android baseline is now `minSdkVersion 21`.
+- Java compatibility is Java 11.
+- The SDK relies on React Native codegen for TurboModule generation at build time.
 
-No additional Android configuration is required. The SDK uses React Native's codegen to generate the TurboModule spec automatically during the app build.
+### OkHttp Compatibility (PR #1921)
 
-### OkHttp Version Conflict
+The wrapper now includes an Android-side transitive dependency fix to prevent OkHttp 5.x from being pulled into React Native apps ([PR #1921](https://github.com/OneSignal/react-native-onesignal/pull/1921)).
 
-The OneSignal Android SDK transitively pulls in OkHttp 5.x via its OpenTelemetry dependency, which conflicts with React Native's OkHttp 4.x. If you see a `NoClassDefFoundError` for `okhttp3.internal.Util`, add this to your app's `build.gradle`:
+If you still see `NoClassDefFoundError: okhttp3.internal.Util` (for example due to other dependency constraints in your app), force OkHttp 4.x in your app's `build.gradle`:
 
 ```groovy
 configurations.all {
@@ -68,6 +83,17 @@ configurations.all {
     }
 }
 ```
+
+## Post-Upgrade Verification Checklist
+
+After upgrading, validate:
+
+- SDK initializes at app start
+- Permission prompt flow works
+- Foreground/background notification receive + click behavior
+- Push subscription id/token/opted-in reads via async APIs
+- Login/logout and user alias/tag operations
+- In-app message lifecycle/click events
 
 ---
 
