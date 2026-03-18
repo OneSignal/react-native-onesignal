@@ -1,3 +1,4 @@
+# DON'T RUN THIS FILE DIRECTLY, USE PACKAGE.JSON SCRIPTS
 #!/bin/bash
 set -e
 

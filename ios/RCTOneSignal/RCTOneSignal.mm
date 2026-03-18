@@ -1,27 +1,5 @@
-#if __has_include(<React/RCTConvert.h>)
-#import <React/RCTBridge.h>
-#import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
-#import <React/RCTUtils.h>
-#else
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
-#endif
-
 #import "RCTOneSignal.h"
 #import "RCTOneSignalEventEmitter.h"
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-
-#define UIUserNotificationTypeAlert UIRemoteNotificationTypeAlert
-#define UIUserNotificationTypeBadge UIRemoteNotificationTypeBadge
-#define UIUserNotificationTypeSound UIRemoteNotificationTypeSound
-#define UIUserNotificationTypeNone UIRemoteNotificationTypeNone
-#define UIUserNotificationType UIRemoteNotificationType
-
-#endif
 
 @interface RCTOneSignal ()
 @end
@@ -29,8 +7,6 @@
 @implementation RCTOneSignal {
   BOOL didInitialize;
 }
-
-OSNotificationClickResult *coldStartOSNotificationClickResult;
 
 + (RCTOneSignal *)sharedInstance {
   static dispatch_once_t token = 0;
@@ -52,29 +28,6 @@ OSNotificationClickResult *coldStartOSNotificationClickResult;
   // triggered
   [OneSignal initialize:nil withLaunchOptions:launchOptions];
   didInitialize = true;
-}
-
-- (void)handleRemoteNotificationOpened:(NSString *)result {
-  NSDictionary *json = [self jsonObjectWithString:result];
-
-  if (json) {
-    [self sendEvent:OSEventString(NotificationClicked) withBody:json];
-  }
-}
-
-- (NSDictionary *)jsonObjectWithString:(NSString *)jsonString {
-  NSError *jsonError;
-  NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-  NSDictionary *json =
-      [NSJSONSerialization JSONObjectWithData:data
-                                      options:NSJSONReadingMutableContainers
-                                        error:&jsonError];
-
-  if (jsonError) {
-    return nil;
-  }
-
-  return json;
 }
 
 - (void)sendEvent:(NSString *)eventName withBody:(NSDictionary *)body {
@@ -174,10 +127,6 @@ OSNotificationClickResult *coldStartOSNotificationClickResult;
     (OSInAppMessageDidDismissEvent *_Nonnull)event {
   [self sendEvent:OSEventString(InAppMessageDidDismiss)
          withBody:[event jsonRepresentation]];
-}
-
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

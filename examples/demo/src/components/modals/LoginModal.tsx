@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { AppColors, AppDialogStyles } from '../../theme';
+import { AppColors, AppDialogStyles, AppInputProps } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -55,6 +55,7 @@ export default function LoginModal({ visible, onConfirm, onClose }: Props) {
             value={userId}
             onChangeText={setUserId}
             autoFocus
+            {...AppInputProps}
             testID="login_user_id_input"
           />
           <View style={AppDialogStyles.actions}>

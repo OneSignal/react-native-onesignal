@@ -1,5 +1,6 @@
-import { NativeModules, Platform } from 'react-native';
-import type { MockInstance } from 'vitest';
+import { Platform } from 'react-native';
+
+import { mockRNOneSignal } from '../__mocks__/react-native';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -16,7 +17,6 @@ import EventManager, { type EventListenerMap } from './events/EventManager';
 import * as helpers from './helpers';
 import { LogLevel, OneSignal, OSNotificationPermission } from './index';
 
-const mockRNOneSignal = NativeModules.OneSignal;
 const mockPlatform = Platform;
 
 const APP_ID = 'test-app-id';
@@ -25,7 +25,6 @@ const PUSH_TOKEN = 'push-token';
 
 // spies
 const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-let warnSpy: MockInstance;
 
 const isNativeLoadedSpy = vi.spyOn(helpers, 'isNativeModuleLoaded');
 const isValidCallbackSpy = vi.spyOn(helpers, 'isValidCallback');
@@ -51,7 +50,7 @@ describe('OneSignal', () => {
     mockPlatform.OS = 'ios';
     isNativeLoadedSpy.mockReturnValue(true);
     isValidCallbackSpy.mockImplementation(() => {});
-    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   describe('LogLevel enum', () => {
@@ -319,7 +318,7 @@ describe('OneSignal', () => {
       test('should setup default without options', () => {
         OneSignal.LiveActivities.setupDefault();
         expect(mockRNOneSignal.setupDefaultLiveActivity).toHaveBeenCalledWith(
-          undefined,
+          null,
         );
       });
 
@@ -780,14 +779,6 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.addTag).toHaveBeenCalledWith('key', 'value');
       });
 
-      test('should convert non-string values to string', () => {
-        OneSignal.User.addTag('key', 123 as unknown as string);
-        expect(console.warn).toHaveBeenCalledWith(
-          'OneSignal: addTag: tag value must be of type string; attempting to convert',
-        );
-        expect(mockRNOneSignal.addTag).toHaveBeenCalledWith('key', '123');
-      });
-
       test('should not add tag if key is missing', () => {
         OneSignal.User.addTag('', 'value');
         expect(errorSpy).toHaveBeenCalled();
@@ -814,22 +805,6 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.addTags).toHaveBeenCalledWith(tags);
       });
 
-      test('should convert non-string values to string', () => {
-        const tags = { key1: 'value1', key2: 123 };
-        OneSignal.User.addTags(tags);
-        expect(warnSpy).toHaveBeenCalled();
-        expect(mockRNOneSignal.addTags).toHaveBeenCalledWith({
-          key1: 'value1',
-          key2: '123',
-        });
-      });
-
-      test('should not add tags if tags object is empty', () => {
-        OneSignal.User.addTags({});
-        expect(errorSpy).toHaveBeenCalled();
-        expect(mockRNOneSignal.addTags).not.toHaveBeenCalled();
-      });
-
       test('should not add tags if native module is not loaded', () => {
         isNativeLoadedSpy.mockReturnValue(false);
         OneSignal.User.addTags({ key: 'value' });
@@ -840,19 +815,13 @@ describe('OneSignal', () => {
     describe('removeTag', () => {
       test('should remove tag', () => {
         OneSignal.User.removeTag('key');
-        expect(mockRNOneSignal.removeTags).toHaveBeenCalledWith(['key']);
-      });
-
-      test('should not remove tag if key is not a string', () => {
-        OneSignal.User.removeTag(123 as unknown as string);
-        expect(errorSpy).toHaveBeenCalled();
-        expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
+        expect(mockRNOneSignal.removeTag).toHaveBeenCalledWith('key');
       });
 
       test('should not remove tag if native module is not loaded', () => {
         isNativeLoadedSpy.mockReturnValue(false);
         OneSignal.User.removeTag('key');
-        expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
+        expect(mockRNOneSignal.removeTag).not.toHaveBeenCalled();
       });
     });
 
@@ -861,12 +830,6 @@ describe('OneSignal', () => {
         const keys = ['key1', 'key2'];
         OneSignal.User.removeTags(keys);
         expect(mockRNOneSignal.removeTags).toHaveBeenCalledWith(keys);
-      });
-
-      test('should not remove tags if keys is not an array', () => {
-        OneSignal.User.removeTags('key' as unknown as string[]);
-        expect(errorSpy).toHaveBeenCalled();
-        expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
       });
 
       test('should not remove tags if native module is not loaded', () => {
@@ -1338,31 +1301,28 @@ describe('OneSignal', () => {
       describe('addTrigger', () => {
         test('should add trigger', () => {
           OneSignal.InAppMessages.addTrigger('key', 'value');
-          expect(mockRNOneSignal.addTriggers).toHaveBeenCalledWith({
-            key: 'value',
-          });
+          expect(mockRNOneSignal.addTrigger).toHaveBeenCalledWith(
+            'key',
+            'value',
+          );
         });
 
         test('should log error but still call native method if key is missing', () => {
           OneSignal.InAppMessages.addTrigger('', 'value');
           expect(errorSpy).toHaveBeenCalled();
-          expect(mockRNOneSignal.addTriggers).toHaveBeenCalledWith({
-            '': 'value',
-          });
+          expect(mockRNOneSignal.addTrigger).toHaveBeenCalledWith('', 'value');
         });
 
         test('should log error but still call native method if value is null', () => {
           OneSignal.InAppMessages.addTrigger('key', null as unknown as string);
           expect(errorSpy).toHaveBeenCalled();
-          expect(mockRNOneSignal.addTriggers).toHaveBeenCalledWith({
-            key: null,
-          });
+          expect(mockRNOneSignal.addTrigger).toHaveBeenCalledWith('key', null);
         });
 
         test('should not add trigger if native module is not loaded', () => {
           isNativeLoadedSpy.mockReturnValue(false);
           OneSignal.InAppMessages.addTrigger('key', 'value');
-          expect(mockRNOneSignal.addTriggers).not.toHaveBeenCalled();
+          expect(mockRNOneSignal.addTrigger).not.toHaveBeenCalled();
         });
       });
 
@@ -1371,12 +1331,6 @@ describe('OneSignal', () => {
           const triggers = { key1: 'value1', key2: 'value2' };
           OneSignal.InAppMessages.addTriggers(triggers);
           expect(mockRNOneSignal.addTriggers).toHaveBeenCalledWith(triggers);
-        });
-
-        test('should log error but still call native method if empty', () => {
-          OneSignal.InAppMessages.addTriggers({});
-          expect(errorSpy).toHaveBeenCalled();
-          expect(mockRNOneSignal.addTriggers).toHaveBeenCalled();
         });
 
         test('should not add triggers if native module is not loaded', () => {

@@ -1,4 +1,5 @@
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeOneSignal from './NativeOneSignal';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -39,8 +40,15 @@ import type {
 } from './types/subscription';
 import type { UserChangedState, UserState } from './types/user';
 
-const RNOneSignal = NativeModules.OneSignal;
+const RNOneSignal = NativeOneSignal;
+
+const GLOBAL_KEY = '__oneSignalEventManager';
+const prev = (globalThis as Record<string, unknown>)[GLOBAL_KEY];
+if (prev instanceof EventManager) {
+  prev.clearListeners();
+}
 const eventManager = new EventManager(RNOneSignal);
+(globalThis as Record<string, unknown>)[GLOBAL_KEY] = eventManager;
 
 /// An enum that declares different types of log levels you can use with the OneSignal SDK, going from the least verbose (none) to verbose (print all comments).
 export enum LogLevel {
@@ -53,10 +61,8 @@ export enum LogLevel {
   Verbose,
 }
 
-// Internal wrapper notification permission state that is being updated by the permission change handler.
 let notificationPermission = false;
 
-// Internal wrapper push subscription state that is being updated by the subscription change handler.
 let pushSub: PushSubscriptionState = {
   id: '',
   token: '',
@@ -82,8 +88,8 @@ async function _addPushSubscriptionObserver() {
     },
   );
 
-  pushSub.id = await RNOneSignal.getPushSubscriptionId();
-  pushSub.token = await RNOneSignal.getPushSubscriptionToken();
+  pushSub.id = (await RNOneSignal.getPushSubscriptionId()) ?? undefined;
+  pushSub.token = (await RNOneSignal.getPushSubscriptionToken()) ?? undefined;
   pushSub.optedIn = await RNOneSignal.getOptedIn();
 }
 
@@ -170,11 +176,10 @@ export namespace OneSignal {
     export function enter(
       activityId: string,
       token: string,
-      handler: Function = () => {},
+      handler: (result: object) => void = () => {},
     ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      // Only Available on iOS
       if (Platform.OS === 'ios') {
         RNOneSignal.enterLiveActivity(activityId, token, handler);
       }
@@ -187,7 +192,10 @@ export namespace OneSignal {
      *
      * @param activityId: The activity identifier the live activity on this device will no longer receive updates for.
      **/
-    export function exit(activityId: string, handler: Function = () => {}) {
+    export function exit(
+      activityId: string,
+      handler: (result: object) => void = () => {},
+    ) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
@@ -250,7 +258,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
-        RNOneSignal.setupDefaultLiveActivity(options);
+        RNOneSignal.setupDefaultLiveActivity(options ?? null);
       }
     }
 
@@ -453,7 +461,7 @@ export namespace OneSignal {
     }
 
     /** Set aliases for the current user. If any alias already exists, it will be overwritten to the new values. */
-    export function addAliases(aliases: object) {
+    export function addAliases(aliases: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       RNOneSignal.addAliases(aliases);
@@ -519,14 +527,6 @@ export namespace OneSignal {
         return;
       }
 
-      // forces values to be string types
-      if (typeof value !== 'string') {
-        console.warn(
-          'OneSignal: addTag: tag value must be of type string; attempting to convert',
-        );
-        value = String(value);
-      }
-
       RNOneSignal.addTag(key, value);
     }
 
@@ -535,27 +535,8 @@ export namespace OneSignal {
      * specific users and/or personalizing messages. If the tag key already exists, it will be replaced with
      * the value provided here.
      */
-    export function addTags(tags: object) {
+    export function addTags(tags: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      if (!tags || Object.keys(tags).length === 0) {
-        console.error(
-          'OneSignal: addTags: argument must be of type object of the form { key : "value" }',
-        );
-        return;
-      }
-
-      const convertedTags = tags as { [key: string]: any };
-      Object.keys(tags).forEach(function (key) {
-        if (typeof convertedTags[key] !== 'string') {
-          console.warn(
-            'OneSignal: addTags: tag value for key ' +
-              key +
-              ' must be of type string; attempting to convert',
-          );
-          convertedTags[key] = String(convertedTags[key]);
-        }
-      });
 
       RNOneSignal.addTags(tags);
     }
@@ -564,35 +545,24 @@ export namespace OneSignal {
     export function removeTag(key: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      if (typeof key !== 'string') {
-        console.error(
-          'OneSignal: removeTag: key argument must be of type string',
-        );
-        return;
-      }
-
-      RNOneSignal.removeTags([key]);
+      RNOneSignal.removeTag(key);
     }
 
     /** Remove multiple tags with the provided keys from the current user. */
     export function removeTags(keys: string[]) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      if (!Array.isArray(keys)) {
-        console.error('OneSignal: removeTags: argument must be of array type');
-        return;
-      }
-
       RNOneSignal.removeTags(keys);
     }
 
     /** Returns the local tags for the current user. */
-    export function getTags(): Promise<{ [key: string]: string }> {
+    export async function getTags(): Promise<{ [key: string]: string }> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
       }
 
-      return RNOneSignal.getTags();
+      const tags = await RNOneSignal.getTags();
+      return tags as { [key: string]: string };
     }
 
     /**
@@ -840,25 +810,15 @@ export namespace OneSignal {
         console.error('OneSignal: addTrigger: must include a key and a value');
       }
 
-      let trigger: { [key: string]: string } = {};
-      trigger[key] = value;
-      RNOneSignal.addTriggers(trigger);
+      RNOneSignal.addTrigger(key, value);
     }
 
     /**
      * Add multiple triggers for the current user. Triggers are currently explicitly used to determine whether a specific IAM should
      * be displayed to the user.
      */
-    export function addTriggers(triggers: { [key: string]: string }) {
+    export function addTriggers(triggers: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-
-      let keys = Object.keys(triggers);
-
-      if (keys.length === 0) {
-        console.error(
-          "OneSignal: addTriggers: argument must be an object of the form { key : 'value' }",
-        );
-      }
 
       RNOneSignal.addTriggers(triggers);
     }
@@ -971,7 +931,6 @@ export {
   type InAppMessageWillDisplayEvent,
   type NotificationClickEvent,
   type PushSubscriptionChangedState,
-  type PushSubscriptionState,
   type UserChangedState,
   type UserState,
 };
@@ -979,3 +938,4 @@ export {
 export { default as OSNotification } from './OSNotification';
 export type { InAppMessageClickResult } from './types/inAppMessage';
 export type { NotificationClickResult } from './types/notificationEvents';
+export type { PushSubscriptionState } from './types/subscription';

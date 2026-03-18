@@ -1,16 +1,10 @@
 #if __has_include(<React/RCTBridgeModule.h>)
 #import <React/RCTBridgeModule.h>
-#import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
-#import <React/RCTEventEmitter.h>
-#import <React/RCTUtils.h>
 #elif __has_include("RCTBridgeModule.h")
 #import "RCTBridgeModule.h"
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTEventEmitter.h"
-#import "RCTUtils.h"
 #endif
+
+#import <RNOneSignalSpec/RNOneSignalSpec.h>
 
 typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
   PermissionChanged,
@@ -37,9 +31,12 @@ typedef NS_ENUM(NSInteger, OSNotificationEventTypes) {
 
 #define OSEventString(enum) [OSNotificationEventTypesArray objectAtIndex:enum]
 
-@interface RCTOneSignalEventEmitter : RCTEventEmitter <RCTBridgeModule>
+@protocol OSNotificationLifecycleListener;
+
+@interface RCTOneSignalEventEmitter
+    : NativeOneSignalSpecBase <NativeOneSignalSpec,
+                               OSNotificationLifecycleListener>
 
 + (void)sendEventWithName:(NSString *)name withBody:(NSDictionary *)body;
-+ (BOOL)hasSetBridge;
 
 @end

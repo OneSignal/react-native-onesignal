@@ -4,7 +4,10 @@
   "description": "React Native OneSignal SDK",
   "files": [
     "dist",
-    "android",
+    "src/NativeOneSignal.ts",
+    "android/src",
+    "android/build.gradle",
+    "android/proguard-rules.pro",
     "ios",
     "react-native-onesignal.podspec"
   ],
@@ -59,5 +62,21 @@
     "url": "https://github.com/OneSignal/react-native-onesignal"
   },
   "author": "OneSignal <https://www.onesignal.com>, Geektime <http://www.geektime.co.il>",
-  "license": "MIT"
+  "license": "MIT",
+  "codegenConfig": {
+    "name": "RNOneSignalSpec",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.onesignal.rnonesignalandroid"
+    },
+    "ios": {
+      "modulesProvider": {
+        "OneSignal": "RCTOneSignalEventEmitter"
+      }
+    }
+  },
+  "peerDependencies": {
+    "react-native": ">=0.76.0"
+  }
 }
