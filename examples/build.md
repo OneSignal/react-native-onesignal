@@ -275,6 +275,13 @@ Create `src/theme.ts` with `AppColors`, `AppSpacing`, and `AppTheme` objects. Ex
 ### iOS
 - Standard React Native setup with push notification entitlement
 
+### Custom Notification Sound
+
+Copy `vine_boom.wav` from [sdk-shared/assets](https://github.com/OneSignal/sdk-shared/tree/main/assets) and place in:
+
+- **Android**: `android/app/src/main/res/raw/vine_boom.wav`
+- **iOS**: `ios/demo/vine_boom.wav` (add to Xcode project as a bundle resource)
+
 ---
 
 ## Key Files Structure
