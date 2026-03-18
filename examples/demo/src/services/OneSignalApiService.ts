@@ -46,6 +46,12 @@ class OneSignalApiService {
             'https://media.onesignal.com/automated_push_templates/ratings_template.png',
         };
         break;
+      case NotificationType.WithSound:
+        headings = { en: 'Sound Notification' };
+        contents = { en: 'This notification plays a custom sound' };
+        extra.ios_sound = 'vine_boom.wav';
+        extra.android_channel_id = 'b3b015d9-c050-4042-8548-dcc34aa44aa4';
+        break;
       default:
         return false;
     }

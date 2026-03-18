@@ -1,10 +1,12 @@
+set -euo pipefail
+
 ORIGINAL_DIR=$(pwd)
 
 # Build root package
 cd ../../
 bun run build
 
-rm -f react-native-onesignal.tgz
+rm -f react-native-onesignal*.tgz
 bun pm pack
 mv react-native-onesignal-*.tgz react-native-onesignal.tgz
 

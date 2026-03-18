@@ -32,6 +32,11 @@ export default function SendPushSection({
         testID="send_image_push_button"
       />
       <ActionButton
+        label="WITH SOUND"
+        onPress={() => onSendNotification(NotificationType.WithSound)}
+        testID="send_sound_push_button"
+      />
+      <ActionButton
         label="CUSTOM"
         onPress={() => setCustomVisible(true)}
         testID="send_custom_push_button"
