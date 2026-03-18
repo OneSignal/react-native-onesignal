@@ -9,7 +9,7 @@
     "android": "bash ../run-android.sh",
     "ios": "bash ../run-ios.sh",
     "clean:android": "cd android && ./gradlew clean && cd ..",
-    "clean:ios": "rm -rf ios/build ios/Pods",
+    "clean:ios": "cd ios && xcodebuild clean && cd ..",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"
