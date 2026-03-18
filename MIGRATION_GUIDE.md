@@ -1,76 +1,3 @@
-# React Native Migration Guide
-
-# Migration Guide (v5 to v6)
-
-## Requirements
-
-- **React Native 0.76.0 or higher** is now required. The SDK exclusively uses the New Architecture (TurboModules, Fabric, Bridgeless Mode). The legacy Bridge architecture is no longer supported.
-
-## Removed Deprecated Methods
-
-The following synchronous methods have been removed. Replace them with their async equivalents:
-
-| Removed (v5) | Replacement (v6) |
-|---|---|
-| `pushSubscription.getPushSubscriptionId()` | `await pushSubscription.getIdAsync()` |
-| `pushSubscription.getPushSubscriptionToken()` | `await pushSubscription.getTokenAsync()` |
-| `pushSubscription.getOptedIn()` | `await pushSubscription.getOptedInAsync()` |
-| `Notifications.hasPermission()` | `await Notifications.getPermissionAsync()` |
-
-Since the replacements are async, update call sites to use `await`:
-
-```typescript
-// v5 (removed)
-const id = OneSignal.User.pushSubscription.getPushSubscriptionId();
-const hasPermission = OneSignal.Notifications.hasPermission();
-
-// v6
-const id = await OneSignal.User.pushSubscription.getIdAsync();
-const hasPermission = await OneSignal.Notifications.getPermissionAsync();
-```
-
-## Stricter TypeScript Types
-
-Methods that accept key-value objects now use `Record<string, string>` instead of a loosely typed object. This applies to:
-
-- `OneSignal.User.addTags(tags)`
-- `OneSignal.User.addAliases(aliases)`
-- `OneSignal.InAppMessages.addTriggers(triggers)`
-
-If you were passing non-string values (e.g. numbers), convert them to strings:
-
-```typescript
-// v5 (allowed at runtime, coerced to strings)
-OneSignal.User.addTags({ score: 100 });
-
-// v6 (TypeScript enforces string values)
-OneSignal.User.addTags({ score: '100' });
-```
-
-## iOS
-
-The podspec now uses `install_modules_dependencies(s)` instead of an explicit `React` dependency. This is handled automatically and requires no action.
-
-The iOS implementation file has been renamed from `.m` to `.mm` (Objective-C++). If you have any custom build phase scripts that reference this file, update them accordingly.
-
-## Android
-
-No additional Android configuration is required. The SDK uses React Native's codegen to generate the TurboModule spec automatically during the app build.
-
-### OkHttp Version Conflict
-
-The OneSignal Android SDK transitively pulls in OkHttp 5.x via its OpenTelemetry dependency, which conflicts with React Native's OkHttp 4.x. If you see a `NoClassDefFoundError` for `okhttp3.internal.Util`, add this to your app's `build.gradle`:
-
-```groovy
-configurations.all {
-    resolutionStrategy {
-        force 'com.squareup.okhttp3:okhttp:4.12.0'
-    }
-}
-```
-
----
-
 # React Native v5.0.0 Migration Guide
 
 #### ⚠️ Migration Advisory for current OneSignal customers
@@ -196,9 +123,9 @@ In previous versions of the SDK, a “player” could have up to one email addre
 The current device’s push subscription can be retrieved via:
 
 ```typescript
-const id = await OneSignal.User.pushSubscription.getIdAsync();
-const token = await OneSignal.User.pushSubscription.getTokenAsync();
-const optedIn = await OneSignal.User.pushSubscription.getOptedInAsync();
+const id: string = OneSignal.User.pushSubscription.getPushSubscriptionId();
+const token: string = OneSignal.User.pushSubscription.getPushSubscriptionToken();
+const optedIn: boolean = OneSignal.User.pushSubscription.getOptedIn();
 ```
 
 ### **Opting In and Out of Push Notifications**
@@ -318,6 +245,9 @@ The Push Subscription namespace is accessible via `OneSignal.User.pushSubscripti
 
 | **React Native**                                                                                          | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OneSignal.User.pushSubscription.getPushSubscriptionId()`                                                           | _**DEPRECATED**<br>use `getIdAsync`._                                                                                                                                                                                                                                                                                                                                             |
+| `OneSignal.User.pushSubscription.getPushSubscriptionToken()`                                                        | _**DEPRECATED**<br>use `getTokenAsync`_                                                                                                                                                                                                                                                                                                                                                       |
+| `OneSignal.User.pushSubscription.getOptedIn()`                                                      | _**DEPRECATED**<br>use `getOptedInAsync`_ |
 | `await OneSignal.User.pushSubscription.getIdAsync()`                                                           | _The readonly push subscription ID._                                                                                                                                                                                                                                                                                                                                             |
 | `await OneSignal.User.pushSubscription.getTokenAsync()`                                                        | _The readonly push token._                                                                                                                                                                                                                                                                                                                                                       |
 | `await OneSignal.User.pushSubscription.getOptedInAsync()`                                                      | _Gets a boolean value indicating whether the current user is opted in to push notifications. This returns `true` when the app has notifications permission and `optOut()` is **not** called. **_Note:_** Does not take into account the existence of the subscription ID and push token. This boolean may return `true` but push notifications may still not be received by the user._ |
@@ -354,7 +284,8 @@ The Notifications namespace is accessible via `OneSignal.Notifications` and prov
 
 | **React Native**                       | **Description** |
 |--------------------------------------- | --------------- |
-| `await OneSignal.Notifications.getPermissionAsync()`                                                                      | _Whether this app has push notification permission._                                                                                                                                                                                                                                                                                                                                                                |
+| `OneSignal.Notifications.hasPermission()`                                                                      | _**DEPRECATED**<br>use `getPermissionAsync()`_                                                                                                                                                                                                                                                                                                                                                                |
+| `OneSignal.Notifications.getPermissionAsync()`                                                                      | _Whether this app has push notification permission._                                                                                                                                                                                                                                                                                                                                                                |
 | `await OneSignal.Notifications.canRequestPermission()`                                                               | _Whether attempting to request notification permission will show a prompt. Returns `true` if the device has not been prompted for push notification permission already._                                                                                                                                                                                                                                            |
 | `await OneSignal.Notifications.permissionNative()`                                                                   | _(ios only) Returns the enum for the native permission of the device. It will be one of: NotDetermined, Denied, Authorized, Provisional (only available in iOS 12), Ephemeral (only available in iOS 14)_                                                                                                                                                                                                           |
 | `OneSignal.Notifications.clearAll();`                                                                                | _Removes all OneSignal notifications._                                                                                                                                                                                                                                                                                                                                                                              |

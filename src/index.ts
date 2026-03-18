@@ -34,7 +34,10 @@ import type {
   NotificationClickEvent,
   NotificationListeners,
 } from './types/notificationEvents';
-import type { PushSubscriptionChangedState } from './types/subscription';
+import type {
+  PushSubscriptionChangedState,
+  PushSubscriptionState,
+} from './types/subscription';
 import type { UserChangedState, UserState } from './types/user';
 
 const RNOneSignal = NativeOneSignal;
@@ -58,12 +61,47 @@ export enum LogLevel {
   Verbose,
 }
 
+let notificationPermission = false;
+
+let pushSub: PushSubscriptionState = {
+  id: '',
+  token: '',
+  optedIn: false,
+};
+
+async function _addPermissionObserver() {
+  OneSignal.Notifications.addEventListener(
+    'permissionChange',
+    (granted: boolean) => {
+      notificationPermission = granted;
+    },
+  );
+
+  notificationPermission = await RNOneSignal.hasNotificationPermission();
+}
+
+async function _addPushSubscriptionObserver() {
+  OneSignal.User.pushSubscription.addEventListener(
+    'change',
+    (subscriptionChange) => {
+      pushSub = subscriptionChange.current;
+    },
+  );
+
+  pushSub.id = (await RNOneSignal.getPushSubscriptionId()) ?? undefined;
+  pushSub.token = (await RNOneSignal.getPushSubscriptionToken()) ?? undefined;
+  pushSub.optedIn = await RNOneSignal.getOptedIn();
+}
+
 export namespace OneSignal {
   /** Initializes the OneSignal SDK. This should be called during startup of the application. */
   export function initialize(appId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
 
     RNOneSignal.initialize(appId);
+
+    _addPermissionObserver();
+    _addPushSubscriptionObserver();
   }
 
   /**
@@ -273,6 +311,20 @@ export namespace OneSignal {
         eventManager.removeEventListener(SUBSCRIPTION_CHANGED, listener);
       }
 
+      /**
+       * @deprecated This method is deprecated. It has been replaced by {@link getIdAsync}.
+       */
+      export function getPushSubscriptionId(): string {
+        if (!isNativeModuleLoaded(RNOneSignal)) {
+          return '';
+        }
+        console.warn(
+          'OneSignal: This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
+        );
+
+        return pushSub.id ? pushSub.id : '';
+      }
+
       export async function getIdAsync(): Promise<string | null> {
         if (!isNativeModuleLoaded(RNOneSignal)) {
           return Promise.reject(
@@ -281,6 +333,20 @@ export namespace OneSignal {
         }
 
         return await RNOneSignal.getPushSubscriptionId();
+      }
+
+      /**
+       * @deprecated This method is deprecated. It has been replaced by {@link getTokenAsync}.
+       */
+      export function getPushSubscriptionToken(): string {
+        if (!isNativeModuleLoaded(RNOneSignal)) {
+          return '';
+        }
+        console.warn(
+          'OneSignal: This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
+        );
+
+        return pushSub.token ? pushSub.token : '';
       }
 
       /** The readonly push subscription token */
@@ -292,6 +358,20 @@ export namespace OneSignal {
         }
 
         return await RNOneSignal.getPushSubscriptionToken();
+      }
+
+      /**
+       * @deprecated This method is deprecated. It has been replaced by {@link getOptedInAsync}.
+       */
+      export function getOptedIn(): boolean {
+        if (!isNativeModuleLoaded(RNOneSignal)) {
+          return false;
+        }
+        console.warn(
+          'OneSignal: This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
+        );
+
+        return pushSub.optedIn ?? false;
       }
 
       /**
@@ -505,6 +585,17 @@ export namespace OneSignal {
   }
 
   export namespace Notifications {
+    /**
+     * @deprecated This method is deprecated. It has been replaced by {@link getPermissionAsync}.
+     */
+    export function hasPermission(): boolean {
+      console.warn(
+        'OneSignal: This method has been deprecated. Use getPermissionAsync instead for getting notification permission status.',
+      );
+
+      return notificationPermission;
+    }
+
     /**
      * Whether this app has push notification permission. Returns true if the user has accepted permissions,
      * or if the app has ephemeral or provisional permission.
