@@ -1,52 +1,51 @@
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
+import { beforeEach, describe, expect, test } from "vite-plus/test";
 
-import { mockRNOneSignal } from '../__mocks__/react-native';
-import OSNotification, { type BaseNotificationData } from './OSNotification';
+import { mockRNOneSignal } from "../__mocks__/react-native";
+import OSNotification, { type BaseNotificationData } from "./OSNotification";
 
 const mockPlatform = Platform;
 
-describe('OSNotification', () => {
+describe("OSNotification", () => {
   const baseNotificationData: BaseNotificationData = {
-    body: 'Test notification body',
-    sound: 'default',
-    title: 'Test Title',
-    launchURL: 'https://example.com',
-    rawPayload: { key: 'value' },
-    actionButtons: [{ id: 'btn1', text: 'Button 1' }],
-    additionalData: { custom: 'data' },
-    notificationId: 'test-notification-id',
+    body: "Test notification body",
+    sound: "default",
+    title: "Test Title",
+    launchURL: "https://example.com",
+    rawPayload: { key: "value" },
+    actionButtons: [{ id: "btn1", text: "Button 1" }],
+    additionalData: { custom: "data" },
+    notificationId: "test-notification-id",
   };
 
   beforeEach(() => {
-    mockPlatform.OS = 'ios';
+    mockPlatform.OS = "ios";
     mockRNOneSignal.displayNotification.mockClear();
   });
 
-  describe('constructor', () => {
-    test('should initialize common properties', () => {
+  describe("constructor", () => {
+    test("should initialize common properties", () => {
       const notification = new OSNotification(baseNotificationData);
 
-      expect(notification.body).toBe('Test notification body');
-      expect(notification.sound).toBe('default');
-      expect(notification.title).toBe('Test Title');
-      expect(notification.launchURL).toBe('https://example.com');
-      expect(notification.rawPayload).toEqual({ key: 'value' });
-      expect(notification.actionButtons).toEqual([
-        { id: 'btn1', text: 'Button 1' },
-      ]);
-      expect(notification.additionalData).toEqual({ custom: 'data' });
-      expect(notification.notificationId).toBe('test-notification-id');
+      expect(notification.body).toBe("Test notification body");
+      expect(notification.sound).toBe("default");
+      expect(notification.title).toBe("Test Title");
+      expect(notification.launchURL).toBe("https://example.com");
+      expect(notification.rawPayload).toEqual({ key: "value" });
+      expect(notification.actionButtons).toEqual([{ id: "btn1", text: "Button 1" }]);
+      expect(notification.additionalData).toEqual({ custom: "data" });
+      expect(notification.notificationId).toBe("test-notification-id");
     });
 
-    test('should initialize with optional common properties as undefined', () => {
+    test("should initialize with optional common properties as undefined", () => {
       const notificationData = {
-        body: 'Test body',
-        rawPayload: '',
-        notificationId: 'id-123',
+        body: "Test body",
+        rawPayload: "",
+        notificationId: "id-123",
       };
       const notification = new OSNotification(notificationData);
 
-      expect(notification.body).toBe('Test body');
+      expect(notification.body).toBe("Test body");
       expect(notification.sound).toBeUndefined();
       expect(notification.title).toBeUndefined();
       expect(notification.launchURL).toBeUndefined();
@@ -54,44 +53,44 @@ describe('OSNotification', () => {
       expect(notification.additionalData).toBeUndefined();
     });
 
-    describe('Android-specific properties', () => {
+    describe("Android-specific properties", () => {
       beforeEach(() => {
-        mockPlatform.OS = 'android';
+        mockPlatform.OS = "android";
       });
 
-      test('should initialize Android-specific properties on Android platform', () => {
+      test("should initialize Android-specific properties on Android platform", () => {
         const androidData = {
           ...baseNotificationData,
-          groupKey: 'group-1',
-          groupMessage: 'group message',
-          ledColor: 'FFFF0000',
+          groupKey: "group-1",
+          groupMessage: "group message",
+          ledColor: "FFFF0000",
           priority: 2,
-          smallIcon: 'icon_small',
-          largeIcon: 'icon_large',
-          bigPicture: 'image_url',
-          collapseId: 'collapse-1',
-          fromProjectNumber: '123456789',
-          smallIconAccentColor: 'FFFF0000',
-          lockScreenVisibility: '1',
+          smallIcon: "icon_small",
+          largeIcon: "icon_large",
+          bigPicture: "image_url",
+          collapseId: "collapse-1",
+          fromProjectNumber: "123456789",
+          smallIconAccentColor: "FFFF0000",
+          lockScreenVisibility: "1",
           androidNotificationId: 456,
         };
         const notification = new OSNotification(androidData);
 
-        expect(notification.groupKey).toBe('group-1');
-        expect(notification.groupMessage).toBe('group message');
-        expect(notification.ledColor).toBe('FFFF0000');
+        expect(notification.groupKey).toBe("group-1");
+        expect(notification.groupMessage).toBe("group message");
+        expect(notification.ledColor).toBe("FFFF0000");
         expect(notification.priority).toBe(2);
-        expect(notification.smallIcon).toBe('icon_small');
-        expect(notification.largeIcon).toBe('icon_large');
-        expect(notification.bigPicture).toBe('image_url');
-        expect(notification.collapseId).toBe('collapse-1');
-        expect(notification.fromProjectNumber).toBe('123456789');
-        expect(notification.smallIconAccentColor).toBe('FFFF0000');
-        expect(notification.lockScreenVisibility).toBe('1');
+        expect(notification.smallIcon).toBe("icon_small");
+        expect(notification.largeIcon).toBe("icon_large");
+        expect(notification.bigPicture).toBe("image_url");
+        expect(notification.collapseId).toBe("collapse-1");
+        expect(notification.fromProjectNumber).toBe("123456789");
+        expect(notification.smallIconAccentColor).toBe("FFFF0000");
+        expect(notification.lockScreenVisibility).toBe("1");
         expect(notification.androidNotificationId).toBe(456);
       });
 
-      test('should not set iOS-specific properties on Android', () => {
+      test("should not set iOS-specific properties on Android", () => {
         const notification = new OSNotification(baseNotificationData);
 
         expect(notification.badge).toBeUndefined();
@@ -109,44 +108,44 @@ describe('OSNotification', () => {
       });
     });
 
-    describe('iOS-specific properties', () => {
+    describe("iOS-specific properties", () => {
       beforeEach(() => {
-        mockPlatform.OS = 'ios';
+        mockPlatform.OS = "ios";
       });
 
-      test('should initialize iOS-specific properties on iOS platform', () => {
+      test("should initialize iOS-specific properties on iOS platform", () => {
         const iosData = {
           ...baseNotificationData,
-          badge: '1',
-          badgeIncrement: '5',
-          category: 'NOTIFICATION_CATEGORY',
-          threadId: 'thread-123',
-          subtitle: 'Test Subtitle',
-          templateId: 'template-1',
-          templateName: 'template-name',
-          attachments: { key: 'attachment-value' },
+          badge: "1",
+          badgeIncrement: "5",
+          category: "NOTIFICATION_CATEGORY",
+          threadId: "thread-123",
+          subtitle: "Test Subtitle",
+          templateId: "template-1",
+          templateName: "template-name",
+          attachments: { key: "attachment-value" },
           mutableContent: true,
-          contentAvailable: '1',
+          contentAvailable: "1",
           relevanceScore: 0.9,
-          interruptionLevel: 'timeSensitive',
+          interruptionLevel: "timeSensitive",
         };
         const notification = new OSNotification(iosData);
 
-        expect(notification.badge).toBe('1');
-        expect(notification.badgeIncrement).toBe('5');
-        expect(notification.category).toBe('NOTIFICATION_CATEGORY');
-        expect(notification.threadId).toBe('thread-123');
-        expect(notification.subtitle).toBe('Test Subtitle');
-        expect(notification.templateId).toBe('template-1');
-        expect(notification.templateName).toBe('template-name');
-        expect(notification.attachments).toEqual({ key: 'attachment-value' });
+        expect(notification.badge).toBe("1");
+        expect(notification.badgeIncrement).toBe("5");
+        expect(notification.category).toBe("NOTIFICATION_CATEGORY");
+        expect(notification.threadId).toBe("thread-123");
+        expect(notification.subtitle).toBe("Test Subtitle");
+        expect(notification.templateId).toBe("template-1");
+        expect(notification.templateName).toBe("template-name");
+        expect(notification.attachments).toEqual({ key: "attachment-value" });
         expect(notification.mutableContent).toBe(true);
-        expect(notification.contentAvailable).toBe('1');
+        expect(notification.contentAvailable).toBe("1");
         expect(notification.relevanceScore).toBe(0.9);
-        expect(notification.interruptionLevel).toBe('timeSensitive');
+        expect(notification.interruptionLevel).toBe("timeSensitive");
       });
 
-      test('should not set Android-specific properties on iOS', () => {
+      test("should not set Android-specific properties on iOS", () => {
         const notification = new OSNotification(baseNotificationData);
 
         expect(notification.groupKey).toBeUndefined();
@@ -165,30 +164,26 @@ describe('OSNotification', () => {
     });
   });
 
-  describe('display', () => {
-    test('should call native displayNotification with notificationId', () => {
+  describe("display", () => {
+    test("should call native displayNotification with notificationId", () => {
       const notification = new OSNotification(baseNotificationData);
       notification.display();
 
-      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith(
-        'test-notification-id',
-      );
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith("test-notification-id");
     });
 
-    test('should display notification with different notificationId', () => {
-      const notificationID = 'custom-id-789';
+    test("should display notification with different notificationId", () => {
+      const notificationID = "custom-id-789";
       const notification = new OSNotification({
         ...baseNotificationData,
         notificationId: notificationID,
       });
       notification.display();
 
-      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith(
-        notificationID,
-      );
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith(notificationID);
     });
 
-    test('should return undefined', () => {
+    test("should return undefined", () => {
       const notification = new OSNotification(baseNotificationData);
       const result = notification.display();
 
@@ -196,21 +191,21 @@ describe('OSNotification', () => {
     });
   });
 
-  describe('rawPayload types', () => {
-    test('should accept object as rawPayload', () => {
+  describe("rawPayload types", () => {
+    test("should accept object as rawPayload", () => {
       const notificationData = {
         ...baseNotificationData,
-        rawPayload: { key: 'value', nested: { key: 'value' } },
+        rawPayload: { key: "value", nested: { key: "value" } },
       };
       const notification = new OSNotification(notificationData);
 
       expect(notification.rawPayload).toEqual({
-        key: 'value',
-        nested: { key: 'value' },
+        key: "value",
+        nested: { key: "value" },
       });
     });
 
-    test('should accept string as rawPayload', () => {
+    test("should accept string as rawPayload", () => {
       const notificationData = {
         ...baseNotificationData,
         rawPayload: '{"key":"value"}',
@@ -220,7 +215,7 @@ describe('OSNotification', () => {
       expect(notification.rawPayload).toBe('{"key":"value"}');
     });
 
-    test('should accept empty object as rawPayload', () => {
+    test("should accept empty object as rawPayload", () => {
       const notificationData = {
         ...baseNotificationData,
         rawPayload: {},
@@ -230,14 +225,14 @@ describe('OSNotification', () => {
       expect(notification.rawPayload).toEqual({});
     });
 
-    test('should accept empty string as rawPayload', () => {
+    test("should accept empty string as rawPayload", () => {
       const notificationData = {
         ...baseNotificationData,
-        rawPayload: '',
+        rawPayload: "",
       };
       const notification = new OSNotification(notificationData);
 
-      expect(notification.rawPayload).toBe('');
+      expect(notification.rawPayload).toBe("");
     });
   });
 });

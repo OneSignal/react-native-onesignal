@@ -9,12 +9,11 @@ export interface UserData {
 export function userDataFromJson(json: Record<string, unknown>): UserData {
   const identity = (json.identity as Record<string, string>) ?? {};
   const properties = (json.properties as Record<string, unknown>) ?? {};
-  const subscriptions =
-    (json.subscriptions as Array<Record<string, unknown>>) ?? [];
+  const subscriptions = (json.subscriptions as Array<Record<string, unknown>>) ?? [];
 
   const aliases: Record<string, string> = {};
   for (const [key, value] of Object.entries(identity)) {
-    if (key !== 'external_id' && key !== 'onesignal_id') {
+    if (key !== "external_id" && key !== "onesignal_id") {
       aliases[key] = String(value);
     }
   }
@@ -24,10 +23,12 @@ export function userDataFromJson(json: Record<string, unknown>): UserData {
   const emails: string[] = [];
   const smsNumbers: string[] = [];
   for (const sub of subscriptions) {
-    if (sub.type === 'Email' && sub.token) {
-      emails.push(String(sub.token));
-    } else if (sub.type === 'SMS' && sub.token) {
-      smsNumbers.push(String(sub.token));
+    const token = sub.token;
+    if (typeof token !== "string") continue;
+    if (sub.type === "Email") {
+      emails.push(token);
+    } else if (sub.type === "SMS") {
+      smsNumbers.push(token);
     }
   }
 

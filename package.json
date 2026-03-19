@@ -2,6 +2,27 @@
   "name": "react-native-onesignal",
   "version": "5.4.0",
   "description": "React Native OneSignal SDK",
+  "keywords": [
+    "android",
+    "apns",
+    "fcm",
+    "gcm",
+    "ios",
+    "notifications",
+    "onesignal",
+    "push",
+    "react-component",
+    "react-native"
+  ],
+  "bugs": {
+    "url": "https://github.com/OneSignal/react-native-onesignal/issues"
+  },
+  "license": "MIT",
+  "author": "OneSignal <https://www.onesignal.com>, Geektime <http://www.geektime.co.il>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OneSignal/react-native-onesignal"
+  },
   "files": [
     "dist",
     "src/NativeOneSignal.ts",
@@ -14,18 +35,18 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "bun run build",
-    "build": "tsc --noEmit && vite build",
+    "prepare": "vp config && bun run build",
+    "build": "tsc --noEmit && vp build",
     "format:spotless": "./examples/demo/android/gradlew spotlessApply",
     "format:prettier": "prettier --write \"**/*.{ts,tsx}\" --ignore-path .gitignore",
     "format": "concurrently \"bun run format:spotless\" \"bun run format:prettier\"",
     "format:check:spotless": "./examples/demo/android/gradlew spotlessCheck",
     "format:check:prettier": "prettier --check \"**/*.{ts,tsx}\" --ignore-path .gitignore",
     "format:check": "concurrently \"bun run format:check:spotless\" \"bun run format:check:prettier\"",
-    "lint": "oxlint src examples && bun run format:check",
-    "lint:fix": "oxlint src examples --fix && bun run format",
-    "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "lint": "vp lint src examples && bun run format:check",
+    "lint:fix": "vp lint src examples --fix && bun run format",
+    "test": "vp test",
+    "test:coverage": "vp test run --coverage"
   },
   "dependencies": {
     "invariant": "^2.2.4"
@@ -35,34 +56,23 @@
     "@types/react-native": "^0.73.0",
     "@vitest/coverage-v8": "4.0.8",
     "concurrently": "^9.2.1",
-    "oxlint": "^1.26.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
-    "vite": "^7.2.0",
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^4.0.8"
+    "vite-plus": "latest",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   },
-  "keywords": [
-    "react-component",
-    "react-native",
-    "ios",
-    "android",
-    "notifications",
-    "push",
-    "apns",
-    "fcm",
-    "gcm",
-    "onesignal"
-  ],
-  "bugs": {
-    "url": "https://github.com/OneSignal/react-native-onesignal/issues"
+  "peerDependencies": {
+    "react-native": ">=0.76.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/OneSignal/react-native-onesignal"
+  "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    }
   },
-  "author": "OneSignal <https://www.onesignal.com>, Geektime <http://www.geektime.co.il>",
-  "license": "MIT",
   "codegenConfig": {
     "name": "RNOneSignalSpec",
     "type": "modules",
@@ -75,8 +85,5 @@
         "OneSignal": "RCTOneSignalEventEmitter"
       }
     }
-  },
-  "peerDependencies": {
-    "react-native": ">=0.76.0"
   }
 }

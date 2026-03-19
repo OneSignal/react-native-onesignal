@@ -2,6 +2,7 @@
   "recommendations": [
     "oxc.oxc-vscode",
     "esbenp.prettier-vscode",
-    "redhat.vscode-yaml"
+    "redhat.vscode-yaml",
+    "VoidZero.vite-plus-extension-pack"
   ]
 }
