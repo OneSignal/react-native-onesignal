@@ -4,5 +4,11 @@ export default defineConfig({
   staged: {
     "*": "vp check --fix",
   },
-  lint: { options: { typeAware: true, typeCheck: true } },
+  lint: {
+    plugins: ["react"],
+    options: { typeAware: true, typeCheck: true },
+    rules: {
+      "react/exhaustive-deps": "warn",
+    },
+  },
 });

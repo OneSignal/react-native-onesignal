@@ -1,27 +1,27 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import ActionButton from "../components/ActionButton";
+import LoadingOverlay from "../components/LoadingOverlay";
+import LogView from "../components/LogView";
+import TooltipModal from "../components/modals/TooltipModal";
+import AliasesSection from "../components/sections/AliasesSection";
+import AppSection from "../components/sections/AppSection";
+import EmailsSection from "../components/sections/EmailsSection";
+import InAppSection from "../components/sections/InAppSection";
+import LocationSection from "../components/sections/LocationSection";
+import OutcomesSection from "../components/sections/OutcomesSection";
+import PushSection from "../components/sections/PushSection";
+import SendIamSection from "../components/sections/SendIamSection";
+import SendPushSection from "../components/sections/SendPushSection";
+import SmsSection from "../components/sections/SmsSection";
+import TagsSection from "../components/sections/TagsSection";
+import TrackEventSection from "../components/sections/TrackEventSection";
+import TriggersSection from "../components/sections/TriggersSection";
+import UserSection from "../components/sections/UserSection";
 import { useAppContext } from "../context/AppContext";
 import { InAppMessageType } from "../models/InAppMessageType";
 import TooltipHelper, { TooltipData } from "../services/TooltipHelper";
-import LogView from "../components/LogView";
-import LoadingOverlay from "../components/LoadingOverlay";
-import ActionButton from "../components/ActionButton";
-import TooltipModal from "../components/modals/TooltipModal";
-import AppSection from "../components/sections/AppSection";
-import UserSection from "../components/sections/UserSection";
-import PushSection from "../components/sections/PushSection";
-import SendPushSection from "../components/sections/SendPushSection";
-import InAppSection from "../components/sections/InAppSection";
-import SendIamSection from "../components/sections/SendIamSection";
-import AliasesSection from "../components/sections/AliasesSection";
-import EmailsSection from "../components/sections/EmailsSection";
-import SmsSection from "../components/sections/SmsSection";
-import TagsSection from "../components/sections/TagsSection";
-import OutcomesSection from "../components/sections/OutcomesSection";
-import TriggersSection from "../components/sections/TriggersSection";
-import TrackEventSection from "../components/sections/TrackEventSection";
-import LocationSection from "../components/sections/LocationSection";
 import { AppColors } from "../theme";
 
 export default function HomeScreen() {
@@ -35,7 +35,6 @@ export default function HomeScreen() {
   // Auto-request push permission on load
   useEffect(() => {
     void app.promptPush();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const showTooltipModal = (key: string) => {
