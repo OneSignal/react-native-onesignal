@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+
 import NativeOneSignal from './NativeOneSignal';
 const RNOneSignal = NativeOneSignal;
 

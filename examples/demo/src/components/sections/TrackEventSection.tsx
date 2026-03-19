@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import SectionCard from '../SectionCard';
+
 import ActionButton from '../ActionButton';
 import TrackEventModal from '../modals/TrackEventModal';
+import SectionCard from '../SectionCard';
 
 interface Props {
   onTrackEvent: (name: string, properties?: Record<string, unknown>) => void;

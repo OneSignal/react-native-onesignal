@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import { AppColors, AppTextStyles, AppTheme } from '../theme';
 
 // PairItem
@@ -42,10 +43,7 @@ export function PairItem({
         </>
       )}
       {onDelete && (
-        <TouchableOpacity
-          onPress={onDelete}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
+        <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Icon name="close" size={18} color={AppColors.osPrimary} />
         </TouchableOpacity>
       )}
@@ -67,10 +65,7 @@ export function SingleItem({ value, onDelete, testID }: SingleItemProps) {
         {value}
       </Text>
       {onDelete && (
-        <TouchableOpacity
-          onPress={onDelete}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
+        <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Icon name="close" size={18} color={AppColors.osPrimary} />
         </TouchableOpacity>
       )}
@@ -100,15 +95,8 @@ interface PairListProps {
   filterKeys?: string[];
 }
 
-export function PairList({
-  items,
-  layout = 'inline',
-  onDelete,
-  filterKeys,
-}: PairListProps) {
-  const filtered = filterKeys
-    ? items.filter(([k]) => !filterKeys.includes(k))
-    : items;
+export function PairList({ items, layout = 'inline', onDelete, filterKeys }: PairListProps) {
+  const filtered = filterKeys ? items.filter(([k]) => !filterKeys.includes(k)) : items;
 
   if (filtered.length === 0) {
     return null;
@@ -172,10 +160,7 @@ export function CollapsibleSingleList({
         </React.Fragment>
       ))}
       {!showAll && hiddenCount > 0 && (
-        <TouchableOpacity
-          onPress={() => setExpanded(true)}
-          style={styles.moreButton}
-        >
+        <TouchableOpacity onPress={() => setExpanded(true)} style={styles.moreButton}>
           <Text style={styles.moreText}>{hiddenCount} more</Text>
         </TouchableOpacity>
       )}

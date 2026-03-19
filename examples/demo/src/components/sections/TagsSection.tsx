@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import SectionCard from '../SectionCard';
+
+import { AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
-import PairInputModal from '../modals/PairInputModal';
+import { PairList, EmptyState } from '../ListWidgets';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import MultiSelectRemoveModal from '../modals/MultiSelectRemoveModal';
-import { PairList, EmptyState } from '../ListWidgets';
-import { AppTheme, AppSpacing } from '../../theme';
+import PairInputModal from '../modals/PairInputModal';
+import SectionCard from '../SectionCard';
 
 interface Props {
   tags: [string, string][];
@@ -35,18 +36,10 @@ export default function TagsSection({
         </View>
       ) : (
         <View style={styles.listCard}>
-          <PairList
-            items={tags}
-            layout="stacked"
-            onDelete={key => onRemoveSelected([key])}
-          />
+          <PairList items={tags} layout="stacked" onDelete={(key) => onRemoveSelected([key])} />
         </View>
       )}
-      <ActionButton
-        label="ADD"
-        onPress={() => setAddVisible(true)}
-        testID="add_tag_button"
-      />
+      <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_tag_button" />
       <ActionButton
         label="ADD MULTIPLE"
         onPress={() => setAddMultipleVisible(true)}

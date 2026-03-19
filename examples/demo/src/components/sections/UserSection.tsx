@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import SectionCard from '../SectionCard';
+
+import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
 import LoginModal from '../modals/LoginModal';
-import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
+import SectionCard from '../SectionCard';
 
 interface Props {
   externalUserId: string | undefined;
@@ -11,11 +12,7 @@ interface Props {
   onLogout: () => void;
 }
 
-export default function UserSection({
-  externalUserId,
-  onLogin,
-  onLogout,
-}: Props) {
+export default function UserSection({ externalUserId, onLogin, onLogout }: Props) {
   const [loginVisible, setLoginVisible] = useState(false);
   const isLoggedIn = !!externalUserId;
 

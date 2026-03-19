@@ -13,7 +13,7 @@ export function userDataFromJson(json: Record<string, unknown>): UserData {
 
   const aliases: Record<string, string> = {};
   for (const [key, value] of Object.entries(identity)) {
-    if (key !== "external_id" && key !== "onesignal_id") {
+    if (key !== 'external_id' && key !== 'onesignal_id') {
       aliases[key] = String(value);
     }
   }
@@ -24,10 +24,10 @@ export function userDataFromJson(json: Record<string, unknown>): UserData {
   const smsNumbers: string[] = [];
   for (const sub of subscriptions) {
     const token = sub.token;
-    if (typeof token !== "string") continue;
-    if (sub.type === "Email") {
+    if (typeof token !== 'string') continue;
+    if (sub.type === 'Email') {
       emails.push(token);
-    } else if (sub.type === "SMS") {
+    } else if (sub.type === 'SMS') {
       smsNumbers.push(token);
     }
   }

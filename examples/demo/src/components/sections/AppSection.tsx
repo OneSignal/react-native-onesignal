@@ -1,14 +1,9 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Linking,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Linking, StyleSheet } from 'react-native';
+
+import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
-import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 
 interface Props {
   appId: string;
@@ -42,9 +37,7 @@ export default function AppSection({
         <Text style={styles.bannerText}>
           Add your own App ID, then rebuild to fully test all functionality.
         </Text>
-        <TouchableOpacity
-          onPress={() => Linking.openURL('https://onesignal.com')}
-        >
+        <TouchableOpacity onPress={() => Linking.openURL('https://onesignal.com')}>
           <Text style={styles.bannerLink}>Get your keys at onesignal.com</Text>
         </TouchableOpacity>
       </View>

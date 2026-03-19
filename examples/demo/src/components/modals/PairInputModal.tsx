@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+
 import { AppColors, AppDialogStyles, AppInputProps } from '../../theme';
 
 interface Props {
@@ -54,12 +55,7 @@ export default function PairInputModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={handleClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
       <KeyboardAvoidingView
         style={AppDialogStyles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -68,11 +64,7 @@ export default function PairInputModal({
           <Text style={AppDialogStyles.title}>{title}</Text>
           <View style={styles.row}>
             <TextInput
-              style={[
-                AppDialogStyles.input,
-                styles.halfInput,
-                styles.inputSpacing,
-              ]}
+              style={[AppDialogStyles.input, styles.halfInput, styles.inputSpacing]}
               placeholder={keyPlaceholder}
               placeholderTextColor={AppColors.osGrey600}
               value={keyValue}
@@ -82,11 +74,7 @@ export default function PairInputModal({
               testID={keyTestID}
             />
             <TextInput
-              style={[
-                AppDialogStyles.input,
-                styles.halfInput,
-                styles.inputSpacing,
-              ]}
+              style={[AppDialogStyles.input, styles.halfInput, styles.inputSpacing]}
               placeholder={valuePlaceholder}
               placeholderTextColor={AppColors.osGrey600}
               value={val}
@@ -96,10 +84,7 @@ export default function PairInputModal({
             />
           </View>
           <View style={AppDialogStyles.actions}>
-            <TouchableOpacity
-              style={AppDialogStyles.actionBtn}
-              onPress={handleClose}
-            >
+            <TouchableOpacity style={AppDialogStyles.actionBtn} onPress={handleClose}>
               <Text style={AppDialogStyles.actionText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity

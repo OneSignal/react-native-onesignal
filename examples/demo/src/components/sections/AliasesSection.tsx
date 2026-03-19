@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import SectionCard from '../SectionCard';
-import ActionButton from '../ActionButton';
-import PairInputModal from '../modals/PairInputModal';
-import MultiPairInputModal from '../modals/MultiPairInputModal';
-import { PairList, EmptyState } from '../ListWidgets';
+
 import { AppTheme, AppSpacing } from '../../theme';
+import ActionButton from '../ActionButton';
+import { PairList, EmptyState } from '../ListWidgets';
+import MultiPairInputModal from '../modals/MultiPairInputModal';
+import PairInputModal from '../modals/PairInputModal';
+import SectionCard from '../SectionCard';
 
 const FILTERED_KEYS = ['external_id', 'onesignal_id'];
 
@@ -16,12 +17,7 @@ interface Props {
   onInfoTap?: () => void;
 }
 
-export default function AliasesSection({
-  aliases,
-  onAdd,
-  onAddMultiple,
-  onInfoTap,
-}: Props) {
+export default function AliasesSection({ aliases, onAdd, onAddMultiple, onInfoTap }: Props) {
   const [addVisible, setAddVisible] = useState(false);
   const [addMultipleVisible, setAddMultipleVisible] = useState(false);
 
@@ -38,11 +34,7 @@ export default function AliasesSection({
           <PairList items={filtered} layout="stacked" />
         </View>
       )}
-      <ActionButton
-        label="ADD"
-        onPress={() => setAddVisible(true)}
-        testID="add_alias_button"
-      />
+      <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_alias_button" />
       <ActionButton
         label="ADD MULTIPLE"
         onPress={() => setAddMultipleVisible(true)}

@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import LogManager, { LogEntry } from '../services/LogManager';
 import { AppColors, AppTextStyles } from '../theme';
 
@@ -23,9 +18,9 @@ export default function LogView() {
   const [containerWidth, setContainerWidth] = useState(0);
 
   useEffect(() => {
-    const unsub = LogManager.getInstance().subscribe(entry => {
+    const unsub = LogManager.getInstance().subscribe((entry) => {
       if (entry) {
-        setEntries(prev => [entry, ...prev]);
+        setEntries((prev) => [entry, ...prev]);
       } else {
         setEntries([]);
       }
@@ -39,7 +34,7 @@ export default function LogView() {
     <View style={styles.container} testID="log_view_container">
       <TouchableOpacity
         style={styles.header}
-        onPress={() => setExpanded(prev => !prev)}
+        onPress={() => setExpanded((prev) => !prev)}
         testID="log_view_header"
       >
         <View style={styles.headerLeft}>
@@ -72,7 +67,7 @@ export default function LogView() {
           <ScrollView
             horizontal
             testID="log_view_list"
-            onLayout={e => setContainerWidth(e.nativeEvent.layout.width)}
+            onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
           >
             <ScrollView
               style={{ minWidth: containerWidth }}
@@ -85,33 +80,22 @@ export default function LogView() {
                 </Text>
               ) : (
                 entries.map((entry, index) => (
-                  <View
-                    key={index}
-                    style={styles.logRow}
-                    testID={`log_entry_${index}`}
-                  >
-                    <Text
-                      style={styles.timestamp}
-                      testID={`log_entry_${index}_timestamp`}
-                    >
+                  <View key={index} style={styles.logRow} testID={`log_entry_${index}`}>
+                    <Text style={styles.timestamp} testID={`log_entry_${index}_timestamp`}>
                       {entry.timestamp}
                     </Text>
                     <Text
                       style={[
                         styles.level,
                         {
-                          color:
-                            LEVEL_COLORS[entry.level] ?? AppColors.osGrey500,
+                          color: LEVEL_COLORS[entry.level] ?? AppColors.osGrey500,
                         },
                       ]}
                       testID={`log_entry_${index}_level`}
                     >
                       {entry.level}
                     </Text>
-                    <Text
-                      style={styles.message}
-                      testID={`log_entry_${index}_message`}
-                    >
+                    <Text style={styles.message} testID={`log_entry_${index}_message`}>
                       {entry.tag}: {entry.message}
                     </Text>
                   </View>

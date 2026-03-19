@@ -35,16 +35,13 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "vp config && bun run build",
-    "build": "tsc --noEmit && vp build",
+    "build": "vp check && vp build",
     "format:spotless": "./examples/demo/android/gradlew spotlessApply",
-    "format:prettier": "prettier --write \"**/*.{ts,tsx}\" --ignore-path .gitignore",
-    "format": "concurrently \"bun run format:spotless\" \"bun run format:prettier\"",
+    "format": "vp fmt && bun run format:spotless",
     "format:check:spotless": "./examples/demo/android/gradlew spotlessCheck",
-    "format:check:prettier": "prettier --check \"**/*.{ts,tsx}\" --ignore-path .gitignore",
-    "format:check": "concurrently \"bun run format:check:spotless\" \"bun run format:check:prettier\"",
-    "lint": "vp lint src examples && bun run format:check",
-    "lint:fix": "vp lint src examples --fix && bun run format",
+    "format:check": "vp fmt --check && bun run format:check:spotless",
+    "lint": "vp check && bun run format:check:spotless",
+    "lint:fix": "vp check --fix && bun run format:spotless",
     "test": "vp test",
     "test:coverage": "vp test run --coverage"
   },
@@ -53,15 +50,8 @@
   },
   "devDependencies": {
     "@types/invariant": "^2.2.37",
-    "@types/react-native": "^0.73.0",
-    "@vitest/coverage-v8": "4.0.8",
-    "concurrently": "^9.2.1",
-    "prettier": "^3.6.2",
     "typescript": "^5.9.3",
-    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-    "vite-plugin-dts": "^4.5.4",
-    "vite-plus": "latest",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    "vite-plus": "^0.1.11"
   },
   "peerDependencies": {
     "react-native": ">=0.76.0"

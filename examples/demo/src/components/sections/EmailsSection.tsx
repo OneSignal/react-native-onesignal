@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import SectionCard from '../SectionCard';
-import ActionButton from '../ActionButton';
-import SingleInputModal from '../modals/SingleInputModal';
-import { CollapsibleSingleList } from '../ListWidgets';
+
 import { AppSpacing } from '../../theme';
+import ActionButton from '../ActionButton';
+import { CollapsibleSingleList } from '../ListWidgets';
+import SingleInputModal from '../modals/SingleInputModal';
+import SectionCard from '../SectionCard';
 
 interface Props {
   emails: string[];
@@ -13,22 +14,13 @@ interface Props {
   onInfoTap?: () => void;
 }
 
-export default function EmailsSection({
-  emails,
-  onAdd,
-  onRemove,
-  onInfoTap,
-}: Props) {
+export default function EmailsSection({ emails, onAdd, onRemove, onInfoTap }: Props) {
   const [addVisible, setAddVisible] = useState(false);
 
   return (
     <SectionCard title="Emails" onInfoTap={onInfoTap}>
       <View style={styles.listCard}>
-        <CollapsibleSingleList
-          items={emails}
-          onDelete={onRemove}
-          emptyMessage="No emails added"
-        />
+        <CollapsibleSingleList items={emails} onDelete={onRemove} emptyMessage="No emails added" />
       </View>
       <ActionButton
         label="ADD EMAIL"

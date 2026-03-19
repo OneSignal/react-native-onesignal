@@ -1,28 +1,29 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import ActionButton from "../components/ActionButton";
-import LoadingOverlay from "../components/LoadingOverlay";
-import LogView from "../components/LogView";
-import TooltipModal from "../components/modals/TooltipModal";
-import AliasesSection from "../components/sections/AliasesSection";
-import AppSection from "../components/sections/AppSection";
-import EmailsSection from "../components/sections/EmailsSection";
-import InAppSection from "../components/sections/InAppSection";
-import LocationSection from "../components/sections/LocationSection";
-import OutcomesSection from "../components/sections/OutcomesSection";
-import PushSection from "../components/sections/PushSection";
-import SendIamSection from "../components/sections/SendIamSection";
-import SendPushSection from "../components/sections/SendPushSection";
-import SmsSection from "../components/sections/SmsSection";
-import TagsSection from "../components/sections/TagsSection";
-import TrackEventSection from "../components/sections/TrackEventSection";
-import TriggersSection from "../components/sections/TriggersSection";
-import UserSection from "../components/sections/UserSection";
-import { useAppContext } from "../context/AppContext";
-import { InAppMessageType } from "../models/InAppMessageType";
-import TooltipHelper, { TooltipData } from "../services/TooltipHelper";
-import { AppColors } from "../theme";
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+
+import ActionButton from '../components/ActionButton';
+import LoadingOverlay from '../components/LoadingOverlay';
+import LogView from '../components/LogView';
+import TooltipModal from '../components/modals/TooltipModal';
+import AliasesSection from '../components/sections/AliasesSection';
+import AppSection from '../components/sections/AppSection';
+import EmailsSection from '../components/sections/EmailsSection';
+import InAppSection from '../components/sections/InAppSection';
+import LocationSection from '../components/sections/LocationSection';
+import OutcomesSection from '../components/sections/OutcomesSection';
+import PushSection from '../components/sections/PushSection';
+import SendIamSection from '../components/sections/SendIamSection';
+import SendPushSection from '../components/sections/SendPushSection';
+import SmsSection from '../components/sections/SmsSection';
+import TagsSection from '../components/sections/TagsSection';
+import TrackEventSection from '../components/sections/TrackEventSection';
+import TriggersSection from '../components/sections/TriggersSection';
+import UserSection from '../components/sections/UserSection';
+import { useAppContext } from '../context/AppContext';
+import { InAppMessageType } from '../models/InAppMessageType';
+import TooltipHelper, { TooltipData } from '../services/TooltipHelper';
+import { AppColors } from '../theme';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -35,6 +36,7 @@ export default function HomeScreen() {
   // Auto-request push permission on load
   useEffect(() => {
     void app.promptPush();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const showTooltipModal = (key: string) => {
@@ -77,46 +79,46 @@ export default function HomeScreen() {
           hasNotificationPermission={state.hasNotificationPermission}
           onSetPushEnabled={app.setPushEnabled}
           onPromptPush={app.promptPush}
-          onInfoTap={() => showTooltipModal("push")}
+          onInfoTap={() => showTooltipModal('push')}
         />
 
         <SendPushSection
           onSendNotification={app.sendNotification}
           onSendCustomNotification={app.sendCustomNotification}
           onClearAll={app.clearAllNotifications}
-          onInfoTap={() => showTooltipModal("sendPushNotification")}
+          onInfoTap={() => showTooltipModal('sendPushNotification')}
         />
 
         <InAppSection
           inAppMessagesPaused={state.inAppMessagesPaused}
           onSetPaused={app.setIamPaused}
-          onInfoTap={() => showTooltipModal("inAppMessaging")}
+          onInfoTap={() => showTooltipModal('inAppMessaging')}
         />
 
         <SendIamSection
           onSendIam={(type: InAppMessageType) => app.sendIamTrigger(type)}
-          onInfoTap={() => showTooltipModal("sendInAppMessage")}
+          onInfoTap={() => showTooltipModal('sendInAppMessage')}
         />
 
         <AliasesSection
           aliases={state.aliasesList}
           onAdd={app.addAlias}
           onAddMultiple={app.addAliases}
-          onInfoTap={() => showTooltipModal("aliases")}
+          onInfoTap={() => showTooltipModal('aliases')}
         />
 
         <EmailsSection
           emails={state.emailsList}
           onAdd={app.addEmail}
           onRemove={app.removeEmail}
-          onInfoTap={() => showTooltipModal("emails")}
+          onInfoTap={() => showTooltipModal('emails')}
         />
 
         <SmsSection
           smsNumbers={state.smsNumbersList}
           onAdd={app.addSms}
           onRemove={app.removeSms}
-          onInfoTap={() => showTooltipModal("sms")}
+          onInfoTap={() => showTooltipModal('sms')}
         />
 
         <TagsSection
@@ -124,14 +126,14 @@ export default function HomeScreen() {
           onAdd={app.addTag}
           onAddMultiple={app.addTags}
           onRemoveSelected={app.removeSelectedTags}
-          onInfoTap={() => showTooltipModal("tags")}
+          onInfoTap={() => showTooltipModal('tags')}
         />
 
         <OutcomesSection
           onSendNormal={app.sendOutcome}
           onSendUnique={app.sendUniqueOutcome}
           onSendWithValue={app.sendOutcomeWithValue}
-          onInfoTap={() => showTooltipModal("outcomes")}
+          onInfoTap={() => showTooltipModal('outcomes')}
         />
 
         <TriggersSection
@@ -140,26 +142,26 @@ export default function HomeScreen() {
           onAddMultiple={app.addTriggers}
           onRemoveSelected={app.removeSelectedTriggers}
           onClearAll={app.clearTriggers}
-          onInfoTap={() => showTooltipModal("triggers")}
+          onInfoTap={() => showTooltipModal('triggers')}
         />
 
         <TrackEventSection
           onTrackEvent={app.trackEvent}
-          onInfoTap={() => showTooltipModal("trackEvent")}
+          onInfoTap={() => showTooltipModal('trackEvent')}
         />
 
         <LocationSection
           locationShared={state.locationShared}
           onSetLocationShared={app.setLocationShared}
           onRequestLocationPermission={app.requestLocationPermission}
-          onInfoTap={() => showTooltipModal("location")}
+          onInfoTap={() => showTooltipModal('location')}
         />
 
         {/* Next Activity Button */}
         <View style={styles.nextButtonContainer}>
           <ActionButton
             label="NEXT ACTIVITY"
-            onPress={() => navigation.navigate("Secondary" as never)}
+            onPress={() => navigation.navigate('Secondary' as never)}
             testID="next_activity_button"
           />
         </View>

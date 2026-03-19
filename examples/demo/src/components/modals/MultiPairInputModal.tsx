@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import { AppColors, AppDialogStyles, AppInputProps } from '../../theme';
 
 interface Row {
@@ -41,23 +42,18 @@ export default function MultiPairInputModal({
 }: Props) {
   const [rows, setRows] = useState<Row[]>([makeRow()]);
 
-  const allFilled = rows.every(r => r.key.trim() && r.value.trim());
+  const allFilled = rows.every((r) => r.key.trim() && r.value.trim());
 
-  const updateRow = useCallback(
-    (id: number, field: 'key' | 'value', text: string) => {
-      setRows(prev =>
-        prev.map(r => (r.id === id ? { ...r, [field]: text } : r)),
-      );
-    },
-    [],
-  );
+  const updateRow = useCallback((id: number, field: 'key' | 'value', text: string) => {
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, [field]: text } : r)));
+  }, []);
 
   const addRow = useCallback(() => {
-    setRows(prev => [...prev, makeRow()]);
+    setRows((prev) => [...prev, makeRow()]);
   }, []);
 
   const removeRow = useCallback((id: number) => {
-    setRows(prev => prev.filter(r => r.id !== id));
+    setRows((prev) => prev.filter((r) => r.id !== id));
   }, []);
 
   const handleConfirm = () => {
@@ -83,12 +79,7 @@ export default function MultiPairInputModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={handleClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
       <KeyboardAvoidingView
         style={AppDialogStyles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -105,7 +96,7 @@ export default function MultiPairInputModal({
                     placeholder={keyPlaceholder}
                     placeholderTextColor={AppColors.osGrey600}
                     value={row.key}
-                    onChangeText={t => updateRow(row.id, 'key', t)}
+                    onChangeText={(t) => updateRow(row.id, 'key', t)}
                     autoFocus={idx === 0}
                     {...AppInputProps}
                     testID={idx === 0 ? 'multi_pair_key_0' : undefined}
@@ -115,7 +106,7 @@ export default function MultiPairInputModal({
                     placeholder={valuePlaceholder}
                     placeholderTextColor={AppColors.osGrey600}
                     value={row.value}
-                    onChangeText={t => updateRow(row.id, 'value', t)}
+                    onChangeText={(t) => updateRow(row.id, 'value', t)}
                     {...AppInputProps}
                     testID={idx === 0 ? 'multi_pair_value_0' : undefined}
                   />
@@ -124,11 +115,7 @@ export default function MultiPairInputModal({
                       onPress={() => removeRow(row.id)}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
-                      <Icon
-                        name="close"
-                        size={20}
-                        color={AppColors.osGrey600}
-                      />
+                      <Icon name="close" size={20} color={AppColors.osGrey600} />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -139,10 +126,7 @@ export default function MultiPairInputModal({
             </TouchableOpacity>
           </ScrollView>
           <View style={AppDialogStyles.actions}>
-            <TouchableOpacity
-              style={AppDialogStyles.actionBtn}
-              onPress={handleClose}
-            >
+            <TouchableOpacity style={AppDialogStyles.actionBtn} onPress={handleClose}>
               <Text style={AppDialogStyles.actionText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity

@@ -10,14 +10,14 @@
  * Requires macOS (uses sips). iOS development already requires macOS.
  */
 
-import { join, dirname } from "path";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "fs";
-import { execFileSync } from "child_process";
-import { tmpdir } from "os";
-import { fileURLToPath } from "url";
+import { execFileSync } from 'child_process';
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'fs';
+import { tmpdir } from 'os';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const DEFAULT_SOURCE = join(REPO_ROOT, "examples/demo/assets/onesignal_logo_icon_padded.png");
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const DEFAULT_SOURCE = join(REPO_ROOT, 'examples/demo/assets/onesignal_logo_icon_padded.png');
 
 const source = process.argv[2] ?? DEFAULT_SOURCE;
 
@@ -27,8 +27,8 @@ if (!existsSync(source)) {
 }
 
 async function resize(src: string, dest: string, size: number): Promise<void> {
-  execFileSync("sips", ["-z", String(size), String(size), src, "--out", dest], {
-    stdio: "ignore",
+  execFileSync('sips', ['-z', String(size), String(size), src, '--out', dest], {
+    stdio: 'ignore',
   });
 }
 
@@ -82,11 +82,11 @@ else {
 try pngData.write(to: URL(fileURLWithPath: outputPath))
 `;
 
-  const tempDir = mkdtempSync(join(tmpdir(), "onesignal-icon-"));
-  const swiftFile = join(tempDir, "flatten.swift");
+  const tempDir = mkdtempSync(join(tmpdir(), 'onesignal-icon-'));
+  const swiftFile = join(tempDir, 'flatten.swift');
   writeFileSync(swiftFile, swift);
   try {
-    execFileSync("swift", [swiftFile, src, dest], { stdio: "ignore" });
+    execFileSync('swift', [swiftFile, src, dest], { stdio: 'ignore' });
   } finally {
     rmSync(tempDir, { recursive: true, force: true });
   }
@@ -94,100 +94,100 @@ try pngData.write(to: URL(fileURLWithPath: outputPath))
 
 // ─── Android ──────────────────────────────────────────────────────────────────
 
-const ANDROID_BASE = join(REPO_ROOT, "examples/demo/android/app/src/main/res");
+const ANDROID_BASE = join(REPO_ROOT, 'examples/demo/android/app/src/main/res');
 
 const ANDROID_SIZES: Record<string, number> = {
-  "mipmap-mdpi": 48,
-  "mipmap-hdpi": 72,
-  "mipmap-xhdpi": 96,
-  "mipmap-xxhdpi": 144,
-  "mipmap-xxxhdpi": 192,
+  'mipmap-mdpi': 48,
+  'mipmap-hdpi': 72,
+  'mipmap-xhdpi': 96,
+  'mipmap-xxhdpi': 144,
+  'mipmap-xxxhdpi': 192,
 };
 
 async function generateAndroid(): Promise<void> {
-  console.log("Generating Android icons...");
+  console.log('Generating Android icons...');
   for (const [dir, size] of Object.entries(ANDROID_SIZES)) {
     const base = join(ANDROID_BASE, dir);
-    await resize(source, join(base, "ic_launcher.png"), size);
-    await resize(source, join(base, "ic_launcher_round.png"), size);
+    await resize(source, join(base, 'ic_launcher.png'), size);
+    await resize(source, join(base, 'ic_launcher_round.png'), size);
     console.log(`  ${dir}: ${size}x${size}`);
   }
 }
 
 // ─── iOS ──────────────────────────────────────────────────────────────────────
 
-const IOS_APPICONSET = join(REPO_ROOT, "examples/demo/ios/demo/Images.xcassets/AppIcon.appiconset");
-const IOS_CONTENTS = join(IOS_APPICONSET, "Contents.json");
+const IOS_APPICONSET = join(REPO_ROOT, 'examples/demo/ios/demo/Images.xcassets/AppIcon.appiconset');
+const IOS_CONTENTS = join(IOS_APPICONSET, 'Contents.json');
 
 const IOS_ICONS: Array<{
   filename: string;
   pixels: number;
-  idiom: "iphone" | "ios-marketing";
+  idiom: 'iphone' | 'ios-marketing';
   size: string;
   scale: string;
 }> = [
   {
-    filename: "icon-20@2x.png",
+    filename: 'icon-20@2x.png',
     pixels: 40,
-    idiom: "iphone",
-    size: "20x20",
-    scale: "2x",
+    idiom: 'iphone',
+    size: '20x20',
+    scale: '2x',
   },
   {
-    filename: "icon-20@3x.png",
+    filename: 'icon-20@3x.png',
     pixels: 60,
-    idiom: "iphone",
-    size: "20x20",
-    scale: "3x",
+    idiom: 'iphone',
+    size: '20x20',
+    scale: '3x',
   },
   {
-    filename: "icon-29@2x.png",
+    filename: 'icon-29@2x.png',
     pixels: 58,
-    idiom: "iphone",
-    size: "29x29",
-    scale: "2x",
+    idiom: 'iphone',
+    size: '29x29',
+    scale: '2x',
   },
   {
-    filename: "icon-29@3x.png",
+    filename: 'icon-29@3x.png',
     pixels: 87,
-    idiom: "iphone",
-    size: "29x29",
-    scale: "3x",
+    idiom: 'iphone',
+    size: '29x29',
+    scale: '3x',
   },
   {
-    filename: "icon-40@2x.png",
+    filename: 'icon-40@2x.png',
     pixels: 80,
-    idiom: "iphone",
-    size: "40x40",
-    scale: "2x",
+    idiom: 'iphone',
+    size: '40x40',
+    scale: '2x',
   },
   {
-    filename: "icon-40@3x.png",
+    filename: 'icon-40@3x.png',
     pixels: 120,
-    idiom: "iphone",
-    size: "40x40",
-    scale: "3x",
+    idiom: 'iphone',
+    size: '40x40',
+    scale: '3x',
   },
   {
-    filename: "icon-60@2x.png",
+    filename: 'icon-60@2x.png',
     pixels: 120,
-    idiom: "iphone",
-    size: "60x60",
-    scale: "2x",
+    idiom: 'iphone',
+    size: '60x60',
+    scale: '2x',
   },
   {
-    filename: "icon-60@3x.png",
+    filename: 'icon-60@3x.png',
     pixels: 180,
-    idiom: "iphone",
-    size: "60x60",
-    scale: "3x",
+    idiom: 'iphone',
+    size: '60x60',
+    scale: '3x',
   },
   {
-    filename: "icon-1024@1x.png",
+    filename: 'icon-1024@1x.png',
     pixels: 1024,
-    idiom: "ios-marketing",
-    size: "1024x1024",
-    scale: "1x",
+    idiom: 'ios-marketing',
+    size: '1024x1024',
+    scale: '1x',
   },
 ];
 
@@ -200,7 +200,7 @@ async function writeIosContents(): Promise<void> {
       size,
     })),
     info: {
-      author: "xcode",
+      author: 'xcode',
       version: 1,
     },
   };
@@ -208,9 +208,9 @@ async function writeIosContents(): Promise<void> {
 }
 
 async function generateIos(): Promise<void> {
-  console.log("Generating iOS icons...");
-  const tempDir = mkdtempSync(join(tmpdir(), "onesignal-ios-icon-"));
-  const iosSource = join(tempDir, "ios-source-white.png");
+  console.log('Generating iOS icons...');
+  const tempDir = mkdtempSync(join(tmpdir(), 'onesignal-ios-icon-'));
+  const iosSource = join(tempDir, 'ios-source-white.png');
   await flattenToWhiteBackground(source, iosSource);
   await writeIosContents();
   try {
@@ -229,4 +229,4 @@ console.log(`Source: ${source}\n`);
 await generateAndroid();
 console.log();
 await generateIos();
-console.log("\nDone.");
+console.log('\nDone.');

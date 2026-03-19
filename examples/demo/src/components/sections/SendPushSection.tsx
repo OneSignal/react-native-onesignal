@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import SectionCard from '../SectionCard';
+
+import { NotificationType } from '../../models/NotificationType';
 import ActionButton from '../ActionButton';
 import CustomNotificationModal from '../modals/CustomNotificationModal';
-import { NotificationType } from '../../models/NotificationType';
+import SectionCard from '../SectionCard';
 
 interface Props {
   onSendNotification: (type: NotificationType) => void;

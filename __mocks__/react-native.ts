@@ -1,4 +1,4 @@
-import { vi } from "vite-plus/test";
+import { vi } from 'vite-plus/test';
 
 const createEventEmitterMock = () => vi.fn(() => ({ remove: vi.fn() }));
 
@@ -81,7 +81,7 @@ const mockRNOneSignal = {
 };
 
 const mockPlatform = {
-  OS: "ios",
+  OS: 'ios',
 };
 
 export const TurboModuleRegistry = {
