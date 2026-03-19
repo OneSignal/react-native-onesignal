@@ -17,4 +17,10 @@ export default defineConfig({
       'react/exhaustive-deps': 'warn',
     },
   },
+  pack: {
+    entry: 'src/index.ts',
+    dts: true,
+    format: 'es',
+    outExtensions: () => ({ js: '.js', dts: '.d.ts' }),
+  },
 });

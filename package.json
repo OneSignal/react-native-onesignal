@@ -35,7 +35,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "vp check && vp build",
+    "build": "vp pack",
     "format:spotless": "./examples/demo/android/gradlew spotlessApply",
     "format": "vp fmt && bun run format:spotless",
     "format:check:spotless": "./examples/demo/android/gradlew spotlessCheck",
