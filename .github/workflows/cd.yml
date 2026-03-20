@@ -23,11 +23,3 @@ jobs:
     with:
       branch: ${{ github.event.pull_request.base.ref }}
       toolchain: vite-plus
-
-  move-linear-tickets:
-    if: |
-      github.event.pull_request.merged == true &&
-      contains(github.event.pull_request.title, 'chore: Release')
-    uses: OneSignal/sdk-shared/.github/workflows/linear-deployed.yml@main
-    secrets:
-      LINEAR_GITHUB_API_KEY: ${{ secrets.LINEAR_GITHUB_API_KEY }}
