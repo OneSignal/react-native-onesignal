@@ -9,11 +9,12 @@ import React, {
 } from 'react';
 import { OneSignal } from 'react-native-onesignal';
 import Toast from 'react-native-toast-message';
-import OneSignalRepository from '../repositories/OneSignalRepository';
-import PreferencesService from '../services/PreferencesService';
-import OneSignalApiService from '../services/OneSignalApiService';
+
 import { NotificationType } from '../models/NotificationType';
+import OneSignalRepository from '../repositories/OneSignalRepository';
 import LogManager from '../services/LogManager';
+import OneSignalApiService from '../services/OneSignalApiService';
+import PreferencesService from '../services/PreferencesService';
 
 const TAG = 'AppContext';
 const log = LogManager.getInstance();
@@ -146,10 +147,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'ADD_ALIAS':
       return {
         ...state,
-        aliasesList: [
-          ...state.aliasesList,
-          [action.payload.label, action.payload.id],
-        ],
+        aliasesList: [...state.aliasesList, [action.payload.label, action.payload.id]],
       };
     case 'ADD_ALIASES':
       return {
@@ -161,7 +159,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'REMOVE_EMAIL':
       return {
         ...state,
-        emailsList: state.emailsList.filter(email => email !== action.payload),
+        emailsList: state.emailsList.filter((email) => email !== action.payload),
       };
     case 'ADD_SMS':
       return {
@@ -171,14 +169,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'REMOVE_SMS':
       return {
         ...state,
-        smsNumbersList: state.smsNumbersList.filter(
-          sms => sms !== action.payload,
-        ),
+        smsNumbersList: state.smsNumbersList.filter((sms) => sms !== action.payload),
       };
     case 'ADD_TAG': {
-      const filtered = state.tagsList.filter(
-        ([key]) => key !== action.payload.key,
-      );
+      const filtered = state.tagsList.filter(([key]) => key !== action.payload.key);
       return {
         ...state,
         tagsList: [...filtered, [action.payload.key, action.payload.value]],
@@ -188,10 +182,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
       const keys = new Set(action.payload.map(([key]) => key));
       return {
         ...state,
-        tagsList: [
-          ...state.tagsList.filter(([key]) => !keys.has(key)),
-          ...action.payload,
-        ],
+        tagsList: [...state.tagsList.filter(([key]) => !keys.has(key)), ...action.payload],
       };
     }
     case 'REMOVE_SELECTED_TAGS': {
@@ -202,9 +193,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
       };
     }
     case 'ADD_TRIGGER': {
-      const filtered = state.triggersList.filter(
-        ([key]) => key !== action.payload.key,
-      );
+      const filtered = state.triggersList.filter(([key]) => key !== action.payload.key);
       return {
         ...state,
         triggersList: [...filtered, [action.payload.key, action.payload.value]],
@@ -214,10 +203,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
       const keys = new Set(action.payload.map(([key]) => key));
       return {
         ...state,
-        triggersList: [
-          ...state.triggersList.filter(([key]) => !keys.has(key)),
-          ...action.payload,
-        ],
+        triggersList: [...state.triggersList.filter(([key]) => !keys.has(key)), ...action.payload],
       };
     }
     case 'REMOVE_SELECTED_TRIGGERS': {
@@ -340,19 +326,14 @@ export function AppContextProvider({ children }: Props) {
 
   useEffect(() => {
     const load = async () => {
-      const [
-        appId,
-        consentRequired,
-        privacyConsentGiven,
-        iamPaused,
-        locationShared,
-      ] = await Promise.all([
-        preferences.getAppId(),
-        preferences.getConsentRequired(),
-        preferences.getPrivacyConsent(),
-        preferences.getIamPaused(),
-        preferences.getLocationShared(),
-      ]);
+      const [appId, consentRequired, privacyConsentGiven, iamPaused, locationShared] =
+        await Promise.all([
+          preferences.getAppId(),
+          preferences.getConsentRequired(),
+          preferences.getPrivacyConsent(),
+          preferences.getIamPaused(),
+          preferences.getLocationShared(),
+        ]);
 
       OneSignalApiService.getInstance().setAppId(appId);
 
@@ -393,7 +374,7 @@ export function AppContextProvider({ children }: Props) {
       }
     };
 
-    load().catch(err => {
+    load().catch((err) => {
       log.e(TAG, `Initial load error: ${String(err)}`);
       if (mountedRef.current) {
         dispatch({ type: 'SET_LOADING', payload: false });
@@ -442,21 +423,12 @@ export function AppContextProvider({ children }: Props) {
     };
 
     OneSignal.User.pushSubscription.addEventListener('change', pushSubHandler);
-    OneSignal.Notifications.addEventListener(
-      'permissionChange',
-      permissionHandler,
-    );
+    OneSignal.Notifications.addEventListener('permissionChange', permissionHandler);
     OneSignal.User.addEventListener('change', userChangeHandler);
 
     return () => {
-      OneSignal.User.pushSubscription.removeEventListener(
-        'change',
-        pushSubHandler,
-      );
-      OneSignal.Notifications.removeEventListener(
-        'permissionChange',
-        permissionHandler,
-      );
+      OneSignal.User.pushSubscription.removeEventListener('change', pushSubHandler);
+      OneSignal.Notifications.removeEventListener('permissionChange', permissionHandler);
       OneSignal.User.removeEventListener('change', userChangeHandler);
     };
   }, [fetchUserDataFromApi]);
@@ -531,24 +503,17 @@ export function AppContextProvider({ children }: Props) {
 
   const sendNotification = useCallback(async (type: NotificationType) => {
     const success = await repository.sendNotification(type);
-    const msg = success
-      ? `Notification sent: ${type}`
-      : 'Failed to send notification';
+    const msg = success ? `Notification sent: ${type}` : 'Failed to send notification';
     log.i(TAG, msg);
     Toast.show({ type: success ? 'info' : 'error', text1: msg });
   }, []);
 
-  const sendCustomNotification = useCallback(
-    async (title: string, body: string) => {
-      const success = await repository.sendCustomNotification(title, body);
-      const msg = success
-        ? `Notification sent: ${title}`
-        : 'Failed to send notification';
-      log.i(TAG, msg);
-      Toast.show({ type: success ? 'info' : 'error', text1: msg });
-    },
-    [],
-  );
+  const sendCustomNotification = useCallback(async (title: string, body: string) => {
+    const success = await repository.sendCustomNotification(title, body);
+    const msg = success ? `Notification sent: ${title}` : 'Failed to send notification';
+    log.i(TAG, msg);
+    Toast.show({ type: success ? 'info' : 'error', text1: msg });
+  }, []);
 
   const clearAllNotifications = useCallback(() => {
     repository.clearAllNotifications();
@@ -697,22 +662,17 @@ export function AppContextProvider({ children }: Props) {
     Toast.show({ type: 'info', text1: 'All triggers cleared' });
   }, []);
 
-  const trackEvent = useCallback(
-    (name: string, properties?: Record<string, unknown>) => {
-      repository.trackEvent(name, properties);
-      log.i(TAG, `Event tracked: ${name}`);
-      Toast.show({ type: 'info', text1: `Event tracked: ${name}` });
-    },
-    [],
-  );
+  const trackEvent = useCallback((name: string, properties?: Record<string, unknown>) => {
+    repository.trackEvent(name, properties);
+    log.i(TAG, `Event tracked: ${name}`);
+    Toast.show({ type: 'info', text1: `Event tracked: ${name}` });
+  }, []);
 
   const setLocationShared = useCallback(async (shared: boolean) => {
     dispatch({ type: 'SET_LOCATION_SHARED', payload: shared });
     repository.setLocationShared(shared);
     await preferences.setLocationShared(shared);
-    const msg = shared
-      ? 'Location sharing enabled'
-      : 'Location sharing disabled';
+    const msg = shared ? 'Location sharing enabled' : 'Location sharing disabled';
     log.i(TAG, msg);
     Toast.show({ type: 'info', text1: msg });
   }, []);
@@ -790,9 +750,7 @@ export function AppContextProvider({ children }: Props) {
     ],
   );
 
-  return (
-    <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
-  );
+  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
 }
 
 export function useAppContext(): AppContextValue {

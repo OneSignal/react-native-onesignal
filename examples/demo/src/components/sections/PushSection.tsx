@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+
+import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
+import ActionButton from '../ActionButton';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
-import ActionButton from '../ActionButton';
-import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 
 interface Props {
   pushSubscriptionId: string | undefined;
@@ -42,11 +43,7 @@ export default function PushSection({
       </View>
       {!hasNotificationPermission && (
         <View style={styles.promptButtonWrap}>
-          <ActionButton
-            label="PROMPT PUSH"
-            onPress={onPromptPush}
-            testID="prompt_push_button"
-          />
+          <ActionButton label="PROMPT PUSH" onPress={onPromptPush} testID="prompt_push_button" />
         </View>
       )}
     </SectionCard>

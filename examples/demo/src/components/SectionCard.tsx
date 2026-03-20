@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../theme';
 
 interface Props {
@@ -9,21 +10,13 @@ interface Props {
   style?: object;
 }
 
-export default function SectionCard({
-  title,
-  children,
-  onInfoTap,
-  style,
-}: Props) {
+export default function SectionCard({ title, children, onInfoTap, style }: Props) {
   return (
     <View style={[styles.wrapper, style]}>
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
         {onInfoTap && (
-          <TouchableOpacity
-            onPress={onInfoTap}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
+          <TouchableOpacity onPress={onInfoTap} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
             <Text style={styles.infoIcon}>ⓘ</Text>
           </TouchableOpacity>
         )}

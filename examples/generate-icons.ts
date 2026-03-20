@@ -10,15 +10,14 @@
  * Requires macOS (uses sips). iOS development already requires macOS.
  */
 
-import { join } from 'path';
+import { execFileSync } from 'child_process';
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const REPO_ROOT = join(import.meta.dir, '..');
-const DEFAULT_SOURCE = join(
-  REPO_ROOT,
-  'examples/demo/assets/onesignal_logo_icon_padded.png',
-);
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const DEFAULT_SOURCE = join(REPO_ROOT, 'examples/demo/assets/onesignal_logo_icon_padded.png');
 
 const source = process.argv[2] ?? DEFAULT_SOURCE;
 
@@ -28,13 +27,12 @@ if (!existsSync(source)) {
 }
 
 async function resize(src: string, dest: string, size: number): Promise<void> {
-  await Bun.$`sips -z ${size} ${size} ${src} --out ${dest}`.quiet();
+  execFileSync('sips', ['-z', String(size), String(size), src, '--out', dest], {
+    stdio: 'ignore',
+  });
 }
 
-async function flattenToWhiteBackground(
-  src: string,
-  dest: string,
-): Promise<void> {
+async function flattenToWhiteBackground(src: string, dest: string): Promise<void> {
   const swift = `
 import AppKit
 
@@ -88,7 +86,7 @@ try pngData.write(to: URL(fileURLWithPath: outputPath))
   const swiftFile = join(tempDir, 'flatten.swift');
   writeFileSync(swiftFile, swift);
   try {
-    await Bun.$`swift ${swiftFile} ${src} ${dest}`.quiet();
+    execFileSync('swift', [swiftFile, src, dest], { stdio: 'ignore' });
   } finally {
     rmSync(tempDir, { recursive: true, force: true });
   }
@@ -118,10 +116,7 @@ async function generateAndroid(): Promise<void> {
 
 // ─── iOS ──────────────────────────────────────────────────────────────────────
 
-const IOS_APPICONSET = join(
-  REPO_ROOT,
-  'examples/demo/ios/demo/Images.xcassets/AppIcon.appiconset',
-);
+const IOS_APPICONSET = join(REPO_ROOT, 'examples/demo/ios/demo/Images.xcassets/AppIcon.appiconset');
 const IOS_CONTENTS = join(IOS_APPICONSET, 'Contents.json');
 
 const IOS_ICONS: Array<{

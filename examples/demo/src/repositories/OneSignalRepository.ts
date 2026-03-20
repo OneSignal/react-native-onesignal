@@ -1,4 +1,5 @@
 import { OneSignal } from 'react-native-onesignal';
+
 import { NotificationType } from '../models/NotificationType';
 import { UserData } from '../models/UserData';
 import OneSignalApiService from '../services/OneSignalApiService';

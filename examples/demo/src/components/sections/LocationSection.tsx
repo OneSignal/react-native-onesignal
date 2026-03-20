@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+
+import { AppTheme, AppSpacing } from '../../theme';
+import ActionButton from '../ActionButton';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
-import ActionButton from '../ActionButton';
-import { AppTheme, AppSpacing } from '../../theme';
 
 interface Props {
   locationShared: boolean;

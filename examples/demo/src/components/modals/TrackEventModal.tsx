@@ -9,13 +9,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {
-  AppColors,
-  AppTextStyles,
-  AppSpacing,
-  AppDialogStyles,
-  AppInputProps,
-} from '../../theme';
+
+import { AppColors, AppTextStyles, AppSpacing, AppDialogStyles, AppInputProps } from '../../theme';
 
 interface Props {
   visible: boolean;
@@ -23,11 +18,7 @@ interface Props {
   onClose: () => void;
 }
 
-export default function TrackEventModal({
-  visible,
-  onConfirm,
-  onClose,
-}: Props) {
+export default function TrackEventModal({ visible, onConfirm, onClose }: Props) {
   const [name, setName] = useState('');
   const [propertiesText, setPropertiesText] = useState('');
   const [jsonError, setJsonError] = useState('');
@@ -57,9 +48,7 @@ export default function TrackEventModal({
   };
 
   const canSubmit =
-    name.trim() &&
-    !jsonError &&
-    (propertiesText.trim() === '' || !!propertiesText.trim());
+    name.trim() && !jsonError && (propertiesText.trim() === '' || !!propertiesText.trim());
 
   const handleConfirm = () => {
     if (!name.trim()) {
@@ -84,12 +73,7 @@ export default function TrackEventModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={handleClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
       <KeyboardAvoidingView
         style={AppDialogStyles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -109,11 +93,7 @@ export default function TrackEventModal({
           />
           <Text style={styles.label}>Properties (optional, JSON)</Text>
           <TextInput
-            style={[
-              AppDialogStyles.input,
-              styles.inputSpacing,
-              styles.jsonInput,
-            ]}
+            style={[AppDialogStyles.input, styles.inputSpacing, styles.jsonInput]}
             placeholder={'{"key": "value"}'}
             placeholderTextColor={AppColors.osGrey600}
             value={propertiesText}
@@ -124,10 +104,7 @@ export default function TrackEventModal({
           />
           {!!jsonError && <Text style={styles.errorText}>{jsonError}</Text>}
           <View style={AppDialogStyles.actions}>
-            <TouchableOpacity
-              style={AppDialogStyles.actionBtn}
-              onPress={handleClose}
-            >
+            <TouchableOpacity style={AppDialogStyles.actionBtn} onPress={handleClose}>
               <Text style={AppDialogStyles.actionText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity

@@ -15,23 +15,12 @@ export interface Spec extends TurboModule {
   setAlertLevel(logLevel: number): void;
 
   // Live Activities (iOS only, stubs on Android)
-  enterLiveActivity(
-    activityId: string,
-    token: string,
-    callback: (result: Object) => void,
-  ): void;
-  exitLiveActivity(
-    activityId: string,
-    callback: (result: Object) => void,
-  ): void;
+  enterLiveActivity(activityId: string, token: string, callback: (result: Object) => void): void;
+  exitLiveActivity(activityId: string, callback: (result: Object) => void): void;
   setPushToStartToken(activityType: string, token: string): void;
   removePushToStartToken(activityType: string): void;
   setupDefaultLiveActivity(options: Object | null): void;
-  startDefaultLiveActivity(
-    activityId: string,
-    attributes: Object,
-    content: Object,
-  ): void;
+  startDefaultLiveActivity(activityId: string, attributes: Object, content: Object): void;
 
   // Push Subscription
   addPushSubscriptionObserver(): void;
@@ -65,9 +54,7 @@ export interface Spec extends TurboModule {
   hasNotificationPermission(): Promise<boolean>;
   requestNotificationPermission(fallbackToSettings: boolean): Promise<boolean>;
   canRequestNotificationPermission(): Promise<boolean>;
-  registerForProvisionalAuthorization(
-    callback: (accepted: boolean) => void,
-  ): void;
+  registerForProvisionalAuthorization(callback: (accepted: boolean) => void): void;
   permissionNative(): Promise<number>;
   addNotificationClickListener(): void;
   addNotificationForegroundLifecycleListener(): void;

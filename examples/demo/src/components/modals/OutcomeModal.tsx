@@ -9,12 +9,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {
-  AppColors,
-  AppTextStyles,
-  AppDialogStyles,
-  AppInputProps,
-} from '../../theme';
+
+import { AppColors, AppTextStyles, AppDialogStyles, AppInputProps } from '../../theme';
 
 type OutcomeType = 'normal' | 'unique' | 'withValue';
 
@@ -38,9 +34,7 @@ export default function OutcomeModal({
   const [value, setValue] = useState('');
 
   const canSubmit =
-    name.trim() &&
-    (outcomeType !== 'withValue' ||
-      (value.trim() && !isNaN(parseFloat(value))));
+    name.trim() && (outcomeType !== 'withValue' || (value.trim() && !isNaN(parseFloat(value))));
 
   const handleSend = () => {
     if (!canSubmit) {
@@ -67,17 +61,8 @@ export default function OutcomeModal({
     onClose();
   };
 
-  const RadioOption = ({
-    type,
-    label,
-  }: {
-    type: OutcomeType;
-    label: string;
-  }) => (
-    <TouchableOpacity
-      style={styles.radioRow}
-      onPress={() => setOutcomeType(type)}
-    >
+  const RadioOption = ({ type, label }: { type: OutcomeType; label: string }) => (
+    <TouchableOpacity style={styles.radioRow} onPress={() => setOutcomeType(type)}>
       <View style={styles.radioOuter}>
         {outcomeType === type && <View style={styles.radioInner} />}
       </View>
@@ -86,12 +71,7 @@ export default function OutcomeModal({
   );
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={handleClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
       <KeyboardAvoidingView
         style={AppDialogStyles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -124,10 +104,7 @@ export default function OutcomeModal({
             />
           )}
           <View style={AppDialogStyles.actions}>
-            <TouchableOpacity
-              style={AppDialogStyles.actionBtn}
-              onPress={handleClose}
-            >
+            <TouchableOpacity style={AppDialogStyles.actionBtn} onPress={handleClose}>
               <Text style={AppDialogStyles.actionText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity

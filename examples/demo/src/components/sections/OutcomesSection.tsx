@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import SectionCard from '../SectionCard';
+
 import ActionButton from '../ActionButton';
 import OutcomeModal from '../modals/OutcomeModal';
+import SectionCard from '../SectionCard';
 
 interface Props {
   onSendNormal: (name: string) => void;

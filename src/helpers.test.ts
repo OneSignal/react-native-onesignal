@@ -1,10 +1,7 @@
 import type { NativeModule } from 'react-native';
-import type { MockInstance } from 'vitest';
-import {
-  isNativeModuleLoaded,
-  isObjectSerializable,
-  isValidCallback,
-} from './helpers';
+import { beforeEach, describe, expect, test, vi, type MockInstance } from 'vite-plus/test';
+
+import { isNativeModuleLoaded, isObjectSerializable, isValidCallback } from './helpers';
 
 describe('helpers', () => {
   let errorSpy: MockInstance;
@@ -29,7 +26,7 @@ describe('helpers', () => {
       { description: 'a boolean', value: true },
     ])(
       'should throw invariant error when handler is $description',
-      ({ value }) => {
+      ({ value }: { description: string; value: unknown }) => {
         expect(() => isValidCallback(value as unknown as Function)).toThrow(
           'Must provide a valid callback',
         );
@@ -46,7 +43,7 @@ describe('helpers', () => {
       },
     ])(
       'should return false and log error when module is $description',
-      ({ value }) => {
+      ({ value }: { description: string; value: NativeModule }) => {
         const result = isNativeModuleLoaded(value);
 
         expect(result).toBe(false);
@@ -78,9 +75,12 @@ describe('helpers', () => {
         description: 'an object with array values',
         value: { items: [1, 2, 3] },
       },
-    ])('should return true for $description', ({ value }) => {
-      expect(isObjectSerializable(value)).toBe(true);
-    });
+    ])(
+      'should return true for $description',
+      ({ value }: { description: string; value: unknown }) => {
+        expect(isObjectSerializable(value)).toBe(true);
+      },
+    );
 
     test.each([
       { description: 'null', value: null },
@@ -90,9 +90,12 @@ describe('helpers', () => {
       { description: 'a boolean', value: true },
       { description: 'an array', value: [1, 2, 3] },
       { description: 'a function', value: () => {} },
-    ])('should return false for $description', ({ value }) => {
-      expect(isObjectSerializable(value)).toBe(false);
-    });
+    ])(
+      'should return false for $description',
+      ({ value }: { description: string; value: unknown }) => {
+        expect(isObjectSerializable(value)).toBe(false);
+      },
+    );
 
     test('should return false for objects with circular references', () => {
       const circular: Record<string, unknown> = {};

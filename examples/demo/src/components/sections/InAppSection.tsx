@@ -1,8 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
+
+import { AppTheme } from '../../theme';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
-import { AppTheme } from '../../theme';
 
 interface Props {
   inAppMessagesPaused: boolean;
@@ -10,11 +11,7 @@ interface Props {
   onInfoTap?: () => void;
 }
 
-export default function InAppSection({
-  inAppMessagesPaused,
-  onSetPaused,
-  onInfoTap,
-}: Props) {
+export default function InAppSection({ inAppMessagesPaused, onSetPaused, onInfoTap }: Props) {
   return (
     <SectionCard title="In-App Messaging" onInfoTap={onInfoTap}>
       <View style={AppTheme.card}>

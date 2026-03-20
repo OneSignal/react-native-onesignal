@@ -1,13 +1,10 @@
 import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import SectionCard from '../SectionCard';
-import {
-  InAppMessageType,
-  iamTypeLabel,
-  iamTypeIcon,
-} from '../../models/InAppMessageType';
+
+import { InAppMessageType, iamTypeLabel, iamTypeIcon } from '../../models/InAppMessageType';
 import { AppColors, AppSpacing } from '../../theme';
+import SectionCard from '../SectionCard';
 
 interface Props {
   onSendIam: (type: InAppMessageType) => void;
@@ -24,7 +21,7 @@ const IAM_TYPES: InAppMessageType[] = [
 export default function SendIamSection({ onSendIam, onInfoTap }: Props) {
   return (
     <SectionCard title="Send In-App Message" onInfoTap={onInfoTap}>
-      {IAM_TYPES.map(type => (
+      {IAM_TYPES.map((type) => (
         <TouchableOpacity
           key={type}
           style={styles.button}
@@ -33,12 +30,7 @@ export default function SendIamSection({ onSendIam, onInfoTap }: Props) {
           testID={`send_iam_${type}_button`}
         >
           <View style={styles.inner}>
-            <Icon
-              name={iamTypeIcon[type]}
-              size={20}
-              color={AppColors.white}
-              style={styles.icon}
-            />
+            <Icon name={iamTypeIcon[type]} size={20} color={AppColors.white} style={styles.icon} />
             <Text style={styles.label}>{iamTypeLabel[type]}</Text>
           </View>
         </TouchableOpacity>

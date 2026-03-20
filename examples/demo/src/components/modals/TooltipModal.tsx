@@ -1,12 +1,6 @@
 import React from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { Modal, View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+
 import { TooltipData } from '../../services/TooltipHelper';
 import { AppColors, AppTextStyles, AppDialogStyles } from '../../theme';
 
@@ -21,22 +15,13 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
     return null;
   }
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <TouchableOpacity
-        style={AppDialogStyles.backdrop}
-        activeOpacity={1}
-        onPress={onClose}
-      >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity style={AppDialogStyles.backdrop} activeOpacity={1} onPress={onClose}>
         <View style={[AppDialogStyles.container, styles.containerMaxHeight]}>
           <Text style={AppDialogStyles.title}>{tooltip.title}</Text>
           <ScrollView>
             <Text style={styles.description}>{tooltip.description}</Text>
-            {tooltip.options?.map(opt => (
+            {tooltip.options?.map((opt) => (
               <View key={opt.name} style={styles.optionRow}>
                 <Text style={styles.optionName}>{opt.name}</Text>
                 <Text style={styles.optionDescription}>{opt.description}</Text>
@@ -44,10 +29,7 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
             ))}
           </ScrollView>
           <View style={AppDialogStyles.actions}>
-            <TouchableOpacity
-              style={AppDialogStyles.actionBtn}
-              onPress={onClose}
-            >
+            <TouchableOpacity style={AppDialogStyles.actionBtn} onPress={onClose}>
               <Text style={AppDialogStyles.actionText}>Ok</Text>
             </TouchableOpacity>
           </View>

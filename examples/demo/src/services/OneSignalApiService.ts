@@ -23,10 +23,7 @@ class OneSignalApiService {
     return this._appId;
   }
 
-  async sendNotification(
-    type: NotificationType,
-    subscriptionId: string,
-  ): Promise<boolean> {
+  async sendNotification(type: NotificationType, subscriptionId: string): Promise<boolean> {
     let headings: Record<string, string>;
     let contents: Record<string, string>;
     const extra: Record<string, unknown> = {};
@@ -42,8 +39,7 @@ class OneSignalApiService {
         extra.big_picture =
           'https://media.onesignal.com/automated_push_templates/ratings_template.png';
         extra.ios_attachments = {
-          image:
-            'https://media.onesignal.com/automated_push_templates/ratings_template.png',
+          image: 'https://media.onesignal.com/automated_push_templates/ratings_template.png',
         };
         break;
       case NotificationType.WithSound:
@@ -64,12 +60,7 @@ class OneSignalApiService {
     body: string,
     subscriptionId: string,
   ): Promise<boolean> {
-    return this._postNotification(
-      { en: title },
-      { en: body },
-      subscriptionId,
-      {},
-    );
+    return this._postNotification({ en: title }, { en: body }, subscriptionId, {});
   }
 
   private async _postNotification(
@@ -87,17 +78,14 @@ class OneSignalApiService {
         ...extra,
       };
 
-      const response = await fetch(
-        'https://onesignal.com/api/v1/notifications',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/vnd.onesignal.v1+json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
+      const response = await fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/vnd.onesignal.v1+json',
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(body),
+      });
 
       if (!response.ok) {
         const text = await response.text();
@@ -107,10 +95,7 @@ class OneSignalApiService {
 
       return true;
     } catch (err) {
-      LogManager.getInstance().e(
-        TAG,
-        `Send notification error: ${String(err)}`,
-      );
+      LogManager.getInstance().e(TAG, `Send notification error: ${String(err)}`);
       return false;
     }
   }

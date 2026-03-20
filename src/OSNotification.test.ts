@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { beforeEach, describe, expect, test } from 'vite-plus/test';
 
 import { mockRNOneSignal } from '../__mocks__/react-native';
 import OSNotification, { type BaseNotificationData } from './OSNotification';
@@ -31,9 +32,7 @@ describe('OSNotification', () => {
       expect(notification.title).toBe('Test Title');
       expect(notification.launchURL).toBe('https://example.com');
       expect(notification.rawPayload).toEqual({ key: 'value' });
-      expect(notification.actionButtons).toEqual([
-        { id: 'btn1', text: 'Button 1' },
-      ]);
+      expect(notification.actionButtons).toEqual([{ id: 'btn1', text: 'Button 1' }]);
       expect(notification.additionalData).toEqual({ custom: 'data' });
       expect(notification.notificationId).toBe('test-notification-id');
     });
@@ -170,9 +169,7 @@ describe('OSNotification', () => {
       const notification = new OSNotification(baseNotificationData);
       notification.display();
 
-      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith(
-        'test-notification-id',
-      );
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith('test-notification-id');
     });
 
     test('should display notification with different notificationId', () => {
@@ -183,9 +180,7 @@ describe('OSNotification', () => {
       });
       notification.display();
 
-      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith(
-        notificationID,
-      );
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith(notificationID);
     });
 
     test('should return undefined', () => {

@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vite-plus/test';
+
 import { mockRNOneSignal } from '../../__mocks__/react-native';
 import OSNotification, { type BaseNotificationData } from '../OSNotification';
 import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
@@ -65,9 +67,7 @@ describe('NotificationWillDisplayEvent', () => {
       const event = new NotificationWillDisplayEvent(notification);
       const result = event.preventDefault();
 
-      expect(mockRNOneSignal.preventDefault).toHaveBeenCalledWith(
-        notificationId,
-      );
+      expect(mockRNOneSignal.preventDefault).toHaveBeenCalledWith(notificationId);
       expect(result).toBeUndefined();
     });
 
@@ -80,9 +80,7 @@ describe('NotificationWillDisplayEvent', () => {
       event.preventDefault();
 
       expect(mockRNOneSignal.preventDefault).toHaveBeenCalledTimes(3);
-      expect(mockRNOneSignal.preventDefault).toHaveBeenCalledWith(
-        'test-notification-id',
-      );
+      expect(mockRNOneSignal.preventDefault).toHaveBeenCalledWith('test-notification-id');
     });
   });
 

@@ -4,4 +4,4 @@ paths:
   - .github/actions
 
 paths-ignore:
-  - "examples/**/android/**"
+  - 'examples/**/android/**'

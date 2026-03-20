@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  View,
-  ActivityIndicator,
-} from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, View, ActivityIndicator } from 'react-native';
+
 import { AppColors, AppSpacing } from '../theme';
 
 interface Props {
@@ -39,9 +34,7 @@ export default function ActionButton({
       : {};
 
   const textColor =
-    variant === 'outlined' || variant === 'destructive'
-      ? AppColors.osPrimary
-      : AppColors.white;
+    variant === 'outlined' || variant === 'destructive' ? AppColors.osPrimary : AppColors.white;
 
   return (
     <TouchableOpacity
@@ -60,13 +53,9 @@ export default function ActionButton({
         <ActivityIndicator color={textColor} />
       ) : (
         <View style={[styles.inner, leftAligned && styles.leftAligned]}>
-          {icon && iconPosition === 'left' && (
-            <View style={styles.iconLeft}>{icon}</View>
-          )}
+          {icon && iconPosition === 'left' && <View style={styles.iconLeft}>{icon}</View>}
           <Text style={[styles.text, { color: textColor }]}>{label}</Text>
-          {icon && iconPosition === 'right' && (
-            <View style={styles.iconRight}>{icon}</View>
-          )}
+          {icon && iconPosition === 'right' && <View style={styles.iconRight}>{icon}</View>}
         </View>
       )}
     </TouchableOpacity>

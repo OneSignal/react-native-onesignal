@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, test, vi } from 'vite-plus/test';
+
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -82,7 +84,7 @@ describe('EventManager', () => {
       const subscriptions = eventManager['nativeSubscriptions'];
       expect(subscriptions.length).toBe(10);
       subscriptions.forEach((sub) => {
-        expect(sub.remove).toBeDefined();
+        expect(sub).toHaveProperty('remove');
       });
     });
 
@@ -98,8 +100,7 @@ describe('EventManager', () => {
       const handler = vi.fn();
       eventManager.addEventListener(PERMISSION_CHANGED, handler);
 
-      const handlerArray =
-        eventManager['eventListenerArrayMap'].get(PERMISSION_CHANGED);
+      const handlerArray = eventManager['eventListenerArrayMap'].get(PERMISSION_CHANGED);
       expect(handlerArray).toContain(handler);
     });
 
@@ -110,8 +111,7 @@ describe('EventManager', () => {
       eventManager.addEventListener(PERMISSION_CHANGED, handler1);
       eventManager.addEventListener(PERMISSION_CHANGED, handler2);
 
-      const handlerArray =
-        eventManager['eventListenerArrayMap'].get(PERMISSION_CHANGED);
+      const handlerArray = eventManager['eventListenerArrayMap'].get(PERMISSION_CHANGED);
       expect(handlerArray).toContain(handler1);
       expect(handlerArray).toContain(handler2);
       expect(handlerArray?.length).toBe(2);
@@ -124,10 +124,8 @@ describe('EventManager', () => {
       eventManager.addEventListener(PERMISSION_CHANGED, handler1);
       eventManager.addEventListener(SUBSCRIPTION_CHANGED, handler2);
 
-      const handlerArray1 =
-        eventManager['eventListenerArrayMap'].get(PERMISSION_CHANGED);
-      const handlerArray2 =
-        eventManager['eventListenerArrayMap'].get(SUBSCRIPTION_CHANGED);
+      const handlerArray1 = eventManager['eventListenerArrayMap'].get(PERMISSION_CHANGED);
+      const handlerArray2 = eventManager['eventListenerArrayMap'].get(SUBSCRIPTION_CHANGED);
 
       expect(handlerArray1).toContain(handler1);
       expect(handlerArray2).toContain(handler2);
@@ -140,8 +138,7 @@ describe('EventManager', () => {
       eventManager.addEventListener(PERMISSION_CHANGED, handler);
       eventManager.removeEventListener(PERMISSION_CHANGED, handler);
 
-      const handlerArray =
-        eventManager['eventListenerArrayMap'].get(PERMISSION_CHANGED);
+      const handlerArray = eventManager['eventListenerArrayMap'].get(PERMISSION_CHANGED);
       expect(handlerArray).toBeUndefined();
     });
 
@@ -155,8 +152,7 @@ describe('EventManager', () => {
       eventManager.addEventListener(SUBSCRIPTION_CHANGED, handler3);
       eventManager.removeEventListener(SUBSCRIPTION_CHANGED, handler2);
 
-      const handlerArray =
-        eventManager['eventListenerArrayMap'].get(SUBSCRIPTION_CHANGED);
+      const handlerArray = eventManager['eventListenerArrayMap'].get(SUBSCRIPTION_CHANGED);
       expect(handlerArray).toContain(handler1);
       expect(handlerArray).not.toContain(handler2);
       expect(handlerArray).toContain(handler3);
@@ -180,9 +176,7 @@ describe('EventManager', () => {
         eventManager.removeEventListener(NOTIFICATION_WILL_DISPLAY, handler2);
       }).not.toThrow();
 
-      const handlerArray = eventManager['eventListenerArrayMap'].get(
-        NOTIFICATION_WILL_DISPLAY,
-      );
+      const handlerArray = eventManager['eventListenerArrayMap'].get(NOTIFICATION_WILL_DISPLAY);
       expect(handlerArray).toContain(handler1);
       expect(handlerArray?.length).toBe(1);
     });
@@ -364,14 +358,9 @@ describe('EventManager', () => {
 
       eventManager.addEventListener(PERMISSION_CHANGED, permissionHandler);
       eventManager.addEventListener(SUBSCRIPTION_CHANGED, subscriptionHandler);
-      eventManager.addEventListener(
-        NOTIFICATION_WILL_DISPLAY,
-        notificationWillDisplayHandler,
-      );
+      eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, notificationWillDisplayHandler);
 
-      callbacks.get('onPermissionChanged')!(
-        getRawPermissionChangedPayload(true),
-      );
+      callbacks.get('onPermissionChanged')!(getRawPermissionChangedPayload(true));
       callbacks.get('onSubscriptionChanged')!(pushChangedPayload);
       callbacks.get('onNotificationWillDisplay')!(rawWillDisplayPayload);
 
@@ -391,12 +380,9 @@ describe('EventManager', () => {
       eventManager.addEventListener(SUBSCRIPTION_CHANGED, handler2);
       eventManager.addEventListener(USER_STATE_CHANGED, handler3);
 
-      const permissionArray =
-        eventManager['eventListenerArrayMap'].get(PERMISSION_CHANGED);
-      const subscriptionArray =
-        eventManager['eventListenerArrayMap'].get(SUBSCRIPTION_CHANGED);
-      const userStateArray =
-        eventManager['eventListenerArrayMap'].get(USER_STATE_CHANGED);
+      const permissionArray = eventManager['eventListenerArrayMap'].get(PERMISSION_CHANGED);
+      const subscriptionArray = eventManager['eventListenerArrayMap'].get(SUBSCRIPTION_CHANGED);
+      const userStateArray = eventManager['eventListenerArrayMap'].get(USER_STATE_CHANGED);
 
       expect(permissionArray).toEqual([handler1]);
       expect(subscriptionArray).toEqual([handler2]);

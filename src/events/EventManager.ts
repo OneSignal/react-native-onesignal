@@ -1,5 +1,5 @@
 import type { EventSubscription } from 'react-native';
-import type { Spec } from '../NativeOneSignal';
+
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -12,6 +12,7 @@ import {
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
 } from '../constants/events';
+import type { Spec } from '../NativeOneSignal';
 import OSNotification from '../OSNotification';
 import type {
   InAppMessageClickEvent,
@@ -97,17 +98,12 @@ export default class EventManager {
     );
   }
 
-  addEventListener<K extends keyof EventListenerMap>(
-    eventName: K,
-    handler: EventListenerMap[K],
-  ) {
+  addEventListener<K extends keyof EventListenerMap>(eventName: K, handler: EventListenerMap[K]) {
     const handlerArray = this.eventListenerArrayMap.get(eventName);
     if (handlerArray && handlerArray.length > 0) {
       handlerArray.push(handler as (event: unknown) => void);
     } else {
-      this.eventListenerArrayMap.set(eventName, [
-        handler as (event: unknown) => void,
-      ]);
+      this.eventListenerArrayMap.set(eventName, [handler as (event: unknown) => void]);
     }
   }
 

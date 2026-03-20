@@ -61,31 +61,21 @@ function App() {
     };
 
     const handleForegroundWillDisplay = (e: NotificationWillDisplayEvent) => {
-      log.i(
-        TAG,
-        `Notification foregroundWillDisplay: ${
-          e.getNotification().title ?? ''
-        }`,
-      );
+      log.i(TAG, `Notification foregroundWillDisplay: ${e.getNotification().title ?? ''}`);
       e.getNotification().display();
     };
 
     const init = async () => {
       try {
         const prefs = PreferencesService.getInstance();
-        const [
-          appId,
-          consentRequired,
-          privacyConsent,
-          iamPaused,
-          locationShared,
-        ] = await Promise.all([
-          prefs.getAppId(),
-          prefs.getConsentRequired(),
-          prefs.getPrivacyConsent(),
-          prefs.getIamPaused(),
-          prefs.getLocationShared(),
-        ]);
+        const [appId, consentRequired, privacyConsent, iamPaused, locationShared] =
+          await Promise.all([
+            prefs.getAppId(),
+            prefs.getConsentRequired(),
+            prefs.getPrivacyConsent(),
+            prefs.getIamPaused(),
+            prefs.getLocationShared(),
+          ]);
 
         OneSignalApiService.getInstance().setAppId(appId);
 
@@ -98,31 +88,13 @@ function App() {
         OneSignal.Location.setShared(locationShared);
 
         // Register SDK event listeners for logging
-        OneSignal.InAppMessages.addEventListener(
-          'willDisplay',
-          handleIamWillDisplay,
-        );
-        OneSignal.InAppMessages.addEventListener(
-          'didDisplay',
-          handleIamDidDisplay,
-        );
-        OneSignal.InAppMessages.addEventListener(
-          'willDismiss',
-          handleIamWillDismiss,
-        );
-        OneSignal.InAppMessages.addEventListener(
-          'didDismiss',
-          handleIamDidDismiss,
-        );
+        OneSignal.InAppMessages.addEventListener('willDisplay', handleIamWillDisplay);
+        OneSignal.InAppMessages.addEventListener('didDisplay', handleIamDidDisplay);
+        OneSignal.InAppMessages.addEventListener('willDismiss', handleIamWillDismiss);
+        OneSignal.InAppMessages.addEventListener('didDismiss', handleIamDidDismiss);
         OneSignal.InAppMessages.addEventListener('click', handleIamClick);
-        OneSignal.Notifications.addEventListener(
-          'click',
-          handleNotificationClick,
-        );
-        OneSignal.Notifications.addEventListener(
-          'permissionChange',
-          handlePermissionChange,
-        );
+        OneSignal.Notifications.addEventListener('click', handleNotificationClick);
+        OneSignal.Notifications.addEventListener('permissionChange', handlePermissionChange);
         OneSignal.Notifications.addEventListener(
           'foregroundWillDisplay',
           handleForegroundWillDisplay,
@@ -140,31 +112,13 @@ function App() {
     void TooltipHelper.getInstance().init();
 
     return () => {
-      OneSignal.InAppMessages.removeEventListener(
-        'willDisplay',
-        handleIamWillDisplay,
-      );
-      OneSignal.InAppMessages.removeEventListener(
-        'didDisplay',
-        handleIamDidDisplay,
-      );
-      OneSignal.InAppMessages.removeEventListener(
-        'willDismiss',
-        handleIamWillDismiss,
-      );
-      OneSignal.InAppMessages.removeEventListener(
-        'didDismiss',
-        handleIamDidDismiss,
-      );
+      OneSignal.InAppMessages.removeEventListener('willDisplay', handleIamWillDisplay);
+      OneSignal.InAppMessages.removeEventListener('didDisplay', handleIamDidDisplay);
+      OneSignal.InAppMessages.removeEventListener('willDismiss', handleIamWillDismiss);
+      OneSignal.InAppMessages.removeEventListener('didDismiss', handleIamDidDismiss);
       OneSignal.InAppMessages.removeEventListener('click', handleIamClick);
-      OneSignal.Notifications.removeEventListener(
-        'click',
-        handleNotificationClick,
-      );
-      OneSignal.Notifications.removeEventListener(
-        'permissionChange',
-        handlePermissionChange,
-      );
+      OneSignal.Notifications.removeEventListener('click', handleNotificationClick);
+      OneSignal.Notifications.removeEventListener('permissionChange', handlePermissionChange);
       OneSignal.Notifications.removeEventListener(
         'foregroundWillDisplay',
         handleForegroundWillDisplay,
@@ -174,10 +128,7 @@ function App() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar
-        backgroundColor={AppColors.osPrimary}
-        barStyle="light-content"
-      />
+      <StatusBar backgroundColor={AppColors.osPrimary} barStyle="light-content" />
       <AppContextProvider>
         <NavigationContainer>
           <Stack.Navigator
@@ -194,11 +145,7 @@ function App() {
               options={{
                 headerTitle: () => (
                   <View style={headerStyles.container}>
-                    <OneSignalLogo
-                      height={22}
-                      width={99}
-                      style={headerStyles.logo}
-                    />
+                    <OneSignalLogo height={22} width={99} style={headerStyles.logo} />
                     <Text style={headerStyles.subtitle}>React Native</Text>
                   </View>
                 ),
