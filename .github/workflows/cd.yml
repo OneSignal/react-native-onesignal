@@ -22,6 +22,7 @@ jobs:
       GH_PUSH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
     with:
       branch: ${{ github.event.pull_request.base.ref }}
+      toolchain: vite-plus
 
   move-linear-tickets:
     if: |
