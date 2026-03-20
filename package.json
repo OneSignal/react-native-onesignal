@@ -37,19 +37,19 @@
   "scripts": {
     "build": "vp pack",
     "format:spotless": "./examples/demo/android/gradlew spotlessApply",
-    "format": "vp fmt && bun run format:spotless",
+    "format": "vp fmt && npm run format:spotless",
     "format:check:spotless": "./examples/demo/android/gradlew spotlessCheck",
-    "format:check": "vp fmt --check && bun run format:check:spotless",
-    "lint": "vp check && bun run format:check:spotless",
-    "lint:fix": "vp check --fix && bun run format:spotless",
-    "test": "vp test",
-    "test:coverage": "vp test run --coverage"
+    "format:check": "vp fmt --check && npm run format:check:spotless",
+    "lint": "vp check && npm run format:check:spotless",
+    "lint:fix": "vp check --fix && npm run format:spotless",
+    "test": "vp test"
   },
   "dependencies": {
     "invariant": "^2.2.4"
   },
   "devDependencies": {
     "@types/invariant": "^2.2.37",
+    "@vitest/coverage-v8": "^4.1.0",
     "typescript": "^5.9.3",
     "vite-plus": "^0.1.11"
   },
