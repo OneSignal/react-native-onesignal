@@ -33,7 +33,7 @@ dependencies {
     // Exclude OkHttp from OneSignal's transitive deps: the 5.7.x otel module pulls in OkHttp 5.x
     // (via opentelemetry-exporter-sender-okhttp) which is binary-incompatible with React Native's
     // networking stack (okhttp3.internal.Util removed in 5.x). React Native already provides OkHttp 4.x.
-    api('com.onesignal:OneSignal:5.7.4') {
+    api('com.onesignal:OneSignal:5.7.6') {
         exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     }
 
