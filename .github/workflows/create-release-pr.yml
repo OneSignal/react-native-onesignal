@@ -79,13 +79,11 @@ jobs:
       - name: Setup Git User
         uses: OneSignal/sdk-shared/.github/actions/setup-git-user@main
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@v1
         with:
-          bun-version: latest
-
-      - name: Install
-        run: bun install --frozen-lockfile
+          cache: true
+          run-install: true
 
       - name: Get current native SDK versions from target branch
         id: current_versions
@@ -152,7 +150,7 @@ jobs:
           NEW_VERSION="${{ inputs.rn_version }}"
 
           # Update package.json version
-          bun pm pkg set version="$NEW_VERSION"
+          npm pkg set version="$NEW_VERSION"
 
           # Only commit if there are changes
           git add -A
