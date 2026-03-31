@@ -83,6 +83,7 @@
 		A2000000000000000000000F /* libPods-OneSignalNotificationServiceExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneSignalNotificationServiceExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000010 /* libPods-OneSignalWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneSignalWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000011 /* demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = demo.entitlements; path = demo/demo.entitlements; sourceTree = "<group>"; };
+		A20000000000000000000012 /* OneSignalWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneSignalWidgetExtension.entitlements; sourceTree = "<group>"; };
 		B20000000000000000000001 /* vine_boom.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = vine_boom.wav; path = demo/vine_boom.wav; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -193,6 +194,7 @@
 				A20000000000000000000006 /* Info.plist */,
 				A20000000000000000000007 /* OneSignalWidgetLiveActivity.swift */,
 				A20000000000000000000008 /* OneSignalWidgetBundle.swift */,
+				A20000000000000000000012 /* OneSignalWidgetExtension.entitlements */,
 			);
 			path = OneSignalWidget;
 			sourceTree = "<group>";
@@ -772,6 +774,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A2000000000000000000000D /* Pods-OneSignalWidgetExtension.debug.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = OneSignalWidget/OneSignalWidgetExtension.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 99SW8E36CT;
 				INFOPLIST_FILE = OneSignalWidget/Info.plist;
@@ -795,6 +798,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A2000000000000000000000E /* Pods-OneSignalWidgetExtension.release.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = OneSignalWidget/OneSignalWidgetExtension.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 99SW8E36CT;
 				INFOPLIST_FILE = OneSignalWidget/Info.plist;

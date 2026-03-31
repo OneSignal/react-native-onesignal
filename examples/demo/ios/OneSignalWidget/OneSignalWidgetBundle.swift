@@ -3,7 +3,10 @@ import SwiftUI
 
 @main
 struct OneSignalWidgetBundle: WidgetBundle {
+    @WidgetBundleBuilder
     var body: some Widget {
-        OneSignalWidgetLiveActivity()
+        if #available(iOS 16.2, *) {
+            OneSignalWidgetLiveActivity()
+        }
     }
 }

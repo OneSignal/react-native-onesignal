@@ -160,6 +160,19 @@ class OneSignalRepository {
     return id ?? undefined;
   }
 
+  // Live Activities
+  startDefaultLiveActivity(
+    activityId: string,
+    attributes: object,
+    content: object,
+  ): void {
+    OneSignal.LiveActivities.startDefault(activityId, attributes, content);
+  }
+
+  exitLiveActivity(activityId: string): void {
+    OneSignal.LiveActivities.exit(activityId);
+  }
+
   // Notification sending (via REST API)
   async sendNotification(type: NotificationType): Promise<boolean> {
     const subscriptionId = await this.getPushSubscriptionIdAsync();

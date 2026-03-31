@@ -263,6 +263,8 @@ type AppContextValue = {
   trackEvent: (name: string, properties?: Record<string, unknown>) => void;
   setLocationShared: (shared: boolean) => Promise<void>;
   requestLocationPermission: () => void;
+  startLiveActivity: (activityId: string, attributes: object, content: object) => void;
+  exitLiveActivity: (activityId: string) => void;
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -681,6 +683,18 @@ export function AppContextProvider({ children }: Props) {
     repository.requestLocationPermission();
   }, []);
 
+  const startLiveActivity = useCallback((activityId: string, attributes: object, content: object) => {
+    repository.startDefaultLiveActivity(activityId, attributes, content);
+    log.i(TAG, `Started Live Activity: ${activityId}`);
+    Toast.show({ type: 'info', text1: `Started Live Activity: ${activityId}` });
+  }, []);
+
+  const exitLiveActivity = useCallback((activityId: string) => {
+    repository.exitLiveActivity(activityId);
+    log.i(TAG, `Exited Live Activity: ${activityId}`);
+    Toast.show({ type: 'info', text1: `Exited Live Activity: ${activityId}` });
+  }, []);
+
   const contextValue = useMemo<AppContextValue>(
     () => ({
       state,
@@ -714,6 +728,8 @@ export function AppContextProvider({ children }: Props) {
       trackEvent,
       setLocationShared,
       requestLocationPermission,
+      startLiveActivity,
+      exitLiveActivity,
     }),
     [
       state,
@@ -747,6 +763,8 @@ export function AppContextProvider({ children }: Props) {
       trackEvent,
       setLocationShared,
       requestLocationPermission,
+      startLiveActivity,
+      exitLiveActivity,
     ],
   );
 

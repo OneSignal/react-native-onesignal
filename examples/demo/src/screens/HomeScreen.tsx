@@ -20,6 +20,7 @@ import TagsSection from '../components/sections/TagsSection';
 import TrackEventSection from '../components/sections/TrackEventSection';
 import TriggersSection from '../components/sections/TriggersSection';
 import UserSection from '../components/sections/UserSection';
+import LiveActivitySection from '../components/sections/LiveActivitySection';
 import { useAppContext } from '../context/AppContext';
 import { InAppMessageType } from '../models/InAppMessageType';
 import TooltipHelper, { TooltipData } from '../services/TooltipHelper';
@@ -155,6 +156,12 @@ export default function HomeScreen() {
           onSetLocationShared={app.setLocationShared}
           onRequestLocationPermission={app.requestLocationPermission}
           onInfoTap={() => showTooltipModal('location')}
+        />
+
+        <LiveActivitySection
+          onStart={app.startLiveActivity}
+          onExit={app.exitLiveActivity}
+          onInfoTap={() => showTooltipModal('liveActivities')}
         />
 
         {/* Next Activity Button */}
