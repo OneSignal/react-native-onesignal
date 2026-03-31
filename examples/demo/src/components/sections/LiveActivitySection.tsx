@@ -11,18 +11,23 @@ import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 //   {
 //     "event": "update",
 //     "event_updates": {
-//       "status": "on_the_way",
-//       "message": "Driver is heading your way",
-//       "estimatedTime": "10 min"
+//       "data": {
+//         "status": "on_the_way",
+//         "message": "Driver is heading your way",
+//         "estimatedTime": "10 min"
+//       }
 //     },
-//     "name": "Delivery Update"
+//     "name": "Delivery Update",
+//     "priority": 10
 //   }
 //
 // To mark delivered:
 //   "event_updates": {
-//     "status": "delivered",
-//     "message": "Order delivered!",
-//     "estimatedTime": ""
+//     "data": {
+//       "status": "delivered",
+//       "message": "Order delivered!",
+//       "estimatedTime": ""
+//     }
 //   }
 // ──────────────────────────────────────────────────────────────────────────────
 
