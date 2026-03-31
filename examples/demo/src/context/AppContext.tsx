@@ -266,7 +266,6 @@ type AppContextValue = {
   startDefaultLiveActivity: (activityId: string, attributes: object, content: object) => void;
   updateLiveActivity: (activityId: string, eventUpdates: Record<string, unknown>) => Promise<void>;
   endLiveActivity: (activityId: string) => Promise<void>;
-
   stopUpdatingLiveActivity: (activityId: string) => void;
 };
 
@@ -708,7 +707,9 @@ export function AppContextProvider({ children }: Props) {
   );
 
   const endLiveActivity = useCallback(async (activityId: string) => {
-    const success = await repository.updateLiveActivity(activityId, 'end');
+    const success = await repository.updateLiveActivity(activityId, 'end', {
+      message: 'Ended Live Activity',
+    });
     const msg = success ? `Ended Live Activity: ${activityId}` : 'Failed to end Live Activity';
     log.i(TAG, msg);
     Toast.show({ type: success ? 'info' : 'error', text1: msg });
