@@ -84,6 +84,11 @@ function App() {
         OneSignal.setConsentGiven(privacyConsent);
         OneSignal.initialize(appId);
 
+        OneSignal.LiveActivities.setupDefault({
+          enablePushToStart: true,
+          enablePushToUpdate: true,
+        });
+
         OneSignal.InAppMessages.setPaused(iamPaused);
         OneSignal.Location.setShared(locationShared);
 

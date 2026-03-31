@@ -10,6 +10,7 @@ import AliasesSection from '../components/sections/AliasesSection';
 import AppSection from '../components/sections/AppSection';
 import EmailsSection from '../components/sections/EmailsSection';
 import InAppSection from '../components/sections/InAppSection';
+import LiveActivitySection from '../components/sections/LiveActivitySection';
 import LocationSection from '../components/sections/LocationSection';
 import OutcomesSection from '../components/sections/OutcomesSection';
 import PushSection from '../components/sections/PushSection';
@@ -155,6 +156,12 @@ export default function HomeScreen() {
           onSetLocationShared={app.setLocationShared}
           onRequestLocationPermission={app.requestLocationPermission}
           onInfoTap={() => showTooltipModal('location')}
+        />
+
+        <LiveActivitySection
+          onStart={app.startDefaultLiveActivity}
+          onStopUpdating={app.stopUpdatingLiveActivity}
+          onInfoTap={() => showTooltipModal('liveActivities')}
         />
 
         {/* Next Activity Button */}
