@@ -1,3 +1,4 @@
+import { ONESIGNAL_REST_API_KEY } from '@env';
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
@@ -5,49 +6,71 @@ import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
 import SectionCard from '../SectionCard';
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Push-to-update example payload (send via OneSignal REST API):
-//
-//   POST https://api.onesignal.com/apps/{app_id}/live_activities/{activity_id}/notifications
-//   {
-//     "event": "update",
-//     "event_updates": {
-//       "status": "on_the_way",
-//       "message": "Driver is heading your way",
-//       "estimatedTime": "10 min"
-//     },
-//     "name": "Delivery Update"
-//   }
-//
-// To mark delivered:
-//   "event_updates": {
-//     "status": "delivered",
-//     "message": "Order delivered!",
-//     "estimatedTime": ""
-//   }
-// ──────────────────────────────────────────────────────────────────────────────
+const ORDER_STATUSES = [
+  { status: 'preparing', message: 'Your order is being prepared', estimatedTime: '15 min' },
+  { status: 'on_the_way', message: 'Driver is heading your way', estimatedTime: '10 min' },
+  { status: 'delivered', message: 'Order delivered!', estimatedTime: '' },
+];
 
 interface Props {
   onStart: (activityId: string, attributes: object, content: object) => void;
+  onUpdate: (
+    activityId: string,
+    eventUpdates: Record<string, unknown>,
+    apiKey: string,
+  ) => Promise<void>;
   onStopUpdating: (activityId: string) => void;
   onInfoTap?: () => void;
 }
 
-export default function LiveActivitySection({ onStart, onStopUpdating, onInfoTap }: Props) {
+export default function LiveActivitySection({
+  onStart,
+  onUpdate,
+  onStopUpdating,
+  onInfoTap,
+}: Props) {
   const [activityId, setActivityId] = useState('order-1');
   const [orderNumber, setOrderNumber] = useState('ORD-1234');
+  const [apiKey, setApiKey] = useState(ONESIGNAL_REST_API_KEY ?? '');
+  const [statusIndex, setStatusIndex] = useState(0);
+  const [updating, setUpdating] = useState(false);
 
   const handleStart = () => {
+    setStatusIndex(0);
     onStart(
       activityId,
       { orderNumber },
       {
-        status: 'preparing',
-        message: 'Your order is being prepared',
-        estimatedTime: '15 min',
+        status: ORDER_STATUSES[0].status,
+        message: ORDER_STATUSES[0].message,
+        estimatedTime: ORDER_STATUSES[0].estimatedTime,
       },
     );
   };
+
+  const handleUpdate = async () => {
+    const nextIndex = (statusIndex + 1) % ORDER_STATUSES.length;
+    const next = ORDER_STATUSES[nextIndex];
+    setUpdating(true);
+    try {
+      await onUpdate(
+        activityId,
+        {
+          data: {
+            status: next.status,
+            message: next.message,
+            estimatedTime: next.estimatedTime,
+          },
+        },
+        apiKey,
+      );
+      setStatusIndex(nextIndex);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const nextStatus = ORDER_STATUSES[(statusIndex + 1) % ORDER_STATUSES.length];
 
   return (
     <SectionCard title="Live Activities" onInfoTap={onInfoTap}>
@@ -64,6 +87,13 @@ export default function LiveActivitySection({ onStart, onStopUpdating, onInfoTap
           onChangeText={setOrderNumber}
           testID="live_activity_order_number"
         />
+        <InputRow
+          label="REST API Key"
+          value={apiKey}
+          onChangeText={setApiKey}
+          testID="live_activity_api_key"
+          secureTextEntry
+        />
       </View>
       <View style={styles.buttons}>
         <ActionButton
@@ -71,6 +101,13 @@ export default function LiveActivitySection({ onStart, onStopUpdating, onInfoTap
           onPress={handleStart}
           disabled={!activityId.trim()}
           testID="start_live_activity_button"
+        />
+        <ActionButton
+          label={`UPDATE → ${nextStatus.status.replace('_', ' ').toUpperCase()}`}
+          onPress={handleUpdate}
+          disabled={!activityId.trim() || !apiKey.trim() || updating}
+          loading={updating}
+          testID="update_live_activity_button"
         />
         <ActionButton
           label="STOP UPDATING LIVE ACTIVITY"
@@ -89,11 +126,13 @@ function InputRow({
   value,
   onChangeText,
   testID,
+  secureTextEntry,
 }: {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
   testID?: string;
+  secureTextEntry?: boolean;
 }) {
   return (
     <View style={styles.inputRow}>
@@ -106,6 +145,7 @@ function InputRow({
         placeholderTextColor={AppColors.osGrey500}
         autoCapitalize="none"
         autoCorrect={false}
+        secureTextEntry={secureTextEntry}
         testID={testID}
       />
     </View>

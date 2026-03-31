@@ -160,6 +160,7 @@ export default function HomeScreen() {
 
         <LiveActivitySection
           onStart={app.startDefaultLiveActivity}
+          onUpdate={app.updateLiveActivity}
           onStopUpdating={app.stopUpdatingLiveActivity}
           onInfoTap={() => showTooltipModal('liveActivities')}
         />

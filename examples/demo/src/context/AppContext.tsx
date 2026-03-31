@@ -264,6 +264,11 @@ type AppContextValue = {
   setLocationShared: (shared: boolean) => Promise<void>;
   requestLocationPermission: () => void;
   startDefaultLiveActivity: (activityId: string, attributes: object, content: object) => void;
+  updateLiveActivity: (
+    activityId: string,
+    eventUpdates: Record<string, unknown>,
+    apiKey: string,
+  ) => Promise<void>;
   stopUpdatingLiveActivity: (activityId: string) => void;
 };
 
@@ -692,6 +697,18 @@ export function AppContextProvider({ children }: Props) {
     [],
   );
 
+  const updateLiveActivity = useCallback(
+    async (activityId: string, eventUpdates: Record<string, unknown>, apiKey: string) => {
+      const success = await repository.updateLiveActivity(activityId, eventUpdates, apiKey);
+      const msg = success
+        ? `Updated Live Activity: ${activityId}`
+        : 'Failed to update Live Activity';
+      log.i(TAG, msg);
+      Toast.show({ type: success ? 'info' : 'error', text1: msg });
+    },
+    [],
+  );
+
   const stopUpdatingLiveActivity = useCallback((activityId: string) => {
     repository.exitLiveActivity(activityId);
     log.i(TAG, `Exited Live Activity: ${activityId}`);
@@ -732,6 +749,7 @@ export function AppContextProvider({ children }: Props) {
       setLocationShared,
       requestLocationPermission,
       startDefaultLiveActivity: startDefaultLiveActivity,
+      updateLiveActivity,
       stopUpdatingLiveActivity,
     }),
     [
@@ -767,6 +785,7 @@ export function AppContextProvider({ children }: Props) {
       setLocationShared,
       requestLocationPermission,
       startDefaultLiveActivity,
+      updateLiveActivity,
       stopUpdatingLiveActivity,
     ],
   );
