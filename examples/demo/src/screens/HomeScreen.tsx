@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import ActionButton from '../components/ActionButton';
 import LoadingOverlay from '../components/LoadingOverlay';
@@ -158,12 +158,14 @@ export default function HomeScreen() {
           onInfoTap={() => showTooltipModal('location')}
         />
 
-        <LiveActivitySection
-          onStart={app.startDefaultLiveActivity}
-          onUpdate={app.updateLiveActivity}
-          onStopUpdating={app.stopUpdatingLiveActivity}
-          onInfoTap={() => showTooltipModal('liveActivities')}
-        />
+        {Platform.OS === 'ios' && (
+          <LiveActivitySection
+            onStart={app.startDefaultLiveActivity}
+            onUpdate={app.updateLiveActivity}
+            onStopUpdating={app.stopUpdatingLiveActivity}
+            onInfoTap={() => showTooltipModal('liveActivities')}
+          />
+        )}
 
         {/* Next Activity Button */}
         <View style={styles.nextButtonContainer}>
