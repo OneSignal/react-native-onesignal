@@ -1,4 +1,3 @@
-import { ONESIGNAL_REST_API_KEY } from '@env';
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
@@ -14,11 +13,7 @@ const ORDER_STATUSES = [
 
 interface Props {
   onStart: (activityId: string, attributes: object, content: object) => void;
-  onUpdate: (
-    activityId: string,
-    eventUpdates: Record<string, unknown>,
-    apiKey: string,
-  ) => Promise<void>;
+  onUpdate: (activityId: string, eventUpdates: Record<string, unknown>) => Promise<void>;
   onStopUpdating: (activityId: string) => void;
   onInfoTap?: () => void;
 }
@@ -31,7 +26,6 @@ export default function LiveActivitySection({
 }: Props) {
   const [activityId, setActivityId] = useState('order-1');
   const [orderNumber, setOrderNumber] = useState('ORD-1234');
-  const [apiKey, setApiKey] = useState(ONESIGNAL_REST_API_KEY ?? '');
   const [statusIndex, setStatusIndex] = useState(0);
   const [updating, setUpdating] = useState(false);
 
@@ -53,17 +47,13 @@ export default function LiveActivitySection({
     const next = ORDER_STATUSES[nextIndex];
     setUpdating(true);
     try {
-      await onUpdate(
-        activityId,
-        {
-          data: {
-            status: next.status,
-            message: next.message,
-            estimatedTime: next.estimatedTime,
-          },
+      await onUpdate(activityId, {
+        data: {
+          status: next.status,
+          message: next.message,
+          estimatedTime: next.estimatedTime,
         },
-        apiKey,
-      );
+      });
       setStatusIndex(nextIndex);
     } finally {
       setUpdating(false);
@@ -87,13 +77,6 @@ export default function LiveActivitySection({
           onChangeText={setOrderNumber}
           testID="live_activity_order_number"
         />
-        <InputRow
-          label="REST API Key"
-          value={apiKey}
-          onChangeText={setApiKey}
-          testID="live_activity_api_key"
-          secureTextEntry
-        />
       </View>
       <View style={styles.buttons}>
         <ActionButton
@@ -105,7 +88,7 @@ export default function LiveActivitySection({
         <ActionButton
           label={`UPDATE → ${nextStatus.status.replace('_', ' ').toUpperCase()}`}
           onPress={handleUpdate}
-          disabled={!activityId.trim() || !apiKey.trim() || updating}
+          disabled={!activityId.trim() || updating}
           loading={updating}
           testID="update_live_activity_button"
         />
@@ -126,13 +109,11 @@ function InputRow({
   value,
   onChangeText,
   testID,
-  secureTextEntry,
 }: {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
   testID?: string;
-  secureTextEntry?: boolean;
 }) {
   return (
     <View style={styles.inputRow}>
@@ -145,7 +126,6 @@ function InputRow({
         placeholderTextColor={AppColors.osGrey500}
         autoCapitalize="none"
         autoCorrect={false}
-        secureTextEntry={secureTextEntry}
         testID={testID}
       />
     </View>

@@ -264,11 +264,7 @@ type AppContextValue = {
   setLocationShared: (shared: boolean) => Promise<void>;
   requestLocationPermission: () => void;
   startDefaultLiveActivity: (activityId: string, attributes: object, content: object) => void;
-  updateLiveActivity: (
-    activityId: string,
-    eventUpdates: Record<string, unknown>,
-    apiKey: string,
-  ) => Promise<void>;
+  updateLiveActivity: (activityId: string, eventUpdates: Record<string, unknown>) => Promise<void>;
   stopUpdatingLiveActivity: (activityId: string) => void;
 };
 
@@ -698,8 +694,8 @@ export function AppContextProvider({ children }: Props) {
   );
 
   const updateLiveActivity = useCallback(
-    async (activityId: string, eventUpdates: Record<string, unknown>, apiKey: string) => {
-      const success = await repository.updateLiveActivity(activityId, eventUpdates, apiKey);
+    async (activityId: string, eventUpdates: Record<string, unknown>) => {
+      const success = await repository.updateLiveActivity(activityId, eventUpdates);
       const msg = success
         ? `Updated Live Activity: ${activityId}`
         : 'Failed to update Live Activity';

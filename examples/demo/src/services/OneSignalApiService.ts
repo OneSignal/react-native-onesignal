@@ -1,3 +1,5 @@
+import { ONESIGNAL_REST_API_KEY } from '@env';
+
 import { NotificationType } from '../models/NotificationType';
 import { UserData, userDataFromJson } from '../models/UserData';
 import LogManager from './LogManager';
@@ -103,7 +105,6 @@ class OneSignalApiService {
   async updateLiveActivity(
     activityId: string,
     eventUpdates: Record<string, unknown>,
-    apiKey: string,
   ): Promise<boolean> {
     try {
       const url = `https://api.onesignal.com/apps/${this._appId}/live_activities/${activityId}/notifications`;
@@ -111,7 +112,7 @@ class OneSignalApiService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Key ${apiKey}`,
+          Authorization: `Key ${ONESIGNAL_REST_API_KEY}`,
         },
         body: JSON.stringify({
           event: 'update',
