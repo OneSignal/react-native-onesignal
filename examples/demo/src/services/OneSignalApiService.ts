@@ -1,4 +1,4 @@
-import { ONESIGNAL_REST_API_KEY } from '@env';
+import { ONESIGNAL_API_KEY } from '@env';
 
 import { NotificationType } from '../models/NotificationType';
 import { UserData, userDataFromJson } from '../models/UserData';
@@ -104,63 +104,40 @@ class OneSignalApiService {
 
   async updateLiveActivity(
     activityId: string,
-    eventUpdates: Record<string, unknown>,
+    event: 'update' | 'end',
+    eventUpdates: Record<string, unknown> = {},
   ): Promise<boolean> {
     try {
       const url = `https://api.onesignal.com/apps/${this._appId}/live_activities/${activityId}/notifications`;
+      const payload: Record<string, unknown> = {
+        event,
+        event_updates: eventUpdates,
+        name: event === 'end' ? 'End Live Activity' : 'Live Activity Update',
+        priority: 10,
+      };
+
+      if (event === 'end') {
+        payload.dismissal_date = Math.floor(Date.now() / 1000);
+      }
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Key ${ONESIGNAL_REST_API_KEY}`,
+          Authorization: `Key ${ONESIGNAL_API_KEY}`,
         },
-        body: JSON.stringify({
-          event: 'update',
-          event_updates: eventUpdates,
-          name: 'Live Activity Update',
-          priority: 10,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
         const text = await response.text();
-        LogManager.getInstance().e(TAG, `Update live activity failed: ${text}`);
+        LogManager.getInstance().e(TAG, `${event} live activity failed: ${text}`);
         return false;
       }
 
       return true;
     } catch (err) {
-      LogManager.getInstance().e(TAG, `Update live activity error: ${String(err)}`);
-      return false;
-    }
-  }
-
-  async endLiveActivity(activityId: string): Promise<boolean> {
-    try {
-      const url = `https://api.onesignal.com/apps/${this._appId}/live_activities/${activityId}/notifications`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Key ${ONESIGNAL_REST_API_KEY}`,
-        },
-        body: JSON.stringify({
-          event: 'end',
-          event_updates: {},
-          name: 'End Live Activity',
-          dismissal_date: Math.floor(Date.now() / 1000),
-        }),
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        LogManager.getInstance().e(TAG, `End live activity failed: ${text}`);
-        return false;
-      }
-
-      return true;
-    } catch (err) {
-      LogManager.getInstance().e(TAG, `End live activity error: ${String(err)}`);
+      LogManager.getInstance().e(TAG, `${event} live activity error: ${String(err)}`);
       return false;
     }
   }

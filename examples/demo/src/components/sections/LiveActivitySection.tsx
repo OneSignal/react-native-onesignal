@@ -95,18 +95,18 @@ export default function LiveActivitySection({
           testID="update_live_activity_button"
         />
         <ActionButton
-          label="END LIVE ACTIVITY"
-          onPress={() => onEnd(activityId)}
-          disabled={!activityId.trim()}
-          variant="destructive"
-          testID="end_live_activity_button"
-        />
-        <ActionButton
           label="STOP UPDATING LIVE ACTIVITY"
           onPress={() => onStopUpdating(activityId)}
           disabled={!activityId.trim()}
           variant="outlined"
           testID="stop_updating_live_activity_button"
+        />
+        <ActionButton
+          label="END LIVE ACTIVITY"
+          onPress={() => onEnd(activityId)}
+          disabled={!activityId.trim()}
+          variant="destructive"
+          testID="end_live_activity_button"
         />
       </View>
     </SectionCard>

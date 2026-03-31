@@ -188,13 +188,10 @@ class OneSignalRepository {
 
   async updateLiveActivity(
     activityId: string,
-    eventUpdates: Record<string, unknown>,
+    event: 'update' | 'end',
+    eventUpdates?: Record<string, unknown>,
   ): Promise<boolean> {
-    return this.apiService.updateLiveActivity(activityId, eventUpdates);
-  }
-
-  async endLiveActivity(activityId: string): Promise<boolean> {
-    return this.apiService.endLiveActivity(activityId);
+    return this.apiService.updateLiveActivity(activityId, event, eventUpdates);
   }
 
   exitLiveActivity(activityId: string): void {
