@@ -265,6 +265,7 @@ type AppContextValue = {
   requestLocationPermission: () => void;
   startDefaultLiveActivity: (activityId: string, attributes: object, content: object) => void;
   updateLiveActivity: (activityId: string, eventUpdates: Record<string, unknown>) => Promise<void>;
+  endLiveActivity: (activityId: string) => Promise<void>;
   stopUpdatingLiveActivity: (activityId: string) => void;
 };
 
@@ -705,6 +706,13 @@ export function AppContextProvider({ children }: Props) {
     [],
   );
 
+  const endLiveActivity = useCallback(async (activityId: string) => {
+    const success = await repository.endLiveActivity(activityId);
+    const msg = success ? `Ended Live Activity: ${activityId}` : 'Failed to end Live Activity';
+    log.i(TAG, msg);
+    Toast.show({ type: success ? 'info' : 'error', text1: msg });
+  }, []);
+
   const stopUpdatingLiveActivity = useCallback((activityId: string) => {
     repository.exitLiveActivity(activityId);
     log.i(TAG, `Exited Live Activity: ${activityId}`);
@@ -746,6 +754,7 @@ export function AppContextProvider({ children }: Props) {
       requestLocationPermission,
       startDefaultLiveActivity: startDefaultLiveActivity,
       updateLiveActivity,
+      endLiveActivity,
       stopUpdatingLiveActivity,
     }),
     [
@@ -782,6 +791,7 @@ export function AppContextProvider({ children }: Props) {
       requestLocationPermission,
       startDefaultLiveActivity,
       updateLiveActivity,
+      endLiveActivity,
       stopUpdatingLiveActivity,
     ],
   );

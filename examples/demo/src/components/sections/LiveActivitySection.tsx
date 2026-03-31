@@ -14,6 +14,7 @@ const ORDER_STATUSES = [
 interface Props {
   onStart: (activityId: string, attributes: object, content: object) => void;
   onUpdate: (activityId: string, eventUpdates: Record<string, unknown>) => Promise<void>;
+  onEnd: (activityId: string) => Promise<void>;
   onStopUpdating: (activityId: string) => void;
   onInfoTap?: () => void;
 }
@@ -21,6 +22,7 @@ interface Props {
 export default function LiveActivitySection({
   onStart,
   onUpdate,
+  onEnd,
   onStopUpdating,
   onInfoTap,
 }: Props) {
@@ -91,6 +93,13 @@ export default function LiveActivitySection({
           disabled={!activityId.trim() || updating}
           loading={updating}
           testID="update_live_activity_button"
+        />
+        <ActionButton
+          label="END LIVE ACTIVITY"
+          onPress={() => onEnd(activityId)}
+          disabled={!activityId.trim()}
+          variant="destructive"
+          testID="end_live_activity_button"
         />
         <ActionButton
           label="STOP UPDATING LIVE ACTIVITY"

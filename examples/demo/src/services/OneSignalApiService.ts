@@ -135,6 +135,36 @@ class OneSignalApiService {
     }
   }
 
+  async endLiveActivity(activityId: string): Promise<boolean> {
+    try {
+      const url = `https://api.onesignal.com/apps/${this._appId}/live_activities/${activityId}/notifications`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Key ${ONESIGNAL_REST_API_KEY}`,
+        },
+        body: JSON.stringify({
+          event: 'end',
+          event_updates: {},
+          name: 'End Live Activity',
+          dismissal_date: Math.floor(Date.now() / 1000),
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        LogManager.getInstance().e(TAG, `End live activity failed: ${text}`);
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      LogManager.getInstance().e(TAG, `End live activity error: ${String(err)}`);
+      return false;
+    }
+  }
+
   async fetchUser(onesignalId: string): Promise<UserData | null> {
     try {
       const url = `https://api.onesignal.com/apps/${this._appId}/users/by/onesignal_id/${onesignalId}`;
