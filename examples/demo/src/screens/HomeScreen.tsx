@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import ActionButton from '../components/ActionButton';
 import LoadingOverlay from '../components/LoadingOverlay';
@@ -10,6 +10,7 @@ import AliasesSection from '../components/sections/AliasesSection';
 import AppSection from '../components/sections/AppSection';
 import EmailsSection from '../components/sections/EmailsSection';
 import InAppSection from '../components/sections/InAppSection';
+import LiveActivitySection from '../components/sections/LiveActivitySection';
 import LocationSection from '../components/sections/LocationSection';
 import OutcomesSection from '../components/sections/OutcomesSection';
 import PushSection from '../components/sections/PushSection';
@@ -157,12 +158,22 @@ export default function HomeScreen() {
           onInfoTap={() => showTooltipModal('location')}
         />
 
+        {Platform.OS === 'ios' && (
+          <LiveActivitySection
+            onStart={app.startDefaultLiveActivity}
+            onUpdate={app.updateLiveActivity}
+            onEnd={app.endLiveActivity}
+            onStopUpdating={app.stopUpdatingLiveActivity}
+            onInfoTap={() => showTooltipModal('liveActivities')}
+          />
+        )}
+
         {/* Next Activity Button */}
         <View style={styles.nextButtonContainer}>
           <ActionButton
-            label="NEXT ACTIVITY"
+            label="NEXT SCREEN"
             onPress={() => navigation.navigate('Secondary' as never)}
-            testID="next_activity_button"
+            testID="next_screen_button"
           />
         </View>
 

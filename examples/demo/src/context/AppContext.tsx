@@ -263,6 +263,10 @@ type AppContextValue = {
   trackEvent: (name: string, properties?: Record<string, unknown>) => void;
   setLocationShared: (shared: boolean) => Promise<void>;
   requestLocationPermission: () => void;
+  startDefaultLiveActivity: (activityId: string, attributes: object, content: object) => void;
+  updateLiveActivity: (activityId: string, eventUpdates: Record<string, unknown>) => Promise<void>;
+  endLiveActivity: (activityId: string) => Promise<void>;
+  stopUpdatingLiveActivity: (activityId: string) => void;
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -681,6 +685,42 @@ export function AppContextProvider({ children }: Props) {
     repository.requestLocationPermission();
   }, []);
 
+  const startDefaultLiveActivity = useCallback(
+    (activityId: string, attributes: object, content: object) => {
+      repository.startDefaultLiveActivity(activityId, attributes, content);
+      log.i(TAG, `Started Live Activity: ${activityId}`);
+      Toast.show({ type: 'info', text1: `Started Live Activity: ${activityId}` });
+    },
+    [],
+  );
+
+  const updateLiveActivity = useCallback(
+    async (activityId: string, eventUpdates: Record<string, unknown>) => {
+      const success = await repository.updateLiveActivity(activityId, 'update', eventUpdates);
+      const msg = success
+        ? `Updated Live Activity: ${activityId}`
+        : 'Failed to update Live Activity';
+      log.i(TAG, msg);
+      Toast.show({ type: success ? 'info' : 'error', text1: msg });
+    },
+    [],
+  );
+
+  const endLiveActivity = useCallback(async (activityId: string) => {
+    const success = await repository.updateLiveActivity(activityId, 'end', {
+      message: 'Ended Live Activity',
+    });
+    const msg = success ? `Ended Live Activity: ${activityId}` : 'Failed to end Live Activity';
+    log.i(TAG, msg);
+    Toast.show({ type: success ? 'info' : 'error', text1: msg });
+  }, []);
+
+  const stopUpdatingLiveActivity = useCallback((activityId: string) => {
+    repository.exitLiveActivity(activityId);
+    log.i(TAG, `Exited Live Activity: ${activityId}`);
+    Toast.show({ type: 'info', text1: `Exited Live Activity: ${activityId}` });
+  }, []);
+
   const contextValue = useMemo<AppContextValue>(
     () => ({
       state,
@@ -714,6 +754,10 @@ export function AppContextProvider({ children }: Props) {
       trackEvent,
       setLocationShared,
       requestLocationPermission,
+      startDefaultLiveActivity: startDefaultLiveActivity,
+      updateLiveActivity,
+      endLiveActivity,
+      stopUpdatingLiveActivity,
     }),
     [
       state,
@@ -747,6 +791,10 @@ export function AppContextProvider({ children }: Props) {
       trackEvent,
       setLocationShared,
       requestLocationPermission,
+      startDefaultLiveActivity,
+      updateLiveActivity,
+      endLiveActivity,
+      stopUpdatingLiveActivity,
     ],
   );
 

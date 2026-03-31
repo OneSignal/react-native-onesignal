@@ -180,6 +180,23 @@ class OneSignalRepository {
   async fetchUser(onesignalId: string): Promise<UserData | null> {
     return this.apiService.fetchUser(onesignalId);
   }
+
+  // Live Activities
+  startDefaultLiveActivity(activityId: string, attributes: object, content: object): void {
+    OneSignal.LiveActivities.startDefault(activityId, attributes, content);
+  }
+
+  async updateLiveActivity(
+    activityId: string,
+    event: 'update' | 'end',
+    eventUpdates?: Record<string, unknown>,
+  ): Promise<boolean> {
+    return this.apiService.updateLiveActivity(activityId, event, eventUpdates);
+  }
+
+  exitLiveActivity(activityId: string): void {
+    OneSignal.LiveActivities.exit(activityId);
+  }
 }
 
 export default OneSignalRepository;
