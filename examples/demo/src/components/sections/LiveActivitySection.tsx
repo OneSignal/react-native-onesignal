@@ -87,6 +87,8 @@ export default function LiveActivitySection({
           disabled={!activityId.trim()}
           testID="start_live_activity_button"
         />
+
+        {/* Requires API key */}
         <ActionButton
           label={`UPDATE → ${nextStatus.status.replace('_', ' ').toUpperCase()}`}
           onPress={handleUpdate}
@@ -94,6 +96,7 @@ export default function LiveActivitySection({
           loading={updating}
           testID="update_live_activity_button"
         />
+
         <ActionButton
           label="STOP UPDATING LIVE ACTIVITY"
           onPress={() => onStopUpdating(activityId)}
@@ -101,6 +104,8 @@ export default function LiveActivitySection({
           variant="outlined"
           testID="stop_updating_live_activity_button"
         />
+
+        {/* Requires API key */}
         <ActionButton
           label="END LIVE ACTIVITY"
           onPress={() => onEnd(activityId)}

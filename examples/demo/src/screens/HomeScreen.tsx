@@ -171,9 +171,9 @@ export default function HomeScreen() {
         {/* Next Activity Button */}
         <View style={styles.nextButtonContainer}>
           <ActionButton
-            label="NEXT ACTIVITY"
+            label="NEXT SCREEN"
             onPress={() => navigation.navigate('Secondary' as never)}
-            testID="next_activity_button"
+            testID="next_screen_button"
           />
         </View>
 
