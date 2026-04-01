@@ -163,7 +163,6 @@ export default function HomeScreen() {
             onStart={app.startDefaultLiveActivity}
             onUpdate={app.updateLiveActivity}
             onEnd={app.endLiveActivity}
-            onStopUpdating={app.stopUpdatingLiveActivity}
             onInfoTap={() => showTooltipModal('liveActivities')}
           />
         )}

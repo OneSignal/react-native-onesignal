@@ -175,6 +175,7 @@ export namespace OneSignal {
      *
      * Only applies to iOS
      *
+     * @deprecated Use the REST API to end live activities instead.
      * @param activityId: The activity identifier the live activity on this device will no longer receive updates for.
      **/
     export function exit(activityId: string, handler: (result: object) => void = () => {}) {

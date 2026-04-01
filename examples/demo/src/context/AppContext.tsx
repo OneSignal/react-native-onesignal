@@ -266,7 +266,6 @@ type AppContextValue = {
   startDefaultLiveActivity: (activityId: string, attributes: object, content: object) => void;
   updateLiveActivity: (activityId: string, eventUpdates: Record<string, unknown>) => Promise<void>;
   endLiveActivity: (activityId: string) => Promise<void>;
-  stopUpdatingLiveActivity: (activityId: string) => void;
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -715,12 +714,6 @@ export function AppContextProvider({ children }: Props) {
     Toast.show({ type: success ? 'info' : 'error', text1: msg });
   }, []);
 
-  const stopUpdatingLiveActivity = useCallback((activityId: string) => {
-    repository.exitLiveActivity(activityId);
-    log.i(TAG, `Exited Live Activity: ${activityId}`);
-    Toast.show({ type: 'info', text1: `Exited Live Activity: ${activityId}` });
-  }, []);
-
   const contextValue = useMemo<AppContextValue>(
     () => ({
       state,
@@ -757,7 +750,6 @@ export function AppContextProvider({ children }: Props) {
       startDefaultLiveActivity: startDefaultLiveActivity,
       updateLiveActivity,
       endLiveActivity,
-      stopUpdatingLiveActivity,
     }),
     [
       state,
@@ -794,7 +786,6 @@ export function AppContextProvider({ children }: Props) {
       startDefaultLiveActivity,
       updateLiveActivity,
       endLiveActivity,
-      stopUpdatingLiveActivity,
     ],
   );
 

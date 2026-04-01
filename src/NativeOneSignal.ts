@@ -16,7 +16,10 @@ export interface Spec extends TurboModule {
 
   // Live Activities (iOS only, stubs on Android)
   enterLiveActivity(activityId: string, token: string, callback: (result: Object) => void): void;
+
+  /** @deprecated Use REST API to end live activities instead. */
   exitLiveActivity(activityId: string, callback: (result: Object) => void): void;
+
   setPushToStartToken(activityType: string, token: string): void;
   removePushToStartToken(activityType: string): void;
   setupDefaultLiveActivity(options: Object | null): void;

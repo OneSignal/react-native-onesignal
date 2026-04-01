@@ -193,10 +193,6 @@ class OneSignalRepository {
   ): Promise<boolean> {
     return this.apiService.updateLiveActivity(activityId, event, eventUpdates);
   }
-
-  exitLiveActivity(activityId: string): void {
-    OneSignal.LiveActivities.exit(activityId);
-  }
 }
 
 export default OneSignalRepository;
