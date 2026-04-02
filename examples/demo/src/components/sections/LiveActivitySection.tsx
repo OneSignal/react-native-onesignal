@@ -15,17 +15,10 @@ interface Props {
   onStart: (activityId: string, attributes: object, content: object) => void;
   onUpdate: (activityId: string, eventUpdates: Record<string, unknown>) => Promise<void>;
   onEnd: (activityId: string) => Promise<void>;
-  onStopUpdating: (activityId: string) => void;
   onInfoTap?: () => void;
 }
 
-export default function LiveActivitySection({
-  onStart,
-  onUpdate,
-  onEnd,
-  onStopUpdating,
-  onInfoTap,
-}: Props) {
+export default function LiveActivitySection({ onStart, onUpdate, onEnd, onInfoTap }: Props) {
   const [activityId, setActivityId] = useState('order-1');
   const [orderNumber, setOrderNumber] = useState('ORD-1234');
   const [statusIndex, setStatusIndex] = useState(0);
@@ -97,20 +90,12 @@ export default function LiveActivitySection({
           testID="update_live_activity_button"
         />
 
-        <ActionButton
-          label="STOP UPDATING LIVE ACTIVITY"
-          onPress={() => onStopUpdating(activityId)}
-          disabled={!activityId.trim()}
-          variant="outlined"
-          testID="stop_updating_live_activity_button"
-        />
-
         {/* Requires API key */}
         <ActionButton
           label="END LIVE ACTIVITY"
           onPress={() => onEnd(activityId)}
           disabled={!activityId.trim()}
-          variant="destructive"
+          variant="outlined"
           testID="end_live_activity_button"
         />
       </View>

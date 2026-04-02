@@ -6,7 +6,7 @@ import { AppColors, AppSpacing } from '../theme';
 interface Props {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'destructive' | 'outlined';
+  variant?: 'primary' | 'outlined';
   disabled?: boolean;
   loading?: boolean;
   testID?: string;
@@ -29,12 +29,9 @@ export default function ActionButton({
   const bgColor = variant === 'primary' ? AppColors.osPrimary : 'transparent';
 
   const borderStyle =
-    variant === 'outlined' || variant === 'destructive'
-      ? { borderWidth: 1, borderColor: AppColors.osPrimary }
-      : {};
+    variant === 'outlined' ? { borderWidth: 1, borderColor: AppColors.osPrimary } : {};
 
-  const textColor =
-    variant === 'outlined' || variant === 'destructive' ? AppColors.osPrimary : AppColors.white;
+  const textColor = variant === 'outlined' ? AppColors.osPrimary : AppColors.white;
 
   return (
     <TouchableOpacity
