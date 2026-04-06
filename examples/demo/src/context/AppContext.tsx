@@ -1,4 +1,3 @@
-import { ONESIGNAL_APP_ID } from '@env';
 import React, {
   createContext,
   useCallback,
@@ -11,6 +10,7 @@ import React, {
 import { OneSignal } from 'react-native-onesignal';
 import Toast from 'react-native-toast-message';
 
+import { APP_ID } from '../config';
 import { NotificationType } from '../models/NotificationType';
 import OneSignalRepository from '../repositories/OneSignalRepository';
 import LogManager from '../services/LogManager';
@@ -42,7 +42,7 @@ export interface AppState {
 }
 
 const initialState: AppState = {
-  appId: ONESIGNAL_APP_ID || '77e32082-ea27-42e3-a898-c72e141824ef',
+  appId: '',
   consentRequired: false,
   privacyConsentGiven: false,
   externalUserId: undefined,
@@ -330,16 +330,15 @@ export function AppContextProvider({ children }: Props) {
 
   useEffect(() => {
     const load = async () => {
-      const [appId, consentRequired, privacyConsentGiven, iamPaused, locationShared] =
-        await Promise.all([
-          preferences.getAppId(),
-          preferences.getConsentRequired(),
-          preferences.getPrivacyConsent(),
-          preferences.getIamPaused(),
-          preferences.getLocationShared(),
-        ]);
+      console.log('appId', APP_ID);
+      const [consentRequired, privacyConsentGiven, iamPaused, locationShared] = await Promise.all([
+        preferences.getConsentRequired(),
+        preferences.getPrivacyConsent(),
+        preferences.getIamPaused(),
+        preferences.getLocationShared(),
+      ]);
 
-      OneSignalApiService.getInstance().setAppId(appId);
+      OneSignalApiService.getInstance().setAppId(APP_ID);
 
       const externalId = await repository.getExternalId();
       const [pushId, pushOptedIn, hasPerm] = await Promise.all([
@@ -355,7 +354,7 @@ export function AppContextProvider({ children }: Props) {
       dispatch({
         type: 'SET_INITIAL_STATE',
         payload: {
-          appId,
+          appId: APP_ID,
           consentRequired,
           privacyConsentGiven,
           inAppMessagesPaused: iamPaused,

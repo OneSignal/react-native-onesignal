@@ -51,17 +51,14 @@
     "@types/invariant": "^2.2.37",
     "@vitest/coverage-v8": "^4.1.0",
     "typescript": "^5.9.3",
-    "vite-plus": "^0.1.11"
+    "vite-plus": "^0.1.15"
   },
   "peerDependencies": {
     "react-native": ">=0.76.0"
   },
-  "packageManager": "pnpm@10.32.1",
-  "pnpm": {
-    "overrides": {
-      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
-    }
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   },
   "codegenConfig": {
     "name": "RNOneSignalSpec",

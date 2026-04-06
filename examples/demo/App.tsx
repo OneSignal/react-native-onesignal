@@ -17,6 +17,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 import OneSignalLogo from './assets/onesignal_logo.svg';
+import { APP_ID } from './src/config';
 import { AppContextProvider } from './src/context/AppContext';
 import HomeScreen from './src/screens/HomeScreen';
 import SecondaryScreen from './src/screens/SecondaryScreen';
@@ -68,21 +69,19 @@ function App() {
     const init = async () => {
       try {
         const prefs = PreferencesService.getInstance();
-        const [appId, consentRequired, privacyConsent, iamPaused, locationShared] =
-          await Promise.all([
-            prefs.getAppId(),
-            prefs.getConsentRequired(),
-            prefs.getPrivacyConsent(),
-            prefs.getIamPaused(),
-            prefs.getLocationShared(),
-          ]);
+        const [consentRequired, privacyConsent, iamPaused, locationShared] = await Promise.all([
+          prefs.getConsentRequired(),
+          prefs.getPrivacyConsent(),
+          prefs.getIamPaused(),
+          prefs.getLocationShared(),
+        ]);
 
-        OneSignalApiService.getInstance().setAppId(appId);
+        OneSignalApiService.getInstance().setAppId(APP_ID);
 
         OneSignal.Debug.setLogLevel(LogLevel.Verbose);
         OneSignal.setConsentRequired(consentRequired);
         OneSignal.setConsentGiven(privacyConsent);
-        OneSignal.initialize(appId);
+        OneSignal.initialize(APP_ID);
 
         OneSignal.LiveActivities.setupDefault({
           enablePushToStart: true,
@@ -105,7 +104,7 @@ function App() {
           handleForegroundWillDisplay,
         );
 
-        log.i(TAG, `OneSignal initialized with app ID: ${appId}`);
+        log.i(TAG, `OneSignal initialized with app ID: ${APP_ID}`);
       } catch (err) {
         log.e(TAG, `Init error: ${String(err)}`);
       }
