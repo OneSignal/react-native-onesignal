@@ -1,3 +1,4 @@
+import { ONESIGNAL_APP_ID } from '@env';
 import React, {
   createContext,
   useCallback,
@@ -41,7 +42,7 @@ export interface AppState {
 }
 
 const initialState: AppState = {
-  appId: '77e32082-ea27-42e3-a898-c72e141824ef',
+  appId: ONESIGNAL_APP_ID || '77e32082-ea27-42e3-a898-c72e141824ef',
   consentRequired: false,
   privacyConsentGiven: false,
   externalUserId: undefined,

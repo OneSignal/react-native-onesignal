@@ -1,0 +1,102 @@
+name: E2E Tests
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-android:
+    name: E2E (Android)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Build SDK
+        run: |
+          bun install
+          bun run build
+          bun pm pack
+          mv react-native-onesignal-*.tgz react-native-onesignal.tgz
+
+      - name: Install demo dependencies
+        working-directory: examples/demo
+        run: bun install
+
+      - name: Build demo APK
+        working-directory: examples/demo/android
+        run: ./gradlew assembleDebug
+
+      - name: Run Appium E2E tests
+        uses: OneSignal/sdk-shared/.github/actions/appium-e2e@fadi/sdk-4333-add-appium-sdk-shared-action
+        with:
+          platform: android
+          app-path: examples/demo/android/app/build/outputs/apk/debug/app-debug.apk
+          sdk-type: react-native
+          browserstack-username: ${{ secrets.BROWSERSTACK_USERNAME }}
+          browserstack-access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          onesignal-app-id: ${{ secrets.E2E_ONESIGNAL_APP_ID }}
+          build-name: ${{ github.repository }} - ${{ github.run_id }}
+
+  # e2e-ios:
+  #   name: E2E (iOS)
+  #   runs-on: macos-latest
+  #   timeout-minutes: 45
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+
+  #     - uses: oven-sh/setup-bun@v2
+
+  #     - name: Build SDK
+  #       run: |
+  #         bun install
+  #         bun run build
+  #         bun pm pack
+  #         mv react-native-onesignal-*.tgz react-native-onesignal.tgz
+
+  #     - name: Install demo dependencies
+  #       working-directory: examples/demo
+  #       run: bun install
+
+  #     - name: Install CocoaPods
+  #       working-directory: examples/demo/ios
+  #       run: pod install
+
+  #     - name: Build demo app
+  #       working-directory: examples/demo/ios
+  #       run: |
+  #         xcodebuild build \
+  #           -workspace demo.xcworkspace \
+  #           -scheme demo \
+  #           -destination 'generic/platform=iOS Simulator' \
+  #           -derivedDataPath build \
+  #           -quiet
+
+  #     - name: Run Appium E2E tests
+  #       uses: OneSignal/sdk-shared/.github/actions/appium-e2e@main
+  #       with:
+  #         platform: ios
+  #         app-path: examples/demo/ios/build/Build/Products/Debug-iphonesimulator/demo.app
+  #         sdk-type: react-native
+  #         browserstack-username: ${{ secrets.BROWSERSTACK_USERNAME }}
+  #         browserstack-access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+  #         onesignal-app-id: ${{ secrets.ONESIGNAL_APP_ID }}
+  #         build-name: ${{ github.repository }} - ${{ github.run_id }}
