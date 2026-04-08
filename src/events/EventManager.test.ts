@@ -93,6 +93,18 @@ describe('EventManager', () => {
       new EventManager(null as never);
       expect(freshModule.onPermissionChanged).not.toHaveBeenCalled();
     });
+
+    test('should not crash when event emitters are unavailable (Old Architecture)', () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const moduleWithoutEmitters = {} as never;
+
+      expect(() => new EventManager(moduleWithoutEmitters)).not.toThrow();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Native event emitters are not available'),
+      );
+
+      consoleSpy.mockRestore();
+    });
   });
 
   describe('addEventListener', () => {

@@ -60,6 +60,14 @@ export default class EventManager {
   setupListeners() {
     if (this.RNOneSignal == null) return;
 
+    if (typeof this.RNOneSignal.onPermissionChanged !== 'function') {
+      console.error(
+        'OneSignal: Native event emitters are not available. ' +
+          'Ensure the New Architecture (TurboModules) is enabled and the native module is rebuilt.',
+      );
+      return;
+    }
+
     this.nativeSubscriptions.push(
       this.RNOneSignal.onPermissionChanged((payload) => {
         const typed = payload as { permission: boolean };
