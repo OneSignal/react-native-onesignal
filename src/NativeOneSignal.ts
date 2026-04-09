@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-wrapper-object-types */
-import type { CodegenTypes, TurboModule } from 'react-native';
+import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
+import type { EventEmitter } from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
   // OneSignal root
@@ -90,16 +91,16 @@ export interface Spec extends TurboModule {
   addOutcomeWithValue(name: string, value: number): void;
 
   // Events
-  readonly onPermissionChanged: CodegenTypes.EventEmitter<Object>;
-  readonly onSubscriptionChanged: CodegenTypes.EventEmitter<Object>;
-  readonly onUserStateChanged: CodegenTypes.EventEmitter<Object>;
-  readonly onNotificationWillDisplay: CodegenTypes.EventEmitter<Object>;
-  readonly onNotificationClicked: CodegenTypes.EventEmitter<Object>;
-  readonly onInAppMessageClicked: CodegenTypes.EventEmitter<Object>;
-  readonly onInAppMessageWillDisplay: CodegenTypes.EventEmitter<Object>;
-  readonly onInAppMessageDidDisplay: CodegenTypes.EventEmitter<Object>;
-  readonly onInAppMessageWillDismiss: CodegenTypes.EventEmitter<Object>;
-  readonly onInAppMessageDidDismiss: CodegenTypes.EventEmitter<Object>;
+  readonly onPermissionChanged: EventEmitter<Object>;
+  readonly onSubscriptionChanged: EventEmitter<Object>;
+  readonly onUserStateChanged: EventEmitter<Object>;
+  readonly onNotificationWillDisplay: EventEmitter<Object>;
+  readonly onNotificationClicked: EventEmitter<Object>;
+  readonly onInAppMessageClicked: EventEmitter<Object>;
+  readonly onInAppMessageWillDisplay: EventEmitter<Object>;
+  readonly onInAppMessageDidDisplay: EventEmitter<Object>;
+  readonly onInAppMessageWillDismiss: EventEmitter<Object>;
+  readonly onInAppMessageDidDismiss: EventEmitter<Object>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('OneSignal');
