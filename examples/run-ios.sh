@@ -70,5 +70,4 @@ name="${selected%%|*}"
 udid="${selected##*|}"
 echo "Using simulator: $name ($udid)"
 
-cd "$(dirname "$0")/demo"
 bunx react-native run-ios --udid "$udid"
