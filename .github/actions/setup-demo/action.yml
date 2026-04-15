@@ -23,12 +23,27 @@ runs:
     - name: Set up Bun
       uses: oven-sh/setup-bun@v2
 
+    - name: Cache bun dependencies
+      uses: actions/cache@v4
+      with:
+        path: examples/demo/node_modules
+        key: bun-${{ runner.os }}-${{ hashFiles('examples/demo/bun.lock') }}
+        restore-keys: bun-${{ runner.os }}-
+
     - name: Install and set up demo
       shell: bash
       working-directory: examples/demo
       run: |
         bun install
         bun run setup
+
+    - name: Cache CocoaPods
+      if: inputs.install-pods == 'true'
+      uses: actions/cache@v4
+      with:
+        path: examples/demo/ios/Pods
+        key: pods-${{ runner.os }}-${{ hashFiles('examples/demo/ios/Podfile.lock') }}
+        restore-keys: pods-${{ runner.os }}-
 
     - name: Update CocoaPods
       if: inputs.install-pods == 'true'

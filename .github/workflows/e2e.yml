@@ -74,6 +74,15 @@ jobs:
           onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
           install-pods: 'true'
 
+      - name: Cache Xcode DerivedData
+        uses: actions/cache@v4
+        with:
+          path: examples/demo/ios/build
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/ios/Podfile.lock') }}-${{ hashFiles('ios/**', 'react-native-onesignal.podspec', 'examples/demo/ios/**/*.swift', 'examples/demo/ios/**/*.m', 'examples/demo/ios/**/*.mm') }}
+          restore-keys: |
+            deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/ios/Podfile.lock') }}-
+            deriveddata-${{ runner.os }}-
+
       - name: Build iOS app
         working-directory: examples/demo/ios
         run: |
@@ -85,7 +94,8 @@ jobs:
             -derivedDataPath build \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO
 
       - name: Package IPA
         working-directory: examples/demo/ios
