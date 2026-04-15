@@ -18,9 +18,13 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity style={AppDialogStyles.backdrop} activeOpacity={1} onPress={onClose}>
         <View style={[AppDialogStyles.container, styles.containerMaxHeight]}>
-          <Text style={AppDialogStyles.title}>{tooltip.title}</Text>
+          <Text style={AppDialogStyles.title} testID="tooltip_title">
+            {tooltip.title}
+          </Text>
           <ScrollView>
-            <Text style={styles.description}>{tooltip.description}</Text>
+            <Text style={styles.description} testID="tooltip_description">
+              {tooltip.description}
+            </Text>
             {tooltip.options?.map((opt) => (
               <View key={opt.name} style={styles.optionRow}>
                 <Text style={styles.optionName}>{opt.name}</Text>

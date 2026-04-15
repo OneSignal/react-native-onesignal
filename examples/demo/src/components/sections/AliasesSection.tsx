@@ -24,14 +24,14 @@ export default function AliasesSection({ aliases, onAdd, onAddMultiple, onInfoTa
   const filtered = aliases.filter(([k]) => !FILTERED_KEYS.includes(k));
 
   return (
-    <SectionCard title="Aliases" onInfoTap={onInfoTap}>
+    <SectionCard title="Aliases" onInfoTap={onInfoTap} sectionKey="aliases">
       {filtered.length === 0 ? (
         <View style={[AppTheme.card, styles.listCard]}>
           <EmptyState message="No aliases added" testID="aliases_empty" />
         </View>
       ) : (
         <View style={styles.listCard}>
-          <PairList items={filtered} layout="stacked" />
+          <PairList items={filtered} layout="stacked" sectionKey="aliases" />
         </View>
       )}
       <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_alias_button" />
@@ -49,6 +49,7 @@ export default function AliasesSection({ aliases, onAdd, onAddMultiple, onInfoTa
         onClose={() => setAddVisible(false)}
         keyTestID="alias_label_input"
         valueTestID="alias_id_input"
+        confirmTestID="alias_confirm_button"
       />
       <MultiPairInputModal
         visible={addMultipleVisible}

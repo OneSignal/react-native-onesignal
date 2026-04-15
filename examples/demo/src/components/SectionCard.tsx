@@ -7,16 +7,21 @@ interface Props {
   title: string;
   children?: React.ReactNode;
   onInfoTap?: () => void;
+  sectionKey?: string;
   style?: object;
 }
 
-export default function SectionCard({ title, children, onInfoTap, style }: Props) {
+export default function SectionCard({ title, children, onInfoTap, sectionKey, style }: Props) {
   return (
-    <View style={[styles.wrapper, style]}>
+    <View style={[styles.wrapper, style]} testID={sectionKey ? `${sectionKey}_section` : undefined}>
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
         {onInfoTap && (
-          <TouchableOpacity onPress={onInfoTap} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <TouchableOpacity
+            onPress={onInfoTap}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            testID={sectionKey ? `${sectionKey}_info_icon` : undefined}
+          >
             <Text style={styles.infoIcon}>ⓘ</Text>
           </TouchableOpacity>
         )}

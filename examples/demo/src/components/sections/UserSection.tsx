@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
@@ -8,27 +9,40 @@ import SectionCard from '../SectionCard';
 
 interface Props {
   externalUserId: string | undefined;
-  onLogin: (externalUserId: string) => void;
-  onLogout: () => void;
+  onLogin: (externalUserId: string) => Promise<void>;
+  onLogout: () => Promise<void>;
 }
 
 export default function UserSection({ externalUserId, onLogin, onLogout }: Props) {
   const [loginVisible, setLoginVisible] = useState(false);
   const isLoggedIn = !!externalUserId;
 
+  const handleLogin = async (userId: string) => {
+    await onLogin(userId);
+    Toast.show({ type: 'info', text1: `Logged in as ${userId}` });
+  };
+
+  const handleLogout = async () => {
+    await onLogout();
+    Toast.show({ type: 'info', text1: 'User logged out' });
+  };
+
   return (
-    <SectionCard title="User">
+    <SectionCard title="User" sectionKey="user">
       <View style={[AppTheme.card, styles.card]}>
         <View style={styles.row}>
           <Text style={styles.label}>Status</Text>
-          <Text style={[styles.value, isLoggedIn && styles.loggedInText]}>
+          <Text
+            style={[styles.value, isLoggedIn && styles.loggedInText]}
+            testID="user_status_value"
+          >
             {isLoggedIn ? 'Logged In' : 'Anonymous'}
           </Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.row}>
           <Text style={styles.label}>External ID</Text>
-          <Text style={styles.value} numberOfLines={1}>
+          <Text style={styles.value} numberOfLines={1} testID="user_external_id_value">
             {externalUserId ?? '–'}
           </Text>
         </View>
@@ -41,14 +55,14 @@ export default function UserSection({ externalUserId, onLogin, onLogout }: Props
       {isLoggedIn && (
         <ActionButton
           label="LOGOUT USER"
-          onPress={onLogout}
+          onPress={handleLogout}
           variant="outlined"
           testID="logout_user_button"
         />
       )}
       <LoginModal
         visible={loginVisible}
-        onConfirm={onLogin}
+        onConfirm={handleLogin}
         onClose={() => setLoginVisible(false)}
       />
     </SectionCard>

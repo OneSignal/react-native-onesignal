@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Toast from 'react-native-toast-message';
 
 import ActionButton from '../ActionButton';
 import OutcomeModal from '../modals/OutcomeModal';
@@ -19,8 +20,23 @@ export default function OutcomesSection({
 }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
 
+  const handleSendNormal = (name: string) => {
+    onSendNormal(name);
+    Toast.show({ type: 'info', text1: `Outcome sent: ${name}` });
+  };
+
+  const handleSendUnique = (name: string) => {
+    onSendUnique(name);
+    Toast.show({ type: 'info', text1: `Unique outcome sent: ${name}` });
+  };
+
+  const handleSendWithValue = (name: string, value: number) => {
+    onSendWithValue(name, value);
+    Toast.show({ type: 'info', text1: `Outcome sent: ${name} = ${value}` });
+  };
+
   return (
-    <SectionCard title="Outcome Events" onInfoTap={onInfoTap}>
+    <SectionCard title="Outcome Events" onInfoTap={onInfoTap} sectionKey="outcomes">
       <ActionButton
         label="SEND OUTCOME"
         onPress={() => setModalVisible(true)}
@@ -28,9 +44,9 @@ export default function OutcomesSection({
       />
       <OutcomeModal
         visible={modalVisible}
-        onSendNormal={onSendNormal}
-        onSendUnique={onSendUnique}
-        onSendWithValue={onSendWithValue}
+        onSendNormal={handleSendNormal}
+        onSendUnique={handleSendUnique}
+        onSendWithValue={handleSendWithValue}
         onClose={() => setModalVisible(false)}
       />
     </SectionCard>

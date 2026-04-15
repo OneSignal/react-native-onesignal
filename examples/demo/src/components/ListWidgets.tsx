@@ -10,7 +10,7 @@ interface PairItemProps {
   itemValue: string;
   layout?: 'inline' | 'stacked';
   onDelete?: () => void;
-  testID?: string;
+  sectionKey?: string;
 }
 
 export function PairItem({
@@ -18,32 +18,52 @@ export function PairItem({
   itemValue,
   layout = 'inline',
   onDelete,
-  testID,
+  sectionKey,
 }: PairItemProps) {
   return (
-    <View style={styles.pairRow} testID={testID}>
+    <View style={styles.pairRow}>
       {layout === 'stacked' ? (
         <View style={styles.pairStackedContent}>
-          <Text style={styles.pairStackedKey} numberOfLines={1}>
+          <Text
+            style={styles.pairStackedKey}
+            numberOfLines={1}
+            testID={sectionKey ? `${sectionKey}_pair_key_${itemKey}` : undefined}
+          >
             {itemKey}
           </Text>
-          <Text style={styles.pairStackedValue} numberOfLines={1}>
+          <Text
+            style={styles.pairStackedValue}
+            numberOfLines={1}
+            testID={sectionKey ? `${sectionKey}_pair_value_${itemKey}` : undefined}
+          >
             {itemValue}
           </Text>
         </View>
       ) : (
         <>
-          <Text style={styles.pairKey} numberOfLines={1}>
+          <Text
+            style={styles.pairKey}
+            numberOfLines={1}
+            testID={sectionKey ? `${sectionKey}_pair_key_${itemKey}` : undefined}
+          >
             {itemKey}
           </Text>
           <Text style={styles.pairSeparator}>|</Text>
-          <Text style={styles.pairValue} numberOfLines={1}>
+          <Text
+            style={styles.pairValue}
+            numberOfLines={1}
+            testID={sectionKey ? `${sectionKey}_pair_value_${itemKey}` : undefined}
+          >
             {itemValue}
           </Text>
         </>
       )}
       {onDelete && (
-        <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity
+          onPress={onDelete}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          testID={sectionKey ? `${sectionKey}_remove_${itemKey}` : undefined}
+        >
           <Icon name="close" size={18} color={AppColors.osPrimary} />
         </TouchableOpacity>
       )}
@@ -55,17 +75,21 @@ export function PairItem({
 interface SingleItemProps {
   value: string;
   onDelete?: () => void;
-  testID?: string;
+  sectionKey?: string;
 }
 
-export function SingleItem({ value, onDelete, testID }: SingleItemProps) {
+export function SingleItem({ value, onDelete, sectionKey }: SingleItemProps) {
   return (
-    <View style={styles.singleRow} testID={testID}>
+    <View style={styles.singleRow}>
       <Text style={styles.singleValue} numberOfLines={1}>
         {value}
       </Text>
       {onDelete && (
-        <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity
+          onPress={onDelete}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          testID={sectionKey ? `${sectionKey}_remove_${value}` : undefined}
+        >
           <Icon name="close" size={18} color={AppColors.osPrimary} />
         </TouchableOpacity>
       )}
@@ -93,9 +117,16 @@ interface PairListProps {
   layout?: 'inline' | 'stacked';
   onDelete?: (key: string) => void;
   filterKeys?: string[];
+  sectionKey?: string;
 }
 
-export function PairList({ items, layout = 'inline', onDelete, filterKeys }: PairListProps) {
+export function PairList({
+  items,
+  layout = 'inline',
+  onDelete,
+  filterKeys,
+  sectionKey,
+}: PairListProps) {
   const filtered = filterKeys ? items.filter(([k]) => !filterKeys.includes(k)) : items;
 
   if (filtered.length === 0) {
@@ -112,7 +143,7 @@ export function PairList({ items, layout = 'inline', onDelete, filterKeys }: Pai
             itemValue={v}
             layout={layout}
             onDelete={onDelete ? () => onDelete(k) : undefined}
-            testID={`pair_item_${idx}`}
+            sectionKey={sectionKey}
           />
         </React.Fragment>
       ))}
@@ -127,12 +158,14 @@ interface CollapsibleSingleListProps {
   items: string[];
   onDelete?: (value: string) => void;
   emptyMessage: string;
+  sectionKey?: string;
 }
 
 export function CollapsibleSingleList({
   items,
   onDelete,
   emptyMessage,
+  sectionKey,
 }: CollapsibleSingleListProps) {
   const [expanded, setExpanded] = useState(false);
   const showAll = expanded || items.length <= COLLAPSE_THRESHOLD;
@@ -155,7 +188,7 @@ export function CollapsibleSingleList({
           <SingleItem
             value={item}
             onDelete={onDelete ? () => onDelete(item) : undefined}
-            testID={`single_item_${idx}`}
+            sectionKey={sectionKey}
           />
         </React.Fragment>
       ))}

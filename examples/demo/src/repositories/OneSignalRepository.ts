@@ -136,6 +136,10 @@ class OneSignalRepository {
     OneSignal.Location.setShared(shared);
   }
 
+  async isLocationShared(): Promise<boolean> {
+    return OneSignal.Location.isShared();
+  }
+
   requestLocationPermission(): void {
     OneSignal.Location.requestPermission();
   }

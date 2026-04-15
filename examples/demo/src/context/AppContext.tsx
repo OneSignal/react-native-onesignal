@@ -1,3 +1,4 @@
+import { ONESIGNAL_APP_ID } from '@env';
 import React, {
   createContext,
   useCallback,
@@ -8,16 +9,18 @@ import React, {
   useRef,
 } from 'react';
 import { OneSignal } from 'react-native-onesignal';
-import Toast from 'react-native-toast-message';
 
 import { NotificationType } from '../models/NotificationType';
 import OneSignalRepository from '../repositories/OneSignalRepository';
-import LogManager from '../services/LogManager';
 import OneSignalApiService from '../services/OneSignalApiService';
 import PreferencesService from '../services/PreferencesService';
 
-const TAG = 'AppContext';
-const log = LogManager.getInstance();
+const DEFAULT_APP_ID = '77e32082-ea27-42e3-a898-c72e141824ef';
+
+function getAppId(): string {
+  return ONESIGNAL_APP_ID?.trim() || DEFAULT_APP_ID;
+}
+
 const apiService = OneSignalApiService.getInstance();
 const repository = new OneSignalRepository(apiService);
 const preferences = PreferencesService.getInstance();
@@ -41,7 +44,7 @@ export interface AppState {
 }
 
 const initialState: AppState = {
-  appId: '77e32082-ea27-42e3-a898-c72e141824ef',
+  appId: getAppId(),
   consentRequired: false,
   privacyConsentGiven: false,
   externalUserId: undefined,
@@ -262,6 +265,7 @@ type AppContextValue = {
   clearTriggers: () => void;
   trackEvent: (name: string, properties?: Record<string, unknown>) => void;
   setLocationShared: (shared: boolean) => Promise<void>;
+  checkLocationShared: () => Promise<boolean>;
   requestLocationPermission: () => void;
   startDefaultLiveActivity: (activityId: string, attributes: object, content: object) => void;
   updateLiveActivity: (activityId: string, eventUpdates: Record<string, unknown>) => Promise<void>;
@@ -329,14 +333,13 @@ export function AppContextProvider({ children }: Props) {
 
   useEffect(() => {
     const load = async () => {
-      const [appId, consentRequired, privacyConsentGiven, iamPaused, locationShared] =
-        await Promise.all([
-          preferences.getAppId(),
-          preferences.getConsentRequired(),
-          preferences.getPrivacyConsent(),
-          preferences.getIamPaused(),
-          preferences.getLocationShared(),
-        ]);
+      const appId = getAppId();
+      const [consentRequired, privacyConsentGiven, iamPaused, locationShared] = await Promise.all([
+        preferences.getConsentRequired(),
+        preferences.getPrivacyConsent(),
+        preferences.getIamPaused(),
+        preferences.getLocationShared(),
+      ]);
 
       OneSignalApiService.getInstance().setAppId(appId);
 
@@ -378,7 +381,7 @@ export function AppContextProvider({ children }: Props) {
     };
 
     load().catch((err) => {
-      log.e(TAG, `Initial load error: ${String(err)}`);
+      console.error(`Initial load error: ${String(err)}`);
       if (mountedRef.current) {
         dispatch({ type: 'SET_LOADING', payload: false });
       }
@@ -417,7 +420,7 @@ export function AppContextProvider({ children }: Props) {
     };
 
     const userChangeHandler = async () => {
-      log.i(TAG, 'User changed, fetching user data...');
+      console.log('User changed, fetching user data...');
       if (!mountedRef.current) {
         return;
       }
@@ -445,11 +448,10 @@ export function AppContextProvider({ children }: Props) {
         if (mountedRef.current) {
           dispatch({ type: 'CLEAR_USER_DATA' });
         }
-        log.i(TAG, `Logged in as: ${externalUserId}`);
-        Toast.show({ type: 'info', text1: `Logged in as: ${externalUserId}` });
+        console.log(`Logged in as: ${externalUserId}`);
         await fetchUserDataFromApi();
       } catch (err) {
-        log.e(TAG, `Login error: ${String(err)}`);
+        console.error(`Login error: ${String(err)}`);
         if (mountedRef.current) {
           dispatch({ type: 'SET_LOADING', payload: false });
         }
@@ -465,8 +467,7 @@ export function AppContextProvider({ children }: Props) {
     if (mountedRef.current) {
       dispatch({ type: 'LOGOUT' });
     }
-    log.i(TAG, 'Logged out');
-    Toast.show({ type: 'info', text1: 'Logged out' });
+    console.log('Logged out');
   }, []);
 
   const setConsentRequired = useCallback(async (required: boolean) => {
@@ -499,38 +500,29 @@ export function AppContextProvider({ children }: Props) {
       repository.optOutPush();
     }
     dispatch({ type: 'SET_PUSH_ENABLED', payload: enabled });
-    const msg = enabled ? 'Push enabled' : 'Push disabled';
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(enabled ? 'Push enabled' : 'Push disabled');
   }, []);
 
   const sendNotification = useCallback(async (type: NotificationType) => {
     const success = await repository.sendNotification(type);
-    const msg = success ? `Notification sent: ${type}` : 'Failed to send notification';
-    log.i(TAG, msg);
-    Toast.show({ type: success ? 'info' : 'error', text1: msg });
+    console.log(success ? `Notification sent: ${type}` : 'Failed to send notification');
   }, []);
 
   const sendCustomNotification = useCallback(async (title: string, body: string) => {
     const success = await repository.sendCustomNotification(title, body);
-    const msg = success ? `Notification sent: ${title}` : 'Failed to send notification';
-    log.i(TAG, msg);
-    Toast.show({ type: success ? 'info' : 'error', text1: msg });
+    console.log(success ? `Notification sent: ${title}` : 'Failed to send notification');
   }, []);
 
   const clearAllNotifications = useCallback(() => {
     repository.clearAllNotifications();
-    log.i(TAG, 'All notifications cleared');
-    Toast.show({ type: 'info', text1: 'All notifications cleared' });
+    console.log('All notifications cleared');
   }, []);
 
   const setIamPaused = useCallback(async (paused: boolean) => {
     dispatch({ type: 'SET_IAM_PAUSED', payload: paused });
     repository.setPaused(paused);
     await preferences.setIamPaused(paused);
-    const msg = paused ? 'In-app messages paused' : 'In-app messages resumed';
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(paused ? 'In-app messages paused' : 'In-app messages resumed');
   }, []);
 
   const sendIamTrigger = useCallback((iamType: string) => {
@@ -539,145 +531,121 @@ export function AppContextProvider({ children }: Props) {
       type: 'ADD_TRIGGER',
       payload: { key: 'iam_type', value: iamType },
     });
-    const msg = `Sent In-App Message: ${iamType}`;
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(`Sent In-App Message: ${iamType}`);
   }, []);
 
   const addAlias = useCallback((label: string, id: string) => {
     repository.addAlias(label, id);
     dispatch({ type: 'ADD_ALIAS', payload: { label, id } });
-    const msg = `Alias added: ${label}`;
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(`Alias added: ${label}`);
   }, []);
 
   const addAliases = useCallback((pairs: Record<string, string>) => {
     repository.addAliases(pairs);
     const newEntries = toPairs(pairs);
     dispatch({ type: 'ADD_ALIASES', payload: newEntries });
-    const msg = `${newEntries.length} alias(es) added`;
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(`${newEntries.length} alias(es) added`);
   }, []);
 
   const addEmail = useCallback((email: string) => {
     repository.addEmail(email);
     dispatch({ type: 'ADD_EMAIL', payload: email });
-    const msg = `Email added: ${email}`;
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(`Email added: ${email}`);
   }, []);
 
   const removeEmail = useCallback((email: string) => {
     repository.removeEmail(email);
     dispatch({ type: 'REMOVE_EMAIL', payload: email });
-    log.i(TAG, `Email removed: ${email}`);
-    Toast.show({ type: 'info', text1: `Email removed: ${email}` });
+    console.log(`Email removed: ${email}`);
   }, []);
 
   const addSms = useCallback((sms: string) => {
     repository.addSms(sms);
     dispatch({ type: 'ADD_SMS', payload: sms });
-    const msg = `SMS added: ${sms}`;
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(`SMS added: ${sms}`);
   }, []);
 
   const removeSms = useCallback((sms: string) => {
     repository.removeSms(sms);
     dispatch({ type: 'REMOVE_SMS', payload: sms });
-    log.i(TAG, `SMS removed: ${sms}`);
-    Toast.show({ type: 'info', text1: `SMS removed: ${sms}` });
+    console.log(`SMS removed: ${sms}`);
   }, []);
 
   const addTag = useCallback((key: string, value: string) => {
     repository.addTag(key, value);
     dispatch({ type: 'ADD_TAG', payload: { key, value } });
-    const msg = `Tag added: ${key}`;
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(`Tag added: ${key}`);
   }, []);
 
   const addTags = useCallback((pairs: Record<string, string>) => {
     repository.addTags(pairs);
     const newEntries = toPairs(pairs);
     dispatch({ type: 'ADD_TAGS', payload: newEntries });
-    const msg = `${newEntries.length} tag(s) added`;
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(`${newEntries.length} tag(s) added`);
   }, []);
 
   const removeSelectedTags = useCallback((keys: string[]) => {
     repository.removeTags(keys);
     dispatch({ type: 'REMOVE_SELECTED_TAGS', payload: keys });
-    const msg = `${keys.length} tag(s) removed`;
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(`${keys.length} tag(s) removed`);
   }, []);
 
   const sendOutcome = useCallback((name: string) => {
     repository.sendOutcome(name);
-    log.i(TAG, `Outcome sent: ${name}`);
-    Toast.show({ type: 'info', text1: `Outcome sent: ${name}` });
+    console.log(`Outcome sent: ${name}`);
   }, []);
 
   const sendUniqueOutcome = useCallback((name: string) => {
     repository.sendUniqueOutcome(name);
-    log.i(TAG, `Unique outcome sent: ${name}`);
-    Toast.show({ type: 'info', text1: `Unique outcome sent: ${name}` });
+    console.log(`Unique outcome sent: ${name}`);
   }, []);
 
   const sendOutcomeWithValue = useCallback((name: string, value: number) => {
     repository.sendOutcomeWithValue(name, value);
-    log.i(TAG, `Outcome sent: ${name} = ${value}`);
-    Toast.show({ type: 'info', text1: `Outcome sent: ${name}` });
+    console.log(`Outcome sent: ${name} = ${value}`);
   }, []);
 
   const addTrigger = useCallback((key: string, value: string) => {
     repository.addTrigger(key, value);
     dispatch({ type: 'ADD_TRIGGER', payload: { key, value } });
-    log.i(TAG, `Trigger added: ${key}`);
-    Toast.show({ type: 'info', text1: `Trigger added: ${key}` });
+    console.log(`Trigger added: ${key}`);
   }, []);
 
   const addTriggers = useCallback((pairs: Record<string, string>) => {
     repository.addTriggers(pairs);
     const newEntries = toPairs(pairs);
     dispatch({ type: 'ADD_TRIGGERS', payload: newEntries });
-    const msg = `${newEntries.length} trigger(s) added`;
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(`${newEntries.length} trigger(s) added`);
   }, []);
 
   const removeSelectedTriggers = useCallback((keys: string[]) => {
     repository.removeTriggers(keys);
     dispatch({ type: 'REMOVE_SELECTED_TRIGGERS', payload: keys });
-    const msg = `${keys.length} trigger(s) removed`;
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(`${keys.length} trigger(s) removed`);
   }, []);
 
   const clearTriggers = useCallback(() => {
     repository.clearTriggers();
     dispatch({ type: 'CLEAR_TRIGGERS' });
-    log.i(TAG, 'All triggers cleared');
-    Toast.show({ type: 'info', text1: 'All triggers cleared' });
+    console.log('All triggers cleared');
   }, []);
 
   const trackEvent = useCallback((name: string, properties?: Record<string, unknown>) => {
     repository.trackEvent(name, properties);
-    log.i(TAG, `Event tracked: ${name}`);
-    Toast.show({ type: 'info', text1: `Event tracked: ${name}` });
+    console.log(`Event tracked: ${name}`);
   }, []);
 
   const setLocationShared = useCallback(async (shared: boolean) => {
     dispatch({ type: 'SET_LOCATION_SHARED', payload: shared });
     repository.setLocationShared(shared);
     await preferences.setLocationShared(shared);
-    const msg = shared ? 'Location sharing enabled' : 'Location sharing disabled';
-    log.i(TAG, msg);
-    Toast.show({ type: 'info', text1: msg });
+    console.log(shared ? 'Location sharing enabled' : 'Location sharing disabled');
+  }, []);
+
+  const checkLocationShared = useCallback(async () => {
+    const shared = await repository.isLocationShared();
+    console.log(`Location shared: ${shared}`);
+    return shared;
   }, []);
 
   const requestLocationPermission = useCallback(() => {
@@ -687,8 +655,7 @@ export function AppContextProvider({ children }: Props) {
   const startDefaultLiveActivity = useCallback(
     (activityId: string, attributes: object, content: object) => {
       repository.startDefaultLiveActivity(activityId, attributes, content);
-      log.i(TAG, `Started Live Activity: ${activityId}`);
-      Toast.show({ type: 'info', text1: `Started Live Activity: ${activityId}` });
+      console.log(`Started Live Activity: ${activityId}`);
     },
     [],
   );
@@ -696,11 +663,9 @@ export function AppContextProvider({ children }: Props) {
   const updateLiveActivity = useCallback(
     async (activityId: string, eventUpdates: Record<string, unknown>) => {
       const success = await repository.updateLiveActivity(activityId, 'update', eventUpdates);
-      const msg = success
-        ? `Updated Live Activity: ${activityId}`
-        : 'Failed to update Live Activity';
-      log.i(TAG, msg);
-      Toast.show({ type: success ? 'info' : 'error', text1: msg });
+      console.log(
+        success ? `Updated Live Activity: ${activityId}` : 'Failed to update Live Activity',
+      );
     },
     [],
   );
@@ -709,9 +674,7 @@ export function AppContextProvider({ children }: Props) {
     const success = await repository.updateLiveActivity(activityId, 'end', {
       message: 'Ended Live Activity',
     });
-    const msg = success ? `Ended Live Activity: ${activityId}` : 'Failed to end Live Activity';
-    log.i(TAG, msg);
-    Toast.show({ type: success ? 'info' : 'error', text1: msg });
+    console.log(success ? `Ended Live Activity: ${activityId}` : 'Failed to end Live Activity');
   }, []);
 
   const contextValue = useMemo<AppContextValue>(
@@ -746,6 +709,7 @@ export function AppContextProvider({ children }: Props) {
       clearTriggers,
       trackEvent,
       setLocationShared,
+      checkLocationShared,
       requestLocationPermission,
       startDefaultLiveActivity: startDefaultLiveActivity,
       updateLiveActivity,
@@ -782,6 +746,7 @@ export function AppContextProvider({ children }: Props) {
       clearTriggers,
       trackEvent,
       setLocationShared,
+      checkLocationShared,
       requestLocationPermission,
       startDefaultLiveActivity,
       updateLiveActivity,

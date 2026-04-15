@@ -1,3 +1,4 @@
+import { ONESIGNAL_APP_ID } from '@env';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
@@ -20,62 +21,64 @@ import OneSignalLogo from './assets/onesignal_logo.svg';
 import { AppContextProvider } from './src/context/AppContext';
 import HomeScreen from './src/screens/HomeScreen';
 import SecondaryScreen from './src/screens/SecondaryScreen';
-import LogManager from './src/services/LogManager';
 import OneSignalApiService from './src/services/OneSignalApiService';
 import PreferencesService from './src/services/PreferencesService';
 import TooltipHelper from './src/services/TooltipHelper';
 import { AppColors } from './src/theme';
 
+const DEFAULT_APP_ID = '77e32082-ea27-42e3-a898-c72e141824ef';
+
+function getAppId(): string {
+  return ONESIGNAL_APP_ID?.trim() || DEFAULT_APP_ID;
+}
+
 const Stack = createNativeStackNavigator();
-const log = LogManager.getInstance();
-const TAG = 'App';
 
 function App() {
   useEffect(() => {
     const handleIamWillDisplay = (e: InAppMessageWillDisplayEvent) => {
-      log.i(TAG, `IAM willDisplay: ${e.message.messageId}`);
+      console.log(`IAM willDisplay: ${e.message.messageId}`);
     };
 
     const handleIamDidDisplay = (e: InAppMessageDidDisplayEvent) => {
-      log.i(TAG, `IAM didDisplay: ${e.message.messageId}`);
+      console.log(`IAM didDisplay: ${e.message.messageId}`);
     };
 
     const handleIamWillDismiss = (e: InAppMessageWillDismissEvent) => {
-      log.i(TAG, `IAM willDismiss: ${e.message.messageId}`);
+      console.log(`IAM willDismiss: ${e.message.messageId}`);
     };
 
     const handleIamDidDismiss = (e: InAppMessageDidDismissEvent) => {
-      log.i(TAG, `IAM didDismiss: ${e.message.messageId}`);
+      console.log(`IAM didDismiss: ${e.message.messageId}`);
     };
 
     const handleIamClick = (e: InAppMessageClickEvent) => {
-      log.i(TAG, `IAM click: ${e.result.actionId ?? 'unknown'}`);
+      console.log(`IAM click: ${e.result.actionId ?? 'unknown'}`);
     };
 
     const handleNotificationClick = (e: NotificationClickEvent) => {
-      log.i(TAG, `Notification click: ${e.notification.title ?? ''}`);
+      console.log(`Notification click: ${e.notification.title ?? ''}`);
     };
 
     const handlePermissionChange = (granted: boolean) => {
-      log.i(TAG, `Permission changed: ${granted}`);
+      console.log(`Permission changed: ${granted}`);
     };
 
     const handleForegroundWillDisplay = (e: NotificationWillDisplayEvent) => {
-      log.i(TAG, `Notification foregroundWillDisplay: ${e.getNotification().title ?? ''}`);
+      console.log(`Notification foregroundWillDisplay: ${e.getNotification().title ?? ''}`);
       e.getNotification().display();
     };
 
     const init = async () => {
       try {
         const prefs = PreferencesService.getInstance();
-        const [appId, consentRequired, privacyConsent, iamPaused, locationShared] =
-          await Promise.all([
-            prefs.getAppId(),
-            prefs.getConsentRequired(),
-            prefs.getPrivacyConsent(),
-            prefs.getIamPaused(),
-            prefs.getLocationShared(),
-          ]);
+        const appId = getAppId();
+        const [consentRequired, privacyConsent, iamPaused, locationShared] = await Promise.all([
+          prefs.getConsentRequired(),
+          prefs.getPrivacyConsent(),
+          prefs.getIamPaused(),
+          prefs.getLocationShared(),
+        ]);
 
         OneSignalApiService.getInstance().setAppId(appId);
 
@@ -105,9 +108,9 @@ function App() {
           handleForegroundWillDisplay,
         );
 
-        log.i(TAG, `OneSignal initialized with app ID: ${appId}`);
+        console.log(`OneSignal initialized with app ID: ${appId}`);
       } catch (err) {
-        log.e(TAG, `Init error: ${String(err)}`);
+        console.error(`Init error: ${String(err)}`);
       }
     };
 

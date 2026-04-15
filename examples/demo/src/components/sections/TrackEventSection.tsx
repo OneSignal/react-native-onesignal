@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Toast from 'react-native-toast-message';
 
 import ActionButton from '../ActionButton';
 import TrackEventModal from '../modals/TrackEventModal';
@@ -13,7 +14,7 @@ export default function TrackEventSection({ onTrackEvent, onInfoTap }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <SectionCard title="Track Event" onInfoTap={onInfoTap}>
+    <SectionCard title="Custom Events" onInfoTap={onInfoTap} sectionKey="custom_events">
       <ActionButton
         label="TRACK EVENT"
         onPress={() => setModalVisible(true)}
@@ -23,6 +24,7 @@ export default function TrackEventSection({ onTrackEvent, onInfoTap }: Props) {
         visible={modalVisible}
         onConfirm={(name, properties) => {
           onTrackEvent(name, properties);
+          Toast.show({ type: 'info', text1: `Event tracked: ${name}` });
           setModalVisible(false);
         }}
         onClose={() => setModalVisible(false)}

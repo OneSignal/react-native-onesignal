@@ -9,12 +9,6 @@ import MultiSelectRemoveModal from '../modals/MultiSelectRemoveModal';
 import PairInputModal from '../modals/PairInputModal';
 import SectionCard from '../SectionCard';
 
-const styles = StyleSheet.create({
-  listCard: {
-    marginBottom: AppSpacing.gap,
-  },
-});
-
 interface Props {
   triggers: [string, string][];
   onAdd: (key: string, value: string) => void;
@@ -37,14 +31,19 @@ export default function TriggersSection({
   const [removeVisible, setRemoveVisible] = useState(false);
 
   return (
-    <SectionCard title="Triggers" onInfoTap={onInfoTap}>
+    <SectionCard title="Triggers" onInfoTap={onInfoTap} sectionKey="triggers">
       {triggers.length === 0 ? (
         <View style={[AppTheme.card, styles.listCard]}>
           <EmptyState message="No triggers added" testID="triggers_empty" />
         </View>
       ) : (
         <View style={styles.listCard}>
-          <PairList items={triggers} layout="stacked" onDelete={(key) => onRemoveSelected([key])} />
+          <PairList
+            items={triggers}
+            layout="stacked"
+            onDelete={(key) => onRemoveSelected([key])}
+            sectionKey="triggers"
+          />
         </View>
       )}
       <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_trigger_button" />
@@ -76,6 +75,7 @@ export default function TriggersSection({
         onClose={() => setAddVisible(false)}
         keyTestID="trigger_key_input"
         valueTestID="trigger_value_input"
+        confirmTestID="trigger_confirm_button"
       />
       <MultiPairInputModal
         visible={addMultipleVisible}
@@ -93,3 +93,9 @@ export default function TriggersSection({
     </SectionCard>
   );
 }
+
+const styles = StyleSheet.create({
+  listCard: {
+    marginBottom: AppSpacing.gap,
+  },
+});

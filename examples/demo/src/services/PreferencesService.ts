@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEYS = {
-  APP_ID: 'onesignal_app_id',
   CONSENT_REQUIRED: 'onesignal_consent_required',
   PRIVACY_CONSENT: 'onesignal_privacy_consent',
   EXTERNAL_USER_ID: 'onesignal_external_user_id',
@@ -17,15 +16,6 @@ class PreferencesService {
       PreferencesService._instance = new PreferencesService();
     }
     return PreferencesService._instance;
-  }
-
-  async getAppId(): Promise<string> {
-    const value = await AsyncStorage.getItem(KEYS.APP_ID);
-    return value ?? '77e32082-ea27-42e3-a898-c72e141824ef';
-  }
-
-  async setAppId(appId: string): Promise<void> {
-    await AsyncStorage.setItem(KEYS.APP_ID, appId);
   }
 
   async getConsentRequired(): Promise<boolean> {

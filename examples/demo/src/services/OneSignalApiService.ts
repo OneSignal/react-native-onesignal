@@ -2,9 +2,6 @@ import { ONESIGNAL_API_KEY } from '@env';
 
 import { NotificationType } from '../models/NotificationType';
 import { UserData, userDataFromJson } from '../models/UserData';
-import LogManager from './LogManager';
-
-const TAG = 'OneSignalApiService';
 
 class OneSignalApiService {
   private static _instance: OneSignalApiService;
@@ -23,6 +20,10 @@ class OneSignalApiService {
 
   getAppId(): string {
     return this._appId;
+  }
+
+  hasApiKey(): boolean {
+    return !!ONESIGNAL_API_KEY?.trim();
   }
 
   async sendNotification(type: NotificationType, subscriptionId: string): Promise<boolean> {
@@ -91,13 +92,13 @@ class OneSignalApiService {
 
       if (!response.ok) {
         const text = await response.text();
-        LogManager.getInstance().e(TAG, `Send notification failed: ${text}`);
+        console.error(`Send notification failed: ${text}`);
         return false;
       }
 
       return true;
     } catch (err) {
-      LogManager.getInstance().e(TAG, `Send notification error: ${String(err)}`);
+      console.error(`Send notification error: ${String(err)}`);
       return false;
     }
   }
@@ -131,13 +132,13 @@ class OneSignalApiService {
 
       if (!response.ok) {
         const text = await response.text();
-        LogManager.getInstance().e(TAG, `${event} live activity failed: ${text}`);
+        console.error(`${event} live activity failed: ${text}`);
         return false;
       }
 
       return true;
     } catch (err) {
-      LogManager.getInstance().e(TAG, `${event} live activity error: ${String(err)}`);
+      console.error(`${event} live activity error: ${String(err)}`);
       return false;
     }
   }
@@ -147,13 +148,13 @@ class OneSignalApiService {
       const url = `https://api.onesignal.com/apps/${this._appId}/users/by/onesignal_id/${onesignalId}`;
       const response = await fetch(url);
       if (!response.ok) {
-        LogManager.getInstance().w(TAG, `fetchUser failed: ${response.status}`);
+        console.warn(`fetchUser failed: ${response.status}`);
         return null;
       }
       const json = (await response.json()) as Record<string, unknown>;
       return userDataFromJson(json);
     } catch (err) {
-      LogManager.getInstance().e(TAG, `fetchUser error: ${String(err)}`);
+      console.error(`fetchUser error: ${String(err)}`);
       return null;
     }
   }

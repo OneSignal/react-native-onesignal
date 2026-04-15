@@ -18,9 +18,14 @@ export default function SmsSection({ smsNumbers, onAdd, onRemove, onInfoTap }: P
   const [addVisible, setAddVisible] = useState(false);
 
   return (
-    <SectionCard title="SMS" onInfoTap={onInfoTap}>
+    <SectionCard title="SMS" onInfoTap={onInfoTap} sectionKey="sms">
       <View style={styles.listCard}>
-        <CollapsibleSingleList items={smsNumbers} onDelete={onRemove} emptyMessage="No SMS added" />
+        <CollapsibleSingleList
+          items={smsNumbers}
+          onDelete={onRemove}
+          emptyMessage="No SMS added"
+          sectionKey="sms"
+        />
       </View>
       <ActionButton label="ADD SMS" onPress={() => setAddVisible(true)} testID="add_sms_button" />
       <SingleInputModal

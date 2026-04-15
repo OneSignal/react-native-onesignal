@@ -29,14 +29,19 @@ export default function TagsSection({
   const [removeVisible, setRemoveVisible] = useState(false);
 
   return (
-    <SectionCard title="Tags" onInfoTap={onInfoTap}>
+    <SectionCard title="Tags" onInfoTap={onInfoTap} sectionKey="tags">
       {tags.length === 0 ? (
         <View style={[AppTheme.card, styles.listCard]}>
           <EmptyState message="No tags added" testID="tags_empty" />
         </View>
       ) : (
         <View style={styles.listCard}>
-          <PairList items={tags} layout="stacked" onDelete={(key) => onRemoveSelected([key])} />
+          <PairList
+            items={tags}
+            layout="stacked"
+            onDelete={(key) => onRemoveSelected([key])}
+            sectionKey="tags"
+          />
         </View>
       )}
       <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_tag_button" />
@@ -62,6 +67,7 @@ export default function TagsSection({
         onClose={() => setAddVisible(false)}
         keyTestID="tag_key_input"
         valueTestID="tag_value_input"
+        confirmTestID="tag_confirm_button"
       />
       <MultiPairInputModal
         visible={addMultipleVisible}

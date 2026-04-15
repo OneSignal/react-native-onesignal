@@ -18,9 +18,14 @@ export default function EmailsSection({ emails, onAdd, onRemove, onInfoTap }: Pr
   const [addVisible, setAddVisible] = useState(false);
 
   return (
-    <SectionCard title="Emails" onInfoTap={onInfoTap}>
+    <SectionCard title="Emails" onInfoTap={onInfoTap} sectionKey="emails">
       <View style={styles.listCard}>
-        <CollapsibleSingleList items={emails} onDelete={onRemove} emptyMessage="No emails added" />
+        <CollapsibleSingleList
+          items={emails}
+          onDelete={onRemove}
+          emptyMessage="No emails added"
+          sectionKey="emails"
+        />
       </View>
       <ActionButton
         label="ADD EMAIL"

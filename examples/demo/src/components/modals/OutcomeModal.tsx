@@ -111,6 +111,7 @@ export default function OutcomeModal({
               style={AppDialogStyles.actionBtn}
               onPress={handleSend}
               disabled={!canSubmit}
+              testID="outcome_send_button"
             >
               <Text
                 style={[

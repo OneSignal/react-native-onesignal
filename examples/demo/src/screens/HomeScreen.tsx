@@ -4,7 +4,6 @@ import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import ActionButton from '../components/ActionButton';
 import LoadingOverlay from '../components/LoadingOverlay';
-import LogView from '../components/LogView';
 import TooltipModal from '../components/modals/TooltipModal';
 import AliasesSection from '../components/sections/AliasesSection';
 import AppSection from '../components/sections/AppSection';
@@ -23,6 +22,7 @@ import TriggersSection from '../components/sections/TriggersSection';
 import UserSection from '../components/sections/UserSection';
 import { useAppContext } from '../context/AppContext';
 import { InAppMessageType } from '../models/InAppMessageType';
+import OneSignalApiService from '../services/OneSignalApiService';
 import TooltipHelper, { TooltipData } from '../services/TooltipHelper';
 import { AppColors } from '../theme';
 
@@ -50,13 +50,11 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.root}>
-      {/* Sticky Log View */}
-      <LogView />
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
+        testID="main_scroll_view"
       >
         <View style={styles.spacer} />
 
@@ -154,12 +152,14 @@ export default function HomeScreen() {
         <LocationSection
           locationShared={state.locationShared}
           onSetLocationShared={app.setLocationShared}
+          onCheckLocationShared={app.checkLocationShared}
           onRequestLocationPermission={app.requestLocationPermission}
           onInfoTap={() => showTooltipModal('location')}
         />
 
         {Platform.OS === 'ios' && (
           <LiveActivitySection
+            hasApiKey={OneSignalApiService.getInstance().hasApiKey()}
             onStart={app.startDefaultLiveActivity}
             onUpdate={app.updateLiveActivity}
             onEnd={app.endLiveActivity}
