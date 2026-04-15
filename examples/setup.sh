@@ -18,4 +18,3 @@ bun pm cache rm
 bun remove react-native-onesignal
 bun add file:../../react-native-onesignal.tgz
 
-cd ios && pod update OneSignalXCFramework --no-repo-update && cd ..

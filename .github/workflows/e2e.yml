@@ -1,0 +1,125 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - rel/**
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to test'
+        required: true
+        default: 'android'
+        type: choice
+        options:
+          - android
+          - ios
+          - both
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-android:
+    if: >-
+      github.event_name == 'push' ||
+      github.event.inputs.platform == 'android' ||
+      github.event.inputs.platform == 'both'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up demo
+        uses: ./.github/actions/setup-demo
+        with:
+          onesignal-app-id: ${{ vars.APPIUM_ONESIGNAL_APP_ID }}
+          onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
+
+      - name: Build release APK
+        working-directory: examples/demo/android
+        run: ./gradlew assembleRelease
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v5
+        with:
+          name: demo-apk
+          path: examples/demo/android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 1
+
+  build-ios:
+    if: >-
+      github.event_name == 'push' ||
+      github.event.inputs.platform == 'ios' ||
+      github.event.inputs.platform == 'both'
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up demo
+        uses: ./.github/actions/setup-demo
+        with:
+          onesignal-app-id: ${{ vars.APPIUM_ONESIGNAL_APP_ID }}
+          onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
+          install-pods: 'true'
+
+      - name: Build iOS app
+        working-directory: examples/demo/ios
+        run: |
+          xcodebuild \
+            -workspace demo.xcworkspace \
+            -scheme demo \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package IPA
+        working-directory: examples/demo/ios
+        run: |
+          cd build/Build/Products/Release-iphoneos
+          mkdir Payload
+          cp -r demo.app Payload/
+          zip -r demo.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v5
+        with:
+          name: demo-ipa
+          path: examples/demo/ios/build/Build/Products/Release-iphoneos/demo.ipa
+          retention-days: 1
+
+  e2e-android:
+    needs: build-android
+    uses: OneSignal/sdk-shared/.github/workflows/appium-e2e.yml@main
+    secrets: inherit
+    with:
+      platform: android
+      app-artifact: demo-apk
+      app-filename: app-release.apk
+      sdk-type: react-native
+      build-name: react-native-android-${{ github.ref_name }}-${{ github.run_number }}
+
+  e2e-ios:
+    needs: build-ios
+    uses: OneSignal/sdk-shared/.github/workflows/appium-e2e.yml@main
+    secrets: inherit
+    with:
+      platform: ios
+      app-artifact: demo-ipa
+      app-filename: demo.ipa
+      sdk-type: react-native
+      build-name: react-native-ios-${{ github.ref_name }}-${{ github.run_number }}

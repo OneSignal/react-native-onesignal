@@ -8,6 +8,7 @@
     "preios": "bun run setup",
     "android": "bash ../run-android.sh",
     "ios": "bash ../run-ios.sh",
+    "update:pods": "cd ios && pod update OneSignalXCFramework --no-repo-update && cd ..",
     "clean:android": "rm -rf android/app/build android/app/.cxx android/build",
     "clean:ios": "rm -rf ios/build ios/Pods",
     "start": "react-native start"
