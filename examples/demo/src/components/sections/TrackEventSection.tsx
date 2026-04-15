@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Toast from 'react-native-toast-message';
 
+import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
 import TrackEventModal from '../modals/TrackEventModal';
 import SectionCard from '../SectionCard';
@@ -24,7 +24,7 @@ export default function TrackEventSection({ onTrackEvent, onInfoTap }: Props) {
         visible={modalVisible}
         onConfirm={(name, properties) => {
           onTrackEvent(name, properties);
-          Toast.show({ type: 'info', text1: `Event tracked: ${name}` });
+          showSnackbar(`Event tracked: ${name}`);
           setModalVisible(false);
         }}
         onClose={() => setModalVisible(false)}

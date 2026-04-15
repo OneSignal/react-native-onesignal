@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Toast from 'react-native-toast-message';
 
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
+import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
 import LoginModal from '../modals/LoginModal';
 import SectionCard from '../SectionCard';
@@ -19,12 +19,12 @@ export default function UserSection({ externalUserId, onLogin, onLogout }: Props
 
   const handleLogin = async (userId: string) => {
     await onLogin(userId);
-    Toast.show({ type: 'info', text1: `Logged in as ${userId}` });
+    showSnackbar(`Logged in as ${userId}`);
   };
 
   const handleLogout = async () => {
     await onLogout();
-    Toast.show({ type: 'info', text1: 'User logged out' });
+    showSnackbar('User logged out');
   };
 
   return (

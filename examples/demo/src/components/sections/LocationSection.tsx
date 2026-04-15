@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Toast from 'react-native-toast-message';
 
 import { AppTheme, AppSpacing } from '../../theme';
+import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
@@ -24,7 +24,7 @@ export default function LocationSection({
 }: Props) {
   const handleCheckLocation = async () => {
     const shared = await onCheckLocationShared();
-    Toast.show({ type: 'info', text1: `Location shared: ${shared}` });
+    showSnackbar(`Location shared: ${shared}`);
   };
 
   return (

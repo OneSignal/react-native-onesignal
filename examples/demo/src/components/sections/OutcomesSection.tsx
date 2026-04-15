@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Toast from 'react-native-toast-message';
 
+import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
 import OutcomeModal from '../modals/OutcomeModal';
 import SectionCard from '../SectionCard';
@@ -22,17 +22,17 @@ export default function OutcomesSection({
 
   const handleSendNormal = (name: string) => {
     onSendNormal(name);
-    Toast.show({ type: 'info', text1: `Outcome sent: ${name}` });
+    showSnackbar(`Outcome sent: ${name}`);
   };
 
   const handleSendUnique = (name: string) => {
     onSendUnique(name);
-    Toast.show({ type: 'info', text1: `Unique outcome sent: ${name}` });
+    showSnackbar(`Unique outcome sent: ${name}`);
   };
 
   const handleSendWithValue = (name: string, value: number) => {
     onSendWithValue(name, value);
-    Toast.show({ type: 'info', text1: `Outcome sent: ${name} = ${value}` });
+    showSnackbar(`Outcome sent: ${name} = ${value}`);
   };
 
   return (
