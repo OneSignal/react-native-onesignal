@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, Modal, StyleSheet } from 'react-native';
 
 import { AppColors } from '../theme';
 
@@ -8,13 +8,12 @@ interface Props {
 }
 
 export default function LoadingOverlay({ visible }: Props) {
-  if (!visible) {
-    return null;
-  }
   return (
-    <View style={styles.overlay}>
-      <ActivityIndicator size="large" color={AppColors.osPrimary} />
-    </View>
+    <Modal visible={visible} transparent animationType="none" statusBarTranslucent>
+      <View style={styles.overlay}>
+        <ActivityIndicator size="large" color={AppColors.osPrimary} />
+      </View>
+    </Modal>
   );
 }
 
@@ -24,6 +23,5 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.osBackdrop,
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 999,
   },
 });

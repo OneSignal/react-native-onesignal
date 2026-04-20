@@ -22,12 +22,13 @@ export default function LoginModal({ visible, onConfirm, onClose }: Props) {
   const [userId, setUserId] = useState('');
 
   const handleConfirm = () => {
-    if (!userId.trim()) {
+    const trimmed = userId.trim();
+    if (!trimmed) {
       return;
     }
-    onConfirm(userId.trim());
     setUserId('');
     onClose();
+    onConfirm(trimmed);
   };
 
   const handleClose = () => {
@@ -36,7 +37,7 @@ export default function LoginModal({ visible, onConfirm, onClose }: Props) {
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
       <KeyboardAvoidingView
         style={AppDialogStyles.backdrop}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}

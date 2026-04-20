@@ -20,7 +20,7 @@ import TagsSection from '../components/sections/TagsSection';
 import TrackEventSection from '../components/sections/TrackEventSection';
 import TriggersSection from '../components/sections/TriggersSection';
 import UserSection from '../components/sections/UserSection';
-import { useAppContext } from '../context/AppContext';
+import { useOneSignal } from '../hooks/useOneSignal';
 import { InAppMessageType } from '../models/InAppMessageType';
 import OneSignalApiService from '../services/OneSignalApiService';
 import TooltipHelper, { TooltipData } from '../services/TooltipHelper';
@@ -28,15 +28,14 @@ import { AppColors } from '../theme';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  const app = useAppContext();
-  const { state } = app;
+  const os = useOneSignal();
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<TooltipData | null>(null);
 
   // Auto-request push permission on load
   useEffect(() => {
-    void app.promptPush();
+    void os.promptPush();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -59,110 +58,110 @@ export default function HomeScreen() {
         <View style={styles.spacer} />
 
         <AppSection
-          appId={state.appId}
-          consentRequired={state.consentRequired}
-          privacyConsentGiven={state.privacyConsentGiven}
-          onSetConsentRequired={app.setConsentRequired}
-          onSetConsentGiven={app.setConsentGiven}
+          appId={os.appId}
+          consentRequired={os.consentRequired}
+          privacyConsentGiven={os.privacyConsentGiven}
+          onSetConsentRequired={os.setConsentRequired}
+          onSetConsentGiven={os.setConsentGiven}
         />
 
         <UserSection
-          externalUserId={state.externalUserId}
-          onLogin={app.loginUser}
-          onLogout={app.logoutUser}
+          externalUserId={os.externalUserId}
+          onLogin={os.loginUser}
+          onLogout={os.logoutUser}
         />
 
         <PushSection
-          pushSubscriptionId={state.pushSubscriptionId}
-          isPushEnabled={state.isPushEnabled}
-          hasNotificationPermission={state.hasNotificationPermission}
-          onSetPushEnabled={app.setPushEnabled}
-          onPromptPush={app.promptPush}
+          pushSubscriptionId={os.pushSubscriptionId}
+          isPushEnabled={os.isPushEnabled}
+          hasNotificationPermission={os.hasNotificationPermission}
+          onSetPushEnabled={os.setPushEnabled}
+          onPromptPush={os.promptPush}
           onInfoTap={() => showTooltipModal('push')}
         />
 
         <SendPushSection
-          onSendNotification={app.sendNotification}
-          onSendCustomNotification={app.sendCustomNotification}
-          onClearAll={app.clearAllNotifications}
+          onSendNotification={os.sendNotification}
+          onSendCustomNotification={os.sendCustomNotification}
+          onClearAll={os.clearAllNotifications}
           onInfoTap={() => showTooltipModal('sendPushNotification')}
         />
 
         <InAppSection
-          inAppMessagesPaused={state.inAppMessagesPaused}
-          onSetPaused={app.setIamPaused}
+          inAppMessagesPaused={os.inAppMessagesPaused}
+          onSetPaused={os.setIamPaused}
           onInfoTap={() => showTooltipModal('inAppMessaging')}
         />
 
         <SendIamSection
-          onSendIam={(type: InAppMessageType) => app.sendIamTrigger(type)}
+          onSendIam={(type: InAppMessageType) => os.sendIamTrigger(type)}
           onInfoTap={() => showTooltipModal('sendInAppMessage')}
         />
 
         <AliasesSection
-          aliases={state.aliasesList}
-          onAdd={app.addAlias}
-          onAddMultiple={app.addAliases}
+          aliases={os.aliasesList}
+          onAdd={os.addAlias}
+          onAddMultiple={os.addAliases}
           onInfoTap={() => showTooltipModal('aliases')}
         />
 
         <EmailsSection
-          emails={state.emailsList}
-          onAdd={app.addEmail}
-          onRemove={app.removeEmail}
+          emails={os.emailsList}
+          onAdd={os.addEmail}
+          onRemove={os.removeEmail}
           onInfoTap={() => showTooltipModal('emails')}
         />
 
         <SmsSection
-          smsNumbers={state.smsNumbersList}
-          onAdd={app.addSms}
-          onRemove={app.removeSms}
+          smsNumbers={os.smsNumbersList}
+          onAdd={os.addSms}
+          onRemove={os.removeSms}
           onInfoTap={() => showTooltipModal('sms')}
         />
 
         <TagsSection
-          tags={state.tagsList}
-          onAdd={app.addTag}
-          onAddMultiple={app.addTags}
-          onRemoveSelected={app.removeSelectedTags}
+          tags={os.tagsList}
+          onAdd={os.addTag}
+          onAddMultiple={os.addTags}
+          onRemoveSelected={os.removeSelectedTags}
           onInfoTap={() => showTooltipModal('tags')}
         />
 
         <OutcomesSection
-          onSendNormal={app.sendOutcome}
-          onSendUnique={app.sendUniqueOutcome}
-          onSendWithValue={app.sendOutcomeWithValue}
+          onSendNormal={os.sendOutcome}
+          onSendUnique={os.sendUniqueOutcome}
+          onSendWithValue={os.sendOutcomeWithValue}
           onInfoTap={() => showTooltipModal('outcomes')}
         />
 
         <TriggersSection
-          triggers={state.triggersList}
-          onAdd={app.addTrigger}
-          onAddMultiple={app.addTriggers}
-          onRemoveSelected={app.removeSelectedTriggers}
-          onClearAll={app.clearTriggers}
+          triggers={os.triggersList}
+          onAdd={os.addTrigger}
+          onAddMultiple={os.addTriggers}
+          onRemoveSelected={os.removeSelectedTriggers}
+          onClearAll={os.clearTriggers}
           onInfoTap={() => showTooltipModal('triggers')}
         />
 
         <TrackEventSection
-          onTrackEvent={app.trackEvent}
+          onTrackEvent={os.trackEvent}
           onInfoTap={() => showTooltipModal('trackEvent')}
         />
 
         <LocationSection
-          locationShared={state.locationShared}
-          onSetLocationShared={app.setLocationShared}
-          onCheckLocationShared={app.checkLocationShared}
-          onRequestLocationPermission={app.requestLocationPermission}
+          locationShared={os.locationShared}
+          onSetLocationShared={os.setLocationShared}
+          onCheckLocationShared={os.checkLocationShared}
+          onRequestLocationPermission={os.requestLocationPermission}
           onInfoTap={() => showTooltipModal('location')}
         />
 
         {Platform.OS === 'ios' && (
           <LiveActivitySection
             hasApiKey={OneSignalApiService.getInstance().hasApiKey()}
-            onStart={app.startDefaultLiveActivity}
-            onUpdate={app.updateLiveActivity}
-            onEnd={app.endLiveActivity}
+            onStart={os.startDefaultLiveActivity}
+            onUpdate={os.updateLiveActivity}
+            onEnd={os.endLiveActivity}
             onInfoTap={() => showTooltipModal('liveActivities')}
           />
         )}
@@ -179,7 +178,7 @@ export default function HomeScreen() {
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
-      <LoadingOverlay visible={state.isLoading} />
+      <LoadingOverlay visible={os.isLoading} />
 
       <TooltipModal
         visible={tooltipVisible}

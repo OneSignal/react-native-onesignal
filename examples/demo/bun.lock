@@ -1010,7 +1010,7 @@
 
     "react-native-dotenv": ["react-native-dotenv@3.4.11", "", { "dependencies": { "dotenv": "^16.4.5" }, "peerDependencies": { "@babel/runtime": "^7.20.6" } }, "sha512-6vnIE+WHABSeHCaYP6l3O1BOEhWxKH6nHAdV7n/wKn/sciZ64zPPp2NUdEUf1m7g4uuzlLbjgr+6uDt89q2DOg=="],
 
-    "react-native-onesignal": ["react-native-onesignal@../../react-native-onesignal.tgz", { "dependencies": { "invariant": "^2.2.4" }, "peerDependencies": { "react-native": ">=0.76.0" } }, "sha512-WhQamBG3dabBuacLCMifoYeY0f6zkoJZxfHRHZhrgtO0ZjXi7p4idhSs/iw/Yobc7NhYGIXp9/shuF9/7ePA3A=="],
+    "react-native-onesignal": ["react-native-onesignal@../../react-native-onesignal.tgz", { "dependencies": { "invariant": "^2.2.4" }, "peerDependencies": { "react-native": ">=0.76.0" } }, "sha512-KxtT37YRAJFMU59Bt+GubWks3B06v3u8zVqV7bRQvi/5LKRgNj0kL1r2Ib36Z/DW+8SEBBO7WMi3UC/cSljnHg=="],
 
     "react-native-safe-area-context": ["react-native-safe-area-context@5.6.2", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-4XGqMNj5qjUTYywJqpdWZ9IG8jgkS3h06sfVjfw5yZQZfWnRFXczi0GnYyFyCc2EBps/qFmoCH8fez//WumdVg=="],
 
