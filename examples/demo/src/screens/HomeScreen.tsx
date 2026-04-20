@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import ActionButton from '../components/ActionButton';
-import LoadingOverlay from '../components/LoadingOverlay';
 import TooltipModal from '../components/modals/TooltipModal';
 import AliasesSection from '../components/sections/AliasesSection';
 import AppSection from '../components/sections/AppSection';
@@ -100,6 +99,7 @@ export default function HomeScreen() {
 
         <AliasesSection
           aliases={os.aliasesList}
+          loading={os.isLoading}
           onAdd={os.addAlias}
           onAddMultiple={os.addAliases}
           onInfoTap={() => showTooltipModal('aliases')}
@@ -107,6 +107,7 @@ export default function HomeScreen() {
 
         <EmailsSection
           emails={os.emailsList}
+          loading={os.isLoading}
           onAdd={os.addEmail}
           onRemove={os.removeEmail}
           onInfoTap={() => showTooltipModal('emails')}
@@ -114,6 +115,7 @@ export default function HomeScreen() {
 
         <SmsSection
           smsNumbers={os.smsNumbersList}
+          loading={os.isLoading}
           onAdd={os.addSms}
           onRemove={os.removeSms}
           onInfoTap={() => showTooltipModal('sms')}
@@ -121,6 +123,7 @@ export default function HomeScreen() {
 
         <TagsSection
           tags={os.tagsList}
+          loading={os.isLoading}
           onAdd={os.addTag}
           onAddMultiple={os.addTags}
           onRemoveSelected={os.removeSelectedTags}
@@ -177,8 +180,6 @@ export default function HomeScreen() {
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
-
-      <LoadingOverlay visible={os.isLoading} />
 
       <TooltipModal
         visible={tooltipVisible}

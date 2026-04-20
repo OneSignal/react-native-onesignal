@@ -117,20 +117,10 @@ function useOneSignalState(): UseOneSignalReturn {
     requestSequenceRef.current = requestId;
 
     const onesignalId = await repository.getOnesignalId();
-    if (!onesignalId) {
-      if (mountedRef.current && requestSequenceRef.current === requestId) {
-        setIsLoading(false);
-      }
-      return;
-    }
+    if (!onesignalId) return;
 
     const userData = await repository.fetchUser(onesignalId);
-    if (!userData) {
-      if (mountedRef.current && requestSequenceRef.current === requestId) {
-        setIsLoading(false);
-      }
-      return;
-    }
+    if (!userData) return;
 
     const externalId = await repository.getExternalId();
     if (!mountedRef.current || requestSequenceRef.current !== requestId) {
@@ -142,7 +132,6 @@ function useOneSignalState(): UseOneSignalReturn {
     setEmailsList(userData.emails);
     setSmsNumbersList(userData.smsNumbers);
     setExternalUserId(externalId ?? userData.externalId);
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -211,8 +200,22 @@ function useOneSignalState(): UseOneSignalReturn {
       if (!mountedRef.current) {
         return;
       }
+      // Skip the loading toggle when there's no logged-in user (e.g. just
+      // logged out) so the empty list cards don't flash a spinner.
+      const onesignalId = await repository.getOnesignalId();
+      if (!mountedRef.current || !onesignalId) {
+        return;
+      }
       setIsLoading(true);
-      await fetchUserDataFromApi();
+      try {
+        await fetchUserDataFromApi();
+      } catch (err) {
+        console.error(`fetchUserDataFromApi error: ${String(err)}`);
+      } finally {
+        if (mountedRef.current) {
+          setIsLoading(false);
+        }
+      }
     };
 
     const load = async () => {
@@ -298,7 +301,13 @@ function useOneSignalState(): UseOneSignalReturn {
 
       if (onesignalId) {
         setIsLoading(true);
-        await fetchUserDataFromApi();
+        try {
+          await fetchUserDataFromApi();
+        } finally {
+          if (mountedRef.current && !cancelled) {
+            setIsLoading(false);
+          }
+        }
       }
     };
 

@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
-import { PairList, EmptyState } from '../ListWidgets';
+import { PairList, EmptyState, LoadingState } from '../ListWidgets';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import PairInputModal from '../modals/PairInputModal';
 import SectionCard from '../SectionCard';
@@ -12,12 +12,19 @@ const FILTERED_KEYS = ['external_id', 'onesignal_id'];
 
 interface Props {
   aliases: [string, string][];
+  loading?: boolean;
   onAdd: (label: string, id: string) => void;
   onAddMultiple: (pairs: Record<string, string>) => void;
   onInfoTap?: () => void;
 }
 
-export default function AliasesSection({ aliases, onAdd, onAddMultiple, onInfoTap }: Props) {
+export default function AliasesSection({
+  aliases,
+  loading = false,
+  onAdd,
+  onAddMultiple,
+  onInfoTap,
+}: Props) {
   const [addVisible, setAddVisible] = useState(false);
   const [addMultipleVisible, setAddMultipleVisible] = useState(false);
 
@@ -27,7 +34,11 @@ export default function AliasesSection({ aliases, onAdd, onAddMultiple, onInfoTa
     <SectionCard title="Aliases" onInfoTap={onInfoTap} sectionKey="aliases">
       {filtered.length === 0 ? (
         <View style={[AppTheme.card, styles.listCard]}>
-          <EmptyState message="No aliases added" testID="aliases_empty" />
+          {loading ? (
+            <LoadingState testID="aliases_loading" />
+          ) : (
+            <EmptyState message="No aliases added" testID="aliases_empty" />
+          )}
         </View>
       ) : (
         <View style={styles.listCard}>

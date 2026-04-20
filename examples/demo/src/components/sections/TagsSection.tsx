@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
-import { PairList, EmptyState } from '../ListWidgets';
+import { PairList, EmptyState, LoadingState } from '../ListWidgets';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import MultiSelectRemoveModal from '../modals/MultiSelectRemoveModal';
 import PairInputModal from '../modals/PairInputModal';
@@ -11,6 +11,7 @@ import SectionCard from '../SectionCard';
 
 interface Props {
   tags: [string, string][];
+  loading?: boolean;
   onAdd: (key: string, value: string) => void;
   onAddMultiple: (pairs: Record<string, string>) => void;
   onRemoveSelected: (keys: string[]) => void;
@@ -19,6 +20,7 @@ interface Props {
 
 export default function TagsSection({
   tags,
+  loading = false,
   onAdd,
   onAddMultiple,
   onRemoveSelected,
@@ -32,7 +34,11 @@ export default function TagsSection({
     <SectionCard title="Tags" onInfoTap={onInfoTap} sectionKey="tags">
       {tags.length === 0 ? (
         <View style={[AppTheme.card, styles.listCard]}>
-          <EmptyState message="No tags added" testID="tags_empty" />
+          {loading ? (
+            <LoadingState testID="tags_loading" />
+          ) : (
+            <EmptyState message="No tags added" testID="tags_empty" />
+          )}
         </View>
       ) : (
         <View style={styles.listCard}>

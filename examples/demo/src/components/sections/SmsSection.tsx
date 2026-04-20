@@ -9,12 +9,19 @@ import SectionCard from '../SectionCard';
 
 interface Props {
   smsNumbers: string[];
+  loading?: boolean;
   onAdd: (sms: string) => void;
   onRemove: (sms: string) => void;
   onInfoTap?: () => void;
 }
 
-export default function SmsSection({ smsNumbers, onAdd, onRemove, onInfoTap }: Props) {
+export default function SmsSection({
+  smsNumbers,
+  loading = false,
+  onAdd,
+  onRemove,
+  onInfoTap,
+}: Props) {
   const [addVisible, setAddVisible] = useState(false);
 
   return (
@@ -24,6 +31,7 @@ export default function SmsSection({ smsNumbers, onAdd, onRemove, onInfoTap }: P
           items={smsNumbers}
           onDelete={onRemove}
           emptyMessage="No SMS added"
+          loading={loading}
           sectionKey="sms"
         />
       </View>

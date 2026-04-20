@@ -9,12 +9,19 @@ import SectionCard from '../SectionCard';
 
 interface Props {
   emails: string[];
+  loading?: boolean;
   onAdd: (email: string) => void;
   onRemove: (email: string) => void;
   onInfoTap?: () => void;
 }
 
-export default function EmailsSection({ emails, onAdd, onRemove, onInfoTap }: Props) {
+export default function EmailsSection({
+  emails,
+  loading = false,
+  onAdd,
+  onRemove,
+  onInfoTap,
+}: Props) {
   const [addVisible, setAddVisible] = useState(false);
 
   return (
@@ -24,6 +31,7 @@ export default function EmailsSection({ emails, onAdd, onRemove, onInfoTap }: Pr
           items={emails}
           onDelete={onRemove}
           emptyMessage="No emails added"
+          loading={loading}
           sectionKey="emails"
         />
       </View>

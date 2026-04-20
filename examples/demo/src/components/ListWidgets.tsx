@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { AppColors, AppTextStyles, AppTheme } from '../theme';
@@ -111,6 +111,19 @@ export function EmptyState({ message, testID }: EmptyStateProps) {
   );
 }
 
+// LoadingState - shown inside a list area while data is being fetched
+interface LoadingStateProps {
+  testID?: string;
+}
+
+export function LoadingState({ testID }: LoadingStateProps) {
+  return (
+    <View style={styles.emptyContainer} testID={testID}>
+      <ActivityIndicator size="small" color={AppColors.osPrimary} />
+    </View>
+  );
+}
+
 // PairList (simple, no collapse)
 interface PairListProps {
   items: [string, string][];
@@ -158,6 +171,7 @@ interface CollapsibleSingleListProps {
   items: string[];
   onDelete?: (value: string) => void;
   emptyMessage: string;
+  loading?: boolean;
   sectionKey?: string;
 }
 
@@ -165,6 +179,7 @@ export function CollapsibleSingleList({
   items,
   onDelete,
   emptyMessage,
+  loading = false,
   sectionKey,
 }: CollapsibleSingleListProps) {
   const [expanded, setExpanded] = useState(false);
@@ -175,7 +190,14 @@ export function CollapsibleSingleList({
   if (items.length === 0) {
     return (
       <View style={AppTheme.card}>
-        <EmptyState message={emptyMessage} />
+        {loading ? (
+          <LoadingState testID={sectionKey ? `${sectionKey}_loading` : undefined} />
+        ) : (
+          <EmptyState
+            message={emptyMessage}
+            testID={sectionKey ? `${sectionKey}_empty` : undefined}
+          />
+        )}
       </View>
     );
   }
