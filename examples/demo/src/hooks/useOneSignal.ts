@@ -5,7 +5,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -67,11 +66,12 @@ export type UseOneSignalReturn = {
   tagsList: [string, string][];
   triggersList: [string, string][];
   isLoading: boolean;
+  isReady: boolean;
   loginUser: (externalUserId: string) => Promise<void>;
   logoutUser: () => Promise<void>;
   setConsentRequired: (required: boolean) => Promise<void>;
   setConsentGiven: (granted: boolean) => Promise<void>;
-  promptPush: () => Promise<void>;
+  promptPush: () => void;
   setPushEnabled: (enabled: boolean) => void;
   sendNotification: (type: NotificationType) => Promise<void>;
   sendCustomNotification: (title: string, body: string) => Promise<void>;
@@ -119,27 +119,16 @@ function useOneSignalState(): UseOneSignalReturn {
   const [tagsList, setTagsList] = useState<[string, string][]>([]);
   const [triggersList, setTriggersList] = useState<[string, string][]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const mountedRef = useRef(true);
-  const requestSequenceRef = useRef(0);
+  const [isReady, setIsReady] = useState(false);
 
   const fetchUserDataFromApi = useCallback(async () => {
-    const requestId = requestSequenceRef.current + 1;
-    requestSequenceRef.current = requestId;
-
     const onesignalId = await OneSignal.User.getOnesignalId();
-    console.log('onesignalId', onesignalId);
     if (!onesignalId) return;
 
     const userData = await apiService.fetchUser(onesignalId);
-    console.log('userData1', userData);
     if (!userData) return;
-    console.log('userDat2a', userData);
 
     const externalId = await OneSignal.User.getExternalId();
-    if (!mountedRef.current || requestSequenceRef.current !== requestId) {
-      return;
-    }
 
     setAliasesList(Object.entries(userData.aliases));
     setTagsList(Object.entries(userData.tags));
@@ -149,15 +138,6 @@ function useOneSignalState(): UseOneSignalReturn {
   }, []);
 
   useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
     const handleIamWillDisplay = (e: InAppMessageWillDisplayEvent) => {
       console.log(`IAM willDisplay: ${e.message.messageId}`);
     };
@@ -188,24 +168,15 @@ function useOneSignalState(): UseOneSignalReturn {
     };
 
     const pushSubHandler = async () => {
-      if (!mountedRef.current) {
-        return;
-      }
       const [id, optedIn] = await Promise.all([
         OneSignal.User.pushSubscription.getIdAsync(),
         OneSignal.User.pushSubscription.getOptedInAsync(),
       ]);
-      if (!mountedRef.current) {
-        return;
-      }
       setPushSubscriptionId(id ?? undefined);
       setIsPushEnabled(optedIn);
     };
 
     const permissionHandler = async () => {
-      if (!mountedRef.current) {
-        return;
-      }
       setHasNotificationPermission(await OneSignal.Notifications.getPermissionAsync());
     };
 
@@ -228,55 +199,45 @@ function useOneSignalState(): UseOneSignalReturn {
 
       apiService.setAppId(nextAppId);
 
-      try {
-        OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-        OneSignal.setConsentRequired(nextConsentRequired);
-        OneSignal.setConsentGiven(nextPrivacyConsentGiven);
-        OneSignal.initialize(nextAppId);
+      OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+      OneSignal.setConsentRequired(nextConsentRequired);
+      OneSignal.setConsentGiven(nextPrivacyConsentGiven);
+      OneSignal.initialize(nextAppId);
 
-        OneSignal.LiveActivities.setupDefault({
-          enablePushToStart: true,
-          enablePushToUpdate: true,
-        });
-
-        OneSignal.InAppMessages.setPaused(nextIamPaused);
-        OneSignal.Location.setShared(nextLocationShared);
-
-        if (storedExternalUserId) {
-          OneSignal.login(storedExternalUserId);
-        }
-
-        // Don't register listeners if the effect was cancelled while we were
-        // awaiting AsyncStorage above — otherwise the cleanup function would
-        // have already run and removeEventListener would no-op, leaking these
-        // handlers (worst on React 18 StrictMode dev double-invoke).
-        if (cancelled) {
-          return;
-        }
-
-        OneSignal.InAppMessages.addEventListener('willDisplay', handleIamWillDisplay);
-        OneSignal.InAppMessages.addEventListener('didDisplay', handleIamDidDisplay);
-        OneSignal.InAppMessages.addEventListener('willDismiss', handleIamWillDismiss);
-        OneSignal.InAppMessages.addEventListener('didDismiss', handleIamDidDismiss);
-        OneSignal.InAppMessages.addEventListener('click', handleIamClick);
-        OneSignal.Notifications.addEventListener('click', handleNotificationClick);
-        OneSignal.Notifications.addEventListener('permissionChange', permissionHandler);
-        OneSignal.Notifications.addEventListener(
-          'foregroundWillDisplay',
-          handleForegroundWillDisplay,
-        );
-
-        OneSignal.User.pushSubscription.addEventListener('change', pushSubHandler);
-        OneSignal.User.addEventListener('change', userChangeHandler);
-
-        console.log(`OneSignal initialized with app ID: ${nextAppId}`);
-      } catch (err) {
-        console.error(`Init error: ${String(err)}`);
-      }
-
-      if (cancelled) {
+      const onesignalId = await OneSignal.User.getOnesignalId();
+      console.log('onesignalId', onesignalId);
+      if (!onesignalId) {
         return;
       }
+
+      OneSignal.LiveActivities.setupDefault({
+        enablePushToStart: true,
+        enablePushToUpdate: true,
+      });
+
+      OneSignal.InAppMessages.setPaused(nextIamPaused);
+      OneSignal.Location.setShared(nextLocationShared);
+
+      if (storedExternalUserId) {
+        OneSignal.login(storedExternalUserId);
+      }
+
+      OneSignal.InAppMessages.addEventListener('willDisplay', handleIamWillDisplay);
+      OneSignal.InAppMessages.addEventListener('didDisplay', handleIamDidDisplay);
+      OneSignal.InAppMessages.addEventListener('willDismiss', handleIamWillDismiss);
+      OneSignal.InAppMessages.addEventListener('didDismiss', handleIamDidDismiss);
+      OneSignal.InAppMessages.addEventListener('click', handleIamClick);
+      OneSignal.Notifications.addEventListener('click', handleNotificationClick);
+      OneSignal.Notifications.addEventListener('permissionChange', permissionHandler);
+      OneSignal.Notifications.addEventListener(
+        'foregroundWillDisplay',
+        handleForegroundWillDisplay,
+      );
+
+      OneSignal.User.pushSubscription.addEventListener('change', pushSubHandler);
+      OneSignal.User.addEventListener('change', userChangeHandler);
+
+      console.log(`OneSignal initialized with app ID: ${nextAppId}`);
 
       const externalId = await OneSignal.User.getExternalId();
       const [pushId, pushOptedIn, hasPerm] = await Promise.all([
@@ -284,10 +245,6 @@ function useOneSignalState(): UseOneSignalReturn {
         OneSignal.User.pushSubscription.getOptedInAsync(),
         OneSignal.Notifications.getPermissionAsync(),
       ]);
-
-      if (cancelled || !mountedRef.current) {
-        return;
-      }
 
       setAppId(nextAppId);
       setConsentRequiredState(nextConsentRequired);
@@ -298,33 +255,22 @@ function useOneSignalState(): UseOneSignalReturn {
       setPushSubscriptionId(pushId ?? undefined);
       setIsPushEnabled(pushOptedIn);
       setHasNotificationPermission(hasPerm);
+      setIsReady(true);
 
-      const onesignalId = await OneSignal.User.getOnesignalId();
-      if (cancelled || !mountedRef.current) {
-        return;
-      }
-
-      if (onesignalId) {
-        setIsLoading(true);
-        try {
-          await fetchUserDataFromApi();
-        } finally {
-          if (mountedRef.current && !cancelled) {
-            setIsLoading(false);
-          }
-        }
+      setIsLoading(true);
+      try {
+        await fetchUserDataFromApi();
+      } finally {
+        setIsLoading(false);
       }
     };
 
     void load().catch((err) => {
       console.error(`Initial load error: ${String(err)}`);
-      if (mountedRef.current) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     });
 
     return () => {
-      cancelled = true;
       OneSignal.InAppMessages.removeEventListener('willDisplay', handleIamWillDisplay);
       OneSignal.InAppMessages.removeEventListener('didDisplay', handleIamDidDisplay);
       OneSignal.InAppMessages.removeEventListener('willDismiss', handleIamWillDismiss);
@@ -342,15 +288,13 @@ function useOneSignalState(): UseOneSignalReturn {
   }, [fetchUserDataFromApi]);
 
   const loginUser = async (nextExternalUserId: string) => {
-    if (mountedRef.current) {
-      setAliasesList([]);
-      setEmailsList([]);
-      setSmsNumbersList([]);
-      setTagsList([]);
-      setTriggersList([]);
-      setExternalUserId(nextExternalUserId);
-      setIsLoading(true);
-    }
+    setAliasesList([]);
+    setEmailsList([]);
+    setSmsNumbersList([]);
+    setTagsList([]);
+    setTriggersList([]);
+    setExternalUserId(nextExternalUserId);
+    setIsLoading(true);
 
     try {
       OneSignal.login(nextExternalUserId);
@@ -363,47 +307,36 @@ function useOneSignalState(): UseOneSignalReturn {
     } catch (err) {
       console.error(`Login error: ${String(err)}`);
     } finally {
-      if (mountedRef.current) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   };
 
   const logoutUser = async () => {
     OneSignal.logout();
     await preferences.setExternalUserId(null);
-    if (mountedRef.current) {
-      setExternalUserId(undefined);
-      setAliasesList([]);
-      setEmailsList([]);
-      setSmsNumbersList([]);
-      setTagsList([]);
-      setTriggersList([]);
-    }
+    setExternalUserId(undefined);
+    setAliasesList([]);
+    setEmailsList([]);
+    setSmsNumbersList([]);
+    setTagsList([]);
+    setTriggersList([]);
     console.log('Logged out');
   };
 
   const setConsentRequired = async (required: boolean) => {
-    if (mountedRef.current) {
-      setConsentRequiredState(required);
-    }
+    setConsentRequiredState(required);
     OneSignal.setConsentRequired(required);
     await preferences.setConsentRequired(required);
   };
 
   const setConsentGiven = async (granted: boolean) => {
-    if (mountedRef.current) {
-      setPrivacyConsentGivenState(granted);
-    }
+    setPrivacyConsentGivenState(granted);
     OneSignal.setConsentGiven(granted);
     await preferences.setPrivacyConsent(granted);
   };
 
-  const promptPush = async () => {
-    const granted = await OneSignal.Notifications.requestPermission(true);
-    if (mountedRef.current) {
-      setHasNotificationPermission(granted);
-    }
+  const promptPush = () => {
+    OneSignal.Notifications.requestPermission(true);
   };
 
   const setPushEnabled = (enabled: boolean) => {
@@ -614,6 +547,7 @@ function useOneSignalState(): UseOneSignalReturn {
     tagsList,
     triggersList,
     isLoading,
+    isReady,
     loginUser,
     logoutUser,
     setConsentRequired,

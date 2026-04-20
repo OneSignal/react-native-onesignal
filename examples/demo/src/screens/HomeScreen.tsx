@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useRef, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import ActionButton from '../components/ActionButton';
@@ -32,11 +32,18 @@ export default function HomeScreen() {
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<TooltipData | null>(null);
 
-  // Auto-request push permission on load
-  useEffect(() => {
-    void os.promptPush();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Prompt for push only after the screen is actually focused so the Android
+  // Activity is resumed and can present the OS dialog. Otherwise the request
+  // gets queued and the prompt only appears after the next foreground.
+  const hasPromptedRef = useRef(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (os.isReady && !hasPromptedRef.current) {
+        hasPromptedRef.current = true;
+        os.promptPush();
+      }
+    }, [os.isReady, os.promptPush]),
+  );
 
   const showTooltipModal = (key: string) => {
     const tooltip = TooltipHelper.getInstance().getTooltip(key);
