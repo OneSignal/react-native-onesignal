@@ -9,7 +9,7 @@ on:
       platform:
         description: 'Platform to test'
         required: true
-        default: 'android'
+        default: 'both'
         type: choice
         options:
           - android
@@ -32,10 +32,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -51,11 +51,12 @@ jobs:
         run: ./gradlew assembleRelease
 
       - name: Upload APK
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: demo-apk
           path: examples/demo/android/app/build/outputs/apk/release/app-release.apk
           retention-days: 1
+          compression-level: 0
 
   build-ios:
     if: >-
@@ -65,7 +66,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up demo
         uses: ./.github/actions/setup-demo
@@ -81,34 +82,54 @@ jobs:
           key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/ios/Podfile.lock') }}
           restore-keys: deriveddata-${{ runner.os }}-
 
-      - name: Build iOS app
+      - name: Set up iOS codesigning
+        uses: OneSignal/sdk-shared/.github/actions/setup-ios-demo-codesigning@main
+        with:
+          p12-base64: ${{ secrets.APPIUM_IOS_DEV_CERT_P12_BASE64 }}
+          p12-password: ${{ secrets.APPIUM_IOS_DEV_CERT_PASSWORD }}
+          asc-key-id: ${{ secrets.APPIUM_APP_STORE_CONNECT_KEY_ID }}
+          asc-issuer-id: ${{ secrets.APPIUM_APP_STORE_CONNECT_ISSUER_ID }}
+          asc-private-key: ${{ secrets.APPIUM_APP_STORE_CONNECT_PRIVATE_KEY }}
+          nse-bundle-id: com.onesignal.example.OneSignalNotificationServiceExtensionRN
+          widget-bundle-id: com.onesignal.example.OneSignalWidgetExtension
+
+      - name: Build signed IPA
         working-directory: examples/demo/ios
         run: |
-          xcodebuild \
+          xcodebuild archive \
             -workspace demo.xcworkspace \
             -scheme demo \
             -configuration Release \
             -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/demo.xcarchive \
             -derivedDataPath build \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_STYLE=Manual \
             COMPILER_INDEX_STORE_ENABLE=NO
+          xcodebuild -exportArchive \
+            -archivePath build/demo.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/ipa
 
-      - name: Package IPA
+      - name: Verify aps-environment in IPA
         working-directory: examples/demo/ios
         run: |
-          cd build/Build/Products/Release-iphoneos
-          mkdir Payload
-          cp -r demo.app Payload/
-          zip -r demo.ipa Payload
+          IPA=$(ls build/ipa/*.ipa | head -n1)
+          unzip -oq "$IPA" -d /tmp/ipa
+          APP=$(ls -d /tmp/ipa/Payload/*.app | head -n1)
+          codesign -d --entitlements - "$APP" 2>&1 | tee /tmp/entitlements.txt
+          if ! grep -q 'aps-environment' /tmp/entitlements.txt; then
+            echo "::error::Built IPA is missing aps-environment entitlement; push subscription will not work"
+            exit 1
+          fi
 
       - name: Upload IPA
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: demo-ipa
-          path: examples/demo/ios/build/Build/Products/Release-iphoneos/demo.ipa
+          path: examples/demo/ios/build/ipa/demo.ipa
           retention-days: 1
+          compression-level: 0
 
   e2e-android:
     needs: build-android
