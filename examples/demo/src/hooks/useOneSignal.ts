@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -121,20 +122,34 @@ function useOneSignalState(): UseOneSignalReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
+  const requestSequenceRef = useRef(0);
+
   const fetchUserDataFromApi = useCallback(async () => {
-    const onesignalId = await OneSignal.User.getOnesignalId();
-    if (!onesignalId) return;
+    const requestId = requestSequenceRef.current + 1;
+    requestSequenceRef.current = requestId;
+    setIsLoading(true);
 
-    const userData = await apiService.fetchUser(onesignalId);
-    if (!userData) return;
+    try {
+      const onesignalId = await OneSignal.User.getOnesignalId();
+      if (!onesignalId) return;
 
-    const externalId = await OneSignal.User.getExternalId();
+      const userData = await apiService.fetchUser(onesignalId);
+      if (!userData) return;
 
-    setAliasesList(Object.entries(userData.aliases));
-    setTagsList(Object.entries(userData.tags));
-    setEmailsList(userData.emails);
-    setSmsNumbersList(userData.smsNumbers);
-    setExternalUserId(externalId ?? userData.externalId);
+      const externalId = await OneSignal.User.getExternalId();
+
+      if (requestSequenceRef.current !== requestId) return;
+
+      setAliasesList(Object.entries(userData.aliases));
+      setTagsList(Object.entries(userData.tags));
+      setEmailsList(userData.emails);
+      setSmsNumbersList(userData.smsNumbers);
+      setExternalUserId(externalId ?? userData.externalId);
+    } finally {
+      if (requestSequenceRef.current === requestId) {
+        setIsLoading(false);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -181,9 +196,16 @@ function useOneSignalState(): UseOneSignalReturn {
     };
 
     const userChangeHandler = (event: UserChangedState) => {
+      const nextOnesignalId = event.current.onesignalId ?? null;
       console.log(
-        `User changed: onesignalId=${event.current.onesignalId ?? 'null'}, externalId=${event.current.externalId ?? 'null'}`,
+        `User changed: onesignalId=${nextOnesignalId ?? 'null'}, externalId=${event.current.externalId ?? 'null'}`,
       );
+
+      if (nextOnesignalId === null) {
+        return;
+      }
+
+      fetchUserDataFromApi();
     };
 
     const load = async () => {
@@ -203,12 +225,6 @@ function useOneSignalState(): UseOneSignalReturn {
       OneSignal.setConsentRequired(nextConsentRequired);
       OneSignal.setConsentGiven(nextPrivacyConsentGiven);
       OneSignal.initialize(nextAppId);
-
-      const onesignalId = await OneSignal.User.getOnesignalId();
-      console.log('onesignalId', onesignalId);
-      if (!onesignalId) {
-        return;
-      }
 
       OneSignal.LiveActivities.setupDefault({
         enablePushToStart: true,
@@ -257,11 +273,9 @@ function useOneSignalState(): UseOneSignalReturn {
       setHasNotificationPermission(hasPerm);
       setIsReady(true);
 
-      setIsLoading(true);
-      try {
+      const initialOnesignalId = await OneSignal.User.getOnesignalId();
+      if (initialOnesignalId) {
         await fetchUserDataFromApi();
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -300,13 +314,10 @@ function useOneSignalState(): UseOneSignalReturn {
       OneSignal.login(nextExternalUserId);
       await preferences.setExternalUserId(nextExternalUserId);
       console.log(`Logged in as: ${nextExternalUserId}`);
-      // Mirror the cold-start flow: drive the post-login fetch ourselves so
-      // isLoading always clears, even when OneSignal.login() doesn't emit a
-      // user 'change' event (e.g. logging in with the same external ID).
-      await fetchUserDataFromApi();
+      // The user 'change' listener runs fetchUserDataFromApi once the new
+      // onesignalId is assigned; that call clears isLoading in its finally.
     } catch (err) {
       console.error(`Login error: ${String(err)}`);
-    } finally {
       setIsLoading(false);
     }
   };
