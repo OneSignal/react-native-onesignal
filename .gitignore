@@ -15,7 +15,7 @@ build
 dist
 android/build
 *.tgz
-.sdk-build-stamp
+.rn-sdk-source.stamp
 
 # OSX
 #

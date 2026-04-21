@@ -366,9 +366,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-demo/Pods-demo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-demo/Pods-demo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -427,9 +431,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-demo/Pods-demo-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-demo/Pods-demo-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -569,7 +577,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CC = "$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang.sh";
-				CCACHE_BINARY = /opt/homebrew/bin/ccache;
+				CCACHE_BINARY = ccache;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -656,7 +664,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CC = "$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang.sh";
-				CCACHE_BINARY = /opt/homebrew/bin/ccache;
+				CCACHE_BINARY = ccache;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -745,7 +753,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalNotificationServiceExtensionRN;
+				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.NSE;
 				PRODUCT_NAME = OneSignalNotificationServiceExtension;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -769,7 +777,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalNotificationServiceExtensionRN;
+				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.NSE;
 				PRODUCT_NAME = OneSignalNotificationServiceExtension;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -792,7 +800,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalWidgetExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.LA;
 				PRODUCT_NAME = OneSignalWidgetExtension;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -815,7 +823,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalWidgetExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.LA;
 				PRODUCT_NAME = OneSignalWidgetExtension;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;

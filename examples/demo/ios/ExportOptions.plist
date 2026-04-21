@@ -14,9 +14,9 @@
   <dict>
     <key>com.onesignal.example</key>
     <string>Appium OneSignal Main</string>
-    <key>com.onesignal.example.OneSignalNotificationServiceExtensionRN</key>
+    <key>com.onesignal.example.NSE</key>
     <string>Appium OneSignal NSE RN</string>
-    <key>com.onesignal.example.OneSignalWidgetExtension</key>
+    <key>com.onesignal.example.LA</key>
     <string>Appium OneSignal Widget RN</string>
   </dict>
 </dict>

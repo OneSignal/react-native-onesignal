@@ -16,7 +16,12 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
   }
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <TouchableOpacity style={AppDialogStyles.backdrop} activeOpacity={1} onPress={onClose}>
+      <TouchableOpacity
+        style={AppDialogStyles.backdrop}
+        activeOpacity={1}
+        onPress={onClose}
+        accessible={false}
+      >
         <View style={[AppDialogStyles.container, styles.containerMaxHeight]}>
           <Text style={AppDialogStyles.title} testID="tooltip_title">
             {tooltip.title}

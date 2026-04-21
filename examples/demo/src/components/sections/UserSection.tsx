@@ -18,13 +18,21 @@ export default function UserSection({ externalUserId, onLogin, onLogout }: Props
   const isLoggedIn = !!externalUserId;
 
   const handleLogin = async (userId: string) => {
-    await onLogin(userId);
-    showSnackbar(`Logged in as ${userId}`);
+    try {
+      await onLogin(userId);
+      showSnackbar(`Logged in as ${userId}`);
+    } catch (err) {
+      showSnackbar(`Login failed: ${String(err)}`);
+    }
   };
 
   const handleLogout = async () => {
-    await onLogout();
-    showSnackbar('User logged out');
+    try {
+      await onLogout();
+      showSnackbar('User logged out');
+    } catch (err) {
+      showSnackbar(`Logout failed: ${String(err)}`);
+    }
   };
 
   return (

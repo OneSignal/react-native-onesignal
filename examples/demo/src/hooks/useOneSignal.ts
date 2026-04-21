@@ -307,12 +307,12 @@ function useOneSignalState(): UseOneSignalReturn {
     setSmsNumbersList([]);
     setTagsList([]);
     setTriggersList([]);
-    setExternalUserId(nextExternalUserId);
     setIsLoading(true);
 
     try {
       OneSignal.login(nextExternalUserId);
       await preferences.setExternalUserId(nextExternalUserId);
+      setExternalUserId(nextExternalUserId);
       console.log(`Logged in as: ${nextExternalUserId}`);
       // The user 'change' listener runs fetchUserDataFromApi once the new
       // onesignalId is assigned; that call clears isLoading in its finally.
@@ -406,7 +406,7 @@ function useOneSignalState(): UseOneSignalReturn {
 
   const addEmail = (email: string) => {
     OneSignal.User.addEmail(email);
-    setEmailsList((prev) => [...prev, email]);
+    setEmailsList((prev) => [...prev.filter((value) => value !== email), email]);
     console.log(`Email added: ${email}`);
   };
 
@@ -418,7 +418,7 @@ function useOneSignalState(): UseOneSignalReturn {
 
   const addSms = (sms: string) => {
     OneSignal.User.addSms(sms);
-    setSmsNumbersList((prev) => [...prev, sms]);
+    setSmsNumbersList((prev) => [...prev.filter((value) => value !== sms), sms]);
     console.log(`SMS added: ${sms}`);
   };
 

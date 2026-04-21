@@ -28,6 +28,7 @@ export default function SendIamSection({ onSendIam, onInfoTap }: Props) {
           onPress={() => onSendIam(type)}
           activeOpacity={0.8}
           testID={`send_iam_${type}_button`}
+          accessibilityLabel={iamTypeLabel[type]}
         >
           <View style={styles.inner}>
             <Icon name={iamTypeIcon[type]} size={20} color={AppColors.white} style={styles.icon} />

@@ -121,7 +121,12 @@ export default function MultiPairInputModal({
                 </View>
               </View>
             ))}
-            <TouchableOpacity onPress={addRow} style={styles.addRowBtn}>
+            <TouchableOpacity
+              onPress={addRow}
+              style={styles.addRowBtn}
+              testID="multipair_add_row_button"
+              accessibilityLabel="Add Row"
+            >
               <Icon name="add" size={18} color={AppColors.osPrimary} />
               <Text style={styles.addRowText}>Add Row</Text>
             </TouchableOpacity>
@@ -134,6 +139,7 @@ export default function MultiPairInputModal({
               style={AppDialogStyles.actionBtn}
               onPress={handleConfirm}
               disabled={!allFilled}
+              testID="multipair_confirm_button"
             >
               <Text
                 style={[

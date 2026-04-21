@@ -90,8 +90,6 @@ jobs:
           asc-key-id: ${{ secrets.APPIUM_APP_STORE_CONNECT_KEY_ID }}
           asc-issuer-id: ${{ secrets.APPIUM_APP_STORE_CONNECT_ISSUER_ID }}
           asc-private-key: ${{ secrets.APPIUM_APP_STORE_CONNECT_PRIVATE_KEY }}
-          nse-bundle-id: com.onesignal.example.OneSignalNotificationServiceExtensionRN
-          widget-bundle-id: com.onesignal.example.OneSignalWidgetExtension
 
       - name: Build signed IPA
         working-directory: examples/demo/ios
