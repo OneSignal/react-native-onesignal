@@ -46,22 +46,26 @@ export default function TriggersSection({
           />
         </View>
       )}
-      <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_trigger_button" />
       <ActionButton
-        label="ADD MULTIPLE"
+        label="ADD TRIGGER"
+        onPress={() => setAddVisible(true)}
+        testID="add_trigger_button"
+      />
+      <ActionButton
+        label="ADD MULTIPLE TRIGGERS"
         onPress={() => setAddMultipleVisible(true)}
         testID="add_multiple_triggers_button"
       />
       {triggers.length > 0 && (
         <>
           <ActionButton
-            label="REMOVE SELECTED"
+            label="REMOVE TRIGGERS"
             onPress={() => setRemoveVisible(true)}
             variant="outlined"
             testID="remove_triggers_button"
           />
           <ActionButton
-            label="CLEAR ALL"
+            label="CLEAR ALL TRIGGERS"
             onPress={onClearAll}
             variant="outlined"
             testID="clear_triggers_button"

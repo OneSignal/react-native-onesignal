@@ -34,7 +34,7 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
           </ScrollView>
           <View style={AppDialogStyles.actions}>
             <TouchableOpacity style={AppDialogStyles.actionBtn} onPress={onClose}>
-              <Text style={AppDialogStyles.actionText}>Ok</Text>
+              <Text style={AppDialogStyles.actionText}>OK</Text>
             </TouchableOpacity>
           </View>
         </View>

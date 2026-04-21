@@ -50,15 +50,15 @@ export default function TagsSection({
           />
         </View>
       )}
-      <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_tag_button" />
+      <ActionButton label="ADD TAG" onPress={() => setAddVisible(true)} testID="add_tag_button" />
       <ActionButton
-        label="ADD MULTIPLE"
+        label="ADD MULTIPLE TAGS"
         onPress={() => setAddMultipleVisible(true)}
         testID="add_multiple_tags_button"
       />
       {tags.length > 0 && (
         <ActionButton
-          label="REMOVE SELECTED"
+          label="REMOVE TAGS"
           onPress={() => setRemoveVisible(true)}
           variant="outlined"
           testID="remove_tags_button"

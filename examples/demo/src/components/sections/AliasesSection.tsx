@@ -45,9 +45,13 @@ export default function AliasesSection({
           <PairList items={filtered} layout="stacked" sectionKey="aliases" />
         </View>
       )}
-      <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_alias_button" />
       <ActionButton
-        label="ADD MULTIPLE"
+        label="ADD ALIAS"
+        onPress={() => setAddVisible(true)}
+        testID="add_alias_button"
+      />
+      <ActionButton
+        label="ADD MULTIPLE ALIASES"
         onPress={() => setAddMultipleVisible(true)}
         testID="add_multiple_aliases_button"
       />
