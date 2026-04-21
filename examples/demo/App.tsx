@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 import OneSignalLogo from './assets/onesignal_logo.svg';
+import AppHeader from './src/components/AppHeader';
 import { OneSignalProvider } from './src/hooks/useOneSignal';
 import HomeScreen from './src/screens/HomeScreen';
 import SecondaryScreen from './src/screens/SecondaryScreen';
@@ -26,10 +27,7 @@ function App() {
         <NavigationContainer>
           <Stack.Navigator
             screenOptions={{
-              headerStyle: { backgroundColor: AppColors.osPrimary },
-              headerTintColor: AppColors.white,
-              headerTitleAlign: 'center',
-              headerShadowVisible: false,
+              header: (props) => <AppHeader {...props} />,
             }}
           >
             <Stack.Screen
