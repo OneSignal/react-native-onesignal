@@ -251,7 +251,8 @@ public class RNOneSignal extends NativeOneSignalSpec
             context = reactContext.getApplicationContext();
         }
 
-        Logging.debug("OneSignal initialize using context: " + context.getClass().getSimpleName(), null);
+        Logging.debug(
+                "OneSignal initialize using context: " + context.getClass().getSimpleName(), null);
         OneSignal.initWithContext(context, appId);
         oneSignalInitDone = true;
     }

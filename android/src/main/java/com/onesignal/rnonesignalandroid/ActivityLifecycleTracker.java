@@ -20,7 +20,7 @@ import java.lang.ref.WeakReference;
 public class ActivityLifecycleTracker implements Application.ActivityLifecycleCallbacks {
     private static final ActivityLifecycleTracker INSTANCE = new ActivityLifecycleTracker();
 
-    private WeakReference<Activity> currentActivity = new WeakReference<>(null);
+    private volatile WeakReference<Activity> currentActivity = new WeakReference<>(null);
 
     private ActivityLifecycleTracker() {}
 
