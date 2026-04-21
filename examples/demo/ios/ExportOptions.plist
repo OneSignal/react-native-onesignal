@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>method</key>
+  <string>development</string>
+  <key>teamID</key>
+  <string>99SW8E36CT</string>
+  <key>signingStyle</key>
+  <string>manual</string>
+  <key>stripSwiftSymbols</key>
+  <true/>
+  <key>provisioningProfiles</key>
+  <dict>
+    <key>com.onesignal.example</key>
+    <string>Appium Demo - Main</string>
+    <key>com.onesignal.example.NSE</key>
+    <string>Appium Demo - NSE</string>
+    <key>com.onesignal.example.LA</key>
+    <string>Appium Demo - Live Activity</string>
+  </dict>
+</dict>
+</plist>

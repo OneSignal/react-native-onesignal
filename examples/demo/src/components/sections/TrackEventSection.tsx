@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
 import TrackEventModal from '../modals/TrackEventModal';
 import SectionCard from '../SectionCard';
@@ -13,7 +14,7 @@ export default function TrackEventSection({ onTrackEvent, onInfoTap }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <SectionCard title="Track Event" onInfoTap={onInfoTap}>
+    <SectionCard title="Custom Events" onInfoTap={onInfoTap} sectionKey="custom_events">
       <ActionButton
         label="TRACK EVENT"
         onPress={() => setModalVisible(true)}
@@ -23,6 +24,7 @@ export default function TrackEventSection({ onTrackEvent, onInfoTap }: Props) {
         visible={modalVisible}
         onConfirm={(name, properties) => {
           onTrackEvent(name, properties);
+          showSnackbar(`Event tracked: ${name}`);
           setModalVisible(false);
         }}
         onClose={() => setModalVisible(false)}

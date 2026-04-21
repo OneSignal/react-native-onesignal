@@ -9,18 +9,31 @@ import SectionCard from '../SectionCard';
 
 interface Props {
   smsNumbers: string[];
+  loading?: boolean;
   onAdd: (sms: string) => void;
   onRemove: (sms: string) => void;
   onInfoTap?: () => void;
 }
 
-export default function SmsSection({ smsNumbers, onAdd, onRemove, onInfoTap }: Props) {
+export default function SmsSection({
+  smsNumbers,
+  loading = false,
+  onAdd,
+  onRemove,
+  onInfoTap,
+}: Props) {
   const [addVisible, setAddVisible] = useState(false);
 
   return (
-    <SectionCard title="SMS" onInfoTap={onInfoTap}>
+    <SectionCard title="SMS" onInfoTap={onInfoTap} sectionKey="sms">
       <View style={styles.listCard}>
-        <CollapsibleSingleList items={smsNumbers} onDelete={onRemove} emptyMessage="No SMS added" />
+        <CollapsibleSingleList
+          items={smsNumbers}
+          onDelete={onRemove}
+          emptyMessage="No SMS added"
+          loading={loading}
+          sectionKey="sms"
+        />
       </View>
       <ActionButton label="ADD SMS" onPress={() => setAddVisible(true)} testID="add_sms_button" />
       <SingleInputModal

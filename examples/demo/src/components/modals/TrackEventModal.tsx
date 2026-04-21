@@ -89,7 +89,7 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
             onChangeText={setName}
             autoFocus
             {...AppInputProps}
-            testID="track_event_name_input"
+            testID="event_name_input"
           />
           <Text style={styles.label}>Properties (optional, JSON)</Text>
           <TextInput
@@ -100,7 +100,7 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
             onChangeText={handlePropertiesChange}
             multiline
             {...AppInputProps}
-            testID="track_event_properties_input"
+            testID="event_properties_input"
           />
           {!!jsonError && <Text style={styles.errorText}>{jsonError}</Text>}
           <View style={AppDialogStyles.actions}>
@@ -111,7 +111,7 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
               style={AppDialogStyles.actionBtn}
               onPress={handleConfirm}
               disabled={!canSubmit}
-              testID="track_event_confirm_button"
+              testID="event_track_button"
             >
               <Text
                 style={[

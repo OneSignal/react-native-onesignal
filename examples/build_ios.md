@@ -271,7 +271,7 @@ The `project.pbxproj` needs native target entries for both extensions. These are
 **OneSignalNotificationServiceExtension target** (`com.apple.product-type.app-extension`):
 
 - Sources, Frameworks, Resources build phases
-- `PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalNotificationServiceExtensionRN` (must be prefixed with the parent app bundle ID)
+- `PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.NSE` (must be prefixed with the parent app bundle ID)
 - `CODE_SIGN_ENTITLEMENTS = OneSignalNotificationServiceExtension/OneSignalNotificationServiceExtension.entitlements`
 - `INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist`
 - `SKIP_INSTALL = YES`, `SWIFT_VERSION = 5.0`, `IPHONEOS_DEPLOYMENT_TARGET = 13.0`
@@ -279,7 +279,7 @@ The `project.pbxproj` needs native target entries for both extensions. These are
 **OneSignalWidgetExtension target** (`com.apple.product-type.app-extension`):
 
 - Sources, Frameworks (linking WidgetKit.framework and SwiftUI.framework), Resources build phases
-- `PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.OneSignalWidgetExtension`
+- `PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.LA`
 - `INFOPLIST_FILE = OneSignalWidget/Info.plist` (note: folder is `OneSignalWidget`, not `OneSignalWidgetExtension`)
 - `SKIP_INSTALL = YES`, `SWIFT_VERSION = 5.0`, `IPHONEOS_DEPLOYMENT_TARGET = 16.2` (Live Activities require iOS 16.2+)
 

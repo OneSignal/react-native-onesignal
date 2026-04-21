@@ -99,7 +99,7 @@ export default function MultiPairInputModal({
                     onChangeText={(t) => updateRow(row.id, 'key', t)}
                     autoFocus={idx === 0}
                     {...AppInputProps}
-                    testID={idx === 0 ? 'multi_pair_key_0' : undefined}
+                    testID={`multipair_key_${idx}`}
                   />
                   <TextInput
                     style={[AppDialogStyles.input, styles.halfInput]}
@@ -108,7 +108,7 @@ export default function MultiPairInputModal({
                     value={row.value}
                     onChangeText={(t) => updateRow(row.id, 'value', t)}
                     {...AppInputProps}
-                    testID={idx === 0 ? 'multi_pair_value_0' : undefined}
+                    testID={`multipair_value_${idx}`}
                   />
                   {rows.length > 1 && (
                     <TouchableOpacity
@@ -121,8 +121,14 @@ export default function MultiPairInputModal({
                 </View>
               </View>
             ))}
-            <TouchableOpacity onPress={addRow} style={styles.addRowBtn}>
-              <Text style={styles.addRowText}>+ Add Row</Text>
+            <TouchableOpacity
+              onPress={addRow}
+              style={styles.addRowBtn}
+              testID="multipair_add_row_button"
+              accessibilityLabel="Add Row"
+            >
+              <Icon name="add" size={18} color={AppColors.osPrimary} />
+              <Text style={styles.addRowText}>Add Row</Text>
             </TouchableOpacity>
           </ScrollView>
           <View style={AppDialogStyles.actions}>
@@ -133,6 +139,7 @@ export default function MultiPairInputModal({
               style={AppDialogStyles.actionBtn}
               onPress={handleConfirm}
               disabled={!allFilled}
+              testID="multipair_confirm_button"
             >
               <Text
                 style={[
@@ -173,7 +180,10 @@ const styles = StyleSheet.create({
   },
   addRowBtn: {
     paddingVertical: 10,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
   },
   addRowText: {
     color: AppColors.osPrimary,

@@ -38,7 +38,8 @@ target 'demo' do
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      # ccache doesn't work with Xcode's explicit modules feature
+      :ccache_enabled => false
     )
   end
 end

@@ -13,14 +13,14 @@ interface Props {
 
 export default function InAppSection({ inAppMessagesPaused, onSetPaused, onInfoTap }: Props) {
   return (
-    <SectionCard title="In-App Messaging" onInfoTap={onInfoTap}>
+    <SectionCard title="In-App Messaging" onInfoTap={onInfoTap} sectionKey="iam">
       <View style={AppTheme.card}>
         <ToggleRow
           label="Pause In-App Messages"
           description="Toggle in-app message display"
           value={inAppMessagesPaused}
           onValueChange={onSetPaused}
-          testID="iam_pause_toggle"
+          testID="pause_iam_toggle"
         />
       </View>
     </SectionCard>

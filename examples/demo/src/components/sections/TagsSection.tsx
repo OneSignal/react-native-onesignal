@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
-import { PairList, EmptyState } from '../ListWidgets';
+import { PairList, EmptyState, LoadingState } from '../ListWidgets';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import MultiSelectRemoveModal from '../modals/MultiSelectRemoveModal';
 import PairInputModal from '../modals/PairInputModal';
@@ -11,6 +11,7 @@ import SectionCard from '../SectionCard';
 
 interface Props {
   tags: [string, string][];
+  loading?: boolean;
   onAdd: (key: string, value: string) => void;
   onAddMultiple: (pairs: Record<string, string>) => void;
   onRemoveSelected: (keys: string[]) => void;
@@ -19,6 +20,7 @@ interface Props {
 
 export default function TagsSection({
   tags,
+  loading = false,
   onAdd,
   onAddMultiple,
   onRemoveSelected,
@@ -29,25 +31,34 @@ export default function TagsSection({
   const [removeVisible, setRemoveVisible] = useState(false);
 
   return (
-    <SectionCard title="Tags" onInfoTap={onInfoTap}>
+    <SectionCard title="Tags" onInfoTap={onInfoTap} sectionKey="tags">
       {tags.length === 0 ? (
         <View style={[AppTheme.card, styles.listCard]}>
-          <EmptyState message="No tags added" testID="tags_empty" />
+          {loading ? (
+            <LoadingState testID="tags_loading" />
+          ) : (
+            <EmptyState message="No tags added" testID="tags_empty" />
+          )}
         </View>
       ) : (
         <View style={styles.listCard}>
-          <PairList items={tags} layout="stacked" onDelete={(key) => onRemoveSelected([key])} />
+          <PairList
+            items={tags}
+            layout="stacked"
+            onDelete={(key) => onRemoveSelected([key])}
+            sectionKey="tags"
+          />
         </View>
       )}
-      <ActionButton label="ADD" onPress={() => setAddVisible(true)} testID="add_tag_button" />
+      <ActionButton label="ADD TAG" onPress={() => setAddVisible(true)} testID="add_tag_button" />
       <ActionButton
-        label="ADD MULTIPLE"
+        label="ADD MULTIPLE TAGS"
         onPress={() => setAddMultipleVisible(true)}
         testID="add_multiple_tags_button"
       />
       {tags.length > 0 && (
         <ActionButton
-          label="REMOVE SELECTED"
+          label="REMOVE TAGS"
           onPress={() => setRemoveVisible(true)}
           variant="outlined"
           testID="remove_tags_button"
@@ -62,6 +73,7 @@ export default function TagsSection({
         onClose={() => setAddVisible(false)}
         keyTestID="tag_key_input"
         valueTestID="tag_value_input"
+        confirmTestID="tag_confirm_button"
       />
       <MultiPairInputModal
         visible={addMultipleVisible}

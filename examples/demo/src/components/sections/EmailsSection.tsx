@@ -9,18 +9,31 @@ import SectionCard from '../SectionCard';
 
 interface Props {
   emails: string[];
+  loading?: boolean;
   onAdd: (email: string) => void;
   onRemove: (email: string) => void;
   onInfoTap?: () => void;
 }
 
-export default function EmailsSection({ emails, onAdd, onRemove, onInfoTap }: Props) {
+export default function EmailsSection({
+  emails,
+  loading = false,
+  onAdd,
+  onRemove,
+  onInfoTap,
+}: Props) {
   const [addVisible, setAddVisible] = useState(false);
 
   return (
-    <SectionCard title="Emails" onInfoTap={onInfoTap}>
+    <SectionCard title="Emails" onInfoTap={onInfoTap} sectionKey="emails">
       <View style={styles.listCard}>
-        <CollapsibleSingleList items={emails} onDelete={onRemove} emptyMessage="No emails added" />
+        <CollapsibleSingleList
+          items={emails}
+          onDelete={onRemove}
+          emptyMessage="No emails added"
+          loading={loading}
+          sectionKey="emails"
+        />
       </View>
       <ActionButton
         label="ADD EMAIL"

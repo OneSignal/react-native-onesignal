@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
 import OutcomeModal from '../modals/OutcomeModal';
 import SectionCard from '../SectionCard';
@@ -19,8 +20,23 @@ export default function OutcomesSection({
 }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
 
+  const handleSendNormal = (name: string) => {
+    onSendNormal(name);
+    showSnackbar(`Outcome sent: ${name}`);
+  };
+
+  const handleSendUnique = (name: string) => {
+    onSendUnique(name);
+    showSnackbar(`Unique outcome sent: ${name}`);
+  };
+
+  const handleSendWithValue = (name: string, value: number) => {
+    onSendWithValue(name, value);
+    showSnackbar(`Outcome sent: ${name} = ${value}`);
+  };
+
   return (
-    <SectionCard title="Outcome Events" onInfoTap={onInfoTap}>
+    <SectionCard title="Outcome Events" onInfoTap={onInfoTap} sectionKey="outcomes">
       <ActionButton
         label="SEND OUTCOME"
         onPress={() => setModalVisible(true)}
@@ -28,9 +44,9 @@ export default function OutcomesSection({
       />
       <OutcomeModal
         visible={modalVisible}
-        onSendNormal={onSendNormal}
-        onSendUnique={onSendUnique}
-        onSendWithValue={onSendWithValue}
+        onSendNormal={handleSendNormal}
+        onSendUnique={handleSendUnique}
+        onSendWithValue={handleSendWithValue}
         onClose={() => setModalVisible(false)}
       />
     </SectionCard>

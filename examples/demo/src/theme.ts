@@ -12,12 +12,6 @@ export const AppColors = {
   osDivider: '#E8EAED',
   osWarningBackground: '#FFF8E1',
   osBackdrop: 'rgba(0,0,0,0.54)',
-  osLogBackground: '#1A1B1E',
-  osLogDebug: '#82AAFF',
-  osLogInfo: '#C3E88D',
-  osLogWarn: '#FFCB6B',
-  osLogError: '#FF5370',
-  osLogTimestamp: '#676E7B',
   white: '#FFFFFF',
 } as const;
 
@@ -31,7 +25,6 @@ export const AppTextStyles = StyleSheet.create({
   bodyLarge: { fontSize: 16, fontWeight: '400' },
   bodyMedium: { fontSize: 14, fontWeight: '400' },
   bodySmall: { fontSize: 12, fontWeight: '400' },
-  labelSmall: { fontSize: 11, fontWeight: '500' },
 });
 
 export const AppTheme = StyleSheet.create({

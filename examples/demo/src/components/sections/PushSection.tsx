@@ -1,3 +1,4 @@
+import { E2E_MODE } from '@env';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -5,6 +6,15 @@ import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
+
+const MASK_CHAR = '•';
+
+function maskValue(value: string): string {
+  if (E2E_MODE === 'true') {
+    return MASK_CHAR.repeat(value.length);
+  }
+  return value;
+}
 
 interface Props {
   pushSubscriptionId: string | undefined;
@@ -24,12 +34,17 @@ export default function PushSection({
   onInfoTap,
 }: Props) {
   return (
-    <SectionCard title="Push" onInfoTap={onInfoTap}>
+    <SectionCard title="Push" onInfoTap={onInfoTap} sectionKey="push">
       <View style={AppTheme.card}>
         <View style={styles.idRow}>
           <Text style={styles.idLabel}>Push ID</Text>
-          <Text style={styles.idValue} numberOfLines={1} ellipsizeMode="middle">
-            {pushSubscriptionId ?? '–'}
+          <Text
+            style={styles.idValue}
+            numberOfLines={1}
+            ellipsizeMode="middle"
+            testID="push_id_value"
+          >
+            {pushSubscriptionId ? maskValue(pushSubscriptionId) : '–'}
           </Text>
         </View>
         <View style={styles.divider} />

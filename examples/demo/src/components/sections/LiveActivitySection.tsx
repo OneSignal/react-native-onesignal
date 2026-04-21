@@ -12,13 +12,20 @@ const ORDER_STATUSES = [
 ];
 
 interface Props {
+  hasApiKey: boolean;
   onStart: (activityId: string, attributes: object, content: object) => void;
   onUpdate: (activityId: string, eventUpdates: Record<string, unknown>) => Promise<void>;
   onEnd: (activityId: string) => Promise<void>;
   onInfoTap?: () => void;
 }
 
-export default function LiveActivitySection({ onStart, onUpdate, onEnd, onInfoTap }: Props) {
+export default function LiveActivitySection({
+  hasApiKey,
+  onStart,
+  onUpdate,
+  onEnd,
+  onInfoTap,
+}: Props) {
   const [activityId, setActivityId] = useState('order-1');
   const [orderNumber, setOrderNumber] = useState('ORD-1234');
   const [statusIndex, setStatusIndex] = useState(0);
@@ -58,7 +65,7 @@ export default function LiveActivitySection({ onStart, onUpdate, onEnd, onInfoTa
   const nextStatus = ORDER_STATUSES[(statusIndex + 1) % ORDER_STATUSES.length];
 
   return (
-    <SectionCard title="Live Activities" onInfoTap={onInfoTap}>
+    <SectionCard title="Live Activities" onInfoTap={onInfoTap} sectionKey="live_activities">
       <View style={AppTheme.card}>
         <InputRow
           label="Activity ID"
@@ -80,21 +87,17 @@ export default function LiveActivitySection({ onStart, onUpdate, onEnd, onInfoTa
           disabled={!activityId.trim()}
           testID="start_live_activity_button"
         />
-
-        {/* Requires API key */}
         <ActionButton
           label={`UPDATE → ${nextStatus.status.replace('_', ' ').toUpperCase()}`}
           onPress={handleUpdate}
-          disabled={!activityId.trim() || updating}
+          disabled={!activityId.trim() || updating || !hasApiKey}
           loading={updating}
           testID="update_live_activity_button"
         />
-
-        {/* Requires API key */}
         <ActionButton
           label="END LIVE ACTIVITY"
           onPress={() => onEnd(activityId)}
-          disabled={!activityId.trim()}
+          disabled={!activityId.trim() || !hasApiKey}
           variant="outlined"
           testID="end_live_activity_button"
         />
@@ -150,13 +153,6 @@ const styles = StyleSheet.create({
     color: '#212121',
     paddingVertical: 4,
     marginLeft: 8,
-  },
-  hint: {
-    ...AppTextStyles.bodyMedium,
-    color: AppColors.osGrey500,
-    fontSize: 12,
-    marginTop: 8,
-    marginBottom: 4,
   },
   buttons: {
     marginTop: AppSpacing.gap,

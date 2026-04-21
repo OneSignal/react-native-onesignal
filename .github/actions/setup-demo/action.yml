@@ -1,0 +1,60 @@
+name: 'Setup Demo'
+description: 'Installs toolchains, builds the SDK, sets up the demo app, and creates the .env file'
+inputs:
+  onesignal-app-id:
+    description: 'OneSignal App ID for the demo .env'
+    required: true
+  onesignal-api-key:
+    description: 'OneSignal API Key for the demo .env'
+    required: true
+  install-pods:
+    description: 'Whether to run pod update for iOS'
+    required: false
+    default: 'false'
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Vite+
+      uses: voidzero-dev/setup-vp@v1
+      with:
+        cache: true
+        run-install: true
+
+    - name: Set up Bun
+      uses: oven-sh/setup-bun@v2
+
+    - name: Cache bun dependencies
+      uses: actions/cache@v5
+      with:
+        path: examples/demo/node_modules
+        key: bun-${{ runner.os }}-${{ hashFiles('examples/demo/bun.lock') }}
+        restore-keys: bun-${{ runner.os }}-
+
+    - name: Install and set up demo
+      shell: bash
+      working-directory: examples/demo
+      run: |
+        bun run setup
+        bun install
+
+    - name: Cache CocoaPods
+      if: inputs.install-pods == 'true'
+      uses: actions/cache@v5
+      with:
+        path: examples/demo/ios/Pods
+        key: pods-${{ runner.os }}-${{ hashFiles('examples/demo/ios/Podfile.lock') }}
+        restore-keys: pods-${{ runner.os }}-
+
+    - name: Update CocoaPods
+      if: inputs.install-pods == 'true'
+      shell: bash
+      working-directory: examples/demo
+      run: bun run update:pods
+
+    - name: Create demo .env
+      shell: bash
+      working-directory: examples/demo
+      run: |
+        echo "ONESIGNAL_APP_ID=${{ inputs.onesignal-app-id }}" > .env
+        echo "ONESIGNAL_API_KEY=${{ inputs.onesignal-api-key }}" >> .env
+        echo "E2E_MODE=true" >> .env
