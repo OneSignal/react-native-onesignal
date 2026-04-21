@@ -99,7 +99,7 @@ export default function MultiPairInputModal({
                     onChangeText={(t) => updateRow(row.id, 'key', t)}
                     autoFocus={idx === 0}
                     {...AppInputProps}
-                    testID={`${keyPlaceholder}_input_${idx}`}
+                    testID={`multipair_key_${idx}`}
                   />
                   <TextInput
                     style={[AppDialogStyles.input, styles.halfInput]}
@@ -108,7 +108,7 @@ export default function MultiPairInputModal({
                     value={row.value}
                     onChangeText={(t) => updateRow(row.id, 'value', t)}
                     {...AppInputProps}
-                    testID={`${valuePlaceholder}_input_${idx}`}
+                    testID={`multipair_value_${idx}`}
                   />
                   {rows.length > 1 && (
                     <TouchableOpacity

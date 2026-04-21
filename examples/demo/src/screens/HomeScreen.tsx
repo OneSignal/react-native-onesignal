@@ -146,7 +146,7 @@ export default function HomeScreen() {
 
         <TrackEventSection
           onTrackEvent={os.trackEvent}
-          onInfoTap={() => showTooltipModal('trackEvent')}
+          onInfoTap={() => showTooltipModal('customEvents')}
         />
 
         <LocationSection
