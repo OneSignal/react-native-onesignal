@@ -122,7 +122,8 @@ export default function MultiPairInputModal({
               </View>
             ))}
             <TouchableOpacity onPress={addRow} style={styles.addRowBtn}>
-              <Text style={styles.addRowText}>+ Add Row</Text>
+              <Icon name="add" size={18} color={AppColors.osPrimary} />
+              <Text style={styles.addRowText}>Add Row</Text>
             </TouchableOpacity>
           </ScrollView>
           <View style={AppDialogStyles.actions}>
@@ -173,7 +174,10 @@ const styles = StyleSheet.create({
   },
   addRowBtn: {
     paddingVertical: 10,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
   },
   addRowText: {
     color: AppColors.osPrimary,
