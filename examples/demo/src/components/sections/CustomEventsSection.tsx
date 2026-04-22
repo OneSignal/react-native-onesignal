@@ -10,7 +10,7 @@ interface Props {
   onInfoTap?: () => void;
 }
 
-export default function TrackEventSection({ onTrackEvent, onInfoTap }: Props) {
+export default function CustomEventsSection({ onTrackEvent, onInfoTap }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (

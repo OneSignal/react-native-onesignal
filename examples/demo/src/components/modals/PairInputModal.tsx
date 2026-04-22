@@ -21,7 +21,6 @@ interface Props {
   onClose: () => void;
   keyTestID?: string;
   valueTestID?: string;
-  confirmTestID?: string;
 }
 
 export default function PairInputModal({
@@ -33,7 +32,6 @@ export default function PairInputModal({
   onClose,
   keyTestID,
   valueTestID,
-  confirmTestID,
 }: Props) {
   const [keyValue, setKeyValue] = useState('');
   const [val, setVal] = useState('');
@@ -93,7 +91,7 @@ export default function PairInputModal({
               style={AppDialogStyles.actionBtn}
               onPress={handleConfirm}
               disabled={!canSubmit}
-              testID={confirmTestID}
+              testID="singlepair_confirm_button"
             >
               <Text
                 style={[

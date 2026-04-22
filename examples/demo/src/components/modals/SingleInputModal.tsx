@@ -19,6 +19,7 @@ interface Props {
   onConfirm: (value: string) => void;
   onClose: () => void;
   keyboardType?: 'default' | 'email-address' | 'phone-pad';
+  confirmLabel?: string;
   testID?: string;
 }
 
@@ -29,6 +30,7 @@ export default function SingleInputModal({
   onConfirm,
   onClose,
   keyboardType = 'default',
+  confirmLabel = 'Add',
   testID,
 }: Props) {
   const [value, setValue] = useState('');
@@ -74,6 +76,7 @@ export default function SingleInputModal({
               style={AppDialogStyles.actionBtn}
               onPress={handleConfirm}
               disabled={!value.trim()}
+              testID="singleinput_confirm_button"
             >
               <Text
                 style={[
@@ -81,7 +84,7 @@ export default function SingleInputModal({
                   !value.trim() && AppDialogStyles.actionTextDisabled,
                 ]}
               >
-                Add
+                {confirmLabel}
               </Text>
             </TouchableOpacity>
           </View>

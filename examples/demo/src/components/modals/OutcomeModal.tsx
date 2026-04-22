@@ -61,8 +61,16 @@ export default function OutcomeModal({
     onClose();
   };
 
-  const RadioOption = ({ type, label }: { type: OutcomeType; label: string }) => (
-    <TouchableOpacity style={styles.radioRow} onPress={() => setOutcomeType(type)}>
+  const RadioOption = ({
+    type,
+    label,
+    testID,
+  }: {
+    type: OutcomeType;
+    label: string;
+    testID: string;
+  }) => (
+    <TouchableOpacity style={styles.radioRow} onPress={() => setOutcomeType(type)} testID={testID}>
       <View style={styles.radioOuter}>
         {outcomeType === type && <View style={styles.radioInner} />}
       </View>
@@ -78,9 +86,13 @@ export default function OutcomeModal({
       >
         <View style={AppDialogStyles.container}>
           <Text style={AppDialogStyles.title}>Send Outcome</Text>
-          <RadioOption type="normal" label="Normal Outcome" />
-          <RadioOption type="unique" label="Unique Outcome" />
-          <RadioOption type="withValue" label="Outcome with Value" />
+          <RadioOption type="normal" label="Normal Outcome" testID="outcome_type_normal_radio" />
+          <RadioOption type="unique" label="Unique Outcome" testID="outcome_type_unique_radio" />
+          <RadioOption
+            type="withValue"
+            label="Outcome with Value"
+            testID="outcome_type_value_radio"
+          />
           <TextInput
             style={[AppDialogStyles.input, styles.inputSpacing]}
             placeholder="Name"

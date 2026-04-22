@@ -79,7 +79,6 @@ export default function TriggersSection({
         onClose={() => setAddVisible(false)}
         keyTestID="trigger_key_input"
         valueTestID="trigger_value_input"
-        confirmTestID="trigger_confirm_button"
       />
       <MultiPairInputModal
         visible={addMultipleVisible}

@@ -102,12 +102,15 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath build/demo.xcarchive \
             -derivedDataPath build \
+            -quiet \
+            -hideShellScriptEnvironment \
             CODE_SIGN_STYLE=Manual \
             COMPILER_INDEX_STORE_ENABLE=NO
           xcodebuild -exportArchive \
             -archivePath build/demo.xcarchive \
             -exportOptionsPlist ExportOptions.plist \
-            -exportPath build/ipa
+            -exportPath build/ipa \
+            -quiet
 
       - name: Verify aps-environment in IPA
         working-directory: examples/demo/ios

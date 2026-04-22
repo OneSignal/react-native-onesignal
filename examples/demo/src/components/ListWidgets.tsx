@@ -81,7 +81,11 @@ interface SingleItemProps {
 export function SingleItem({ value, onDelete, sectionKey }: SingleItemProps) {
   return (
     <View style={styles.singleRow}>
-      <Text style={styles.singleValue} numberOfLines={1}>
+      <Text
+        style={styles.singleValue}
+        numberOfLines={1}
+        testID={sectionKey ? `${sectionKey}_value_${value}` : undefined}
+      >
         {value}
       </Text>
       {onDelete && (
@@ -105,8 +109,10 @@ interface EmptyStateProps {
 
 export function EmptyState({ message, testID }: EmptyStateProps) {
   return (
-    <View style={styles.emptyContainer} testID={testID}>
-      <Text style={styles.emptyText}>{message}</Text>
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText} testID={testID}>
+        {message}
+      </Text>
     </View>
   );
 }

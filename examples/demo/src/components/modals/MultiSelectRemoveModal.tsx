@@ -89,6 +89,7 @@ export default function MultiSelectRemoveModal({
               style={AppDialogStyles.actionBtn}
               onPress={handleConfirm}
               disabled={selected.size === 0}
+              testID="multiselect_confirm_button"
             >
               <Text
                 style={[

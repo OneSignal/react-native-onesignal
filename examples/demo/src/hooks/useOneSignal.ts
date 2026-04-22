@@ -47,8 +47,14 @@ async function postCustomNotification(title: string, body: string): Promise<bool
   return apiService.sendCustomNotification(title, body, subscriptionId);
 }
 
-function toPairs(pairs: Record<string, string>): [string, string][] {
-  return Object.entries(pairs).map(([key, value]) => [key, value]);
+function mergePairs<V>(prev: [string, V][], next: Record<string, V>): [string, V][] {
+  const merged = new Map(prev);
+  for (const [k, v] of Object.entries(next)) merged.set(k, v);
+  return Array.from(merged.entries());
+}
+
+function mergeUnique<T>(prev: T[], next: T[]): T[] {
+  return Array.from(new Set([...prev, ...next]));
 }
 
 export type UseOneSignalReturn = {
@@ -72,7 +78,7 @@ export type UseOneSignalReturn = {
   logoutUser: () => Promise<void>;
   setConsentRequired: (required: boolean) => Promise<void>;
   setConsentGiven: (granted: boolean) => Promise<void>;
-  promptPush: () => void;
+  promptPush: () => Promise<boolean>;
   setPushEnabled: (enabled: boolean) => void;
   sendNotification: (type: NotificationType) => Promise<void>;
   sendCustomNotification: (title: string, body: string) => Promise<void>;
@@ -140,10 +146,10 @@ function useOneSignalState(): UseOneSignalReturn {
 
       if (requestSequenceRef.current !== requestId) return;
 
-      setAliasesList(Object.entries(userData.aliases));
-      setTagsList(Object.entries(userData.tags));
-      setEmailsList(userData.emails);
-      setSmsNumbersList(userData.smsNumbers);
+      setAliasesList((prev) => mergePairs(prev, userData.aliases));
+      setTagsList((prev) => mergePairs(prev, userData.tags));
+      setEmailsList((prev) => mergeUnique(prev, userData.emails));
+      setSmsNumbersList((prev) => mergeUnique(prev, userData.smsNumbers));
       setExternalUserId(externalId ?? userData.externalId);
     } finally {
       if (requestSequenceRef.current === requestId) {
@@ -191,8 +197,8 @@ function useOneSignalState(): UseOneSignalReturn {
       setIsPushEnabled(optedIn);
     };
 
-    const permissionHandler = async () => {
-      setHasNotificationPermission(await OneSignal.Notifications.getPermissionAsync());
+    const permissionHandler = (granted: boolean) => {
+      setHasNotificationPermission(granted);
     };
 
     const userChangeHandler = (event: UserChangedState) => {
@@ -346,9 +352,9 @@ function useOneSignalState(): UseOneSignalReturn {
     await preferences.setPrivacyConsent(granted);
   };
 
-  const promptPush = () => {
-    OneSignal.Notifications.requestPermission(true);
-  };
+  // Memoized so HomeScreen's push-prompt useEffect dependency doesn't
+  // re-fire on unrelated state changes in this provider.
+  const promptPush = useCallback(() => OneSignal.Notifications.requestPermission(true), []);
 
   const setPushEnabled = (enabled: boolean) => {
     if (enabled) {
@@ -384,29 +390,25 @@ function useOneSignalState(): UseOneSignalReturn {
 
   const sendIamTrigger = (iamType: string) => {
     OneSignal.InAppMessages.addTrigger('iam_type', iamType);
-    setTriggersList((prev) => {
-      const filtered = prev.filter(([key]) => key !== 'iam_type');
-      return [...filtered, ['iam_type', iamType] as [string, string]];
-    });
+    setTriggersList((prev) => mergePairs(prev, { iam_type: iamType }));
     console.log(`Sent In-App Message: ${iamType}`);
   };
 
   const addAlias = (label: string, id: string) => {
     OneSignal.User.addAlias(label, id);
-    setAliasesList((prev) => [...prev, [label, id]]);
+    setAliasesList((prev) => mergePairs(prev, { [label]: id }));
     console.log(`Alias added: ${label}`);
   };
 
   const addAliases = (pairs: Record<string, string>) => {
     OneSignal.User.addAliases(pairs);
-    const newEntries = toPairs(pairs);
-    setAliasesList((prev) => [...prev, ...newEntries]);
-    console.log(`${newEntries.length} alias(es) added`);
+    setAliasesList((prev) => mergePairs(prev, pairs));
+    console.log(`${Object.keys(pairs).length} alias(es) added`);
   };
 
   const addEmail = (email: string) => {
     OneSignal.User.addEmail(email);
-    setEmailsList((prev) => [...prev.filter((value) => value !== email), email]);
+    setEmailsList((prev) => mergeUnique(prev, [email]));
     console.log(`Email added: ${email}`);
   };
 
@@ -418,7 +420,7 @@ function useOneSignalState(): UseOneSignalReturn {
 
   const addSms = (sms: string) => {
     OneSignal.User.addSms(sms);
-    setSmsNumbersList((prev) => [...prev.filter((value) => value !== sms), sms]);
+    setSmsNumbersList((prev) => mergeUnique(prev, [sms]));
     console.log(`SMS added: ${sms}`);
   };
 
@@ -430,21 +432,14 @@ function useOneSignalState(): UseOneSignalReturn {
 
   const addTag = (key: string, value: string) => {
     OneSignal.User.addTag(key, value);
-    setTagsList((prev) => {
-      const filtered = prev.filter(([k]) => k !== key);
-      return [...filtered, [key, value]];
-    });
+    setTagsList((prev) => mergePairs(prev, { [key]: value }));
     console.log(`Tag added: ${key}`);
   };
 
   const addTags = (pairs: Record<string, string>) => {
     OneSignal.User.addTags(pairs);
-    const newEntries = toPairs(pairs);
-    setTagsList((prev) => {
-      const keys = new Set(newEntries.map(([k]) => k));
-      return [...prev.filter(([k]) => !keys.has(k)), ...newEntries];
-    });
-    console.log(`${newEntries.length} tag(s) added`);
+    setTagsList((prev) => mergePairs(prev, pairs));
+    console.log(`${Object.keys(pairs).length} tag(s) added`);
   };
 
   const removeSelectedTags = (keys: string[]) => {
@@ -471,21 +466,14 @@ function useOneSignalState(): UseOneSignalReturn {
 
   const addTrigger = (key: string, value: string) => {
     OneSignal.InAppMessages.addTrigger(key, value);
-    setTriggersList((prev) => {
-      const filtered = prev.filter(([k]) => k !== key);
-      return [...filtered, [key, value]];
-    });
+    setTriggersList((prev) => mergePairs(prev, { [key]: value }));
     console.log(`Trigger added: ${key}`);
   };
 
   const addTriggers = (pairs: Record<string, string>) => {
     OneSignal.InAppMessages.addTriggers(pairs);
-    const newEntries = toPairs(pairs);
-    setTriggersList((prev) => {
-      const keys = new Set(newEntries.map(([k]) => k));
-      return [...prev.filter(([k]) => !keys.has(k)), ...newEntries];
-    });
-    console.log(`${newEntries.length} trigger(s) added`);
+    setTriggersList((prev) => mergePairs(prev, pairs));
+    console.log(`${Object.keys(pairs).length} trigger(s) added`);
   };
 
   const removeSelectedTriggers = (keys: string[]) => {

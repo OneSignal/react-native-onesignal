@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
-import LoginModal from '../modals/LoginModal';
+import SingleInputModal from '../modals/SingleInputModal';
 import SectionCard from '../SectionCard';
 
 interface Props {
@@ -68,10 +68,14 @@ export default function UserSection({ externalUserId, onLogin, onLogout }: Props
           testID="logout_user_button"
         />
       )}
-      <LoginModal
+      <SingleInputModal
         visible={loginVisible}
+        title="Login User"
+        placeholder="External User Id"
+        confirmLabel="Login"
         onConfirm={handleLogin}
         onClose={() => setLoginVisible(false)}
+        testID="login_user_id_input"
       />
     </SectionCard>
   );

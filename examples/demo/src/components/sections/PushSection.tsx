@@ -1,20 +1,11 @@
-import { E2E_MODE } from '@env';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
+import { maskValue } from '../../utils/maskValue';
 import ActionButton from '../ActionButton';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
-
-const MASK_CHAR = '•';
-
-function maskValue(value: string): string {
-  if (E2E_MODE === 'true') {
-    return MASK_CHAR.repeat(value.length);
-  }
-  return value;
-}
 
 interface Props {
   pushSubscriptionId: string | undefined;

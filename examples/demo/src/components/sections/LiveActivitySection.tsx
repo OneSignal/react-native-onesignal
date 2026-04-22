@@ -77,7 +77,7 @@ export default function LiveActivitySection({
           label="Order #"
           value={orderNumber}
           onChangeText={setOrderNumber}
-          testID="live_activity_order_number"
+          testID="live_activity_order_number_input"
         />
       </View>
       <View style={styles.buttons}>

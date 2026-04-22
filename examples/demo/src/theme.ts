@@ -46,6 +46,11 @@ export const AppInputProps: TextInputProps = {
   autoCorrect: false,
   autoCapitalize: 'none',
   autoComplete: 'off',
+  // Prevents Android Autofill / Credential Manager from walking the input on focus.
+  // Without this, Android 14+ rebuilds the AssistStructure when a new input
+  // appears (e.g. revealing the "Value" field in OutcomeModal) and force-stops
+  // the UiAutomator2 instrumentation, making Appium tests fail mid-suite.
+  importantForAutofill: 'no',
 };
 
 export const AppDialogStyles = StyleSheet.create({

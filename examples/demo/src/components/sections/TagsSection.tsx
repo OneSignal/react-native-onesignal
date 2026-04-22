@@ -73,7 +73,6 @@ export default function TagsSection({
         onClose={() => setAddVisible(false)}
         keyTestID="tag_key_input"
         valueTestID="tag_value_input"
-        confirmTestID="tag_confirm_button"
       />
       <MultiPairInputModal
         visible={addMultipleVisible}

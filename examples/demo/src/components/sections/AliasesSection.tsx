@@ -64,7 +64,6 @@ export default function AliasesSection({
         onClose={() => setAddVisible(false)}
         keyTestID="alias_label_input"
         valueTestID="alias_id_input"
-        confirmTestID="alias_confirm_button"
       />
       <MultiPairInputModal
         visible={addMultipleVisible}
