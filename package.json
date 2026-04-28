@@ -54,7 +54,7 @@
     "vite-plus": "^0.1.11"
   },
   "peerDependencies": {
-    "react-native": ">=0.76.0"
+    "react-native": ">=0.79.0"
   },
   "packageManager": "pnpm@10.32.1",
   "pnpm": {
