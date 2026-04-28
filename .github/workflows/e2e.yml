@@ -46,6 +46,17 @@ jobs:
           onesignal-app-id: ${{ vars.APPIUM_ONESIGNAL_APP_ID }}
           onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
 
+      - name: Resolve OneSignal Android SDK version
+        id: android-sdk-version
+        run: |
+          VERSION=$(grep "com.onesignal:OneSignal:" android/build.gradle | sed -E "s/.*OneSignal:([0-9.]+).*/\1/")
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for OneSignal Android SDK on Maven Central
+        uses: OneSignal/sdk-shared/.github/actions/wait-for-maven-artifact@main
+        with:
+          version: ${{ steps.android-sdk-version.outputs.version }}
+
       - name: Build release APK
         working-directory: examples/demo/android
         run: ./gradlew assembleRelease --quiet --console=plain --warning-mode=summary

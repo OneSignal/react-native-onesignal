@@ -8,9 +8,9 @@
         "@react-native-async-storage/async-storage": "^2.1.0",
         "@react-navigation/native": "^7.0.0",
         "@react-navigation/native-stack": "^7.0.0",
+        "react-native-onesignal": "file:../../react-native-onesignal.tgz",
         "react": "19.2.3",
         "react-native": "0.84.0",
-        "react-native-onesignal": "file:../../react-native-onesignal.tgz",
         "react-native-safe-area-context": "^5.5.2",
         "react-native-screens": "^4.0.0",
         "react-native-svg": "^15.8.0",
@@ -1006,7 +1006,7 @@
 
     "react-native-dotenv": ["react-native-dotenv@3.4.11", "", { "dependencies": { "dotenv": "^16.4.5" }, "peerDependencies": { "@babel/runtime": "^7.20.6" } }, "sha512-6vnIE+WHABSeHCaYP6l3O1BOEhWxKH6nHAdV7n/wKn/sciZ64zPPp2NUdEUf1m7g4uuzlLbjgr+6uDt89q2DOg=="],
 
-    "react-native-onesignal": ["react-native-onesignal@../../react-native-onesignal.tgz", { "dependencies": { "invariant": "^2.2.4" }, "peerDependencies": { "react-native": ">=0.76.0" } }, "sha512-waBo86i8QAv33r75UG6X1k9z6GA2sTxjt0hgf2V25z7IVcqhUUbp5sbH+pzYPBAA/yUQGgb6Im5GUvbNH3zRBg=="],
+    "react-native-onesignal": ["react-native-onesignal@../../react-native-onesignal.tgz", { "dependencies": { "invariant": "^2.2.4" }, "peerDependencies": { "react-native": ">=0.79.0" } }, "sha512-kqBF7g+l2w4q4H/RB7AaX4lYiIe73qv9OcbBZ/5y7FYcf5ngyBESgnd0215+mATnrfxVRJd51IO9dEivMRYptQ=="],
 
     "react-native-safe-area-context": ["react-native-safe-area-context@5.7.0", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-/9/MtQz8ODphjsLdZ+GZAIcC/RtoqW9EeShf7Uvnfgm/pzYrJ75y3PV/J1wuAV1T5Dye5ygq4EAW20RoBq0ABQ=="],
 

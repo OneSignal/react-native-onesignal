@@ -152,6 +152,21 @@ jobs:
           # Update package.json version
           npm pkg set version="$NEW_VERSION"
 
+          # Update the wrapper version literal reported to OneSignal's backend.
+          # Format is MMmmpp (zero-padded major/minor/patch); strip any pre-release suffix.
+          CORE_VERSION=${NEW_VERSION%%-*}
+          CORE_VERSION=${CORE_VERSION%%+*}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CORE_VERSION"
+          PADDED_VERSION=$(printf "%02d%02d%02d" "$MAJOR" "$MINOR" "$PATCH")
+
+          sed -i '' -E "s/(OneSignalWrapper\.setSdkVersion\(\")[0-9]+(\"\))/\1${PADDED_VERSION}\2/" \
+            android/src/main/java/com/onesignal/rnonesignalandroid/RNOneSignal.java
+          echo "✓ Updated RNOneSignal.java wrapper version to ${PADDED_VERSION}"
+
+          sed -i '' -E "s/(OneSignalWrapper\.sdkVersion = @\")[0-9]+(\";)/\1${PADDED_VERSION}\2/" \
+            ios/RCTOneSignal/RCTOneSignal.mm
+          echo "✓ Updated RCTOneSignal.mm wrapper version to ${PADDED_VERSION}"
+
           # Only commit if there are changes
           git add -A
           git diff --staged --quiet && exit 0
