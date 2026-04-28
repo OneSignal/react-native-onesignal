@@ -23,6 +23,10 @@ If you run into any challenges or have concerns, please contact our support team
 
 [OneSignal](https://onesignal.com/) is a free email, sms, push notification, and in-app message service for mobile apps. This SDK makes it easy to integrate your native React-Native iOS and/or Android apps with OneSignal.
 
+#### Requirements
+
+- React Native `>=0.79.0` for `5.4.x` and later. The TurboModule registers itself through the `codegenConfig.ios.modulesProvider` field added in React Native 0.79, so earlier versions will throw `TurboModuleRegistry.getEnforcing(...): 'OneSignal' could not be found` at runtime when the New Architecture is enabled. Apps on React Native `0.76`–`0.78` (including Expo SDK 52) should stay on `5.3.x`, which uses the legacy bridge module and works on the New Architecture via the interop layer.
+
 #### Installation
 
 See the [Setup Guide](https://documentation.onesignal.com/docs/react-native-sdk-setup) for setup instructions.

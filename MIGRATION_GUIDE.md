@@ -1,5 +1,9 @@
 # React Native v5.0.0 Migration Guide
 
+#### ⚠️ React Native version requirement for v5.4.x
+
+`react-native-onesignal` `5.4.x` registers its iOS TurboModule through the `codegenConfig.ios.modulesProvider` field, which was introduced in React Native `0.79`. Apps on React Native `0.76`–`0.78` (including Expo SDK `52`) will hit `Invariant Violation: TurboModuleRegistry.getEnforcing(...): 'OneSignal' could not be found` at runtime when the New Architecture is enabled. Stay on `5.3.x` until you can move to React Native `0.79+` (Expo SDK `53+`); `5.3.x` uses the legacy bridge module and works on the New Architecture via the interop layer.
+
 #### ⚠️ Migration Advisory for current OneSignal customers
 
 Our new [user-centric APIs and v5.x.x SDKs](https://onesignal.com/blog/unify-your-users-across-channels-and-devices/) offer an improved user and data management experience. However, they may not be at 1:1 feature parity with our previous versions yet.
