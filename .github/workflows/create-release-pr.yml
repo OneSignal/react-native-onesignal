@@ -159,12 +159,20 @@ jobs:
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CORE_VERSION"
           PADDED_VERSION=$(printf "%02d%02d%02d" "$MAJOR" "$MINOR" "$PATCH")
 
-          sed -i '' -E "s/(OneSignalWrapper\.setSdkVersion\(\")[0-9]+(\"\))/\1${PADDED_VERSION}\2/" \
-            android/src/main/java/com/onesignal/rnonesignalandroid/RNOneSignal.java
+          ANDROID_FILE=android/src/main/java/com/onesignal/rnonesignalandroid/RNOneSignal.java
+          sed -i '' -E "s/(OneSignalWrapper\.setSdkVersion\(\")[0-9]+(\"\))/\1${PADDED_VERSION}\2/" "$ANDROID_FILE"
+          if ! grep -q "OneSignalWrapper.setSdkVersion(\"${PADDED_VERSION}\")" "$ANDROID_FILE"; then
+            echo "::error::Failed to update wrapper version in ${ANDROID_FILE} to ${PADDED_VERSION}"
+            exit 1
+          fi
           echo "✓ Updated RNOneSignal.java wrapper version to ${PADDED_VERSION}"
 
-          sed -i '' -E "s/(OneSignalWrapper\.sdkVersion = @\")[0-9]+(\";)/\1${PADDED_VERSION}\2/" \
-            ios/RCTOneSignal/RCTOneSignal.mm
+          IOS_FILE=ios/RCTOneSignal/RCTOneSignal.mm
+          sed -i '' -E "s/(OneSignalWrapper\.sdkVersion = @\")[0-9]+(\";)/\1${PADDED_VERSION}\2/" "$IOS_FILE"
+          if ! grep -q "OneSignalWrapper.sdkVersion = @\"${PADDED_VERSION}\";" "$IOS_FILE"; then
+            echo "::error::Failed to update wrapper version in ${IOS_FILE} to ${PADDED_VERSION}"
+            exit 1
+          fi
           echo "✓ Updated RCTOneSignal.mm wrapper version to ${PADDED_VERSION}"
 
           # Only commit if there are changes
