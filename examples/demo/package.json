@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "setup": "../setup.sh",
-    "preandroid": "bun run setup",
-    "preios": "bun run setup",
+    "preandroid": "vp run setup",
+    "preios": "vp run setup",
     "android": "bash ../run-android.sh",
     "ios": "bash ../run-ios.sh",
     "update:pods": "(cd ios && pod update OneSignalXCFramework --no-repo-update)",

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Invoked from a demo dir (e.g. examples/demo/) via `bun run setup`.
+# Invoked from a demo dir (e.g. examples/demo/) via `vp run setup`.
 # ORIGINAL_DIR captures that dir so we can return to it after building
 # the SDK; SDK_ROOT is two levels up (the SDK package itself).
 ORIGINAL_DIR=$(pwd)
