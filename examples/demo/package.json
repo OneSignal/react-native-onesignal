@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "setup": "../setup.sh",
-    "preandroid": "bun run setup",
-    "preios": "bun run setup",
+    "preandroid": "vp run setup",
+    "preios": "vp run setup",
     "android": "bash ../run-android.sh",
     "ios": "bash ../run-ios.sh",
-    "update:pods": "cd ios && pod update OneSignalXCFramework --no-repo-update && cd ..",
+    "update:pods": "(cd ios && pod update OneSignalXCFramework --no-repo-update)",
     "clean:android": "rm -rf android/app/build android/app/.cxx android/build && adb uninstall com.onesignal.example >/dev/null 2>&1 || true",
     "clean:ios": "rm -rf ios/build ios/Pods",
     "start": "react-native start"
@@ -44,5 +44,6 @@
   },
   "engines": {
     "node": ">= 22.11.0"
-  }
+  },
+  "packageManager": "bun@1.3.13"
 }

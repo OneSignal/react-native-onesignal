@@ -92,8 +92,8 @@ jobs:
 
           # Get versions from target branch (not the release branch)
           CURRENT_VERSION=$(git show origin/${{ inputs.target_branch }}:package.json | jq -r .version)
-          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:android/build.gradle | grep "com.onesignal:OneSignal:" | sed -E "s/.*OneSignal:([0-9.]+).*/\1/")
-          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:react-native-onesignal.podspec | grep "OneSignalXCFramework" | sed -E "s/.*'([0-9.]+)'.*/\1/")
+          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:android/build.gradle | grep "com.onesignal:OneSignal:" | sed -E "s/.*OneSignal:([^\"']+).*/\1/")
+          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:react-native-onesignal.podspec | grep "OneSignalXCFramework" | sed -E "s/.*'([^']+)'.*/\1/")
 
           echo "rn_from=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "android_from=$ANDROID_VERSION" >> $GITHUB_OUTPUT
@@ -105,8 +105,11 @@ jobs:
           VERSION="${{ inputs.android_version }}"
 
           # Validate version exists on GitHub
-          RELEASE=$(curl -s -H "Authorization: token ${{ github.token }}" \
-            "https://api.github.com/repos/OneSignal/OneSignal-Android-SDK/releases/tags/${VERSION}")
+          # -sf: silent + fail on HTTP >= 400 so RELEASE stays empty
+          # on 404, otherwise GitHub's JSON error body would defeat the
+          # `[ -z ]` guard below.
+          RELEASE=$(curl -sf -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-Android-SDK/releases/tags/${VERSION}" || true)
 
 
           if [ -z "$RELEASE" ]; then
@@ -115,7 +118,7 @@ jobs:
           fi
 
           # Update Android SDK version in build.gradle (handles both api '...' and api('...') syntax)
-          sed -i '' -E "s/(com\.onesignal:OneSignal:)[0-9.]+/\1$VERSION/" android/build.gradle
+          sed -i '' -E "s/(com\.onesignal:OneSignal:)[^\"']+/\1$VERSION/" android/build.gradle
           echo "✓ Updated android/build.gradle with Android SDK ${VERSION}"
 
           # Only commit if there are changes
@@ -129,8 +132,11 @@ jobs:
           VERSION="${{ inputs.ios_version }}"
 
           # Validate version exists on GitHub
-          RELEASE=$(curl -s -H "Authorization: token ${{ github.token }}" \
-            "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}")
+          # -sf: silent + fail on HTTP >= 400 so RELEASE stays empty
+          # on 404, otherwise GitHub's JSON error body would defeat the
+          # `[ -z ]` guard below.
+          RELEASE=$(curl -sf -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}" || true)
 
           if [ -z "$RELEASE" ]; then
             echo "✗ iOS SDK version ${VERSION} not found"
@@ -152,10 +158,53 @@ jobs:
           # Update package.json version
           npm pkg set version="$NEW_VERSION"
 
+          # Update the wrapper version literal reported to OneSignal's backend.
+          # Format is MMmmpp (zero-padded major/minor/patch); strip any pre-release suffix.
+          CORE_VERSION=${NEW_VERSION%%-*}
+          CORE_VERSION=${CORE_VERSION%%+*}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CORE_VERSION"
+          PADDED_VERSION=$(printf "%02d%02d%02d" "$MAJOR" "$MINOR" "$PATCH")
+
+          ANDROID_FILE=android/src/main/java/com/onesignal/rnonesignalandroid/RNOneSignal.java
+          sed -i '' -E "s/(OneSignalWrapper\.setSdkVersion\(\")[0-9]+(\"\))/\1${PADDED_VERSION}\2/" "$ANDROID_FILE"
+          if ! grep -q "OneSignalWrapper.setSdkVersion(\"${PADDED_VERSION}\")" "$ANDROID_FILE"; then
+            echo "::error::Failed to update wrapper version in ${ANDROID_FILE} to ${PADDED_VERSION}"
+            exit 1
+          fi
+          echo "✓ Updated RNOneSignal.java wrapper version to ${PADDED_VERSION}"
+
+          IOS_FILE=ios/RCTOneSignal/RCTOneSignal.mm
+          sed -i '' -E "s/(OneSignalWrapper\.sdkVersion = @\")[0-9]+(\";)/\1${PADDED_VERSION}\2/" "$IOS_FILE"
+          if ! grep -q "OneSignalWrapper.sdkVersion = @\"${PADDED_VERSION}\";" "$IOS_FILE"; then
+            echo "::error::Failed to update wrapper version in ${IOS_FILE} to ${PADDED_VERSION}"
+            exit 1
+          fi
+          echo "✓ Updated RCTOneSignal.mm wrapper version to ${PADDED_VERSION}"
+
           # Only commit if there are changes
           git add -A
           git diff --staged --quiet && exit 0
           git commit -m "Release $NEW_VERSION" && git push
+
+      - name: Refresh demo Podfile.lock
+        run: |
+          # Runs after all version edits (package.json + podspec) so the
+          # repacked SDK tarball and OneSignalXCFramework pin both reflect
+          # the new release. pod install regenerates Podfile.lock entries
+          # for the path-based react-native-onesignal pod and any changed
+          # native pins in a single resolve.
+          (
+            cd examples/demo
+            vp run setup
+            cd ios
+            pod install
+          )
+          echo "✓ Refreshed examples/demo/ios/Podfile.lock"
+
+          # Only commit if there are changes
+          git add -A
+          git diff --staged --quiet && exit 0
+          git commit -m "Update demo Podfile.lock" && git push
 
   create-pr:
     needs: [prep, update_version]

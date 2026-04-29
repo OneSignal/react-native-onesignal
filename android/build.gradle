@@ -36,10 +36,10 @@ dependencies {
     // api is used instead of implementation so the parent :app project can access any of the OneSignal Java
     //   classes if needed. Such as com.onesignal.NotificationExtenderService
     //
-    // Exclude OkHttp from OneSignal's transitive deps: the 5.7.x otel module pulls in OkHttp 5.x
+    // Exclude OkHttp from OneSignal's transitive deps: the otel module pulls in OkHttp 5.x
     // (via opentelemetry-exporter-sender-okhttp) which is binary-incompatible with React Native's
     // networking stack (okhttp3.internal.Util removed in 5.x). React Native already provides OkHttp 4.x.
-    api('com.onesignal:OneSignal:5.7.7') {
+    api('com.onesignal:OneSignal:5.8.0') {
         exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     }
 

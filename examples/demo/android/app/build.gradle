@@ -56,8 +56,9 @@ react {
 
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
+ * Enabled for the demo to keep the BrowserStack/e2e APK small (~28 MB → ~13 MB).
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -103,6 +104,20 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+
+    // CI-only: build a single arm64-v8a APK (~10 MB) instead of the
+    // universal ~30 MB fat APK. Enable with `-PciSingleAbi`. BrowserStack
+    // devices we run e2e against are all arm64-v8a.
+    if (project.hasProperty('ciSingleAbi')) {
+        splits {
+            abi {
+                enable true
+                reset()
+                include 'arm64-v8a'
+                universalApk false
+            }
         }
     }
 }

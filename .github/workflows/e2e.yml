@@ -46,15 +46,29 @@ jobs:
           onesignal-app-id: ${{ vars.APPIUM_ONESIGNAL_APP_ID }}
           onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
 
+      - name: Resolve OneSignal Android SDK version
+        id: android-sdk-version
+        run: |
+          VERSION=$(grep "com.onesignal:OneSignal:" android/build.gradle | sed -E "s/.*OneSignal:([^\"']+).*/\1/")
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for OneSignal Android SDK on Maven Central
+        uses: OneSignal/sdk-shared/.github/actions/wait-for-maven-artifact@main
+        with:
+          version: ${{ steps.android-sdk-version.outputs.version }}
+
       - name: Build release APK
         working-directory: examples/demo/android
-        run: ./gradlew assembleRelease --quiet --console=plain --warning-mode=summary
+        # -PciSingleAbi → arm64-v8a-only APK (~10 MB) instead of the
+        # ~30 MB universal APK. BrowserStack devices we test against
+        # are all arm64-v8a.
+        run: ./gradlew assembleRelease -PciSingleAbi --quiet --console=plain --warning-mode=summary
 
       - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
           name: demo-apk
-          path: examples/demo/android/app/build/outputs/apk/release/app-release.apk
+          path: examples/demo/android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
           retention-days: 1
           compression-level: 0
 
@@ -139,7 +153,7 @@ jobs:
     with:
       platform: android
       app-artifact: demo-apk
-      app-filename: app-release.apk
+      app-filename: app-arm64-v8a-release.apk
       sdk-type: react-native
       build-name: react-native-android-${{ github.ref_name }}-${{ github.run_number }}
 
