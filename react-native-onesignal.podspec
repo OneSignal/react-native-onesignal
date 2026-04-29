@@ -15,5 +15,5 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s)
 
-  s.dependency 'OneSignalXCFramework', '5.5.0'
+  s.dependency 'OneSignalXCFramework', '5.5.1'
 end
