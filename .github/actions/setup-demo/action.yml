@@ -31,8 +31,8 @@ runs:
       shell: bash
       working-directory: examples/demo
       run: |
-        bun run setup
-        bun install
+        vp run setup
+        vp install
 
     - name: Cache CocoaPods
       if: inputs.install-pods == 'true'
@@ -46,7 +46,7 @@ runs:
       if: inputs.install-pods == 'true'
       shell: bash
       working-directory: examples/demo
-      run: bun run update:pods
+      run: vp run update:pods
 
     - name: Create demo .env
       shell: bash
