@@ -140,6 +140,19 @@ jobs:
           sed -i '' "s/s\.dependency 'OneSignalXCFramework', '[^']*'/s.dependency 'OneSignalXCFramework', '$VERSION'/" react-native-onesignal.podspec
           echo "✓ Updated react-native-onesignal.podspec with iOS SDK ${VERSION}"
 
+          # Update demo app's Podfile.lock with the new iOS SDK version.
+          # setup.sh repacks the SDK tarball (so node_modules sees the new pin),
+          # then pod update rewrites the OneSignalXCFramework lock entry only.
+          # --no-repo-update is fine because trunk is a CDN and serves the new
+          # spec on demand without a local refresh.
+          (
+            cd examples/demo
+            vp run setup
+            cd ios
+            pod update OneSignalXCFramework --no-repo-update
+          )
+          echo "✓ Updated examples/demo/ios/Podfile.lock to OneSignalXCFramework ${VERSION}"
+
           # Only commit if there are changes
           git add -A
           git diff --staged --quiet && exit 0

@@ -38,14 +38,14 @@ if [ "${FORCE_SETUP:-0}" != "1" ] \
 fi
 
 cd "$SDK_ROOT"
-bun run build
+vp run build
 
 # `bun pm pack` honors package.json's "files" field (so the tarball matches
 # what would actually be published). The version suffix in the filename
 # is unstable, so we normalize to react-native-onesignal.tgz for a
 # deterministic path that package.json + the extract step can reference.
 rm -f react-native-onesignal*.tgz
-bun pm pack
+vp pm pack
 mv react-native-onesignal-*.tgz react-native-onesignal.tgz
 
 cd "$ORIGINAL_DIR"
@@ -63,8 +63,8 @@ cd "$ORIGINAL_DIR"
 # path is intentional — an absolute path would leak this machine's
 # layout into the lockfile.
 echo "Registering tarball with bun (refreshes bun.lock integrity hash)..."
-bun remove react-native-onesignal 2>/dev/null || true
-bun add file:../../react-native-onesignal.tgz
+vp remove react-native-onesignal 2>/dev/null || true
+vp add file:../../react-native-onesignal.tgz
 
 # Record the hash only after a successful build/install so that an
 # interrupted run forces a full retry next time.
