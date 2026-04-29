@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Invoked from a demo dir (e.g. examples/demo/) via `bun run setup`.

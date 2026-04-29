@@ -45,8 +45,8 @@ runs:
     - name: Update CocoaPods
       if: inputs.install-pods == 'true'
       shell: bash
-      working-directory: examples/demo
-      run: vp run update:pods
+      working-directory: examples/demo/ios
+      run: pod update OneSignalXCFramework --no-repo-update
 
     - name: Create demo .env
       shell: bash
