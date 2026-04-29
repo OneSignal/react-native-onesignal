@@ -1,4 +1,4 @@
-import { ONESIGNAL_API_KEY } from '@env';
+import { ONESIGNAL_API_KEY, ONESIGNAL_ANDROID_CHANNEL_ID } from '@env';
 
 import { NotificationType } from '../models/NotificationType';
 import { UserData, userDataFromJson } from '../models/UserData';
@@ -49,7 +49,8 @@ class OneSignalApiService {
         headings = { en: 'Sound Notification' };
         contents = { en: 'This notification plays a custom sound' };
         extra.ios_sound = 'vine_boom.wav';
-        extra.android_channel_id = 'b3b015d9-c050-4042-8548-dcc34aa44aa4';
+        extra.android_channel_id =
+          ONESIGNAL_ANDROID_CHANNEL_ID ?? 'b3b015d9-c050-4042-8548-dcc34aa44aa4';
         break;
       default:
         return false;
