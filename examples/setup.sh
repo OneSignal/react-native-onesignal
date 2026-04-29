@@ -41,29 +41,31 @@ fi
 cd "$SDK_ROOT"
 vp run build
 
-# `bun pm pack` honors package.json's "files" field (so the tarball matches
-# what would actually be published). The version suffix in the filename
-# is unstable, so we normalize to react-native-onesignal.tgz for a
-# deterministic path that package.json + the extract step can reference.
+# `vp pm pack` (wraps bun pm pack) honors package.json's "files" field
+# (so the tarball matches what would actually be published). The version
+# suffix in the filename is unstable, so we normalize to
+# react-native-onesignal.tgz for a deterministic path that package.json +
+# the extract step can reference.
 rm -f react-native-onesignal*.tgz
 vp pm pack
 mv react-native-onesignal-*.tgz react-native-onesignal.tgz
 
 cd "$ORIGINAL_DIR"
 
-# Always go through bun add so bun.lock's integrity hash for the tarball
-# stays in sync with the freshly-built tarball on disk. A previous version
-# of this script had a "hot path" that just untarred over node_modules
-# directly, which was faster but left a stale sha512 in bun.lock — any
-# subsequent `bun install` that re-resolved this entry (e.g. when the
-# lockfile was touched by another dep) would fail with IntegrityCheckFailed.
+# Always go through `vp add` (wraps bun) so bun.lock's integrity hash for
+# the tarball stays in sync with the freshly-built tarball on disk. A
+# previous version of this script had a "hot path" that just untarred
+# over node_modules directly, which was faster but left a stale sha512
+# in bun.lock — any subsequent `vp install` that re-resolved this entry
+# (e.g. when the lockfile was touched by another dep) would fail with
+# IntegrityCheckFailed.
 #
-# `bun remove` first because bun verifies the existing integrity hash
+# `vp remove` first because bun verifies the existing integrity hash
 # before replacing the entry; without removing, a stale hash from a prior
-# build causes `bun add` itself to fail. The relative `file:../../...`
+# build causes `vp add` itself to fail. The relative `file:../../...`
 # path is intentional — an absolute path would leak this machine's
 # layout into the lockfile.
-echo "Registering tarball with bun (refreshes bun.lock integrity hash)..."
+echo "Registering tarball with vp (refreshes bun.lock integrity hash)..."
 vp remove react-native-onesignal 2>/dev/null || true
 vp add file:../../react-native-onesignal.tgz
 
