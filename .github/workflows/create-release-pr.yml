@@ -92,8 +92,8 @@ jobs:
 
           # Get versions from target branch (not the release branch)
           CURRENT_VERSION=$(git show origin/${{ inputs.target_branch }}:package.json | jq -r .version)
-          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:android/build.gradle | grep "com.onesignal:OneSignal:" | sed -E "s/.*OneSignal:([0-9.]+).*/\1/")
-          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:react-native-onesignal.podspec | grep "OneSignalXCFramework" | sed -E "s/.*'([0-9.]+)'.*/\1/")
+          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:android/build.gradle | grep "com.onesignal:OneSignal:" | sed -E "s/.*OneSignal:([^\"']+).*/\1/")
+          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:react-native-onesignal.podspec | grep "OneSignalXCFramework" | sed -E "s/.*'([^']+)'.*/\1/")
 
           echo "rn_from=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "android_from=$ANDROID_VERSION" >> $GITHUB_OUTPUT
@@ -115,7 +115,7 @@ jobs:
           fi
 
           # Update Android SDK version in build.gradle (handles both api '...' and api('...') syntax)
-          sed -i '' -E "s/(com\.onesignal:OneSignal:)[0-9.]+/\1$VERSION/" android/build.gradle
+          sed -i '' -E "s/(com\.onesignal:OneSignal:)[^\"']+/\1$VERSION/" android/build.gradle
           echo "✓ Updated android/build.gradle with Android SDK ${VERSION}"
 
           # Only commit if there are changes
