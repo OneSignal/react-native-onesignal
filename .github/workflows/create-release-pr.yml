@@ -105,8 +105,11 @@ jobs:
           VERSION="${{ inputs.android_version }}"
 
           # Validate version exists on GitHub
-          RELEASE=$(curl -s -H "Authorization: token ${{ github.token }}" \
-            "https://api.github.com/repos/OneSignal/OneSignal-Android-SDK/releases/tags/${VERSION}")
+          # -sf: silent + fail on HTTP >= 400 so RELEASE stays empty
+          # on 404, otherwise GitHub's JSON error body would defeat the
+          # `[ -z ]` guard below.
+          RELEASE=$(curl -sf -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-Android-SDK/releases/tags/${VERSION}" || true)
 
 
           if [ -z "$RELEASE" ]; then
@@ -129,8 +132,11 @@ jobs:
           VERSION="${{ inputs.ios_version }}"
 
           # Validate version exists on GitHub
-          RELEASE=$(curl -s -H "Authorization: token ${{ github.token }}" \
-            "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}")
+          # -sf: silent + fail on HTTP >= 400 so RELEASE stays empty
+          # on 404, otherwise GitHub's JSON error body would defeat the
+          # `[ -z ]` guard below.
+          RELEASE=$(curl -sf -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}" || true)
 
           if [ -z "$RELEASE" ]; then
             echo "✗ iOS SDK version ${VERSION} not found"
