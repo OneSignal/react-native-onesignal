@@ -15,7 +15,12 @@ import {
 import type { OSNotificationPermission } from './constants/subscription';
 import EventManager from './events/EventManager';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
-import { isNativeModuleLoaded, isObjectSerializable, isValidCallback } from './helpers';
+import {
+  encodeNullsForIOS,
+  isNativeModuleLoaded,
+  isObjectSerializable,
+  isValidCallback,
+} from './helpers';
 import NativeOneSignal from './NativeOneSignal';
 import type {
   InAppMessage,
@@ -538,10 +543,7 @@ export namespace OneSignal {
       return tags as { [key: string]: string };
     }
 
-    /**
-     * Track custom events for the current user.
-     * Note: Currently, null values will be omitted for Android.
-     * */
+    /** Track custom events for the current user. */
     export function trackEvent(name: string, properties: Record<string, unknown> = {}) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
@@ -550,7 +552,12 @@ export namespace OneSignal {
         return;
       }
 
-      RNOneSignal.trackEvent(name, properties);
+      // The iOS TurboModule bridge drops dictionary entries whose value is
+      // `null`. Encode nulls as a sentinel string so the native side can
+      // restore them as `NSNull`. See SDK-4386.
+      const payload = Platform.OS === 'ios' ? encodeNullsForIOS(properties) : properties;
+
+      RNOneSignal.trackEvent(name, payload);
     }
   }
 

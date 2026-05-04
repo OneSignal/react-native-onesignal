@@ -1,7 +1,13 @@
 import type { NativeModule } from 'react-native';
 import { beforeEach, describe, expect, test, vi, type MockInstance } from 'vite-plus/test';
 
-import { isNativeModuleLoaded, isObjectSerializable, isValidCallback } from './helpers';
+import { IOS_NULL_SENTINEL } from './constants/internal';
+import {
+  encodeNullsForIOS,
+  isNativeModuleLoaded,
+  isObjectSerializable,
+  isValidCallback,
+} from './helpers';
 
 describe('helpers', () => {
   let errorSpy: MockInstance;
@@ -101,6 +107,55 @@ describe('helpers', () => {
       const circular: Record<string, unknown> = {};
       circular.self = circular;
       expect(isObjectSerializable(circular)).toBe(false);
+    });
+  });
+
+  describe('encodeNullsForIOS', () => {
+    test('replaces top-level null with the sentinel', () => {
+      expect(encodeNullsForIOS(null)).toBe(IOS_NULL_SENTINEL);
+    });
+
+    test('replaces null values inside an object', () => {
+      expect(encodeNullsForIOS({ a: 1, b: null })).toEqual({
+        a: 1,
+        b: IOS_NULL_SENTINEL,
+      });
+    });
+
+    test('replaces null values inside nested objects', () => {
+      expect(encodeNullsForIOS({ outer: { inner: null, ok: 'x' } })).toEqual({
+        outer: { inner: IOS_NULL_SENTINEL, ok: 'x' },
+      });
+    });
+
+    test('replaces null values inside arrays', () => {
+      expect(encodeNullsForIOS([1, null, 'x'])).toEqual([1, IOS_NULL_SENTINEL, 'x']);
+    });
+
+    test('replaces null values inside mixed arrays of objects', () => {
+      expect(encodeNullsForIOS([1, '2', { a: '3' }, null])).toEqual([
+        1,
+        '2',
+        { a: '3' },
+        IOS_NULL_SENTINEL,
+      ]);
+    });
+
+    test.each([
+      { description: 'a number', value: 42 },
+      { description: 'a float', value: 3.14 },
+      { description: 'a string', value: 'abc' },
+      { description: 'a boolean true', value: true },
+      { description: 'a boolean false', value: false },
+    ])('leaves $description untouched', ({ value }: { description: string; value: unknown }) => {
+      expect(encodeNullsForIOS(value)).toBe(value);
+    });
+
+    test('does not mutate the input object', () => {
+      const input = { a: 1, b: null, nested: { c: null }, arr: [null] };
+      const snapshot = JSON.parse(JSON.stringify(input));
+      encodeNullsForIOS(input);
+      expect(input).toEqual(snapshot);
     });
   });
 });
