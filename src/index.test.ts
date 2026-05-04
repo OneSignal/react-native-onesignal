@@ -842,7 +842,6 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
       });
 
-      // See SDK-4388
       describe('iOS null handling', () => {
         beforeEach(() => {
           mockPlatform.OS = 'ios';
