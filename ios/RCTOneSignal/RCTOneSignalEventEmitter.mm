@@ -6,6 +6,40 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
+// Sentinel string used by the JS side of `trackEvent` to round-trip `null`
+// values across the React Native iOS TurboModule bridge. Must match
+// IOS_NULL_SENTINEL in src/constants/internal.ts byte-for-byte. The string
+// avoids NUL bytes because RN's convertJSIStringToNSString uses
+// stringWithUTF8String: which would truncate at the first NUL.
+// See SDK-4386.
+static NSString *const kOSNullSentinel = @"__OS_RN_NULL_8b3f72d6c1a04f9e__";
+
+// Recursively walks `value`, returning a copy with any string equal to the
+// sentinel replaced by `[NSNull null]`. Containers are rebuilt; primitives
+// are returned as-is.
+static id OSDecodeNullSentinels(id value) {
+  if ([value isKindOfClass:[NSDictionary class]]) {
+    NSDictionary *dict = (NSDictionary *)value;
+    NSMutableDictionary *out = [NSMutableDictionary dictionaryWithCapacity:dict.count];
+    [dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+      out[key] = OSDecodeNullSentinels(obj);
+    }];
+    return out;
+  }
+  if ([value isKindOfClass:[NSArray class]]) {
+    NSArray *arr = (NSArray *)value;
+    NSMutableArray *out = [NSMutableArray arrayWithCapacity:arr.count];
+    for (id item in arr) {
+      [out addObject:OSDecodeNullSentinels(item)];
+    }
+    return out;
+  }
+  if ([value isKindOfClass:[NSString class]] && [(NSString *)value isEqualToString:kOSNullSentinel]) {
+    return [NSNull null];
+  }
+  return value;
+}
+
 @interface RCTOneSignalEventEmitter ()
 - (void)emitEventWithName:(NSString *)name body:(NSDictionary *)body;
 @end
@@ -600,7 +634,8 @@ RCT_EXPORT_METHOD(displayNotification : (NSString *)notificationId) {
 
 RCT_EXPORT_METHOD(trackEvent : (NSString *)name
                   properties : (NSDictionary *_Nullable)properties) {
-  [OneSignal.User trackEventWithName:name properties:properties];
+  NSDictionary *decoded = properties == nil ? nil : OSDecodeNullSentinels(properties);
+  [OneSignal.User trackEventWithName:name properties:decoded];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

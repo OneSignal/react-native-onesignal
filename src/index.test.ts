@@ -14,6 +14,7 @@ import {
   SUBSCRIPTION_CHANGED,
   USER_STATE_CHANGED,
 } from './constants/events';
+import { IOS_NULL_SENTINEL } from './constants/internal';
 import EventManager, { type EventListenerMap } from './events/EventManager';
 import * as helpers from './helpers';
 import { LogLevel, OneSignal, OSNotificationPermission } from './index';
@@ -839,6 +840,79 @@ describe('OneSignal', () => {
         OneSignal.User.trackEvent('event', 'invalid' as unknown as Record<string, unknown>);
         expect(errorSpy).toHaveBeenCalledWith('Properties must be a JSON-serializable object');
         expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
+      });
+
+      describe('iOS null handling', () => {
+        beforeEach(() => {
+          mockPlatform.OS = 'ios';
+        });
+
+        test('replaces top-level null with sentinel', () => {
+          OneSignal.User.trackEvent('event', { someNum: 1, someNull: null });
+          expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('event', {
+            someNum: 1,
+            someNull: IOS_NULL_SENTINEL,
+          });
+        });
+
+        test('replaces nested-object null with sentinel', () => {
+          OneSignal.User.trackEvent('event', {
+            someObject: { abc: '123', nested: { def: '456' }, ghi: null },
+          });
+          expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('event', {
+            someObject: { abc: '123', nested: { def: '456' }, ghi: IOS_NULL_SENTINEL },
+          });
+        });
+
+        test('replaces null inside arrays with sentinel', () => {
+          OneSignal.User.trackEvent('event', { arr: [1, null, 'x'] });
+          expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('event', {
+            arr: [1, IOS_NULL_SENTINEL, 'x'],
+          });
+        });
+
+        test('replaces null inside mixed arrays of objects with sentinel', () => {
+          OneSignal.User.trackEvent('event', {
+            mixed: [1, '2', { abc: '123' }, null],
+          });
+          expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('event', {
+            mixed: [1, '2', { abc: '123' }, IOS_NULL_SENTINEL],
+          });
+        });
+
+        test('leaves primitives untouched', () => {
+          const props = { n: 1, f: 3.14, s: 'abc', b: true };
+          OneSignal.User.trackEvent('event', props);
+          expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('event', props);
+        });
+
+        test('does not mutate the caller-supplied properties object', () => {
+          const props = {
+            top: null,
+            nested: { ghi: null },
+            arr: [1, null],
+          };
+          const snapshot = JSON.parse(JSON.stringify(props));
+          OneSignal.User.trackEvent('event', props);
+          expect(props).toEqual(snapshot);
+        });
+      });
+
+      describe('Android null handling', () => {
+        beforeEach(() => {
+          mockPlatform.OS = 'android';
+        });
+
+        test('passes properties through unchanged (no sentinel substitution)', () => {
+          const props = {
+            someNum: 123,
+            someNull: null,
+            someObject: { ghi: null },
+            arr: [1, null],
+          };
+          OneSignal.User.trackEvent('event', props);
+          expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('event', props);
+        });
       });
     });
 
