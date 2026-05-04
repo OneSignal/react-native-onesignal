@@ -17,12 +17,12 @@ static NSString *const kOSNullSentinel = @"__OS_RN_NULL_8b3f72d6c1a04f9e__";
 // Recursively walks `value`, returning a copy with any string equal to the
 // sentinel replaced by `[NSNull null]`. Containers are rebuilt; primitives
 // are returned as-is.
-static id _Nullable OSDecodeNullSentinels(id _Nullable value) {
+static id OSDecodeNullSentinels(id value) {
   if ([value isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dict = (NSDictionary *)value;
     NSMutableDictionary *out = [NSMutableDictionary dictionaryWithCapacity:dict.count];
     [dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-      out[key] = OSDecodeNullSentinels(obj) ?: [NSNull null];
+      out[key] = OSDecodeNullSentinels(obj);
     }];
     return out;
   }
@@ -30,7 +30,7 @@ static id _Nullable OSDecodeNullSentinels(id _Nullable value) {
     NSArray *arr = (NSArray *)value;
     NSMutableArray *out = [NSMutableArray arrayWithCapacity:arr.count];
     for (id item in arr) {
-      [out addObject:OSDecodeNullSentinels(item) ?: [NSNull null]];
+      [out addObject:OSDecodeNullSentinels(item)];
     }
     return out;
   }
