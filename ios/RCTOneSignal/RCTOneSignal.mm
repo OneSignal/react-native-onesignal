@@ -23,7 +23,7 @@
     return;
 
   OneSignalWrapper.sdkType = @"reactnative";
-  OneSignalWrapper.sdkVersion = @"050404";
+  OneSignalWrapper.sdkVersion = @"050405";
   // initialize the SDK with a nil app ID so cold start click listeners can be
   // triggered
   [OneSignal initialize:nil withLaunchOptions:launchOptions];
