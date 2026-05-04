@@ -187,6 +187,7 @@ jobs:
           git commit -m "Release $NEW_VERSION" && git push
 
       - name: Refresh demo Podfile.lock
+        if: inputs.ios_version != ''
         run: |
           # Runs after all version edits (package.json + podspec) so the
           # repacked SDK tarball and OneSignalXCFramework pin both reflect

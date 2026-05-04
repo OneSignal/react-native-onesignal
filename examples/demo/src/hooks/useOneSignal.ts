@@ -176,7 +176,7 @@ function useOneSignalState(): UseOneSignalReturn {
     };
 
     const handleIamClick = (e: InAppMessageClickEvent) => {
-      console.log(`IAM click: ${e.result.actionId ?? 'unknown'}`);
+      console.log(`IAM click: ${e.message.messageId}`);
     };
 
     const handleNotificationClick = (e: NotificationClickEvent) => {
