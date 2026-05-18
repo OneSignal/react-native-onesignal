@@ -3,6 +3,8 @@ import { ONESIGNAL_API_KEY, ONESIGNAL_ANDROID_CHANNEL_ID } from '@env';
 import { NotificationType } from '../models/NotificationType';
 import { UserData, userDataFromJson } from '../models/UserData';
 
+const DEFAULT_ANDROID_CHANNEL_ID = 'b3b015d9-c050-4042-8548-dcc34aa44aa4';
+
 class OneSignalApiService {
   private static _instance: OneSignalApiService;
   private _appId: string = '';
@@ -50,7 +52,7 @@ class OneSignalApiService {
         contents = { en: 'This notification plays a custom sound' };
         extra.ios_sound = 'vine_boom.wav';
         extra.android_channel_id =
-          ONESIGNAL_ANDROID_CHANNEL_ID?.trim() || 'b3b015d9-c050-4042-8548-dcc34aa44aa4';
+          ONESIGNAL_ANDROID_CHANNEL_ID?.trim() || DEFAULT_ANDROID_CHANNEL_ID;
         break;
       default:
         return false;
