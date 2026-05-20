@@ -75,35 +75,59 @@ class OneSignalApiService {
     subscriptionId: string,
     extra: Record<string, unknown>,
   ): Promise<boolean> {
-    try {
-      const body = {
-        app_id: this._appId,
-        include_subscription_ids: [subscriptionId],
-        headings,
-        contents,
-        ...extra,
-      };
+    const body = {
+      app_id: this._appId,
+      include_subscription_ids: [subscriptionId],
+      headings,
+      contents,
+      ...extra,
+    };
 
-      const response = await fetch('https://onesignal.com/api/v1/notifications', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/vnd.onesignal.v1+json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
+    const maxAttempts = 3;
 
-      if (!response.ok) {
-        const text = await response.text();
-        console.error(`Send notification failed: ${text}`);
+    // Retry on `invalid_player_ids` to absorb the brief race where the
+    // subscription has been created locally but is not yet visible to the
+    // /notifications endpoint.
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const response = await fetch('https://onesignal.com/api/v1/notifications', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/vnd.onesignal.v1+json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+          console.error(`Send notification failed: ${text}`);
+          return false;
+        }
+
+        const data = (await response.json().catch(() => undefined)) as
+          | { errors?: { invalid_player_ids?: unknown } }
+          | undefined;
+        const invalidIds = data?.errors?.invalid_player_ids;
+        if (Array.isArray(invalidIds) && invalidIds.length > 0) {
+          if (attempt < maxAttempts) {
+            await new Promise<void>((resolve) => setTimeout(() => resolve(), 3_000 * attempt));
+            continue;
+          }
+          console.error(
+            `Send notification failed: invalid_player_ids ${JSON.stringify(invalidIds)}`,
+          );
+          return false;
+        }
+
+        return true;
+      } catch (err) {
+        console.error(`Send notification error: ${String(err)}`);
         return false;
       }
-
-      return true;
-    } catch (err) {
-      console.error(`Send notification error: ${String(err)}`);
-      return false;
     }
+
+    return false;
   }
 
   async updateLiveActivity(
