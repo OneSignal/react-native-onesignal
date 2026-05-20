@@ -35,7 +35,7 @@ export default function PushSection({
             ellipsizeMode="middle"
             testID="push_id_value"
           >
-            {pushSubscriptionId ? maskValue(pushSubscriptionId) : '–'}
+            {maskValue(pushSubscriptionId ?? '—')}
           </Text>
         </View>
         <View style={styles.divider} />

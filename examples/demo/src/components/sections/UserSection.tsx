@@ -51,7 +51,7 @@ export default function UserSection({ externalUserId, onLogin, onLogout }: Props
         <View style={styles.row}>
           <Text style={styles.label}>External ID</Text>
           <Text style={styles.value} numberOfLines={1} testID="user_external_id_value">
-            {externalUserId ?? '–'}
+            {externalUserId ?? '—'}
           </Text>
         </View>
       </View>
