@@ -69,6 +69,7 @@ export default function HomeScreen() {
         />
 
         <PushSection
+          oneSignalId={os.oneSignalId}
           pushSubscriptionId={os.pushSubscriptionId}
           isPushEnabled={os.isPushEnabled}
           hasNotificationPermission={os.hasNotificationPermission}

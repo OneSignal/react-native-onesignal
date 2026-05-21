@@ -7,6 +7,7 @@ import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
 
 interface Props {
+  oneSignalId: string | undefined;
   pushSubscriptionId: string | undefined;
   isPushEnabled: boolean;
   hasNotificationPermission: boolean;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function PushSection({
+  oneSignalId,
   pushSubscriptionId,
   isPushEnabled,
   hasNotificationPermission,
@@ -26,6 +28,18 @@ export default function PushSection({
   return (
     <SectionCard title="Push" onInfoTap={onInfoTap} sectionKey="push">
       <View style={AppTheme.card}>
+        <View style={styles.idRow}>
+          <Text style={styles.idLabel}>OneSignal ID</Text>
+          <Text
+            style={styles.idValue}
+            numberOfLines={1}
+            ellipsizeMode="middle"
+            testID="onesignal_id_value"
+          >
+            {oneSignalId ?? '—'}
+          </Text>
+        </View>
+        <View style={styles.divider} />
         <View style={styles.idRow}>
           <Text style={styles.idLabel}>Push ID</Text>
           <Text
