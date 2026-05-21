@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
-import { maskValue } from '../../utils/maskValue';
 import ActionButton from '../ActionButton';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
@@ -35,7 +34,7 @@ export default function PushSection({
             ellipsizeMode="middle"
             testID="push_id_value"
           >
-            {maskValue(pushSubscriptionId ?? '—')}
+            {pushSubscriptionId ?? '—'}
           </Text>
         </View>
         <View style={styles.divider} />
