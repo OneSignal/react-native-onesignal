@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Linking, StyleSheet } from 'react-native';
 
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
-import { maskValue } from '../../utils/maskValue';
 import SectionCard from '../SectionCard';
 import ToggleRow from '../ToggleRow';
 
@@ -33,7 +32,7 @@ export default function AppSection({
             ellipsizeMode="middle"
             testID="app_id_value"
           >
-            {maskValue(appId)}
+            {appId}
           </Text>
         </View>
       </View>

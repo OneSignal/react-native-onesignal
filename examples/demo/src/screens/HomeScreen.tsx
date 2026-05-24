@@ -28,13 +28,14 @@ import { AppColors } from '../theme';
 export default function HomeScreen() {
   const navigation = useNavigation();
   const os = useOneSignal();
+  const { isReady, promptPush } = os;
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<TooltipData | null>(null);
 
   useEffect(() => {
-    if (os.isReady) os.promptPush();
-  }, [os.isReady, os.promptPush]);
+    if (isReady) promptPush();
+  }, [isReady, promptPush]);
 
   const showTooltipModal = (key: string) => {
     const tooltip = TooltipHelper.getInstance().getTooltip(key);

@@ -19,7 +19,7 @@ export default function SectionCard({ title, children, onInfoTap, sectionKey, st
         {onInfoTap && (
           <TouchableOpacity
             onPress={onInfoTap}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            style={styles.infoButton}
             testID={sectionKey ? `${sectionKey}_info_icon` : undefined}
           >
             <Text style={styles.infoIcon}>ⓘ</Text>
@@ -49,6 +49,13 @@ const styles = StyleSheet.create({
     color: AppColors.osGrey700,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
+  },
+  infoButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: -11,
   },
   infoIcon: {
     fontSize: 18,
