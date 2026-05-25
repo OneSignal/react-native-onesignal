@@ -26,9 +26,9 @@ export default function TriggersSection({
   onClearAll,
   onInfoTap,
 }: Props) {
-  const [addVisible, setAddVisible] = useState(false);
-  const [addMultipleVisible, setAddMultipleVisible] = useState(false);
-  const [removeVisible, setRemoveVisible] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [addMultipleOpen, setAddMultipleOpen] = useState(false);
+  const [removeOpen, setRemoveOpen] = useState(false);
 
   return (
     <SectionCard title="Triggers" onInfoTap={onInfoTap} sectionKey="triggers">
@@ -48,19 +48,19 @@ export default function TriggersSection({
       )}
       <ActionButton
         label="ADD TRIGGER"
-        onPress={() => setAddVisible(true)}
+        onPress={() => setAddOpen(true)}
         testID="add_trigger_button"
       />
       <ActionButton
         label="ADD MULTIPLE TRIGGERS"
-        onPress={() => setAddMultipleVisible(true)}
+        onPress={() => setAddMultipleOpen(true)}
         testID="add_multiple_triggers_button"
       />
       {triggers.length > 0 && (
         <>
           <ActionButton
             label="REMOVE TRIGGERS"
-            onPress={() => setRemoveVisible(true)}
+            onPress={() => setRemoveOpen(true)}
             variant="outlined"
             testID="remove_triggers_button"
           />
@@ -73,25 +73,25 @@ export default function TriggersSection({
         </>
       )}
       <PairInputModal
-        visible={addVisible}
+        visible={addOpen}
         title="Add Trigger"
         onConfirm={onAdd}
-        onClose={() => setAddVisible(false)}
+        onClose={() => setAddOpen(false)}
         keyTestID="trigger_key_input"
         valueTestID="trigger_value_input"
       />
       <MultiPairInputModal
-        visible={addMultipleVisible}
+        visible={addMultipleOpen}
         title="Add Multiple Triggers"
         onConfirm={onAddMultiple}
-        onClose={() => setAddMultipleVisible(false)}
+        onClose={() => setAddMultipleOpen(false)}
       />
       <MultiSelectRemoveModal
-        visible={removeVisible}
+        visible={removeOpen}
         title="Remove Triggers"
         items={triggers}
         onConfirm={onRemoveSelected}
-        onClose={() => setRemoveVisible(false)}
+        onClose={() => setRemoveOpen(false)}
       />
     </SectionCard>
   );

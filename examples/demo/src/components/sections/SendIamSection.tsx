@@ -1,9 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { InAppMessageType, iamTypeLabel, iamTypeIcon } from '../../models/InAppMessageType';
-import { AppColors, AppSpacing } from '../../theme';
+import { InAppMessageType, iamTypeLabel } from '../../models/InAppMessageType';
+import ActionButton from '../ActionButton';
 import SectionCard from '../SectionCard';
 
 interface Props {
@@ -22,45 +20,13 @@ export default function SendIamSection({ onSendIam, onInfoTap }: Props) {
   return (
     <SectionCard title="Send In-App Message" onInfoTap={onInfoTap} sectionKey="send_iam">
       {IAM_TYPES.map((type) => (
-        <TouchableOpacity
+        <ActionButton
           key={type}
-          style={styles.button}
+          label={iamTypeLabel[type]}
           onPress={() => onSendIam(type)}
-          activeOpacity={0.8}
           testID={`send_iam_${type}_button`}
-          accessibilityLabel={iamTypeLabel[type]}
-        >
-          <View style={styles.inner}>
-            <Icon name={iamTypeIcon[type]} size={20} color={AppColors.white} style={styles.icon} />
-            <Text style={styles.label}>{iamTypeLabel[type]}</Text>
-          </View>
-        </TouchableOpacity>
+        />
       ))}
     </SectionCard>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: AppColors.osPrimary,
-    borderRadius: 8,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    marginBottom: AppSpacing.gap,
-  },
-  inner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  icon: {
-    marginRight: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: AppColors.white,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-});

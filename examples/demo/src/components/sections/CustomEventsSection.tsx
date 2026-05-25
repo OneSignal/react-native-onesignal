@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
 import TrackEventModal from '../modals/TrackEventModal';
 import SectionCard from '../SectionCard';
+import { useSnackbar } from '../ToastProvider';
 
 interface Props {
   onTrackEvent: (name: string, properties?: Record<string, unknown>) => void;
@@ -11,23 +11,20 @@ interface Props {
 }
 
 export default function CustomEventsSection({ onTrackEvent, onInfoTap }: Props) {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [open, setOpen] = useState(false);
+  const showSnackbar = useSnackbar();
 
   return (
     <SectionCard title="Custom Events" onInfoTap={onInfoTap} sectionKey="custom_events">
-      <ActionButton
-        label="TRACK EVENT"
-        onPress={() => setModalVisible(true)}
-        testID="track_event_button"
-      />
+      <ActionButton label="TRACK EVENT" onPress={() => setOpen(true)} testID="track_event_button" />
       <TrackEventModal
-        visible={modalVisible}
+        visible={open}
         onConfirm={(name, properties) => {
           onTrackEvent(name, properties);
           showSnackbar(`Event tracked: ${name}`);
-          setModalVisible(false);
+          setOpen(false);
         }}
-        onClose={() => setModalVisible(false)}
+        onClose={() => setOpen(false)}
       />
     </SectionCard>
   );

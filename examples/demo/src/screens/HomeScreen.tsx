@@ -30,7 +30,7 @@ export default function HomeScreen() {
   const os = useOneSignal();
   const { isReady, promptPush } = os;
 
-  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<TooltipData | null>(null);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function HomeScreen() {
     const tooltip = TooltipHelper.getInstance().getTooltip(key);
     if (tooltip) {
       setActiveTooltip(tooltip);
-      setTooltipVisible(true);
+      setTooltipOpen(true);
     }
   };
 
@@ -181,9 +181,9 @@ export default function HomeScreen() {
       </ScrollView>
 
       <TooltipModal
-        visible={tooltipVisible}
+        visible={tooltipOpen}
         tooltip={activeTooltip}
-        onClose={() => setTooltipVisible(false)}
+        onClose={() => setTooltipOpen(false)}
       />
     </View>
   );

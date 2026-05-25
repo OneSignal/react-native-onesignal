@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
-import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
 import SingleInputModal from '../modals/SingleInputModal';
 import SectionCard from '../SectionCard';
@@ -14,25 +13,15 @@ interface Props {
 }
 
 export default function UserSection({ externalUserId, onLogin, onLogout }: Props) {
-  const [loginVisible, setLoginVisible] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
   const isLoggedIn = !!externalUserId;
 
   const handleLogin = async (userId: string) => {
-    try {
-      await onLogin(userId);
-      showSnackbar(`Logged in as ${userId}`);
-    } catch (err) {
-      showSnackbar(`Login failed: ${String(err)}`);
-    }
+    await onLogin(userId);
   };
 
   const handleLogout = async () => {
-    try {
-      await onLogout();
-      showSnackbar('User logged out');
-    } catch (err) {
-      showSnackbar(`Logout failed: ${String(err)}`);
-    }
+    await onLogout();
   };
 
   return (
@@ -57,7 +46,7 @@ export default function UserSection({ externalUserId, onLogin, onLogout }: Props
       </View>
       <ActionButton
         label={isLoggedIn ? 'SWITCH USER' : 'LOGIN USER'}
-        onPress={() => setLoginVisible(true)}
+        onPress={() => setLoginOpen(true)}
         testID="login_user_button"
       />
       {isLoggedIn && (
@@ -69,12 +58,12 @@ export default function UserSection({ externalUserId, onLogin, onLogout }: Props
         />
       )}
       <SingleInputModal
-        visible={loginVisible}
+        visible={loginOpen}
         title="Login User"
         placeholder="External User Id"
         confirmLabel="Login"
         onConfirm={handleLogin}
-        onClose={() => setLoginVisible(false)}
+        onClose={() => setLoginOpen(false)}
         testID="login_user_id_input"
       />
     </SectionCard>

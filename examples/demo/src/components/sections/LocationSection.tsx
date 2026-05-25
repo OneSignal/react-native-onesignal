@@ -2,9 +2,9 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { AppTheme, AppSpacing } from '../../theme';
-import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
 import SectionCard from '../SectionCard';
+import { useSnackbar } from '../ToastProvider';
 import ToggleRow from '../ToggleRow';
 
 interface Props {
@@ -22,6 +22,8 @@ export default function LocationSection({
   onRequestLocationPermission,
   onInfoTap,
 }: Props) {
+  const showSnackbar = useSnackbar();
+
   const handleCheckLocation = async () => {
     const shared = await onCheckLocationShared();
     showSnackbar(`Location shared: ${shared}`);

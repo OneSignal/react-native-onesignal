@@ -11,10 +11,3 @@ export const iamTypeLabel: Record<InAppMessageType, string> = {
   [InAppMessageType.CenterModal]: 'CENTER MODAL',
   [InAppMessageType.FullScreen]: 'FULL SCREEN',
 };
-
-export const iamTypeIcon: Record<InAppMessageType, string> = {
-  [InAppMessageType.TopBanner]: 'format-vertical-align-top',
-  [InAppMessageType.BottomBanner]: 'format-vertical-align-bottom',
-  [InAppMessageType.CenterModal]: 'crop-square',
-  [InAppMessageType.FullScreen]: 'fullscreen',
-};

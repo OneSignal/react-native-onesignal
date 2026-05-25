@@ -25,8 +25,8 @@ export default function AliasesSection({
   onAddMultiple,
   onInfoTap,
 }: Props) {
-  const [addVisible, setAddVisible] = useState(false);
-  const [addMultipleVisible, setAddMultipleVisible] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [addMultipleOpen, setAddMultipleOpen] = useState(false);
 
   const filtered = aliases.filter(([k]) => !FILTERED_KEYS.includes(k));
 
@@ -45,33 +45,29 @@ export default function AliasesSection({
           <PairList items={filtered} layout="stacked" sectionKey="aliases" />
         </View>
       )}
-      <ActionButton
-        label="ADD ALIAS"
-        onPress={() => setAddVisible(true)}
-        testID="add_alias_button"
-      />
+      <ActionButton label="ADD ALIAS" onPress={() => setAddOpen(true)} testID="add_alias_button" />
       <ActionButton
         label="ADD MULTIPLE ALIASES"
-        onPress={() => setAddMultipleVisible(true)}
+        onPress={() => setAddMultipleOpen(true)}
         testID="add_multiple_aliases_button"
       />
       <PairInputModal
-        visible={addVisible}
+        visible={addOpen}
         title="Add Alias"
         keyPlaceholder="Label"
         valuePlaceholder="ID"
         onConfirm={onAdd}
-        onClose={() => setAddVisible(false)}
+        onClose={() => setAddOpen(false)}
         keyTestID="alias_label_input"
         valueTestID="alias_id_input"
       />
       <MultiPairInputModal
-        visible={addMultipleVisible}
+        visible={addMultipleOpen}
         title="Add Multiple Aliases"
         keyPlaceholder="Label"
         valuePlaceholder="ID"
         onConfirm={onAddMultiple}
-        onClose={() => setAddMultipleVisible(false)}
+        onClose={() => setAddMultipleOpen(false)}
       />
     </SectionCard>
   );

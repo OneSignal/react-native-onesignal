@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-import { showSnackbar } from '../../utils/showSnackbar';
 import ActionButton from '../ActionButton';
 import OutcomeModal from '../modals/OutcomeModal';
 import SectionCard from '../SectionCard';
+import { useSnackbar } from '../ToastProvider';
 
 interface Props {
   onSendNormal: (name: string) => void;
@@ -18,7 +18,8 @@ export default function OutcomesSection({
   onSendWithValue,
   onInfoTap,
 }: Props) {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [open, setOpen] = useState(false);
+  const showSnackbar = useSnackbar();
 
   const handleSendNormal = (name: string) => {
     onSendNormal(name);
@@ -39,15 +40,15 @@ export default function OutcomesSection({
     <SectionCard title="Outcome Events" onInfoTap={onInfoTap} sectionKey="outcomes">
       <ActionButton
         label="SEND OUTCOME"
-        onPress={() => setModalVisible(true)}
+        onPress={() => setOpen(true)}
         testID="send_outcome_button"
       />
       <OutcomeModal
-        visible={modalVisible}
+        visible={open}
         onSendNormal={handleSendNormal}
         onSendUnique={handleSendUnique}
         onSendWithValue={handleSendWithValue}
-        onClose={() => setModalVisible(false)}
+        onClose={() => setOpen(false)}
       />
     </SectionCard>
   );

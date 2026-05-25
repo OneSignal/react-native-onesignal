@@ -26,9 +26,9 @@ export default function TagsSection({
   onRemoveSelected,
   onInfoTap,
 }: Props) {
-  const [addVisible, setAddVisible] = useState(false);
-  const [addMultipleVisible, setAddMultipleVisible] = useState(false);
-  const [removeVisible, setRemoveVisible] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [addMultipleOpen, setAddMultipleOpen] = useState(false);
+  const [removeOpen, setRemoveOpen] = useState(false);
 
   return (
     <SectionCard title="Tags" onInfoTap={onInfoTap} sectionKey="tags">
@@ -50,42 +50,42 @@ export default function TagsSection({
           />
         </View>
       )}
-      <ActionButton label="ADD TAG" onPress={() => setAddVisible(true)} testID="add_tag_button" />
+      <ActionButton label="ADD TAG" onPress={() => setAddOpen(true)} testID="add_tag_button" />
       <ActionButton
         label="ADD MULTIPLE TAGS"
-        onPress={() => setAddMultipleVisible(true)}
+        onPress={() => setAddMultipleOpen(true)}
         testID="add_multiple_tags_button"
       />
       {tags.length > 0 && (
         <ActionButton
           label="REMOVE TAGS"
-          onPress={() => setRemoveVisible(true)}
+          onPress={() => setRemoveOpen(true)}
           variant="outlined"
           testID="remove_tags_button"
         />
       )}
       <PairInputModal
-        visible={addVisible}
+        visible={addOpen}
         title="Add Tag"
         keyPlaceholder="Key"
         valuePlaceholder="Value"
         onConfirm={onAdd}
-        onClose={() => setAddVisible(false)}
+        onClose={() => setAddOpen(false)}
         keyTestID="tag_key_input"
         valueTestID="tag_value_input"
       />
       <MultiPairInputModal
-        visible={addMultipleVisible}
+        visible={addMultipleOpen}
         title="Add Multiple Tags"
         onConfirm={onAddMultiple}
-        onClose={() => setAddMultipleVisible(false)}
+        onClose={() => setAddMultipleOpen(false)}
       />
       <MultiSelectRemoveModal
-        visible={removeVisible}
+        visible={removeOpen}
         title="Remove Tags"
         items={tags}
         onConfirm={onRemoveSelected}
-        onClose={() => setRemoveVisible(false)}
+        onClose={() => setRemoveOpen(false)}
       />
     </SectionCard>
   );

@@ -22,7 +22,7 @@ export default function EmailsSection({
   onRemove,
   onInfoTap,
 }: Props) {
-  const [addVisible, setAddVisible] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
 
   return (
     <SectionCard title="Emails" onInfoTap={onInfoTap} sectionKey="emails">
@@ -35,17 +35,13 @@ export default function EmailsSection({
           sectionKey="emails"
         />
       </View>
-      <ActionButton
-        label="ADD EMAIL"
-        onPress={() => setAddVisible(true)}
-        testID="add_email_button"
-      />
+      <ActionButton label="ADD EMAIL" onPress={() => setAddOpen(true)} testID="add_email_button" />
       <SingleInputModal
-        visible={addVisible}
+        visible={addOpen}
         title="Add Email"
         placeholder="Email address"
         onConfirm={onAdd}
-        onClose={() => setAddVisible(false)}
+        onClose={() => setAddOpen(false)}
         keyboardType="email-address"
         testID="email_input"
       />

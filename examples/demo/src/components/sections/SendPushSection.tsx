@@ -18,7 +18,7 @@ export default function SendPushSection({
   onClearAll,
   onInfoTap,
 }: Props) {
-  const [customVisible, setCustomVisible] = useState(false);
+  const [customOpen, setCustomOpen] = useState(false);
 
   return (
     <SectionCard title="Send Push Notification" onInfoTap={onInfoTap} sectionKey="send_push">
@@ -39,7 +39,7 @@ export default function SendPushSection({
       />
       <ActionButton
         label="CUSTOM"
-        onPress={() => setCustomVisible(true)}
+        onPress={() => setCustomOpen(true)}
         testID="send_custom_button"
       />
       <ActionButton
@@ -49,12 +49,12 @@ export default function SendPushSection({
         testID="clear_all_button"
       />
       <CustomNotificationModal
-        visible={customVisible}
+        visible={customOpen}
         onConfirm={(title, body) => {
           onSendCustomNotification(title, body);
-          setCustomVisible(false);
+          setCustomOpen(false);
         }}
-        onClose={() => setCustomVisible(false)}
+        onClose={() => setCustomOpen(false)}
       />
     </SectionCard>
   );

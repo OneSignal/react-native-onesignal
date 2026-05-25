@@ -22,7 +22,7 @@ export default function SmsSection({
   onRemove,
   onInfoTap,
 }: Props) {
-  const [addVisible, setAddVisible] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
 
   return (
     <SectionCard title="SMS" onInfoTap={onInfoTap} sectionKey="sms">
@@ -35,13 +35,13 @@ export default function SmsSection({
           sectionKey="sms"
         />
       </View>
-      <ActionButton label="ADD SMS" onPress={() => setAddVisible(true)} testID="add_sms_button" />
+      <ActionButton label="ADD SMS" onPress={() => setAddOpen(true)} testID="add_sms_button" />
       <SingleInputModal
-        visible={addVisible}
+        visible={addOpen}
         title="Add SMS"
         placeholder="Phone number"
         onConfirm={onAdd}
-        onClose={() => setAddVisible(false)}
+        onClose={() => setAddOpen(false)}
         keyboardType="phone-pad"
         testID="sms_input"
       />
