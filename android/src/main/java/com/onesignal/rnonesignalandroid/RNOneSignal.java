@@ -238,15 +238,7 @@ public class RNOneSignal extends NativeOneSignalSpec
         }
 
         ReactApplicationContext reactContext = getReactApplicationContext();
-        // Prefer the Activity captured by ActivityLifecycleTracker (registered via androidx.startup
-        // before MainActivity.onResume), then fall back to ReactApplicationContext's accessor and
-        // finally the ApplicationContext. Passing the real Activity lets the OneSignal SDK populate
-        // ApplicationService.current immediately, so requestPermission() can launch the OS dialog
-        // on the first cold-start instead of waiting for the next foreground event.
-        Context context = ActivityLifecycleTracker.getInstance().getCurrentActivity();
-        if (context == null) {
-            context = reactContext.getCurrentActivity();
-        }
+        Context context = reactContext.getCurrentActivity();
         if (context == null) {
             context = reactContext.getApplicationContext();
         }
