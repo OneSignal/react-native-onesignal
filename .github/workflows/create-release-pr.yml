@@ -198,7 +198,7 @@ jobs:
             cd examples/demo
             vp run setup
             cd ios
-            pod install
+            pod update OneSignalXCFramework
           )
           echo "✓ Refreshed examples/demo/ios/Podfile.lock"
 
