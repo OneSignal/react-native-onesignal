@@ -7,6 +7,7 @@ set -euo pipefail
 ORIGINAL_DIR=$(pwd)
 SDK_ROOT="$(cd ../../ && pwd)"
 STAMP_FILE="$SDK_ROOT/.rn-sdk-source.stamp"
+DEMO_ENV_STAMP_FILE="$ORIGINAL_DIR/.rn-demo-env.stamp"
 TGZ_FILE="$SDK_ROOT/react-native-onesignal.tgz"
 INSTALLED_DIR="$ORIGINAL_DIR/node_modules/react-native-onesignal"
 
@@ -23,6 +24,34 @@ src_hash=$(find "$SDK_ROOT/src" "$SDK_ROOT/ios" "$SDK_ROOT/android" \
            | xargs shasum 2>/dev/null \
            | shasum \
            | awk '{print $1}')
+
+demo_env_hash=$(
+  {
+    for file in "$ORIGINAL_DIR/.env" "$ORIGINAL_DIR/babel.config.js"; do
+      if [ -f "$file" ]; then
+        shasum "$file"
+      else
+        echo "missing $file"
+      fi
+    done
+  } | shasum | awk '{print $1}'
+)
+
+if [ ! -f "$DEMO_ENV_STAMP_FILE" ] || [ "$(cat "$DEMO_ENV_STAMP_FILE")" != "$demo_env_hash" ]; then
+  echo "Demo env inputs changed, clearing Metro cache..."
+  rm -rf "${TMPDIR:-/tmp}"/metro-* "${TMPDIR:-/tmp}"/haste-map-* "$ORIGINAL_DIR/node_modules/.cache/metro" 2>/dev/null || true
+  metro_pids=$(lsof -ti tcp:8081 2>/dev/null || true)
+  for pid in $metro_pids; do
+    args=$(ps -p "$pid" -o args= 2>/dev/null || true)
+    case "$args" in
+      *react-native*|*metro*)
+        echo "Stopping Metro so @env values are reloaded..."
+        kill "$pid" 2>/dev/null || true
+        ;;
+    esac
+  done
+  echo "$demo_env_hash" > "$DEMO_ENV_STAMP_FILE"
+fi
 
 # Skip the whole rebuild when:
 #   - the demo already has the SDK installed,
