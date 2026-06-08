@@ -31,6 +31,24 @@ If you run into any challenges or have concerns, please contact our support team
 
 See the [Setup Guide](https://documentation.onesignal.com/docs/react-native-sdk-setup) for setup instructions.
 
+#### Disable Location Module
+
+By default, `react-native-onesignal` includes OneSignal's native location module so `OneSignal.Location` works without extra setup. If your app does not use location features, you can exclude the native location module from iOS and Android builds.
+
+In your iOS `Podfile`, set this before React Native installs native modules:
+
+```ruby
+$OneSignalDisableLocation = true
+```
+
+In your Android `gradle.properties`, set:
+
+```properties
+OneSignal_disableLocation=true
+```
+
+When disabled, `OneSignal.Location.requestPermission()` and `OneSignal.Location.setShared()` no-op on native builds without the location module, and `OneSignal.Location.isShared()` resolves `false`.
+
 #### Change Log
 
 See this repository's [release tags](https://github.com/OneSignal/react-native-onesignal/releases) for a complete change log of every released version.

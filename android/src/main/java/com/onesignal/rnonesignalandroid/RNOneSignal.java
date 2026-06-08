@@ -79,6 +79,8 @@ public class RNOneSignal extends NativeOneSignalSpec
                 LifecycleEventListener,
                 INotificationLifecycleListener {
     public static final String NAME = "OneSignal";
+    private static final String LOCATION_MODULE_NOT_AVAILABLE =
+            "OneSignal location module is not available. Add the location dependency to use OneSignal.Location.";
 
     private boolean oneSignalInitDone;
     private boolean hasSetPermissionObserver = false;
@@ -164,6 +166,10 @@ public class RNOneSignal extends NativeOneSignalSpec
 
     private void logJSONException(String eventName, JSONException exception) {
         Logging.error("Failed to serialize payload for " + eventName, exception);
+    }
+
+    private void logLocationModuleNotAvailable(Exception exception) {
+        Logging.error(LOCATION_MODULE_NOT_AVAILABLE, exception);
     }
 
     private void removeObservers() {
@@ -322,17 +328,30 @@ public class RNOneSignal extends NativeOneSignalSpec
 
     @Override
     public void requestLocationPermission() {
-        OneSignal.getLocation().requestPermission(Continue.none());
+        try {
+            OneSignal.getLocation().requestPermission(Continue.none());
+        } catch (Exception e) {
+            logLocationModuleNotAvailable(e);
+        }
     }
 
     @Override
     public void isLocationShared(Promise promise) {
-        promise.resolve(OneSignal.getLocation().isShared());
+        try {
+            promise.resolve(OneSignal.getLocation().isShared());
+        } catch (Exception e) {
+            logLocationModuleNotAvailable(e);
+            promise.resolve(false);
+        }
     }
 
     @Override
     public void setLocationShared(boolean shared) {
-        OneSignal.getLocation().setShared(shared);
+        try {
+            OneSignal.getLocation().setShared(shared);
+        } catch (Exception e) {
+            logLocationModuleNotAvailable(e);
+        }
     }
 
     @Override
