@@ -5,9 +5,9 @@
     "": {
       "name": "demo-no-location",
       "dependencies": {
+        "react-native-onesignal": "file:../../react-native-onesignal.tgz",
         "react": "19.2.3",
         "react-native": "0.84.0",
-        "react-native-onesignal": "file:../../react-native-onesignal.tgz",
       },
       "devDependencies": {
         "@babel/core": "^7.25.2",
@@ -898,7 +898,7 @@
 
     "react-native-dotenv": ["react-native-dotenv@3.4.11", "", { "dependencies": { "dotenv": "^16.4.5" }, "peerDependencies": { "@babel/runtime": "^7.20.6" } }, "sha512-6vnIE+WHABSeHCaYP6l3O1BOEhWxKH6nHAdV7n/wKn/sciZ64zPPp2NUdEUf1m7g4uuzlLbjgr+6uDt89q2DOg=="],
 
-    "react-native-onesignal": ["react-native-onesignal@../../react-native-onesignal.tgz", { "dependencies": { "invariant": "^2.2.4" }, "peerDependencies": { "react-native": ">=0.79.0" } }, "sha512-hAoOac1avBaHhG4Hxf+vJO75tZ7plc0sVp9pHghwv+Prs46BYjgSnWjRmrC2E+Ekgi3fKH/H4CiPCq4MZGjIgg=="],
+    "react-native-onesignal": ["react-native-onesignal@../../react-native-onesignal.tgz", { "dependencies": { "invariant": "^2.2.4" }, "peerDependencies": { "react-native": ">=0.79.0" } }, "sha512-zzX4NLvrxAzPX4uTVgZdm4rf6ljjOcbNBgcXkJuMLqW6TzIXLyx1DtrcHAkQbrN1WK4RlfVBU2UXgPHePtCykA=="],
 
     "react-refresh": ["react-refresh@0.14.2", "", {}, "sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA=="],
 

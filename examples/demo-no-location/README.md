@@ -9,23 +9,30 @@ vp run ios
 vp run android
 ```
 
+Both platforms exclude the native location module by setting the
+`ONESIGNAL_DISABLE_LOCATION=true` environment variable when dependencies are
+resolved.
+
 ## iOS
 
-The CocoaPods flag is set before `use_native_modules!` installs React Native pods:
+`ios/Podfile` exports the variable before React Native installs pods, so
+`pod install` resolves OneSignal without the location subspec:
 
 ```ruby
-$OneSignalDisableLocation = true
+ENV['ONESIGNAL_DISABLE_LOCATION'] = 'true'
 ```
-
-See `ios/Podfile`.
 
 ## Android
 
-The Gradle property is set in `android/gradle.properties`:
+The `android` script in `package.json` exports the variable so Gradle resolves
+OneSignal without the location module:
 
-```properties
-OneSignal_disableLocation=true
+```sh
+ONESIGNAL_DISABLE_LOCATION=true bash ../run-android.sh
 ```
+
+If you build Android another way (Android Studio, a raw `./gradlew` invocation),
+set `ONESIGNAL_DISABLE_LOCATION=true` in that environment too.
 
 ## App Code
 
