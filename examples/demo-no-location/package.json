@@ -6,7 +6,7 @@
     "setup": "../setup.sh",
     "preandroid": "vp run setup",
     "preios": "vp run setup && vp run pods",
-    "android": "bash ../run-android.sh",
+    "android": "ONESIGNAL_DISABLE_LOCATION=true bash ../run-android.sh",
     "ios": "bash ../run-ios.sh",
     "pods": "bundle install && (cd ios && bundle exec pod install)",
     "update:pods": "(cd ios && pod update OneSignalXCFramework --no-repo-update)",
