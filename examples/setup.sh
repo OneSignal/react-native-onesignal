@@ -67,36 +67,57 @@ if [ "${FORCE_SETUP:-0}" != "1" ] \
   exit 0
 fi
 
-cd "$SDK_ROOT"
-vp run build
+# --- Package-manager shim --------------------------------------------------
+# `vp` (vite-plus) is the intended toolchain and wraps bun under the hood, but
+# some installed vite-plus versions only ship `vp install` and lack the
+# `vp pm pack`, `vp add`, and `vp remove` subcommands this script needs. Probe
+# once and fall back to bun directly when they're unavailable. The repo pins
+# bun via package.json's "packageManager" field, so bun is a faithful
+# substitute and keeps bun.lock's integrity hashes in sync just as `vp` would.
+if vp pm pack --help >/dev/null 2>&1; then
+  pm_pack()   { vp pm pack; }
+  pm_add()    { vp add "$@"; }
+  pm_remove() { vp remove "$@"; }
+else
+  echo "vite-plus is missing 'vp pm'/'vp add'/'vp remove'; falling back to bun."
+  pm_pack()   { bun pm pack; }
+  pm_add()    { bun add "$@"; }
+  pm_remove() { bun remove "$@"; }
+fi
 
-# `vp pm pack` (wraps bun pm pack) honors package.json's "files" field
+cd "$SDK_ROOT"
+# NODE_PATH points the build at the SDK's own typescript. When vite-plus is
+# installed globally, its internal tsc helper resolves `require('typescript')`
+# from vite-plus's own node_modules and otherwise fails to find the compiler.
+NODE_PATH="$SDK_ROOT/node_modules" vp run build
+
+# `pm_pack` (vp pm pack / bun pm pack) honors package.json's "files" field
 # (so the tarball matches what would actually be published). The version
 # suffix in the filename is unstable, so we normalize to
 # react-native-onesignal.tgz for a deterministic path that package.json +
 # the extract step can reference.
 rm -f react-native-onesignal*.tgz
-vp pm pack
+pm_pack
 mv react-native-onesignal-*.tgz react-native-onesignal.tgz
 
 cd "$ORIGINAL_DIR"
 
-# Always go through `vp add` (wraps bun) so bun.lock's integrity hash for
-# the tarball stays in sync with the freshly-built tarball on disk. A
+# Always go through the package manager (vp/bun) so bun.lock's integrity hash
+# for the tarball stays in sync with the freshly-built tarball on disk. A
 # previous version of this script had a "hot path" that just untarred
 # over node_modules directly, which was faster but left a stale sha512
-# in bun.lock — any subsequent `vp install` that re-resolved this entry
+# in bun.lock — any subsequent install that re-resolved this entry
 # (e.g. when the lockfile was touched by another dep) would fail with
 # IntegrityCheckFailed.
 #
-# `vp remove` first because bun verifies the existing integrity hash
-# before replacing the entry; without removing, a stale hash from a prior
-# build causes `vp add` itself to fail. The relative `file:../../...`
-# path is intentional — an absolute path would leak this machine's
-# layout into the lockfile.
-echo "Registering tarball with vp (refreshes bun.lock integrity hash)..."
-vp remove react-native-onesignal 2>/dev/null || true
-vp add file:../../react-native-onesignal.tgz
+# Remove first because bun verifies the existing integrity hash before
+# replacing the entry; without removing, a stale hash from a prior build
+# causes the add itself to fail. The relative `file:../../...` path is
+# intentional — an absolute path would leak this machine's layout into the
+# lockfile.
+echo "Registering tarball with the package manager (refreshes bun.lock integrity hash)..."
+pm_remove react-native-onesignal 2>/dev/null || true
+pm_add file:../../react-native-onesignal.tgz
 
 # Record the hash only after a successful build/install so that an
 # interrupted run forces a full retry next time.
