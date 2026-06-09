@@ -1,5 +1,7 @@
 require 'json'
 package_json = JSON.parse(File.read('package.json'))
+onesignal_xcframework_version = '5.5.2'
+onesignal_disable_location = defined?($OneSignalDisableLocation) && $OneSignalDisableLocation == true
 
 Pod::Spec.new do |s|
   s.name           = "react-native-onesignal"
@@ -15,5 +17,10 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s)
 
-  s.dependency 'OneSignalXCFramework', '5.5.2'
+  if onesignal_disable_location
+    s.dependency 'OneSignalXCFramework/OneSignal', onesignal_xcframework_version
+    s.dependency 'OneSignalXCFramework/OneSignalInAppMessages', onesignal_xcframework_version
+  else
+    s.dependency 'OneSignalXCFramework', onesignal_xcframework_version
+  end
 end
