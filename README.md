@@ -35,19 +35,30 @@ See the [Setup Guide](https://documentation.onesignal.com/docs/react-native-sdk-
 
 By default, `react-native-onesignal` includes OneSignal's native location module so `OneSignal.Location` works without extra setup. If your app does not use location features, you can exclude the native location module from iOS and Android builds.
 
-In your iOS `Podfile`, set this before React Native installs native modules:
+Set `ONESIGNAL_DISABLE_LOCATION=true` in the environment before resolving or building, for both CocoaPods (iOS) and Gradle (Android):
 
-```ruby
-$OneSignalDisableLocation = true
-```
-
-In your Android `gradle.properties`, set:
-
-```properties
-OneSignal_disableLocation=true
+```sh
+ONESIGNAL_DISABLE_LOCATION=true pod install        # iOS, from the ios directory
+ONESIGNAL_DISABLE_LOCATION=true ./gradlew assembleDebug   # Android, from the android directory
 ```
 
 When disabled, `OneSignal.Location.requestPermission()` and `OneSignal.Location.setShared()` no-op on native builds without the location module, and `OneSignal.Location.isShared()` resolves `false`.
+
+##### Applying the change (clearing cached pods)
+
+The environment variable is only read when dependencies are **resolved**. CocoaPods pins the resolved pods in `Podfile.lock`, so after changing the variable on an existing project you must reinstall pods in a shell where the variable is exported:
+
+```sh
+cd ios
+pod deintegrate
+rm -rf Pods Podfile.lock
+ONESIGNAL_DISABLE_LOCATION=true pod install
+```
+
+Gradle re-reads the variable on each configuration, so a clean build with the variable set is enough on Android.
+
+> [!IMPORTANT]
+> When using Xcode or Android Studio, launch the IDE from a terminal that has `ONESIGNAL_DISABLE_LOCATION` exported. An IDE launched from the Dock/Finder does not inherit variables set only in your shell profile. On CI, key any CocoaPods / Gradle caches on the value of `ONESIGNAL_DISABLE_LOCATION` so a restored cache does not resurrect the location module.
 
 #### Change Log
 
