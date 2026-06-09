@@ -42,6 +42,14 @@ ONESIGNAL_DISABLE_LOCATION=true pod install        # iOS, from the ios directory
 ONESIGNAL_DISABLE_LOCATION=true ./gradlew assembleDebug   # Android, from the android directory
 ```
 
+In GitHub Actions, you can also set it once at the job or step level so
+`pod install`, `pod update`, and Gradle builds inherit it:
+
+```yaml
+env:
+  ONESIGNAL_DISABLE_LOCATION: true
+```
+
 When disabled, `OneSignal.Location.requestPermission()` and `OneSignal.Location.setShared()` no-op on native builds without the location module, and `OneSignal.Location.isShared()` resolves `false`.
 
 ##### Applying the change (clearing cached pods)
