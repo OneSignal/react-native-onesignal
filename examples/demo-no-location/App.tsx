@@ -3,9 +3,11 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
+  StatusBar,
   Text,
   TouchableOpacity,
   View,
@@ -13,6 +15,7 @@ import {
 import { OneSignal } from 'react-native-onesignal';
 
 const ONESIGNAL_APP_ID = ENV_ONESIGNAL_APP_ID?.trim() || 'YOUR-ONESIGNAL-APP-ID';
+const ANDROID_STATUS_BAR_HEIGHT = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) : 0;
 
 const isPlaceholder = (value: string) => value.startsWith('YOUR-');
 
@@ -54,6 +57,14 @@ export default function App() {
       setRequestingPermission(false);
     }
   }, [refreshPushState]);
+
+  const testLocationPermissionRequest = useCallback(() => {
+    try {
+      OneSignal.Location.requestPermission();
+    } catch (error) {
+      console.error('OneSignal.Location.requestPermission failed:', error);
+    }
+  }, []);
 
   const sendTestNotification = useCallback(async () => {
     if (isPlaceholder(ONESIGNAL_APP_ID)) {
@@ -106,13 +117,16 @@ export default function App() {
   }, [pushSubscriptionId]);
 
   return (
-    <SafeAreaView style={styles.root}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>OneSignal</Text>
-        <Text style={styles.headerSubtitle}>No-Location Demo</Text>
-      </View>
+    <View style={styles.root}>
+      <StatusBar backgroundColor="#E54B4D" barStyle="light-content" />
+      <SafeAreaView style={styles.headerSafeArea}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>OneSignal</Text>
+          <Text style={styles.headerSubtitle}>No-Location Demo</Text>
+        </View>
+      </SafeAreaView>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>App</Text>
           <View style={styles.card}>
@@ -179,18 +193,36 @@ export default function App() {
           <View style={styles.card}>
             <Text style={styles.body}>
               This demo initializes OneSignal and requests notification permission only when you tap
-              the button above. It never calls the location namespace, and native build flags
-              exclude the location module.
+              the button above. Native build flags exclude the location module. The location test
+              call may not log a JavaScript error; check Android Logcat or Xcode logs for native
+              diagnostics.
             </Text>
+            <View style={styles.locationButtonWrap}>
+              <TouchableOpacity
+                style={styles.outlinedButton}
+                onPress={testLocationPermissionRequest}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.outlinedButtonText}>TEST LOCATION REQUEST</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  headerSafeArea: {
+    backgroundColor: '#E54B4D',
+    paddingTop: ANDROID_STATUS_BAR_HEIGHT,
+  },
+  scroll: {
     flex: 1,
     backgroundColor: '#F8F9FA',
   },
@@ -268,6 +300,24 @@ const styles = StyleSheet.create({
   },
   buttonSpacer: {
     height: 8,
+  },
+  locationButtonWrap: {
+    marginTop: 12,
+  },
+  outlinedButton: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderColor: '#E54B4D',
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 48,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  outlinedButtonText: {
+    color: '#E54B4D',
+    fontSize: 14,
+    fontWeight: '600',
   },
   buttonText: {
     color: '#FFFFFF',
