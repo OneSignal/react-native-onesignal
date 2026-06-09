@@ -168,8 +168,8 @@ public class RNOneSignal extends NativeOneSignalSpec
         Logging.error("Failed to serialize payload for " + eventName, exception);
     }
 
-    private void logLocationModuleNotAvailable(Exception exception) {
-        Logging.error(LOCATION_MODULE_NOT_AVAILABLE, exception);
+    private void logLocationModuleNotAvailable(Throwable throwable) {
+        Logging.error(LOCATION_MODULE_NOT_AVAILABLE, throwable);
     }
 
     private void removeObservers() {
@@ -330,8 +330,8 @@ public class RNOneSignal extends NativeOneSignalSpec
     public void requestLocationPermission() {
         try {
             OneSignal.getLocation().requestPermission(Continue.none());
-        } catch (Exception e) {
-            logLocationModuleNotAvailable(e);
+        } catch (Throwable t) {
+            logLocationModuleNotAvailable(t);
         }
     }
 
@@ -339,8 +339,8 @@ public class RNOneSignal extends NativeOneSignalSpec
     public void isLocationShared(Promise promise) {
         try {
             promise.resolve(OneSignal.getLocation().isShared());
-        } catch (Exception e) {
-            logLocationModuleNotAvailable(e);
+        } catch (Throwable t) {
+            logLocationModuleNotAvailable(t);
             promise.resolve(false);
         }
     }
@@ -349,8 +349,8 @@ public class RNOneSignal extends NativeOneSignalSpec
     public void setLocationShared(boolean shared) {
         try {
             OneSignal.getLocation().setShared(shared);
-        } catch (Exception e) {
-            logLocationModuleNotAvailable(e);
+        } catch (Throwable t) {
+            logLocationModuleNotAvailable(t);
         }
     }
 
