@@ -1,0 +1,10 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    // Override the base config's `"types": ["jest"]` since this demo
+    // doesn't ship jest tests and @types/jest isn't installed.
+    "types": []
+  },
+  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"],
+  "exclude": ["**/node_modules", "**/Pods"]
+}
