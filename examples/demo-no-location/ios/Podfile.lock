@@ -1852,7 +1852,6 @@ PODS:
 DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - OneSignalXCFramework/OneSignal (< 6.0, >= 5.0.0)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
   - RCTRequired (from `../node_modules/react-native/Libraries/Required`)
   - RCTSwiftUI (from `../node_modules/react-native/ReactApple/RCTSwiftUI`)
@@ -2159,6 +2158,6 @@ SPEC CHECKSUMS:
   ReactNativeDependencies: 247df240f5ecafe765afbfba15da0a8daa4a2985
   Yoga: 772166513f9cd2d61a6251d0dacbbfaa5b537479
 
-PODFILE CHECKSUM: 31df9a2d7faa1b807c7329e989c126e892bf0cb1
+PODFILE CHECKSUM: c3ac62d933cd818342aa59fcf882cd94a6cd1af2
 
 COCOAPODS: 1.15.2
