@@ -15,12 +15,15 @@ resolved.
 
 ## iOS
 
-`ios/Podfile` exports the variable before React Native installs pods, so
-`pod install` resolves OneSignal without the location subspec:
+The `pods` and `update:pods` scripts in `package.json` export the variable so
+CocoaPods resolves OneSignal without the location subspec:
 
-```ruby
-ENV['ONESIGNAL_DISABLE_LOCATION'] = 'true'
+```sh
+ONESIGNAL_DISABLE_LOCATION=true bundle exec pod install
 ```
+
+If you run `pod install` or `pod update` manually, set
+`ONESIGNAL_DISABLE_LOCATION=true` in that shell too.
 
 ## Android
 
