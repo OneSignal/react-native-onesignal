@@ -35,7 +35,7 @@ See the [Setup Guide](https://documentation.onesignal.com/docs/react-native-sdk-
 
 By default, `react-native-onesignal` includes OneSignal's native location module so `OneSignal.Location` works without extra setup. If your app does not use location features, you can exclude the native location module from iOS and Android builds.
 
-Set `ONESIGNAL_DISABLE_LOCATION=true` in the environment before resolving or building, for both CocoaPods (iOS) and Gradle (Android):
+Set `ONESIGNAL_DISABLE_LOCATION=true` in the environment before resolving or building, for both CocoaPods (iOS) and Gradle (Android). The value is case-insensitive, and `1` is also accepted:
 
 ```sh
 ONESIGNAL_DISABLE_LOCATION=true pod install        # iOS, from the ios directory

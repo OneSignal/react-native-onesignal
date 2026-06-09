@@ -7,7 +7,8 @@ def safeExtGet(prop, fallback) {
 
 def safeEnvFlagGet(prop) {
     def value = System.getenv(prop)
-    return value != null && value.toString().toBoolean()
+    def normalizedValue = value?.toString()?.trim()
+    return normalizedValue != null && (normalizedValue.equalsIgnoreCase('true') || normalizedValue == '1')
 }
 
 def oneSignalVersion = '5.9.3'

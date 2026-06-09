@@ -353,7 +353,6 @@ Create `src/theme.ts` with `AppColors`, `AppSpacing`, `AppTheme`, `AppDialogStyl
 ### Custom Notification Sound
 
 - **Android**: the WITH SOUND push sends `android_channel_id` (`ONESIGNAL_ANDROID_CHANNEL_ID` env var, with a hardcoded fallback) in `OneSignalApiService.ts`. The demo bundles `android/app/src/main/res/raw/vine_boom.wav` so the sound is available on-device; the channel itself is also configured server-side on the OneSignal app.
-- **iOS**: the WITH SOUND push sends `ios_sound: 'vine_boom.wav'`. The asset is bundled at `ios/demo/vine_boom.wav` and wired into the `demo` Xcode target. If you start from a fresh clone and the asset is missing, copy it from [sdk-shared/assets](https://github.com/OneSignal/sdk-shared/tree/main/assets) and drag into Xcode as a bundle resource.
 
 ---
 
