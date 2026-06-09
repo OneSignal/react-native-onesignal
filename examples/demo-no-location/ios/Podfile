@@ -15,16 +15,6 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'OneSignalNotificationServiceExtension' do
-  # use_frameworks! :linkage => :static
-  pod 'OneSignalXCFramework/OneSignal', '>= 5.0.0', '< 6.0'
-end
-
-target 'OneSignalWidgetExtension' do
-  # use_frameworks! :linkage => :static
-  pod 'OneSignalXCFramework/OneSignal', '>= 5.0.0', '< 6.0'
-end
-
 target 'demo' do
   config = use_native_modules!
 
