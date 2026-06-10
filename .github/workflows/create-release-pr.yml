@@ -92,8 +92,18 @@ jobs:
 
           # Get versions from target branch (not the release branch)
           CURRENT_VERSION=$(git show origin/${{ inputs.target_branch }}:package.json | jq -r .version)
-          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:android/build.gradle | grep "com.onesignal:OneSignal:" | sed -E "s/.*OneSignal:([^\"']+).*/\1/")
-          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:react-native-onesignal.podspec | grep "OneSignalXCFramework" | sed -E "s/.*'([^']+)'.*/\1/")
+          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:android/build.gradle | sed -nE "s/.*def oneSignalVersion = ['\"]([^'\"]+)['\"].*/\1/p" | head -n 1)
+          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:react-native-onesignal.podspec | sed -nE "s/.*onesignal_xcframework_version = ['\"]([^'\"]+)['\"].*/\1/p" | head -n 1)
+
+          if [ -z "$ANDROID_VERSION" ]; then
+            echo "::error::Failed to read Android SDK version from android/build.gradle"
+            exit 1
+          fi
+
+          if [ -z "$IOS_VERSION" ]; then
+            echo "::error::Failed to read iOS SDK version from react-native-onesignal.podspec"
+            exit 1
+          fi
 
           echo "rn_from=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "android_from=$ANDROID_VERSION" >> $GITHUB_OUTPUT
@@ -117,8 +127,11 @@ jobs:
             exit 1
           fi
 
-          # Update Android SDK version in build.gradle (handles both api '...' and api('...') syntax)
-          sed -i '' -E "s/(com\.onesignal:OneSignal:)[^\"']+/\1$VERSION/" android/build.gradle
+          sed -i '' -E "s/(def oneSignalVersion = ['\"])[^'\"]+(['\"])/\1$VERSION\2/" android/build.gradle
+          if ! grep -q "def oneSignalVersion = '${VERSION}'" android/build.gradle; then
+            echo "::error::Failed to update Android SDK version in android/build.gradle to ${VERSION}"
+            exit 1
+          fi
           echo "✓ Updated android/build.gradle with Android SDK ${VERSION}"
 
           # Only commit if there are changes
@@ -143,7 +156,11 @@ jobs:
             exit 1
           fi
 
-          sed -i '' "s/s\.dependency 'OneSignalXCFramework', '[^']*'/s.dependency 'OneSignalXCFramework', '$VERSION'/" react-native-onesignal.podspec
+          sed -i '' -E "s/(onesignal_xcframework_version = ['\"])[^'\"]+(['\"])/\1$VERSION\2/" react-native-onesignal.podspec
+          if ! grep -q "onesignal_xcframework_version = '${VERSION}'" react-native-onesignal.podspec; then
+            echo "::error::Failed to update iOS SDK version in react-native-onesignal.podspec to ${VERSION}"
+            exit 1
+          fi
           echo "✓ Updated react-native-onesignal.podspec with iOS SDK ${VERSION}"
 
           # Only commit if there are changes
