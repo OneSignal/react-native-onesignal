@@ -17,7 +17,7 @@ import { OneSignal } from 'react-native-onesignal';
 const ONESIGNAL_APP_ID = ENV_ONESIGNAL_APP_ID?.trim() || 'YOUR-ONESIGNAL-APP-ID';
 const ANDROID_STATUS_BAR_HEIGHT = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) : 0;
 
-const isPlaceholder = (value: string) => value.startsWith('YOUR-');
+const isPlaceholder = (value: string) => value.toLowerCase().startsWith('your-');
 
 export default function App() {
   const [hasNotificationPermission, setHasNotificationPermission] = useState<boolean | null>(null);
@@ -114,7 +114,7 @@ export default function App() {
     } finally {
       setSending(false);
     }
-  }, [pushSubscriptionId]);
+  }, [hasNotificationPermission, pushSubscriptionId]);
 
   return (
     <View style={styles.root}>

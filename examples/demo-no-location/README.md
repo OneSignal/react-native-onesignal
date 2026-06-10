@@ -9,6 +9,20 @@ vp run ios
 vp run android
 ```
 
+## Setup
+
+Copy `.env.example` to `.env` and set your OneSignal app ID:
+
+```sh
+cp .env.example .env
+```
+
+Then edit `.env`:
+
+```sh
+ONESIGNAL_APP_ID=your-onesignal-app-id
+```
+
 Both platforms exclude the native location module by setting the
 `ONESIGNAL_DISABLE_LOCATION=true` environment variable when dependencies are
 resolved.
