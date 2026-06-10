@@ -5,17 +5,14 @@ def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
-def safePropGet(prop, fallback) {
-    if (rootProject.ext.has(prop)) {
-        return rootProject.ext.get(prop)
-    }
-
-    def value = rootProject.findProperty(prop)
-    return value != null ? value : fallback
+def safeEnvFlagGet(prop) {
+    def value = System.getenv(prop)
+    def normalizedValue = value?.toString()?.trim()
+    return normalizedValue != null && (normalizedValue.equalsIgnoreCase('true') || normalizedValue == '1')
 }
 
 def oneSignalVersion = '5.9.3'
-def oneSignalDisableLocation = safePropGet('OneSignal_disableLocation', false).toString().toBoolean()
+def oneSignalDisableLocation = safeEnvFlagGet('ONESIGNAL_DISABLE_LOCATION')
 
 android {
     namespace "com.onesignal.rnonesignalandroid"

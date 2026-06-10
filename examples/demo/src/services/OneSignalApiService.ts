@@ -62,7 +62,6 @@ class OneSignalApiService {
       case NotificationType.WithSound:
         headings = { en: 'Sound Notification' };
         contents = { en: 'This notification plays a custom sound' };
-        extra.ios_sound = 'vine_boom.wav';
         extra.android_channel_id =
           ONESIGNAL_ANDROID_CHANNEL_ID?.trim() || DEFAULT_ANDROID_CHANNEL_ID;
         break;
