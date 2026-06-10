@@ -42,6 +42,12 @@ ONESIGNAL_DISABLE_LOCATION=true pod install        # iOS, from the ios directory
 ONESIGNAL_DISABLE_LOCATION=true ./gradlew assembleDebug   # Android, from the android directory
 ```
 
+For Android, you can also persist the Gradle property in `android/gradle.properties`:
+
+```properties
+onesignal.disableLocation=true
+```
+
 In GitHub Actions, you can also set it once at the job or step level so
 `pod install`, `pod update`, and Gradle builds inherit it:
 
@@ -63,7 +69,7 @@ rm -rf Pods Podfile.lock
 ONESIGNAL_DISABLE_LOCATION=true pod install
 ```
 
-Gradle re-reads the variable on each configuration, so a clean build with the variable set is enough on Android.
+Gradle re-reads the environment variable or `onesignal.disableLocation` property on each configuration, so a clean build after changing the flag is enough on Android.
 
 > [!IMPORTANT]
 > When using Xcode or Android Studio, launch the IDE from a terminal that has `ONESIGNAL_DISABLE_LOCATION` exported. An IDE launched from the Dock/Finder does not inherit variables set only in your shell profile. On CI, key any CocoaPods / Gradle caches on the value of `ONESIGNAL_DISABLE_LOCATION` so a restored cache does not resurrect the location module.
