@@ -17,7 +17,7 @@ def safeFlagGet(envProp, gradleProp) {
     return normalizedValue != null && (normalizedValue.equalsIgnoreCase('true') || normalizedValue == '1')
 }
 
-def oneSignalVersion = '5.9.4'
+def oneSignalVersion = '5.9.5'
 def oneSignalDisableLocation = safeFlagGet('ONESIGNAL_DISABLE_LOCATION', 'onesignal.disableLocation')
 
 android {
