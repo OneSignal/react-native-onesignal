@@ -1,6 +1,6 @@
 require 'json'
 package_json = JSON.parse(File.read('package.json'))
-onesignal_xcframework_version = '5.5.3'
+onesignal_xcframework_version = '5.5.4'
 onesignal_disable_location_env = ENV['ONESIGNAL_DISABLE_LOCATION'].to_s.strip.downcase
 onesignal_disable_location = ['true', '1'].include?(onesignal_disable_location_env)
 
