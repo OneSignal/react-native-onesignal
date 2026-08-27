@@ -67,6 +67,7 @@ import com.onesignal.user.state.UserChangedState;
 import com.onesignal.user.subscriptions.IPushSubscription;
 import com.onesignal.user.subscriptions.IPushSubscriptionObserver;
 import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONException;
@@ -82,8 +83,8 @@ public class RNOneSignal extends NativeOneSignalSpec
     private boolean hasSetPushSubscriptionObserver = false;
     private boolean hasSetUserStateObserver = false;
 
-    private final HashMap<String, INotificationWillDisplayEvent> notificationWillDisplayCache = new HashMap<>();
-    private final HashMap<String, INotificationWillDisplayEvent> preventDefaultCache = new HashMap<>();
+    private final Map<String, INotificationWillDisplayEvent> notificationWillDisplayCache =
+            Collections.synchronizedMap(new HashMap<>());
 
     private boolean hasAddedNotificationForegroundListener = false;
     private boolean hasAddedInAppMessageLifecycleListener = false;
@@ -366,6 +367,7 @@ public class RNOneSignal extends NativeOneSignalSpec
     public void onWillDisplay(INotificationWillDisplayEvent event) {
         if (!this.hasAddedNotificationForegroundListener) {
             event.getNotification().display();
+            return;
         }
 
         INotification notification = event.getNotification();
@@ -376,16 +378,6 @@ public class RNOneSignal extends NativeOneSignalSpec
         try {
             emitOnNotificationWillDisplay(
                     RNUtils.convertHashMapToWritableMap(RNUtils.convertNotificationToMap(notification)));
-
-            try {
-                synchronized (event) {
-                    while (preventDefaultCache.containsKey(notificationId)) {
-                        event.wait();
-                    }
-                }
-            } catch (InterruptedException e) {
-                Logging.error("InterruptedException: " + e.toString(), null);
-            }
         } catch (JSONException e) {
             logJSONException("onNotificationWillDisplay", e);
         }
@@ -393,7 +385,7 @@ public class RNOneSignal extends NativeOneSignalSpec
 
     @Override
     public void displayNotification(String notificationId) {
-        INotificationWillDisplayEvent event = notificationWillDisplayCache.get(notificationId);
+        INotificationWillDisplayEvent event = notificationWillDisplayCache.remove(notificationId);
         if (event == null) {
             Logging.error(
                     "Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
@@ -411,7 +403,6 @@ public class RNOneSignal extends NativeOneSignalSpec
             return;
         }
         event.preventDefault();
-        this.preventDefaultCache.put(notificationId, event);
     }
 
     @Override
