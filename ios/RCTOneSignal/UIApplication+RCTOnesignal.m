@@ -52,14 +52,16 @@ static void injectSelector(Class newClass, SEL newSel, Class addToClass,
 
 - (void)setOneSignalReactNativeDelegate:(id<UIApplicationDelegate>)delegate {
   static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    Class delegateClass = [delegate class];
-    injectSelector(
-        self.class,
-        @selector(oneSignalApplication:didFinishLaunchingWithOptions:),
-        delegateClass, @selector(application:didFinishLaunchingWithOptions:));
-    [self setOneSignalReactNativeDelegate:delegate];
-  });
+  if (delegate) {
+    dispatch_once(&onceToken, ^{
+      Class delegateClass = [delegate class];
+      injectSelector(
+          self.class,
+          @selector(oneSignalApplication:didFinishLaunchingWithOptions:),
+          delegateClass, @selector(application:didFinishLaunchingWithOptions:));
+    });
+  }
+  [self setOneSignalReactNativeDelegate:delegate];
 }
 
 - (BOOL)oneSignalApplication:(UIApplication *)application
