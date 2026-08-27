@@ -66,6 +66,7 @@ export default function PairInputModal({
             <TextInput
               style={[AppDialogStyles.input, styles.halfInput, styles.inputSpacing]}
               placeholder={keyPlaceholder}
+              accessibilityLabel={keyPlaceholder}
               placeholderTextColor={AppColors.osGrey600}
               value={keyValue}
               onChangeText={setKeyValue}
@@ -76,6 +77,7 @@ export default function PairInputModal({
             <TextInput
               style={[AppDialogStyles.input, styles.halfInput, styles.inputSpacing]}
               placeholder={valuePlaceholder}
+              accessibilityLabel={valuePlaceholder}
               placeholderTextColor={AppColors.osGrey600}
               value={val}
               onChangeText={setVal}

@@ -29,7 +29,11 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
       return true;
     }
     try {
-      JSON.parse(text);
+      const properties = JSON.parse(text);
+      if (properties === null || typeof properties !== 'object' || Array.isArray(properties)) {
+        setJsonError('Properties must be a JSON object');
+        return false;
+      }
       setJsonError('');
       return true;
     } catch {
@@ -40,15 +44,10 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
 
   const handlePropertiesChange = (text: string) => {
     setPropertiesText(text);
-    if (text.trim()) {
-      validateJson(text);
-    } else {
-      setJsonError('');
-    }
+    validateJson(text);
   };
 
-  const canSubmit =
-    name.trim() && !jsonError && (propertiesText.trim() === '' || !!propertiesText.trim());
+  const canSubmit = !!name.trim() && !jsonError;
 
   const handleConfirm = () => {
     if (!name.trim()) {
@@ -90,6 +89,7 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
             autoFocus
             {...AppInputProps}
             testID="event_name_input"
+            accessibilityLabel="Event name"
           />
           <Text style={styles.label}>Properties (optional, JSON)</Text>
           <TextInput
@@ -101,6 +101,7 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
             multiline
             {...AppInputProps}
             testID="event_properties_input"
+            accessibilityLabel="Properties (optional, JSON object)"
           />
           {!!jsonError && <Text style={styles.errorText}>{jsonError}</Text>}
           <View style={AppDialogStyles.actions}>

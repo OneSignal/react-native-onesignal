@@ -14,6 +14,12 @@ import { AppColors, AppTextStyles, AppDialogStyles, AppInputProps } from '../../
 
 type OutcomeType = 'normal' | 'unique' | 'withValue';
 
+const OUTCOME_OPTIONS = [
+  { type: 'normal', label: 'Normal Outcome', testID: 'outcome_type_normal_radio' },
+  { type: 'unique', label: 'Unique Outcome', testID: 'outcome_type_unique_radio' },
+  { type: 'withValue', label: 'Outcome with Value', testID: 'outcome_type_value_radio' },
+] as const;
+
 interface Props {
   visible: boolean;
   onSendNormal: (name: string) => void;
@@ -33,8 +39,9 @@ export default function OutcomeModal({
   const [name, setName] = useState('');
   const [value, setValue] = useState('');
 
+  const numericValue = Number(value);
   const canSubmit =
-    name.trim() && (outcomeType !== 'withValue' || (value.trim() && !isNaN(parseFloat(value))));
+    name.trim() && (outcomeType !== 'withValue' || (value.trim() && Number.isFinite(numericValue)));
 
   const handleSend = () => {
     if (!canSubmit) {
@@ -48,7 +55,7 @@ export default function OutcomeModal({
         onSendUnique(name.trim());
         break;
       case 'withValue':
-        onSendWithValue(name.trim(), parseFloat(value));
+        onSendWithValue(name.trim(), numericValue);
         break;
     }
     handleClose();
@@ -61,23 +68,6 @@ export default function OutcomeModal({
     onClose();
   };
 
-  const RadioOption = ({
-    type,
-    label,
-    testID,
-  }: {
-    type: OutcomeType;
-    label: string;
-    testID: string;
-  }) => (
-    <TouchableOpacity style={styles.radioRow} onPress={() => setOutcomeType(type)} testID={testID}>
-      <View style={styles.radioOuter}>
-        {outcomeType === type && <View style={styles.radioInner} />}
-      </View>
-      <Text style={styles.radioLabel}>{label}</Text>
-    </TouchableOpacity>
-  );
-
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
       <KeyboardAvoidingView
@@ -86,13 +76,22 @@ export default function OutcomeModal({
       >
         <View style={AppDialogStyles.container}>
           <Text style={AppDialogStyles.title}>Send Outcome</Text>
-          <RadioOption type="normal" label="Normal Outcome" testID="outcome_type_normal_radio" />
-          <RadioOption type="unique" label="Unique Outcome" testID="outcome_type_unique_radio" />
-          <RadioOption
-            type="withValue"
-            label="Outcome with Value"
-            testID="outcome_type_value_radio"
-          />
+          {OUTCOME_OPTIONS.map(({ type, label, testID }) => (
+            <TouchableOpacity
+              key={type}
+              style={styles.radioRow}
+              onPress={() => setOutcomeType(type)}
+              accessibilityRole="radio"
+              accessibilityLabel={label}
+              accessibilityState={{ checked: outcomeType === type }}
+              testID={testID}
+            >
+              <View style={styles.radioOuter}>
+                {outcomeType === type && <View style={styles.radioInner} />}
+              </View>
+              <Text style={styles.radioLabel}>{label}</Text>
+            </TouchableOpacity>
+          ))}
           <TextInput
             style={[AppDialogStyles.input, styles.inputSpacing]}
             placeholder="Name"
@@ -102,6 +101,7 @@ export default function OutcomeModal({
             autoFocus
             {...AppInputProps}
             testID="outcome_name_input"
+            accessibilityLabel="Outcome name"
           />
           {outcomeType === 'withValue' && (
             <TextInput
@@ -113,6 +113,7 @@ export default function OutcomeModal({
               keyboardType="numeric"
               {...AppInputProps}
               testID="outcome_value_input"
+              accessibilityLabel="Outcome value"
             />
           )}
           <View style={AppDialogStyles.actions}>

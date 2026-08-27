@@ -60,6 +60,7 @@ export default function SingleInputModal({
           <TextInput
             style={[AppDialogStyles.input, styles.inputSpacing]}
             placeholder={placeholder}
+            accessibilityLabel={placeholder || title}
             placeholderTextColor={AppColors.osGrey600}
             value={value}
             onChangeText={setValue}

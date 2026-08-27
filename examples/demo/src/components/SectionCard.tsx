@@ -15,10 +15,14 @@ export default function SectionCard({ title, children, onInfoTap, sectionKey, st
   return (
     <View style={[styles.wrapper, style]} testID={sectionKey ? `${sectionKey}_section` : undefined}>
       <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title} accessibilityRole="header">
+          {title}
+        </Text>
         {onInfoTap && (
           <TouchableOpacity
             onPress={onInfoTap}
+            accessibilityRole="button"
+            accessibilityLabel={`About ${title}`}
             style={styles.infoButton}
             testID={sectionKey ? `${sectionKey}_info_icon` : undefined}
           >
