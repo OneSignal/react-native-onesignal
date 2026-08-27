@@ -30,8 +30,8 @@ on:
   workflow_dispatch:
     inputs:
       rn_version:
-        description: 'New React Native Version (e.g., 5.2.15 or 5.2.15-beta.1)'
-        required: true
+        description: 'Override the auto-detected version (e.g., 5.2.15 or 5.2.15-beta.1). Leave blank to auto-detect.'
+        required: false
         type: string
       android_version:
         description: 'New Android SDK Version (e.g., 2.3.0). Leave blank to skip.'
@@ -48,7 +48,25 @@ on:
         default: main
 
 jobs:
+  determine_version:
+    runs-on: ubuntu-latest
+    outputs:
+      rn_version: ${{ inputs.rn_version || steps.next_version.outputs.version }}
+      release_needed: ${{ inputs.rn_version != '' || steps.next_version.outputs.release-needed == 'true' }}
+
+    steps:
+      - name: Determine React Native SDK version
+        if: github.event_name == 'workflow_dispatch' && inputs.rn_version == ''
+        id: next_version
+        uses: OneSignal/sdk-shared/.github/actions/determine-next-version@main
+        with:
+          github-token: ${{ secrets.GH_PUSH_TOKEN || github.token }}
+          target-repo: OneSignal/react-native-onesignal
+          target-branch: ${{ inputs.target_branch }}
+
   prep:
+    needs: determine_version
+    if: needs.determine_version.outputs.release_needed == 'true'
     uses: OneSignal/sdk-shared/.github/workflows/prep-release.yml@main
     secrets:
       # Need this cross-repo token (sdk-shared & this repo) to perform changes
@@ -56,11 +74,11 @@ jobs:
       GH_PUSH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
     with:
       target_repo: OneSignal/react-native-onesignal
-      version: ${{ inputs.rn_version }}
+      version: ${{ needs.determine_version.outputs.rn_version }}
 
   # React Native specific steps
   update_version:
-    needs: prep
+    needs: [determine_version, prep]
     runs-on: macos-latest
     outputs:
       rn_from: ${{ steps.current_versions.outputs.rn_from }}
@@ -162,9 +180,9 @@ jobs:
           git commit -m "Update iOS SDK to ${VERSION}" && git push
 
       - name: Update sdk version
+        env:
+          NEW_VERSION: ${{ needs.determine_version.outputs.rn_version }}
         run: |
-          NEW_VERSION="${{ inputs.rn_version }}"
-
           # Update package.json version
           npm pkg set version="$NEW_VERSION"
 
