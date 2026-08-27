@@ -2,11 +2,15 @@
 set -euo pipefail
 
 # Invoked from a demo dir (e.g. examples/demo/) via `vp run setup`.
-# ORIGINAL_DIR captures that dir so we can return to it after building
-# the SDK; SDK_ROOT is two levels up (the SDK package itself).
-ORIGINAL_DIR=$(pwd)
-SDK_ROOT="$(cd ../../ && pwd)"
+# Resolve the SDK independently of the caller before touching generated files.
+ORIGINAL_DIR=$(pwd -P)
+SDK_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+case "$ORIGINAL_DIR" in
+  "$SDK_ROOT/examples/demo"|"$SDK_ROOT/examples/demo-no-location") ;;
+  *) echo "Run setup from examples/demo or examples/demo-no-location." >&2; exit 1 ;;
+esac
 STAMP_FILE="$SDK_ROOT/.rn-sdk-source.stamp"
+DEMO_SDK_STAMP_FILE="$ORIGINAL_DIR/.rn-sdk-source.stamp"
 DEMO_ENV_STAMP_FILE="$ORIGINAL_DIR/.rn-demo-env.stamp"
 TGZ_FILE="$SDK_ROOT/react-native-onesignal.tgz"
 INSTALLED_DIR="$ORIGINAL_DIR/node_modules/react-native-onesignal"
@@ -16,18 +20,20 @@ INSTALLED_DIR="$ORIGINAL_DIR/node_modules/react-native-onesignal"
 # combined list) instead of using `find -newer`, because mtimes get
 # bumped by routine git operations (checkout, branch switch, rebase)
 # even when the source is identical — that caused needless rebuilds.
-src_hash=$(find "$SDK_ROOT/src" "$SDK_ROOT/ios" "$SDK_ROOT/android" \
+src_hash=$(find "$SDK_ROOT/src" "$SDK_ROOT/ios" "$SDK_ROOT/android/src" \
+                "$SDK_ROOT/android/build.gradle" "$SDK_ROOT/android/proguard-rules.pro" \
                 "$SDK_ROOT/package.json" "$SDK_ROOT/tsconfig.json" \
+                "$SDK_ROOT/vite.config.ts" "$SDK_ROOT/bun.lock" \
+                "$SDK_ROOT/README.md" "$SDK_ROOT/LICENSE" \
                 "$SDK_ROOT"/*.podspec \
-           -type f 2>/dev/null \
-           | sort \
-           | xargs shasum 2>/dev/null \
+           -type f -exec shasum {} + \
+           | LC_ALL=C sort \
            | shasum \
            | awk '{print $1}')
 
 demo_env_hash=$(
   {
-    for file in "$ORIGINAL_DIR/.env" "$ORIGINAL_DIR/babel.config.js"; do
+    for file in "$ORIGINAL_DIR/.env" "$ORIGINAL_DIR/babel.config.js" "$ORIGINAL_DIR/metro.config.js"; do
       if [ -f "$file" ]; then
         shasum "$file"
       else
@@ -39,49 +45,52 @@ demo_env_hash=$(
 
 if [ ! -f "$DEMO_ENV_STAMP_FILE" ] || [ "$(cat "$DEMO_ENV_STAMP_FILE")" != "$demo_env_hash" ]; then
   echo "Demo env inputs changed, clearing Metro cache..."
-  rm -rf "${TMPDIR:-/tmp}"/metro-* "${TMPDIR:-/tmp}"/haste-map-* "$ORIGINAL_DIR/node_modules/.cache/metro" 2>/dev/null || true
+  # Both demo Metro configs keep their transform and file-map caches here.
+  rm -rf "$ORIGINAL_DIR/node_modules/.cache/metro"
   metro_pids=$(lsof -ti tcp:8081 2>/dev/null || true)
   for pid in $metro_pids; do
     args=$(ps -p "$pid" -o args= 2>/dev/null || true)
     case "$args" in
       *react-native*|*metro*)
-        echo "Stopping Metro so @env values are reloaded..."
-        kill "$pid" 2>/dev/null || true
+        metro_cwd=$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' || true)
+        if [ "$metro_cwd" = "$ORIGINAL_DIR" ]; then
+          echo "Stopping this demo's Metro so @env values are reloaded..."
+          kill "$pid" 2>/dev/null || true
+        fi
         ;;
     esac
   done
   echo "$demo_env_hash" > "$DEMO_ENV_STAMP_FILE"
 fi
 
-# Skip the whole rebuild when:
-#   - the demo already has the SDK installed,
-#   - the cached tarball is still on disk, and
-#   - the source hash matches the last successful build.
+# Track each demo's installation separately from the shared package build.
 # FORCE_SETUP=1 bypasses the cache when something feels off.
 if [ "${FORCE_SETUP:-0}" != "1" ] \
    && [ -d "$INSTALLED_DIR" ] \
    && [ -f "$STAMP_FILE" ] \
+   && [ -f "$DEMO_SDK_STAMP_FILE" ] \
    && [ -f "$TGZ_FILE" ] \
-   && [ "$(cat "$STAMP_FILE")" = "$src_hash" ]; then
+   && [ "$(cat "$STAMP_FILE")" = "$src_hash" ] \
+   && [ "$(cat "$DEMO_SDK_STAMP_FILE")" = "$src_hash" ]; then
   echo "SDK source unchanged, skipping rebuild. Set FORCE_SETUP=1 to override."
   exit 0
 fi
 
-cd "$SDK_ROOT"
-vp run build
-
-# `vp pm pack` (wraps bun pm pack) honors package.json's "files" field
-# (so the tarball matches what would actually be published). The version
-# suffix in the filename is unstable, so we normalize to
-# react-native-onesignal.tgz for a deterministic path that package.json +
-# the extract step can reference.
-rm -f react-native-onesignal*.tgz
-vp pm pack
-mv react-native-onesignal-*.tgz react-native-onesignal.tgz
+if [ "${FORCE_SETUP:-0}" = "1" ] \
+   || [ ! -f "$STAMP_FILE" ] \
+   || [ ! -f "$TGZ_FILE" ] \
+   || [ "$(cat "$STAMP_FILE")" != "$src_hash" ]; then
+  cd "$SDK_ROOT"
+  vp run build
+  # Use the pinned package manager through Vite+; the local CLI also supports
+  # `exec`, unlike the global-only `vp pm`/`vp add` shortcuts.
+  vp exec bun pm pack --filename "$TGZ_FILE"
+  echo "$src_hash" > "$STAMP_FILE"
+fi
 
 cd "$ORIGINAL_DIR"
 
-# Always go through `vp add` (wraps bun) so bun.lock's integrity hash for
+# Always go through the package manager so bun.lock's integrity hash for
 # the tarball stays in sync with the freshly-built tarball on disk. A
 # previous version of this script had a "hot path" that just untarred
 # over node_modules directly, which was faster but left a stale sha512
@@ -89,15 +98,14 @@ cd "$ORIGINAL_DIR"
 # (e.g. when the lockfile was touched by another dep) would fail with
 # IntegrityCheckFailed.
 #
-# `vp remove` first because bun verifies the existing integrity hash
-# before replacing the entry; without removing, a stale hash from a prior
-# build causes `vp add` itself to fail. The relative `file:../../...`
+# Remove first because bun verifies the existing integrity hash before
+# replacing the entry. The relative `file:../../...`
 # path is intentional — an absolute path would leak this machine's
 # layout into the lockfile.
 echo "Registering tarball with vp (refreshes bun.lock integrity hash)..."
-vp remove react-native-onesignal 2>/dev/null || true
-vp add file:../../react-native-onesignal.tgz
+vp exec bun remove react-native-onesignal
+vp install file:../../react-native-onesignal.tgz
 
 # Record the hash only after a successful build/install so that an
 # interrupted run forces a full retry next time.
-echo "$src_hash" > "$STAMP_FILE"
+echo "$src_hash" > "$DEMO_SDK_STAMP_FILE"
