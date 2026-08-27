@@ -61,7 +61,7 @@ export default class EventManager {
   }
 
   setupListeners() {
-    if (this.RNOneSignal == null) return;
+    if (this.RNOneSignal == null || this.nativeSubscriptions.length > 0) return;
 
     this.nativeSubscriptions.push(
       this.RNOneSignal.onPermissionChanged((payload) => {
@@ -156,9 +156,11 @@ export default class EventManager {
   private dispatchHandlers(eventName: string, payload: unknown) {
     const handlerArray = this.eventListenerArrayMap.get(eventName);
     if (handlerArray) {
-      handlerArray.forEach((handler) => {
+      handlerArray.slice().forEach((handler) => {
         handler(payload);
       });
+    } else if (eventName === NOTIFICATION_WILL_DISPLAY) {
+      (payload as NotificationWillDisplayEvent).getNotification().display();
     }
   }
 }
