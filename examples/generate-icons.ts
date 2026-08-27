@@ -84,8 +84,8 @@ try pngData.write(to: URL(fileURLWithPath: outputPath))
 
   const tempDir = mkdtempSync(join(tmpdir(), 'onesignal-icon-'));
   const swiftFile = join(tempDir, 'flatten.swift');
-  writeFileSync(swiftFile, swift);
   try {
+    writeFileSync(swiftFile, swift);
     execFileSync('swift', [swiftFile, src, dest], { stdio: 'ignore' });
   } finally {
     rmSync(tempDir, { recursive: true, force: true });
@@ -211,9 +211,9 @@ async function generateIos(): Promise<void> {
   console.log('Generating iOS icons...');
   const tempDir = mkdtempSync(join(tmpdir(), 'onesignal-ios-icon-'));
   const iosSource = join(tempDir, 'ios-source-white.png');
-  await flattenToWhiteBackground(source, iosSource);
-  await writeIosContents();
   try {
+    await flattenToWhiteBackground(source, iosSource);
+    await writeIosContents();
     for (const { filename, pixels } of IOS_ICONS) {
       await resize(iosSource, join(IOS_APPICONSET, filename), pixels);
       console.log(`  ${filename}: ${pixels}x${pixels}`);
