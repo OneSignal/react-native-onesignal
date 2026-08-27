@@ -121,7 +121,11 @@ class OneSignalApiService {
           return false;
         }
 
-        const data = await response.json().catch(() => undefined);
+        const data = await response.json();
+        if (data === null || typeof data !== 'object' || Array.isArray(data)) {
+          console.error('Send notification failed: invalid response');
+          return false;
+        }
         if (isTransientSendFailure(data)) {
           if (attempt < maxAttempts) {
             await new Promise<void>((resolve) => setTimeout(() => resolve(), 3_000 * attempt));
