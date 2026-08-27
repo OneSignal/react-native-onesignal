@@ -39,7 +39,6 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -73,11 +72,7 @@ import java.util.Map;
 import org.json.JSONException;
 
 public class RNOneSignal extends NativeOneSignalSpec
-        implements IPushSubscriptionObserver,
-                IPermissionObserver,
-                IUserStateObserver,
-                LifecycleEventListener,
-                INotificationLifecycleListener {
+        implements IPushSubscriptionObserver, IPermissionObserver, IUserStateObserver, INotificationLifecycleListener {
     public static final String NAME = "OneSignal";
     private static final String LOCATION_MODULE_NOT_AVAILABLE =
             "OneSignal location module is not available. Add the location dependency to use OneSignal.Location.";
@@ -202,7 +197,6 @@ public class RNOneSignal extends NativeOneSignalSpec
 
     public RNOneSignal(ReactApplicationContext reactContext) {
         super(reactContext);
-        reactContext.addLifecycleEventListener(this);
 
         // Clean up previous instance if it exists (handles reload scenario)
         if (currentInstance != null && currentInstance != this) {
@@ -217,19 +211,12 @@ public class RNOneSignal extends NativeOneSignalSpec
     }
 
     @Override
-    public void onHostDestroy() {
-        removeObservers();
-    }
-
-    @Override
-    public void onHostPause() {}
-
-    @Override
-    public void onHostResume() {}
-
-    @Override
     public void invalidate() {
         removeObservers();
+        notificationWillDisplayCache.clear();
+        if (currentInstance == this) {
+            currentInstance = null;
+        }
         super.invalidate();
     }
 
