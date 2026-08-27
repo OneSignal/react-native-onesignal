@@ -49,11 +49,9 @@ export function encodeNullsForIOS(value: unknown): unknown {
     return value.map((item) => encodeNullsForIOS(item));
   }
   if (typeof value === 'object') {
-    const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value)) {
-      out[k] = encodeNullsForIOS(v);
-    }
-    return out;
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, encodeNullsForIOS(item)]),
+    );
   }
   return value;
 }
