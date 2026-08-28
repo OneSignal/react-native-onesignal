@@ -125,7 +125,6 @@ function InputRow({
         value={value}
         onChangeText={onChangeText}
         placeholder={label}
-        accessibilityLabel={label}
         placeholderTextColor={AppColors.osGrey500}
         autoCapitalize="none"
         autoCorrect={false}
