@@ -92,7 +92,6 @@ export default function MultiPairInputModal({
                   <TextInput
                     style={[AppDialogStyles.input, styles.halfInput]}
                     placeholder={keyPlaceholder}
-                    accessibilityLabel={`${keyPlaceholder}, row ${idx + 1}`}
                     placeholderTextColor={AppColors.osGrey600}
                     value={row.key}
                     onChangeText={(t) => updateRow(row.id, 'key', t)}
@@ -103,7 +102,6 @@ export default function MultiPairInputModal({
                   <TextInput
                     style={[AppDialogStyles.input, styles.halfInput]}
                     placeholder={valuePlaceholder}
-                    accessibilityLabel={`${valuePlaceholder}, row ${idx + 1}`}
                     placeholderTextColor={AppColors.osGrey600}
                     value={row.value}
                     onChangeText={(t) => updateRow(row.id, 'value', t)}
@@ -113,8 +111,6 @@ export default function MultiPairInputModal({
                   {rows.length > 1 && (
                     <TouchableOpacity
                       onPress={() => removeRow(row.id)}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Remove row ${idx + 1}`}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
                       <Icon name="close" size={20} color={AppColors.osGrey600} />
@@ -128,7 +124,6 @@ export default function MultiPairInputModal({
               style={styles.addRowBtn}
               testID="multipair_add_row_button"
               accessibilityLabel="Add Row"
-              accessibilityRole="button"
             >
               <Icon name="add" size={18} color={AppColors.osPrimary} />
               <Text style={styles.addRowText}>Add Row</Text>
