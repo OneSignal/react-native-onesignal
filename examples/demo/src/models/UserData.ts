@@ -11,7 +11,7 @@ export function userDataFromJson(json: Record<string, unknown>): UserData {
   const properties = (json.properties as Record<string, unknown>) ?? {};
   const subscriptions = (json.subscriptions as Array<Record<string, unknown>>) ?? [];
 
-  const aliases: Record<string, string> = Object.create(null);
+  const aliases: Record<string, string> = {};
   for (const [key, value] of Object.entries(identity)) {
     if (key !== 'external_id' && key !== 'onesignal_id') {
       aliases[key] = String(value);
