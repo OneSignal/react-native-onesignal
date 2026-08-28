@@ -29,7 +29,11 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
       return true;
     }
     try {
-      JSON.parse(text);
+      const properties = JSON.parse(text);
+      if (properties === null || typeof properties !== 'object' || Array.isArray(properties)) {
+        setJsonError('Properties must be a JSON object');
+        return false;
+      }
       setJsonError('');
       return true;
     } catch {
@@ -40,15 +44,10 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
 
   const handlePropertiesChange = (text: string) => {
     setPropertiesText(text);
-    if (text.trim()) {
-      validateJson(text);
-    } else {
-      setJsonError('');
-    }
+    validateJson(text);
   };
 
-  const canSubmit =
-    name.trim() && !jsonError && (propertiesText.trim() === '' || !!propertiesText.trim());
+  const canSubmit = !!name.trim() && !jsonError;
 
   const handleConfirm = () => {
     if (!name.trim()) {

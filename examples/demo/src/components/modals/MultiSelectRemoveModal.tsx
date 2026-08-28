@@ -28,7 +28,7 @@ export default function MultiSelectRemoveModal({
   onConfirm,
   onClose,
 }: Props) {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(() => new Set());
 
   const toggle = (key: string) => {
     setSelected((prev) => {

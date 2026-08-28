@@ -15,7 +15,7 @@ export default function AppHeader({ options, back }: NativeStackHeaderProps) {
     typeof options.headerTitle === 'function' ? (
       options.headerTitle({ children: options.title ?? '', tintColor: AppColors.white })
     ) : (
-      <Text style={styles.title}>{options.title ?? ''}</Text>
+      <Text style={styles.title}>{options.headerTitle ?? options.title ?? ''}</Text>
     );
 
   return (

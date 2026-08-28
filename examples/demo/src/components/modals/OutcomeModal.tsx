@@ -33,8 +33,9 @@ export default function OutcomeModal({
   const [name, setName] = useState('');
   const [value, setValue] = useState('');
 
+  const numericValue = Number(value);
   const canSubmit =
-    name.trim() && (outcomeType !== 'withValue' || (value.trim() && !isNaN(parseFloat(value))));
+    name.trim() && (outcomeType !== 'withValue' || (value.trim() && Number.isFinite(numericValue)));
 
   const handleSend = () => {
     if (!canSubmit) {
@@ -48,7 +49,7 @@ export default function OutcomeModal({
         onSendUnique(name.trim());
         break;
       case 'withValue':
-        onSendWithValue(name.trim(), parseFloat(value));
+        onSendWithValue(name.trim(), numericValue);
         break;
     }
     handleClose();

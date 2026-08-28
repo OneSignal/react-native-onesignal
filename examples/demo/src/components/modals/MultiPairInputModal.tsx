@@ -40,7 +40,7 @@ export default function MultiPairInputModal({
   onConfirm,
   onClose,
 }: Props) {
-  const [rows, setRows] = useState<Row[]>([makeRow()]);
+  const [rows, setRows] = useState<Row[]>(() => [makeRow()]);
 
   const allFilled = rows.every((r) => r.key.trim() && r.value.trim());
 
@@ -49,7 +49,8 @@ export default function MultiPairInputModal({
   }, []);
 
   const addRow = useCallback(() => {
-    setRows((prev) => [...prev, makeRow()]);
+    const row = makeRow();
+    setRows((prev) => [...prev, row]);
   }, []);
 
   const removeRow = useCallback((id: number) => {
@@ -60,10 +61,7 @@ export default function MultiPairInputModal({
     if (!allFilled) {
       return;
     }
-    const pairs: Record<string, string> = {};
-    for (const row of rows) {
-      pairs[row.key.trim()] = row.value.trim();
-    }
+    const pairs = Object.fromEntries(rows.map((row) => [row.key.trim(), row.value.trim()]));
     onConfirm(pairs);
     reset();
     onClose();
