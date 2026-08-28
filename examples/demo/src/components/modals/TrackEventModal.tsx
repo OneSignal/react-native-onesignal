@@ -89,7 +89,6 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
             autoFocus
             {...AppInputProps}
             testID="event_name_input"
-            accessibilityLabel="Event name"
           />
           <Text style={styles.label}>Properties (optional, JSON)</Text>
           <TextInput
@@ -101,7 +100,6 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
             multiline
             {...AppInputProps}
             testID="event_properties_input"
-            accessibilityLabel="Properties (optional, JSON object)"
           />
           {!!jsonError && <Text style={styles.errorText}>{jsonError}</Text>}
           <View style={AppDialogStyles.actions}>
