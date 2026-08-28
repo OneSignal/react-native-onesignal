@@ -61,8 +61,6 @@ export function PairItem({
       {onDelete && (
         <TouchableOpacity
           onPress={onDelete}
-          accessibilityRole="button"
-          accessibilityLabel={`Remove ${itemKey}`}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           testID={sectionKey ? `${sectionKey}_remove_${itemKey}` : undefined}
         >
@@ -93,8 +91,6 @@ export function SingleItem({ value, onDelete, sectionKey }: SingleItemProps) {
       {onDelete && (
         <TouchableOpacity
           onPress={onDelete}
-          accessibilityRole="button"
-          accessibilityLabel={`Remove ${value}`}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           testID={sectionKey ? `${sectionKey}_remove_${value}` : undefined}
         >
@@ -225,11 +221,7 @@ export function CollapsibleSingleList({
         </React.Fragment>
       ))}
       {!showAll && hiddenCount > 0 && (
-        <TouchableOpacity
-          onPress={() => setExpanded(true)}
-          style={styles.moreButton}
-          accessibilityRole="button"
-        >
+        <TouchableOpacity onPress={() => setExpanded(true)} style={styles.moreButton}>
           <Text style={styles.moreText}>{hiddenCount} more</Text>
         </TouchableOpacity>
       )}
