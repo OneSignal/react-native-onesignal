@@ -75,6 +75,7 @@ jobs:
     with:
       target_repo: OneSignal/react-native-onesignal
       version: ${{ needs.determine_version.outputs.rn_version }}
+      target_branch: ${{ inputs.target_branch }}
 
   # React Native specific steps
   update_version:
