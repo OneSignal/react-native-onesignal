@@ -27,8 +27,6 @@ export default function ToggleRow({
         {description && <Text style={styles.description}>{description}</Text>}
       </View>
       <Switch
-        accessibilityLabel={label}
-        accessibilityHint={description}
         value={value}
         onValueChange={onValueChange}
         disabled={disabled}
