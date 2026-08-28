@@ -49,7 +49,6 @@ export default function CustomNotificationModal({ visible, onConfirm, onClose }:
           <TextInput
             style={[AppDialogStyles.input, styles.inputSpacing]}
             placeholder="Title"
-            accessibilityLabel="Notification title"
             placeholderTextColor={AppColors.osGrey600}
             value={title}
             onChangeText={setTitle}
@@ -60,7 +59,6 @@ export default function CustomNotificationModal({ visible, onConfirm, onClose }:
           <TextInput
             style={[AppDialogStyles.input, styles.inputSpacing]}
             placeholder="Body"
-            accessibilityLabel="Notification body"
             placeholderTextColor={AppColors.osGrey600}
             value={body}
             onChangeText={setBody}
