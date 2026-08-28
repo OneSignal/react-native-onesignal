@@ -25,8 +25,6 @@ export default function AppHeader({ options, back }: NativeStackHeaderProps) {
           {back ? (
             <Pressable
               onPress={navigation.goBack}
-              accessibilityRole="button"
-              accessibilityLabel="Go back"
               hitSlop={12}
               style={({ pressed }) => [styles.backBtn, pressed && styles.pressed]}
             >
