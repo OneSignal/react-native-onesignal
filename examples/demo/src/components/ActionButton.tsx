@@ -37,9 +37,6 @@ export default function ActionButton({
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled || loading}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ disabled: !!(disabled || loading), busy: !!loading }}
       testID={testID}
       style={[
         styles.button,
