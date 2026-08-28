@@ -103,7 +103,7 @@ cd "$ORIGINAL_DIR"
 # path is intentional — an absolute path would leak this machine's
 # layout into the lockfile.
 echo "Registering tarball with vp (refreshes bun.lock integrity hash)..."
-vp exec bun remove react-native-onesignal
+vp remove react-native-onesignal
 vp install file:../../react-native-onesignal.tgz
 
 # Record the hash only after a successful build/install so that an
