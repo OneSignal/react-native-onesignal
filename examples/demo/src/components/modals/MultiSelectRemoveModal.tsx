@@ -69,9 +69,6 @@ export default function MultiSelectRemoveModal({
                   key={key}
                   style={styles.row}
                   onPress={() => toggle(key)}
-                  accessibilityRole="checkbox"
-                  accessibilityLabel={key}
-                  accessibilityState={{ checked: isChecked }}
                   testID={`remove_checkbox_${key}`}
                 >
                   <Icon
