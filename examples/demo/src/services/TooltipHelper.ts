@@ -16,6 +16,7 @@ class TooltipHelper {
   private static _instance: TooltipHelper;
   private tooltips: Record<string, TooltipData> = {};
   private initialized = false;
+  private initialization?: Promise<void>;
 
   static getInstance(): TooltipHelper {
     if (!TooltipHelper._instance) {
@@ -24,20 +25,25 @@ class TooltipHelper {
     return TooltipHelper._instance;
   }
 
-  async init(): Promise<void> {
+  init(): Promise<void> {
     if (this.initialized) {
-      return;
+      return Promise.resolve();
     }
-    try {
-      const response = await fetch(TOOLTIP_URL);
-      if (response.ok) {
-        const json = await response.json();
-        this.tooltips = json as Record<string, TooltipData>;
-      }
-    } catch {
-      // Tooltips are non-critical; silently ignore failures
+    if (!this.initialization) {
+      this.initialization = (async () => {
+        try {
+          const response = await fetch(TOOLTIP_URL);
+          if (!response.ok) return;
+          this.tooltips = (await response.json()) as Record<string, TooltipData>;
+          this.initialized = true;
+        } catch {
+          // Tooltips are non-critical; silently ignore failures and allow a retry.
+        }
+      })().finally(() => {
+        this.initialization = undefined;
+      });
     }
-    this.initialized = true;
+    return this.initialization;
   }
 
   getTooltip(key: string): TooltipData | undefined {
