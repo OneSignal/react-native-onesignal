@@ -122,6 +122,14 @@ describe('helpers', () => {
       });
     });
 
+    test('preserves an own __proto__ property', () => {
+      const input = JSON.parse('{"__proto__":null}');
+      const encoded = encodeNullsForIOS(input) as Record<string, unknown>;
+
+      expect(Object.prototype.hasOwnProperty.call(encoded, '__proto__')).toBe(true);
+      expect(encoded['__proto__']).toBe(IOS_NULL_SENTINEL);
+    });
+
     test('replaces null values inside nested objects', () => {
       expect(encodeNullsForIOS({ outer: { inner: null, ok: 'x' } })).toEqual({
         outer: { inner: IOS_NULL_SENTINEL, ok: 'x' },
