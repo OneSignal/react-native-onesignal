@@ -164,10 +164,10 @@ function useOneSignalState(): UseOneSignalReturn {
   }, []);
 
   useEffect(() => {
-    let active = true;
-    let pushVersion = 0;
-    let permissionVersion = 0;
-    let userVersion = 0;
+    let cancelled = false;
+    let pushChanged = false;
+    let permissionChanged = false;
+    let userChanged = false;
 
     const handleIamWillDisplay = (e: InAppMessageWillDisplayEvent) => {
       console.log(`IAM willDisplay: ${e.message.messageId}`);
@@ -199,18 +199,18 @@ function useOneSignalState(): UseOneSignalReturn {
     };
 
     const pushSubHandler = (event: PushSubscriptionChangedState) => {
-      pushVersion++;
+      pushChanged = true;
       setPushSubscriptionId(event.current.id ?? undefined);
       setIsPushEnabled(event.current.optedIn);
     };
 
     const permissionHandler = (granted: boolean) => {
-      permissionVersion++;
+      permissionChanged = true;
       setHasNotificationPermission(granted);
     };
 
     const userChangeHandler = (event: UserChangedState) => {
-      userVersion++;
+      userChanged = true;
       requestSequenceRef.current++;
       const nextOnesignalId = event.current.onesignalId ?? null;
       console.log(
@@ -238,7 +238,7 @@ function useOneSignalState(): UseOneSignalReturn {
           preferences.getLocationShared(),
         ]);
       const storedExternalUserId = (await preferences.getExternalUserId()) ?? undefined;
-      if (!active) return;
+      if (cancelled) return;
 
       apiService.setAppId(nextAppId);
 
@@ -276,9 +276,6 @@ function useOneSignalState(): UseOneSignalReturn {
 
       console.log(`OneSignal initialized with app ID: ${nextAppId}`);
 
-      const initialPushVersion = pushVersion;
-      const initialPermissionVersion = permissionVersion;
-      const initialUserVersion = userVersion;
       const [externalId, initialOnesignalId, pushId, pushOptedIn, hasPerm] = await Promise.all([
         OneSignal.User.getExternalId(),
         OneSignal.User.getOnesignalId(),
@@ -286,21 +283,21 @@ function useOneSignalState(): UseOneSignalReturn {
         OneSignal.User.pushSubscription.getOptedInAsync(),
         OneSignal.Notifications.getPermissionAsync(),
       ]);
-      if (!active) return;
+      if (cancelled) return;
 
       setAppId(nextAppId);
       setConsentRequiredState(nextConsentRequired);
       setPrivacyConsentGivenState(nextPrivacyConsentGiven);
       setInAppMessagesPaused(nextIamPaused);
       setLocationSharedState(nextLocationShared);
-      if (initialPushVersion === pushVersion) {
+      if (!pushChanged) {
         setPushSubscriptionId(pushId ?? undefined);
         setIsPushEnabled(pushOptedIn);
       }
-      if (initialPermissionVersion === permissionVersion) setHasNotificationPermission(hasPerm);
+      if (!permissionChanged) setHasNotificationPermission(hasPerm);
       setIsReady(true);
 
-      if (initialUserVersion === userVersion) {
+      if (!userChanged) {
         setExternalUserId(externalId ?? storedExternalUserId);
         setOneSignalId(initialOnesignalId ?? undefined);
         if (initialOnesignalId) await fetchUserDataFromApi();
@@ -308,13 +305,13 @@ function useOneSignalState(): UseOneSignalReturn {
     };
 
     void load().catch((err) => {
-      if (!active) return;
+      if (cancelled) return;
       console.error(`Initial load error: ${String(err)}`);
       setIsLoading(false);
     });
 
     return () => {
-      active = false;
+      cancelled = true;
       requestSequenceRef.current++;
       OneSignal.InAppMessages.removeEventListener('willDisplay', handleIamWillDisplay);
       OneSignal.InAppMessages.removeEventListener('didDisplay', handleIamDidDisplay);
