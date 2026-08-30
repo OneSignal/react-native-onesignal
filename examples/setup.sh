@@ -82,8 +82,8 @@ if [ "${FORCE_SETUP:-0}" = "1" ] \
    || [ "$(cat "$STAMP_FILE")" != "$src_hash" ]; then
   cd "$SDK_ROOT"
   vp run build
-  # Use the pinned package manager through Vite+; the local CLI also supports
-  # `exec`, unlike the global-only `vp pm`/`vp add` shortcuts.
+  # Use the pinned package manager through Vite+ so the archive is written to
+  # the deterministic filename consumed below.
   vp exec bun pm pack --filename "$TGZ_FILE"
   echo "$src_hash" > "$STAMP_FILE"
 fi
@@ -104,7 +104,7 @@ cd "$ORIGINAL_DIR"
 # layout into the lockfile.
 echo "Registering tarball with vp (refreshes bun.lock integrity hash)..."
 vp remove react-native-onesignal
-vp install file:../../react-native-onesignal.tgz
+vp add file:../../react-native-onesignal.tgz
 
 # Record the hash only after a successful build/install so that an
 # interrupted run forces a full retry next time.
