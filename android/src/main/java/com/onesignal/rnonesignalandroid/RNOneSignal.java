@@ -68,9 +68,7 @@ import com.onesignal.user.subscriptions.IPushSubscription;
 import com.onesignal.user.subscriptions.IPushSubscriptionObserver;
 import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import org.json.JSONException;
 
 public class RNOneSignal extends NativeOneSignalSpec
@@ -84,10 +82,8 @@ public class RNOneSignal extends NativeOneSignalSpec
     private boolean hasSetPushSubscriptionObserver = false;
     private boolean hasSetUserStateObserver = false;
 
-    private final Object notificationCacheLock = new Object();
     private final HashMap<String, INotificationWillDisplayEvent> notificationWillDisplayCache = new HashMap<>();
     private final HashMap<String, INotificationWillDisplayEvent> preventDefaultCache = new HashMap<>();
-    private boolean invalidated = false;
 
     private boolean hasAddedNotificationForegroundListener = false;
     private boolean hasAddedInAppMessageLifecycleListener = false;
@@ -95,7 +91,6 @@ public class RNOneSignal extends NativeOneSignalSpec
     private boolean hasAddedInAppMessageClickListener = false;
 
     // Static reference to track current instance for cleanup on reload
-    private static final Object currentInstanceLock = new Object();
     private static RNOneSignal currentInstance = null;
 
     private final IInAppMessageClickListener rnInAppClickListener = new IInAppMessageClickListener() {
@@ -204,14 +199,10 @@ public class RNOneSignal extends NativeOneSignalSpec
         super(reactContext);
 
         // Clean up previous instance if it exists (handles reload scenario)
-        RNOneSignal previousInstance;
-        synchronized (currentInstanceLock) {
-            previousInstance = currentInstance;
-            currentInstance = this;
+        if (currentInstance != null && currentInstance != this) {
+            currentInstance.removeObservers();
         }
-        if (previousInstance != null && previousInstance != this) {
-            previousInstance.removeObservers();
-        }
+        currentInstance = this;
     }
 
     @Override
@@ -222,25 +213,10 @@ public class RNOneSignal extends NativeOneSignalSpec
     @Override
     public void invalidate() {
         removeObservers();
-
-        Set<INotificationWillDisplayEvent> pendingEvents;
-        synchronized (notificationCacheLock) {
-            invalidated = true;
-            pendingEvents = new HashSet<>(notificationWillDisplayCache.values());
-            pendingEvents.addAll(preventDefaultCache.values());
-            notificationWillDisplayCache.clear();
-            preventDefaultCache.clear();
-        }
-        for (INotificationWillDisplayEvent event : pendingEvents) {
-            synchronized (event) {
-                event.notifyAll();
-            }
-        }
-
-        synchronized (currentInstanceLock) {
-            if (currentInstance == this) {
-                currentInstance = null;
-            }
+        notificationWillDisplayCache.clear();
+        preventDefaultCache.clear();
+        if (currentInstance == this) {
+            currentInstance = null;
         }
         super.invalidate();
     }
@@ -394,17 +370,7 @@ public class RNOneSignal extends NativeOneSignalSpec
 
         INotification notification = event.getNotification();
         String notificationId = notification.getNotificationId();
-        boolean shouldDisplayImmediately;
-        synchronized (notificationCacheLock) {
-            shouldDisplayImmediately = invalidated;
-            if (!shouldDisplayImmediately) {
-                notificationWillDisplayCache.put(notificationId, event);
-            }
-        }
-        if (shouldDisplayImmediately) {
-            event.getNotification().display();
-            return;
-        }
+        notificationWillDisplayCache.put(notificationId, event);
         event.preventDefault();
 
         try {
@@ -413,7 +379,7 @@ public class RNOneSignal extends NativeOneSignalSpec
 
             try {
                 synchronized (event) {
-                    while (shouldWaitForNotification(notificationId)) {
+                    while (preventDefaultCache.containsKey(notificationId)) {
                         event.wait();
                     }
                 }
@@ -427,45 +393,25 @@ public class RNOneSignal extends NativeOneSignalSpec
 
     @Override
     public void displayNotification(String notificationId) {
-        INotificationWillDisplayEvent event;
-        synchronized (notificationCacheLock) {
-            event = notificationWillDisplayCache.remove(notificationId);
-            preventDefaultCache.remove(notificationId);
-        }
+        INotificationWillDisplayEvent event = notificationWillDisplayCache.get(notificationId);
         if (event == null) {
             Logging.error(
                     "Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
             return;
         }
         event.getNotification().display();
-        synchronized (event) {
-            event.notifyAll();
-        }
     }
 
     @Override
     public void preventDefault(String notificationId) {
-        INotificationWillDisplayEvent event;
-        synchronized (notificationCacheLock) {
-            event = notificationWillDisplayCache.get(notificationId);
-        }
+        INotificationWillDisplayEvent event = notificationWillDisplayCache.get(notificationId);
         if (event == null) {
             Logging.error(
                     "Could not find onWillDisplayNotification event for notification with id: " + notificationId, null);
             return;
         }
         event.preventDefault();
-        synchronized (notificationCacheLock) {
-            if (!invalidated && notificationWillDisplayCache.get(notificationId) == event) {
-                preventDefaultCache.put(notificationId, event);
-            }
-        }
-    }
-
-    private boolean shouldWaitForNotification(String notificationId) {
-        synchronized (notificationCacheLock) {
-            return !invalidated && preventDefaultCache.containsKey(notificationId);
-        }
+        this.preventDefaultCache.put(notificationId, event);
     }
 
     @Override
