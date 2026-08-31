@@ -16,6 +16,7 @@ dist
 android/build
 *.tgz
 .rn-sdk-source.stamp
+.rn-demo-env.stamp
 
 # OSX
 #

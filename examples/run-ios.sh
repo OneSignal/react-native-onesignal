@@ -70,4 +70,4 @@ name="${selected%%|*}"
 udid="${selected##*|}"
 echo "Using simulator: $name ($udid)"
 
-bunx react-native run-ios --udid "$udid"
+vp exec react-native run-ios --udid "$udid"

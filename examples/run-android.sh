@@ -37,4 +37,4 @@ else
   selected="${devices[$idx]}"
 fi
 
-ANDROID_SERIAL="$selected" bunx react-native run-android --deviceId "$selected"
+ANDROID_SERIAL="$selected" vp exec react-native run-android --deviceId "$selected"
