@@ -1,5 +1,6 @@
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
-const { FileStore } = require('metro-cache');
+const crypto = require('node:crypto');
+const fs = require('node:fs');
 const path = require('node:path');
 
 /**
@@ -8,11 +9,14 @@ const path = require('node:path');
  *
  * @type {import('@react-native/metro-config').MetroConfig}
  */
+const envPath = path.join(__dirname, '.env');
+const envHash = fs.existsSync(envPath)
+  ? crypto.createHash('sha1').update(fs.readFileSync(envPath)).digest('hex')
+  : 'missing';
+
 const config = {
-  cacheStores: [
-    new FileStore({ root: path.join(__dirname, 'node_modules/.cache/metro/transform') }),
-  ],
-  fileMapCacheDirectory: path.join(__dirname, 'node_modules/.cache/metro/file-map'),
+  // react-native-dotenv does not include .env in Metro's transform cache key.
+  cacheVersion: `env-${envHash}`,
 };
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);
