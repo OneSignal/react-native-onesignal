@@ -17,6 +17,7 @@ export interface BaseNotificationData {
 interface AndroidNotificationData extends BaseNotificationData {
   groupKey?: string;
   groupMessage?: string;
+  groupedNotifications?: AndroidNotificationData[];
   ledColor?: string;
   priority?: number;
   smallIcon?: string;
@@ -58,6 +59,7 @@ export default class OSNotification {
   // android only
   groupKey?: string;
   groupMessage?: string;
+  groupedNotifications?: AndroidNotificationData[];
   ledColor?: string;
   priority?: number;
   smallIcon?: string;
@@ -102,6 +104,7 @@ export default class OSNotification {
       this.bigPicture = receivedEvent.bigPicture;
       this.collapseId = receivedEvent.collapseId;
       this.groupMessage = receivedEvent.groupMessage;
+      this.groupedNotifications = receivedEvent.groupedNotifications;
       this.fromProjectNumber = receivedEvent.fromProjectNumber;
       this.smallIconAccentColor = receivedEvent.smallIconAccentColor;
       this.lockScreenVisibility = receivedEvent.lockScreenVisibility;

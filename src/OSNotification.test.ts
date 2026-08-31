@@ -59,10 +59,16 @@ describe('OSNotification', () => {
       });
 
       test('should initialize Android-specific properties on Android platform', () => {
+        const groupedNotification = {
+          body: 'Grouped notification',
+          rawPayload: {},
+          notificationId: 'grouped-notification-id',
+        };
         const androidData = {
           ...baseNotificationData,
           groupKey: 'group-1',
           groupMessage: 'group message',
+          groupedNotifications: [groupedNotification],
           ledColor: 'FFFF0000',
           priority: 2,
           smallIcon: 'icon_small',
@@ -78,6 +84,7 @@ describe('OSNotification', () => {
 
         expect(notification.groupKey).toBe('group-1');
         expect(notification.groupMessage).toBe('group message');
+        expect(notification.groupedNotifications).toEqual([groupedNotification]);
         expect(notification.ledColor).toBe('FFFF0000');
         expect(notification.priority).toBe(2);
         expect(notification.smallIcon).toBe('icon_small');

@@ -14,6 +14,7 @@ import com.onesignal.inAppMessages.IInAppMessageDidDismissEvent;
 import com.onesignal.inAppMessages.IInAppMessageDidDisplayEvent;
 import com.onesignal.inAppMessages.IInAppMessageWillDismissEvent;
 import com.onesignal.inAppMessages.IInAppMessageWillDisplayEvent;
+import com.onesignal.notifications.IActionButton;
 import com.onesignal.notifications.INotification;
 import com.onesignal.notifications.INotificationClickEvent;
 import com.onesignal.notifications.INotificationClickResult;
@@ -84,7 +85,11 @@ public class RNUtils {
         if (notification.getGroupedNotifications() != null) {
             notificationHash.put("groupKey", notification.getGroupKey());
             notificationHash.put("groupMessage", notification.getGroupMessage());
-            notificationHash.put("groupedNotifications", notification.getGroupedNotifications());
+            List<Object> groupedNotifications = new ArrayList<>();
+            for (INotification groupedNotification : notification.getGroupedNotifications()) {
+                groupedNotifications.add(convertNotificationToMap(groupedNotification));
+            }
+            notificationHash.put("groupedNotifications", groupedNotifications);
         }
 
         notificationHash.put("notificationId", notification.getNotificationId());
@@ -111,7 +116,15 @@ public class RNUtils {
                 && notification.getAdditionalData().length() > 0)
             notificationHash.put("additionalData", convertJSONObjectToHashMap(notification.getAdditionalData()));
         if (notification.getActionButtons() != null) {
-            notificationHash.put("actionButtons", notification.getActionButtons());
+            List<Object> actionButtons = new ArrayList<>();
+            for (IActionButton actionButton : notification.getActionButtons()) {
+                HashMap<String, Object> action = new HashMap<>();
+                action.put("id", actionButton.getId());
+                action.put("text", actionButton.getText());
+                action.put("icon", actionButton.getIcon());
+                actionButtons.add(action);
+            }
+            notificationHash.put("actionButtons", actionButtons);
         }
         notificationHash.put("rawPayload", notification.getRawPayload());
 
@@ -229,8 +242,6 @@ public class RNUtils {
 
         while (keys.hasNext()) {
             String key = keys.next();
-
-            if (object.isNull(key)) continue;
 
             Object val = object.get(key);
 
