@@ -50,17 +50,33 @@ static void injectSelector(Class newClass, SEL newSel, Class addToClass,
   });
 }
 
-- (void)setOneSignalReactNativeDelegate:(id<UIApplicationDelegate>)delegate {
+// A class may only be injected once. A second exchange would swap the original
+// implementation back and drop OneSignal out of the launch chain.
+static BOOL shouldInjectIntoDelegateClass(Class delegateClass) {
+  static NSMutableSet<Class> *injectedClasses;
   static dispatch_once_t onceToken;
-  if (delegate) {
-    dispatch_once(&onceToken, ^{
-      Class delegateClass = [delegate class];
-      injectSelector(
-          self.class,
-          @selector(oneSignalApplication:didFinishLaunchingWithOptions:),
-          delegateClass, @selector(application:didFinishLaunchingWithOptions:));
-    });
+  dispatch_once(&onceToken, ^{
+    injectedClasses = [NSMutableSet set];
+  });
+
+  @synchronized(injectedClasses) {
+    if ([injectedClasses containsObject:delegateClass])
+      return NO;
+
+    [injectedClasses addObject:delegateClass];
+    return YES;
   }
+}
+
+- (void)setOneSignalReactNativeDelegate:(id<UIApplicationDelegate>)delegate {
+  Class delegateClass = [delegate class];
+  if (delegateClass && shouldInjectIntoDelegateClass(delegateClass)) {
+    injectSelector(
+        self.class,
+        @selector(oneSignalApplication:didFinishLaunchingWithOptions:),
+        delegateClass, @selector(application:didFinishLaunchingWithOptions:));
+  }
+
   [self setOneSignalReactNativeDelegate:delegate];
 }
 
