@@ -24,7 +24,10 @@ import type {
 import type { NotificationClickEvent } from '../types/notificationEvents';
 import type { PushSubscriptionChangedState } from '../types/subscription';
 import type { UserChangedState } from '../types/user';
-import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
+import NotificationWillDisplayEvent, {
+  isDefaultPrevented,
+  isDisplayRequested,
+} from './NotificationWillDisplayEvent';
 
 export interface EventListenerMap {
   [PERMISSION_CHANGED]: (event: boolean) => void;
@@ -72,10 +75,14 @@ export default class EventManager {
         this.dispatchHandlers(USER_STATE_CHANGED, payload);
       }),
       this.RNOneSignal.onNotificationWillDisplay((payload) => {
-        this.dispatchHandlers(
-          NOTIFICATION_WILL_DISPLAY,
-          new NotificationWillDisplayEvent(payload as OSNotification),
-        );
+        const event = new NotificationWillDisplayEvent(payload as OSNotification);
+        try {
+          this.dispatchNotificationWillDisplayHandlers(event);
+        } finally {
+          if (!isDefaultPrevented(event) && !isDisplayRequested(event)) {
+            event.getNotification().display();
+          }
+        }
       }),
       this.RNOneSignal.onNotificationClicked((payload) => {
         this.dispatchHandlers(NOTIFICATION_CLICKED, payload);
@@ -121,6 +128,28 @@ export default class EventManager {
     }
     if (handlerArray.length === 0) {
       this.eventListenerArrayMap.delete(eventName);
+    }
+  }
+
+  private dispatchNotificationWillDisplayHandlers(event: NotificationWillDisplayEvent) {
+    // Every handler must run because any one of them can prevent automatic display.
+    const handlers = [...(this.eventListenerArrayMap.get(NOTIFICATION_WILL_DISPLAY) ?? [])];
+    let firstError: unknown;
+    let handlerThrew = false;
+
+    handlers.forEach((handler) => {
+      try {
+        handler(event);
+      } catch (error) {
+        if (!handlerThrew) {
+          firstError = error;
+          handlerThrew = true;
+        }
+      }
+    });
+
+    if (handlerThrew) {
+      throw firstError;
     }
   }
 

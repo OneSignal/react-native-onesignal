@@ -216,7 +216,7 @@ OneSignal.User.addEventListener('change', handler);
 
 ### Foreground notification handler
 
-- `foregroundWillDisplay` calls `e.getNotification().display()` inside `useOneSignal.ts` so foreground pushes are still shown by the OS UI.
+- `foregroundWillDisplay` logs the notification; foreground pushes display automatically unless the handler calls `preventDefault()`.
 
 ---
 

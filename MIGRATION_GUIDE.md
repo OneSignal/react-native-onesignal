@@ -329,6 +329,10 @@ OneSignal.Notifications.removeEventListener('permissionChange', permissionObserv
 
 ### Notification Lifecycle Listener
 
+Foreground notifications display automatically unless `preventDefault()` is called synchronously
+inside the listener. To delay display for asynchronous work, call `preventDefault()` first, then call
+`display()` within about 25 seconds.
+
 ```typescript
 OneSignal.Notifications.addEventListener(
   'foregroundWillDisplay',
