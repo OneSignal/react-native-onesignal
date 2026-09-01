@@ -128,9 +128,9 @@ In previous versions of the SDK, a “player” could have up to one email addre
 The current device’s push subscription can be retrieved via:
 
 ```typescript
-const id: string = OneSignal.User.pushSubscription.getPushSubscriptionId();
-const token: string = OneSignal.User.pushSubscription.getPushSubscriptionToken();
-const optedIn: boolean = OneSignal.User.pushSubscription.getOptedIn();
+const id = await OneSignal.User.pushSubscription.getIdAsync();
+const token = await OneSignal.User.pushSubscription.getTokenAsync();
+const optedIn = await OneSignal.User.pushSubscription.getOptedInAsync();
 ```
 
 ### **Opting In and Out of Push Notifications**
@@ -218,7 +218,7 @@ The User namespace is accessible via `OneSignal.User` and provides access to use
 | `OneSignal.User.addAlias("ALIAS_LABEL", "ALIAS_ID")`                                                     | _Set an alias for the current user. If this alias label already exists on this user, it will be overwritten with the new alias id._                                                                                                     |
 | `OneSignal.User.addAliases({ALIAS_LABEL_01: "ALIAS_ID_01", ALIAS_LABEL_02: "ALIAS_ID_02"})`              | _Set aliases for the current user. If any alias already exists, it will be overwritten to the new values._                                                                                                                              |
 | `OneSignal.User.removeAlias("ALIAS_LABEL")`                                                              | _Remove an alias from the current user._                                                                                                                                                                                                |
-| `OneSignal.User.removeAliases(["ALIAS_LABEL_01", "ALIAS_LABEL_02"]])`                                    | _Remove aliases from the current user._                                                                                                                                                                                                 |
+| `OneSignal.User.removeAliases(["ALIAS_LABEL_01", "ALIAS_LABEL_02"])`                                     | _Remove aliases from the current user._                                                                                                                                                                                                 |
 | `OneSignal.User.addEmail("customer@company.com")`                                                        | _Add a new email subscription to the current user._                                                                                                                                                                                     |
 | `OneSignal.User.removeEmail("customer@company.com")`                                                     | _Results in a no-op if the specified email does not exist on the user within the SDK, and no request will be made._                                                                                                                     |
 | `OneSignal.User.addSms("+15558675309")`                                                                  | _Add a new SMS subscription to the current user._                                                                                                                                                                                       |
@@ -227,7 +227,7 @@ The User namespace is accessible via `OneSignal.User` and provides access to use
 | `OneSignal.User.addTags({"KEY_01": "VALUE_01", "KEY_02": "VALUE_02"})`                                   | _Add multiple tags for the current user. Tags are key:value pairs used as building blocks for targeting specific users and/or personalizing messages. If the tag key already exists, it will be replaced with the value provided here._ |
 | `OneSignal.User.removeTag("KEY")`                                                                        | _Remove the data tag with the provided key from the current user._                                                                                                                                                                      |
 | `OneSignal.User.removeTags(["KEY_01", "KEY_02"])`                                                        | _Remove multiple tags with the provided keys from the current user._                                                                                                                                                                    |
-| `OneSignal.User.getTags()`                                                                               | _Returns the local tags for the current user._                                                                                                                                                                                          |
+| `await OneSignal.User.getTags()`                                                                         | _Returns the local tags for the current user._                                                                                                                                                                                          |
 | `OneSignal.User.addEventListener("change", (event: UserChangedState) => void)` **_See below for usage_** | _Add a User State callback which contains the nullable onesignalId and externalId. The listener will be fired when these values change._                                                                                                |
 | `await OneSignal.User.getOnesignalId()`                                                                  | _Returns the OneSignal ID for the current user, which can be null if it is not yet available._                                                                                                                                          |
 | `await OneSignal.User.getExternalId()`                                                                   | _Returns the External ID for the current user, which can be null if not set._                                                                                                                                                           |
@@ -264,13 +264,14 @@ The Push Subscription namespace is accessible via `OneSignal.User.pushSubscripti
 ### Push Subscription Observer
 
 ```typescript
-// Create an observer
-OneSignal.User.pushSubscription.addEventListener('change', (subscription) => {
+// Keep the callback reference so it can be removed later.
+const subscriptionObserver = (subscription: PushSubscriptionChangedState) => {
   console.log('OneSignal: subscription changed:', subscription);
-});
+};
+OneSignal.User.pushSubscription.addEventListener('change', subscriptionObserver);
 
 // Removes the previously added observer
-OneSignal.User.pushSubscription.removeEventListener('change', subscription);
+OneSignal.User.pushSubscription.removeEventListener('change', subscriptionObserver);
 ```
 
 ## Session Namespace
@@ -316,13 +317,14 @@ OneSignal.Notifications.requestPermission(true).then((accepted) => {
 Add an observer when permission status changes. You can call `removeEventListener` to remove any existing listeners.
 
 ```typescript
-// Add an observer
-OneSignal.Notifications.addEventListener('permissionChange', (granted: boolean) => {
+// Keep the callback reference so it can be removed later.
+const permissionObserver = (granted: boolean) => {
   console.log('OneSignal: permission changed:', granted);
-});
+};
+OneSignal.Notifications.addEventListener('permissionChange', permissionObserver);
 
 // Remove previously added observer
-OneSignal.Notifications.removeEventListener('permissionChange', observer);
+OneSignal.Notifications.removeEventListener('permissionChange', permissionObserver);
 ```
 
 ### Notification Lifecycle Listener
@@ -370,8 +372,11 @@ The In App Messages namespace is accessible via `OneSignal.InAppMessages` and pr
 | `OneSignal.InAppMessages.removeTrigger("triggerKey")`                                                | _Remove the trigger with the provided key from the current user._                                                                                                                                                                                                                                                                                                                                                                                        |
 | `OneSignal.InAppMessages.removeTriggers(["triggerKey1", "triggerKey2"])`                             | _Remove multiple triggers from the current user._                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `OneSignal.InAppMessages.clearTriggers()`                                                            | _Clear all triggers from the current user._                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `OneSignal.InAppMessages.setLifecycleHandler(handlerObject)` **_See below for usage_**               | _Set the in-app message lifecycle handler._                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `OneSignal.InAppMessages.setClickHandler(handler)` **_See below for usage_**                         | _Set the in-app message click handler._                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `OneSignal.InAppMessages.addEventListener("willDisplay", handler)` **_See below for usage_**         | _Add a listener that fires before an in-app message is displayed._                                                                                                                                                                                                                                                                                                                                                                                       |
+| `OneSignal.InAppMessages.addEventListener("didDisplay", handler)` **_See below for usage_**          | _Add a listener that fires after an in-app message is displayed._                                                                                                                                                                                                                                                                                                                                                                                        |
+| `OneSignal.InAppMessages.addEventListener("willDismiss", handler)` **_See below for usage_**         | _Add a listener that fires before an in-app message is dismissed._                                                                                                                                                                                                                                                                                                                                                                                       |
+| `OneSignal.InAppMessages.addEventListener("didDismiss", handler)` **_See below for usage_**          | _Add a listener that fires after an in-app message is dismissed._                                                                                                                                                                                                                                                                                                                                                                                        |
+| `OneSignal.InAppMessages.addEventListener("click", handler)` **_See below for usage_**               | _Add an in-app message click listener._                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ### In-App Message Click Listener
 
