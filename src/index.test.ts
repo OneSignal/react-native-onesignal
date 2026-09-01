@@ -41,6 +41,17 @@ const filterEventListener = <K extends keyof EventListenerMap>(
   )[0][1] as EventListenerMap[K];
 };
 
+const GLOBAL_KEY = '__oneSignalEventManager';
+
+// The SDK's own observer is the first handler registered for these events, so it survives
+// the mock resets that clear the spy call history.
+const internalObserver = <K extends keyof EventListenerMap>(eventName: K): EventListenerMap[K] => {
+  const manager = (globalThis as Record<string, unknown>)[GLOBAL_KEY] as EventManager;
+  return manager['eventListenerArrayMap'].get(eventName)![0] as EventListenerMap[K];
+};
+
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 describe('OneSignal', () => {
   beforeEach(() => {
     mockPlatform.OS = 'ios';
@@ -103,6 +114,91 @@ describe('OneSignal', () => {
       isNativeLoadedSpy.mockReturnValue(false);
       OneSignal.initialize(APP_ID);
       expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
+    });
+
+    test('should keep a permission event that arrives before the startup read resolves', async () => {
+      let resolveStartupRead: ((granted: boolean) => void) | undefined;
+      vi.mocked(mockRNOneSignal.hasNotificationPermission).mockReturnValueOnce(
+        new Promise<boolean>((resolve) => {
+          resolveStartupRead = resolve;
+        }),
+      );
+
+      OneSignal.initialize(APP_ID);
+      internalObserver(PERMISSION_CHANGED)(true);
+      resolveStartupRead!(false);
+      await flushPromises();
+
+      expect(OneSignal.Notifications.hasPermission()).toBe(true);
+
+      internalObserver(PERMISSION_CHANGED)(false);
+    });
+
+    test('should keep a subscription event that arrives before the startup reads resolve', async () => {
+      let resolveStartupRead: ((id: string) => void) | undefined;
+      vi.mocked(mockRNOneSignal.getPushSubscriptionId).mockReturnValueOnce(
+        new Promise<string>((resolve) => {
+          resolveStartupRead = resolve;
+        }),
+      );
+
+      OneSignal.initialize(APP_ID);
+      internalObserver(SUBSCRIPTION_CHANGED)({
+        previous: { id: '', token: '', optedIn: false },
+        current: { id: PUSH_ID, token: PUSH_TOKEN, optedIn: true },
+      });
+      resolveStartupRead!('stale-id');
+      await flushPromises();
+
+      expect(OneSignal.User.pushSubscription.getPushSubscriptionId()).toBe(PUSH_ID);
+
+      internalObserver(SUBSCRIPTION_CHANGED)({
+        previous: { id: PUSH_ID, token: PUSH_TOKEN, optedIn: true },
+        current: { id: '', token: '', optedIn: false },
+      });
+    });
+
+    test('should warn instead of rejecting when a startup read fails', async () => {
+      vi.mocked(mockRNOneSignal.hasNotificationPermission).mockRejectedValueOnce(
+        new Error('native failure'),
+      );
+
+      OneSignal.initialize(APP_ID);
+      await flushPromises();
+
+      expect(console.warn).toHaveBeenCalledWith(
+        'OneSignal: failed to read initial state',
+        expect.any(Error),
+      );
+    });
+  });
+
+  describe('event manager resolution', () => {
+    test('should adopt the manager another module instance left on the global', async () => {
+      const globals = globalThis as Record<string, unknown>;
+      const ownManager = globals[GLOBAL_KEY];
+      const foreignManager = {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        clearListeners: vi.fn(),
+      };
+      globals[GLOBAL_KEY] = foreignManager;
+
+      try {
+        vi.resetModules();
+        const duplicateCopy = await import('./index');
+        const listener = vi.fn();
+        duplicateCopy.OneSignal.Notifications.addEventListener('click', listener);
+
+        expect(foreignManager.clearListeners).not.toHaveBeenCalled();
+        expect(foreignManager.addEventListener).toHaveBeenCalledWith(
+          NOTIFICATION_CLICKED,
+          listener,
+        );
+        expect(globals[GLOBAL_KEY]).toBe(foreignManager);
+      } finally {
+        globals[GLOBAL_KEY] = ownManager;
+      }
     });
   });
 

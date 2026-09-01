@@ -159,8 +159,6 @@ export default class EventManager {
       handlerArray.slice().forEach((handler) => {
         handler(payload);
       });
-    } else if (eventName === NOTIFICATION_WILL_DISPLAY) {
-      (payload as NotificationWillDisplayEvent).getNotification().display();
     }
   }
 }

@@ -95,6 +95,29 @@ describe('EventManager', () => {
       new EventManager(null as never);
       expect(freshModule.onPermissionChanged).not.toHaveBeenCalled();
     });
+
+    test('should not subscribe again when called on an already subscribed manager', () => {
+      eventManager.setupListeners();
+
+      expect(mockModule.onPermissionChanged).toHaveBeenCalledOnce();
+      expect(mockModule.onNotificationWillDisplay).toHaveBeenCalledOnce();
+      expect(eventManager['nativeSubscriptions'].length).toBe(10);
+    });
+  });
+
+  describe('clearListeners', () => {
+    test('should remove native subscriptions and drop handlers', () => {
+      const subscriptions = eventManager['nativeSubscriptions'].slice();
+      eventManager.addEventListener(PERMISSION_CHANGED, vi.fn());
+
+      eventManager.clearListeners();
+
+      subscriptions.forEach((sub) => {
+        expect(sub.remove).toHaveBeenCalledOnce();
+      });
+      expect(eventManager['nativeSubscriptions'].length).toBe(0);
+      expect(eventManager['eventListenerArrayMap'].size).toBe(0);
+    });
   });
 
   describe('addEventListener', () => {
@@ -512,6 +535,29 @@ describe('EventManager', () => {
       expect(handler1).toHaveBeenCalledWith(pushChangedPayload);
       expect(handler2).not.toHaveBeenCalled();
       expect(handler3).toHaveBeenCalledWith(pushChangedPayload);
+    });
+
+    test('should still reach later handlers when one removes itself mid-dispatch', () => {
+      const selfRemoving = vi.fn(() => {
+        eventManager.removeEventListener(SUBSCRIPTION_CHANGED, selfRemoving);
+      });
+      const next = vi.fn();
+
+      eventManager.addEventListener(SUBSCRIPTION_CHANGED, selfRemoving);
+      eventManager.addEventListener(SUBSCRIPTION_CHANGED, next);
+
+      const emitCallback = callbacks.get('onSubscriptionChanged')!;
+      emitCallback(pushChangedPayload);
+
+      expect(selfRemoving).toHaveBeenCalledOnce();
+      expect(next).toHaveBeenCalledWith(pushChangedPayload);
+
+      selfRemoving.mockClear();
+      next.mockClear();
+      emitCallback(pushChangedPayload);
+
+      expect(selfRemoving).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledOnce();
     });
   });
 });
