@@ -33,13 +33,22 @@ const isValidCallbackSpy = vi.spyOn(helpers, 'isValidCallback');
 const addEventManagerListenerSpy = vi.spyOn(EventManager.prototype, 'addEventListener');
 const removeEventManagerListenerSpy = vi.spyOn(EventManager.prototype, 'removeEventListener');
 
-const filterEventListener = <K extends keyof EventListenerMap>(
+const GLOBAL_KEY = '__oneSignalEventManager';
+
+const dispatchEvent = <K extends keyof EventListenerMap>(
   eventName: K,
-): EventListenerMap[K] => {
-  return addEventManagerListenerSpy.mock.calls.filter(
-    (call: [string, unknown]) => call[0] === eventName,
-  )[0][1] as EventListenerMap[K];
+  payload: Parameters<EventListenerMap[K]>[0],
+) => {
+  const manager = (globalThis as Record<string, unknown>)[GLOBAL_KEY] as EventManager;
+  manager['eventListenerArrayMap']
+    .get(eventName)
+    ?.slice()
+    .forEach((handler) => {
+      handler(payload);
+    });
 };
+
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe('OneSignal', () => {
   beforeEach(() => {
@@ -69,8 +78,7 @@ describe('OneSignal', () => {
       expect(mockRNOneSignal.initialize).toHaveBeenCalledWith(APP_ID);
 
       // test permission change listener
-      const changeFn = filterEventListener(PERMISSION_CHANGED);
-      changeFn(true);
+      dispatchEvent(PERMISSION_CHANGED, true);
       const permission = OneSignal.Notifications.hasPermission();
       expect(permission).toBe(true);
 
@@ -87,13 +95,12 @@ describe('OneSignal', () => {
           optedIn: true,
         },
       };
-      const subscriptionChangeFn = filterEventListener(SUBSCRIPTION_CHANGED);
-      subscriptionChangeFn(pushData);
+      dispatchEvent(SUBSCRIPTION_CHANGED, pushData);
       const pushSubscription = OneSignal.User.pushSubscription.getPushSubscriptionId();
       expect(pushSubscription).toBe('subscription-id');
 
       // reset push subscription
-      subscriptionChangeFn({
+      dispatchEvent(SUBSCRIPTION_CHANGED, {
         ...pushData,
         current: { id: '', token: '', optedIn: false },
       });
@@ -103,6 +110,62 @@ describe('OneSignal', () => {
       isNativeLoadedSpy.mockReturnValue(false);
       OneSignal.initialize(APP_ID);
       expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
+    });
+
+    test('should keep a permission event that arrives before the startup read resolves', async () => {
+      let resolveStartupRead: ((granted: boolean) => void) | undefined;
+      vi.mocked(mockRNOneSignal.hasNotificationPermission).mockReturnValueOnce(
+        new Promise<boolean>((resolve) => {
+          resolveStartupRead = resolve;
+        }),
+      );
+
+      OneSignal.initialize(APP_ID);
+      dispatchEvent(PERMISSION_CHANGED, true);
+      resolveStartupRead!(false);
+      await flushPromises();
+
+      expect(OneSignal.Notifications.hasPermission()).toBe(true);
+
+      dispatchEvent(PERMISSION_CHANGED, false);
+    });
+
+    test('should keep a subscription event that arrives before the startup reads resolve', async () => {
+      let resolveStartupRead: ((id: string) => void) | undefined;
+      vi.mocked(mockRNOneSignal.getPushSubscriptionId).mockReturnValueOnce(
+        new Promise<string>((resolve) => {
+          resolveStartupRead = resolve;
+        }),
+      );
+
+      OneSignal.initialize(APP_ID);
+      dispatchEvent(SUBSCRIPTION_CHANGED, {
+        previous: { id: '', token: '', optedIn: false },
+        current: { id: PUSH_ID, token: PUSH_TOKEN, optedIn: true },
+      });
+      resolveStartupRead!('stale-id');
+      await flushPromises();
+
+      expect(OneSignal.User.pushSubscription.getPushSubscriptionId()).toBe(PUSH_ID);
+
+      dispatchEvent(SUBSCRIPTION_CHANGED, {
+        previous: { id: PUSH_ID, token: PUSH_TOKEN, optedIn: true },
+        current: { id: '', token: '', optedIn: false },
+      });
+    });
+
+    test('should warn instead of rejecting when a startup read fails', async () => {
+      vi.mocked(mockRNOneSignal.hasNotificationPermission).mockRejectedValueOnce(
+        new Error('native failure'),
+      );
+
+      OneSignal.initialize(APP_ID);
+      await flushPromises();
+
+      expect(console.warn).toHaveBeenCalledWith(
+        'OneSignal: failed to read initial state',
+        expect.any(Error),
+      );
     });
   });
 

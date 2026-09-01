@@ -58,6 +58,10 @@ export enum LogLevel {
 }
 
 let notificationPermission = false;
+let permissionObserverAdded = false;
+let subscriptionObserverAdded = false;
+let permissionVersion = 0;
+let subscriptionVersion = 0;
 
 let pushSub: PushSubscriptionState = {
   id: '',
@@ -66,21 +70,37 @@ let pushSub: PushSubscriptionState = {
 };
 
 async function _addPermissionObserver() {
-  OneSignal.Notifications.addEventListener('permissionChange', (granted: boolean) => {
-    notificationPermission = granted;
-  });
+  const version = ++permissionVersion;
+  if (!permissionObserverAdded) {
+    OneSignal.Notifications.addEventListener('permissionChange', (granted: boolean) => {
+      permissionVersion++;
+      notificationPermission = granted;
+    });
+    permissionObserverAdded = true;
+  }
 
-  notificationPermission = await RNOneSignal.hasNotificationPermission();
+  const permission = await RNOneSignal.hasNotificationPermission();
+  if (version === permissionVersion) notificationPermission = permission;
 }
 
 async function _addPushSubscriptionObserver() {
-  OneSignal.User.pushSubscription.addEventListener('change', (subscriptionChange) => {
-    pushSub = subscriptionChange.current;
-  });
+  const version = ++subscriptionVersion;
+  if (!subscriptionObserverAdded) {
+    OneSignal.User.pushSubscription.addEventListener('change', (subscriptionChange) => {
+      subscriptionVersion++;
+      pushSub = subscriptionChange.current;
+    });
+    subscriptionObserverAdded = true;
+  }
 
-  pushSub.id = (await RNOneSignal.getPushSubscriptionId()) ?? undefined;
-  pushSub.token = (await RNOneSignal.getPushSubscriptionToken()) ?? undefined;
-  pushSub.optedIn = await RNOneSignal.getOptedIn();
+  const [id, token, optedIn] = await Promise.all([
+    RNOneSignal.getPushSubscriptionId(),
+    RNOneSignal.getPushSubscriptionToken(),
+    RNOneSignal.getOptedIn(),
+  ]);
+  if (version === subscriptionVersion) {
+    pushSub = { id: id ?? undefined, token: token ?? undefined, optedIn };
+  }
 }
 
 export namespace OneSignal {
@@ -90,8 +110,9 @@ export namespace OneSignal {
 
     RNOneSignal.initialize(appId);
 
-    void _addPermissionObserver();
-    void _addPushSubscriptionObserver();
+    void Promise.all([_addPermissionObserver(), _addPushSubscriptionObserver()]).catch((error) => {
+      console.warn('OneSignal: failed to read initial state', error);
+    });
   }
 
   /**
