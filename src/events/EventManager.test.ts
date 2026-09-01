@@ -249,6 +249,45 @@ describe('EventManager', () => {
       expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith('test-id');
     });
 
+    test('should not display twice when a handler displays explicitly', () => {
+      eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, (event) => {
+        event.getNotification().display();
+      });
+
+      callbacks.get('onNotificationWillDisplay')!(rawWillDisplayPayload);
+
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledOnce();
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith('test-id');
+    });
+
+    test('should display by default when a handler throws', () => {
+      eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, () => {
+        throw new Error('listener failed');
+      });
+
+      expect(() => {
+        callbacks.get('onNotificationWillDisplay')!(rawWillDisplayPayload);
+      }).toThrow('listener failed');
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledOnce();
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith('test-id');
+    });
+
+    test('should continue dispatching after a handler throws', () => {
+      const preventingHandler = vi.fn((event: NotificationWillDisplayEvent) => {
+        event.preventDefault();
+      });
+      eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, () => {
+        throw new Error('listener failed');
+      });
+      eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, preventingHandler);
+
+      expect(() => {
+        callbacks.get('onNotificationWillDisplay')!(rawWillDisplayPayload);
+      }).toThrow('listener failed');
+      expect(preventingHandler).toHaveBeenCalledOnce();
+      expect(mockRNOneSignal.displayNotification).not.toHaveBeenCalled();
+    });
+
     test('should handle PERMISSION_CHANGED events with boolean payload', () => {
       const handler = vi.fn();
       eventManager.addEventListener(PERMISSION_CHANGED, handler);
@@ -420,8 +459,9 @@ describe('EventManager', () => {
 
       expect(permissionHandler).toHaveBeenCalledWith(true);
       expect(subscriptionHandler).toHaveBeenCalledWith(pushChangedPayload);
-      expect(notificationWillDisplayHandler).toHaveBeenCalledWith(
-        new NotificationWillDisplayEvent(rawWillDisplayPayload),
+      expect(notificationWillDisplayHandler).toHaveBeenCalledOnce();
+      expect(notificationWillDisplayHandler.mock.calls[0][0]).toBeInstanceOf(
+        NotificationWillDisplayEvent,
       );
     });
 

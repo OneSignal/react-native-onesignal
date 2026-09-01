@@ -73,9 +73,12 @@ export default class EventManager {
       }),
       this.RNOneSignal.onNotificationWillDisplay((payload) => {
         const event = new NotificationWillDisplayEvent(payload as OSNotification);
-        this.dispatchHandlers(NOTIFICATION_WILL_DISPLAY, event);
-        if (!event.isDefaultPrevented()) {
-          event.getNotification().display();
+        try {
+          this.dispatchNotificationWillDisplayHandlers(event);
+        } finally {
+          if (!event.isDefaultPrevented() && !event.isDisplayRequested()) {
+            event.getNotification().display();
+          }
         }
       }),
       this.RNOneSignal.onNotificationClicked((payload) => {
@@ -122,6 +125,27 @@ export default class EventManager {
     }
     if (handlerArray.length === 0) {
       this.eventListenerArrayMap.delete(eventName);
+    }
+  }
+
+  private dispatchNotificationWillDisplayHandlers(event: NotificationWillDisplayEvent) {
+    const handlers = [...(this.eventListenerArrayMap.get(NOTIFICATION_WILL_DISPLAY) ?? [])];
+    let firstError: unknown;
+    let handlerThrew = false;
+
+    handlers.forEach((handler) => {
+      try {
+        handler(event);
+      } catch (error) {
+        if (!handlerThrew) {
+          firstError = error;
+          handlerThrew = true;
+        }
+      }
+    });
+
+    if (handlerThrew) {
+      throw firstError;
     }
   }
 

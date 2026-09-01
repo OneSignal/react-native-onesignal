@@ -95,6 +95,22 @@ describe('NotificationWillDisplayEvent', () => {
     });
   });
 
+  describe('isDisplayRequested', () => {
+    test('should track notification display calls', () => {
+      const notification = new OSNotification(baseNotificationData);
+      const event = new NotificationWillDisplayEvent(notification);
+
+      expect(event.isDisplayRequested()).toBe(false);
+
+      event.getNotification().display();
+      event.getNotification().display();
+
+      expect(event.isDisplayRequested()).toBe(true);
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledOnce();
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith(notificationId);
+    });
+  });
+
   describe('getNotification', () => {
     test('should return the notification instance', () => {
       const notification = new OSNotification(baseNotificationData);
