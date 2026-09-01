@@ -215,7 +215,6 @@ public class RNOneSignal extends NativeOneSignalSpec
     public void invalidate() {
         removeObservers();
         notificationWillDisplayCache.clear();
-        preventDefaultCache.clear();
         if (currentInstance == this) {
             currentInstance = null;
         }
