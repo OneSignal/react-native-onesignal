@@ -463,6 +463,9 @@ describe('EventManager', () => {
       expect(notificationWillDisplayHandler.mock.calls[0][0]).toBeInstanceOf(
         NotificationWillDisplayEvent,
       );
+      expect(notificationWillDisplayHandler.mock.calls[0][0].getNotification().notificationId).toBe(
+        'test-id',
+      );
     });
 
     test('should maintain separate handler arrays for different events', () => {

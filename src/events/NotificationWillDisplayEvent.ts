@@ -22,7 +22,10 @@ export default class NotificationWillDisplayEvent {
     this.notification = new ForegroundNotification(displayEvent);
   }
 
-  /** This must be called synchronously while the foreground listener is running. */
+  /**
+   * This must be called synchronously while the foreground listener is running.
+   * Calling it later cannot stop the automatic display.
+   */
   preventDefault(): void {
     preventedEvents.add(this);
     RNOneSignal.preventDefault(this.notification.notificationId);

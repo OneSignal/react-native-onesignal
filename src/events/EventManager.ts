@@ -132,6 +132,7 @@ export default class EventManager {
   }
 
   private dispatchNotificationWillDisplayHandlers(event: NotificationWillDisplayEvent) {
+    // Every handler must run because any one of them can prevent automatic display.
     const handlers = [...(this.eventListenerArrayMap.get(NOTIFICATION_WILL_DISPLAY) ?? [])];
     let firstError: unknown;
     let handlerThrew = false;
