@@ -52,7 +52,6 @@ static id OSDecodeNullSentinels(id value) {
   BOOL _hasAddedNotificationForegroundLifecycleListener;
   BOOL _hasAddedInAppMessageClickListener;
   BOOL _hasAddedInAppMessageLifecycleListener;
-  NSMutableDictionary *_preventDefaultCache;
   NSMutableDictionary *_notificationWillDisplayCache;
 }
 
@@ -66,7 +65,6 @@ RCT_EXPORT_MODULE(OneSignal)
 
 - (instancetype)init {
   if (self = [super init]) {
-    _preventDefaultCache = [NSMutableDictionary new];
     _notificationWillDisplayCache = [NSMutableDictionary new];
 
     // Clean up previous instance if it exists (handles reload scenario)
@@ -83,8 +81,9 @@ RCT_EXPORT_MODULE(OneSignal)
 - (void)invalidate {
   [self removeHandlers];
   [self removeObservers];
-  [_preventDefaultCache removeAllObjects];
-  [_notificationWillDisplayCache removeAllObjects];
+  @synchronized(_notificationWillDisplayCache) {
+    [_notificationWillDisplayCache removeAllObjects];
+  }
   if (_currentInstance == self) {
     _currentInstance = nil;
   }
@@ -396,7 +395,9 @@ RCT_EXPORT_METHOD(addNotificationForegroundLifecycleListener) {
 }
 
 - (void)onWillDisplayNotification:(OSNotificationWillDisplayEvent *)event {
-  _notificationWillDisplayCache[event.notification.notificationId] = event;
+  @synchronized(_notificationWillDisplayCache) {
+    _notificationWillDisplayCache[event.notification.notificationId] = event;
+  }
   [event preventDefault];
   [RCTOneSignalEventEmitter
       sendEventWithName:@"OneSignal-notificationWillDisplayInForeground"
@@ -404,8 +405,10 @@ RCT_EXPORT_METHOD(addNotificationForegroundLifecycleListener) {
 }
 
 RCT_EXPORT_METHOD(preventDefault : (NSString *)notificationId) {
-  OSNotificationWillDisplayEvent *event =
-      _notificationWillDisplayCache[notificationId];
+  OSNotificationWillDisplayEvent *event;
+  @synchronized(_notificationWillDisplayCache) {
+    event = _notificationWillDisplayCache[notificationId];
+  }
   if (!event) {
     [OneSignalLog
         onesignalLog:ONE_S_LL_ERROR
@@ -416,7 +419,6 @@ RCT_EXPORT_METHOD(preventDefault : (NSString *)notificationId) {
                              notificationId]];
     return;
   }
-  _preventDefaultCache[event.notification.notificationId] = event;
   [event preventDefault];
 }
 
@@ -579,8 +581,11 @@ RCT_EXPORT_METHOD(optIn) { [OneSignal.User.pushSubscription optIn]; }
 RCT_EXPORT_METHOD(optOut) { [OneSignal.User.pushSubscription optOut]; }
 
 RCT_EXPORT_METHOD(displayNotification : (NSString *)notificationId) {
-  OSNotificationWillDisplayEvent *event =
-      _notificationWillDisplayCache[notificationId];
+  OSNotificationWillDisplayEvent *event;
+  @synchronized(_notificationWillDisplayCache) {
+    event = _notificationWillDisplayCache[notificationId];
+    [_notificationWillDisplayCache removeObjectForKey:notificationId];
+  }
   if (!event) {
     [OneSignalLog
         onesignalLog:ONE_S_LL_ERROR
@@ -594,9 +599,6 @@ RCT_EXPORT_METHOD(displayNotification : (NSString *)notificationId) {
   dispatch_async(dispatch_get_main_queue(), ^{
     [event.notification display];
   });
-
-  [_preventDefaultCache removeObjectForKey:notificationId];
-  [_notificationWillDisplayCache removeObjectForKey:notificationId];
 }
 
 - (void)removeObservers {
