@@ -39,24 +39,12 @@ import type { UserChangedState, UserState } from './types/user';
 const RNOneSignal = NativeOneSignal;
 
 const GLOBAL_KEY = '__oneSignalEventManager';
-
-// A reloaded module or a duplicate install gets its own class object, so `instanceof`
-// cannot recognize the manager already holding this realm's native subscriptions. Adopt
-// that manager rather than replacing it: replacing it strands the listeners the other
-// module instance registered on a manager that no longer receives native events.
-function resolveEventManager(): EventManager {
-  const globals = globalThis as Record<string, unknown>;
-  const existing = globals[GLOBAL_KEY] as EventManager | undefined;
-  if (typeof existing?.addEventListener === 'function') {
-    return existing;
-  }
-
-  const created = new EventManager(RNOneSignal);
-  globals[GLOBAL_KEY] = created;
-  return created;
+const prev = (globalThis as Record<string, unknown>)[GLOBAL_KEY];
+if (prev instanceof EventManager) {
+  prev.clearListeners();
 }
-
-const eventManager = resolveEventManager();
+const eventManager = new EventManager(RNOneSignal);
+(globalThis as Record<string, unknown>)[GLOBAL_KEY] = eventManager;
 
 /// An enum that declares different types of log levels you can use with the OneSignal SDK, going from the least verbose (none) to verbose (print all comments).
 export enum LogLevel {

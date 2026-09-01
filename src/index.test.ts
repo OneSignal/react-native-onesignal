@@ -33,21 +33,19 @@ const isValidCallbackSpy = vi.spyOn(helpers, 'isValidCallback');
 const addEventManagerListenerSpy = vi.spyOn(EventManager.prototype, 'addEventListener');
 const removeEventManagerListenerSpy = vi.spyOn(EventManager.prototype, 'removeEventListener');
 
-const filterEventListener = <K extends keyof EventListenerMap>(
-  eventName: K,
-): EventListenerMap[K] => {
-  return addEventManagerListenerSpy.mock.calls.filter(
-    (call: [string, unknown]) => call[0] === eventName,
-  )[0][1] as EventListenerMap[K];
-};
-
 const GLOBAL_KEY = '__oneSignalEventManager';
 
-// The SDK's own observer is the first handler registered for these events, so it survives
-// the mock resets that clear the spy call history.
-const internalObserver = <K extends keyof EventListenerMap>(eventName: K): EventListenerMap[K] => {
+const dispatchEvent = <K extends keyof EventListenerMap>(
+  eventName: K,
+  payload: Parameters<EventListenerMap[K]>[0],
+) => {
   const manager = (globalThis as Record<string, unknown>)[GLOBAL_KEY] as EventManager;
-  return manager['eventListenerArrayMap'].get(eventName)![0] as EventListenerMap[K];
+  manager['eventListenerArrayMap']
+    .get(eventName)
+    ?.slice()
+    .forEach((handler) => {
+      handler(payload);
+    });
 };
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -80,8 +78,7 @@ describe('OneSignal', () => {
       expect(mockRNOneSignal.initialize).toHaveBeenCalledWith(APP_ID);
 
       // test permission change listener
-      const changeFn = filterEventListener(PERMISSION_CHANGED);
-      changeFn(true);
+      dispatchEvent(PERMISSION_CHANGED, true);
       const permission = OneSignal.Notifications.hasPermission();
       expect(permission).toBe(true);
 
@@ -98,13 +95,12 @@ describe('OneSignal', () => {
           optedIn: true,
         },
       };
-      const subscriptionChangeFn = filterEventListener(SUBSCRIPTION_CHANGED);
-      subscriptionChangeFn(pushData);
+      dispatchEvent(SUBSCRIPTION_CHANGED, pushData);
       const pushSubscription = OneSignal.User.pushSubscription.getPushSubscriptionId();
       expect(pushSubscription).toBe('subscription-id');
 
       // reset push subscription
-      subscriptionChangeFn({
+      dispatchEvent(SUBSCRIPTION_CHANGED, {
         ...pushData,
         current: { id: '', token: '', optedIn: false },
       });
@@ -125,13 +121,13 @@ describe('OneSignal', () => {
       );
 
       OneSignal.initialize(APP_ID);
-      internalObserver(PERMISSION_CHANGED)(true);
+      dispatchEvent(PERMISSION_CHANGED, true);
       resolveStartupRead!(false);
       await flushPromises();
 
       expect(OneSignal.Notifications.hasPermission()).toBe(true);
 
-      internalObserver(PERMISSION_CHANGED)(false);
+      dispatchEvent(PERMISSION_CHANGED, false);
     });
 
     test('should keep a subscription event that arrives before the startup reads resolve', async () => {
@@ -143,7 +139,7 @@ describe('OneSignal', () => {
       );
 
       OneSignal.initialize(APP_ID);
-      internalObserver(SUBSCRIPTION_CHANGED)({
+      dispatchEvent(SUBSCRIPTION_CHANGED, {
         previous: { id: '', token: '', optedIn: false },
         current: { id: PUSH_ID, token: PUSH_TOKEN, optedIn: true },
       });
@@ -152,7 +148,7 @@ describe('OneSignal', () => {
 
       expect(OneSignal.User.pushSubscription.getPushSubscriptionId()).toBe(PUSH_ID);
 
-      internalObserver(SUBSCRIPTION_CHANGED)({
+      dispatchEvent(SUBSCRIPTION_CHANGED, {
         previous: { id: PUSH_ID, token: PUSH_TOKEN, optedIn: true },
         current: { id: '', token: '', optedIn: false },
       });
@@ -170,35 +166,6 @@ describe('OneSignal', () => {
         'OneSignal: failed to read initial state',
         expect.any(Error),
       );
-    });
-  });
-
-  describe('event manager resolution', () => {
-    test('should adopt the manager another module instance left on the global', async () => {
-      const globals = globalThis as Record<string, unknown>;
-      const ownManager = globals[GLOBAL_KEY];
-      const foreignManager = {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        clearListeners: vi.fn(),
-      };
-      globals[GLOBAL_KEY] = foreignManager;
-
-      try {
-        vi.resetModules();
-        const duplicateCopy = await import('./index');
-        const listener = vi.fn();
-        duplicateCopy.OneSignal.Notifications.addEventListener('click', listener);
-
-        expect(foreignManager.clearListeners).not.toHaveBeenCalled();
-        expect(foreignManager.addEventListener).toHaveBeenCalledWith(
-          NOTIFICATION_CLICKED,
-          listener,
-        );
-        expect(globals[GLOBAL_KEY]).toBe(foreignManager);
-      } finally {
-        globals[GLOBAL_KEY] = ownManager;
-      }
     });
   });
 
