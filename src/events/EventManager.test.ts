@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 
+import { mockRNOneSignal } from '../../__mocks__/react-native';
 import {
   IN_APP_MESSAGE_CLICKED,
   IN_APP_MESSAGE_DID_DISMISS,
@@ -50,6 +51,7 @@ describe('EventManager', () => {
   let callbacks: Map<string, (payload: unknown) => void>;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     const mock = createMockNativeModule();
     mockModule = mock.module;
     callbacks = mock.callbacks;
@@ -193,6 +195,58 @@ describe('EventManager', () => {
       expect(handler).toHaveBeenCalled();
       const receivedEvent = handler.mock.calls[0][0];
       expect(receivedEvent).toBeInstanceOf(NotificationWillDisplayEvent);
+    });
+
+    test('should display a foreground notification when no handlers are registered', () => {
+      callbacks.get('onNotificationWillDisplay')!(rawWillDisplayPayload);
+
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledOnce();
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith('test-id');
+    });
+
+    test('should display a foreground notification when handlers do not prevent it', () => {
+      const handler1 = vi.fn();
+      const handler2 = vi.fn();
+      eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, handler1);
+      eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, handler2);
+
+      callbacks.get('onNotificationWillDisplay')!(rawWillDisplayPayload);
+
+      expect(handler1).toHaveBeenCalledOnce();
+      expect(handler2).toHaveBeenCalledOnce();
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledOnce();
+    });
+
+    test('should not display automatically when any handler prevents default', () => {
+      const observingHandler = vi.fn();
+      const preventingHandler = vi.fn((event: NotificationWillDisplayEvent) => {
+        event.preventDefault();
+      });
+      eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, observingHandler);
+      eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, preventingHandler);
+
+      callbacks.get('onNotificationWillDisplay')!(rawWillDisplayPayload);
+
+      expect(observingHandler).toHaveBeenCalledOnce();
+      expect(preventingHandler).toHaveBeenCalledOnce();
+      expect(mockRNOneSignal.preventDefault).toHaveBeenCalledWith('test-id');
+      expect(mockRNOneSignal.displayNotification).not.toHaveBeenCalled();
+    });
+
+    test('should allow deferred display after preventing default', () => {
+      let receivedEvent: NotificationWillDisplayEvent | undefined;
+      eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, (event) => {
+        receivedEvent = event;
+        event.preventDefault();
+      });
+
+      callbacks.get('onNotificationWillDisplay')!(rawWillDisplayPayload);
+      expect(mockRNOneSignal.displayNotification).not.toHaveBeenCalled();
+
+      receivedEvent?.getNotification().display();
+
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledOnce();
+      expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith('test-id');
     });
 
     test('should handle PERMISSION_CHANGED events with boolean payload', () => {

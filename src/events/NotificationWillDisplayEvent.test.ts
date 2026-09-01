@@ -68,6 +68,7 @@ describe('NotificationWillDisplayEvent', () => {
       const result = event.preventDefault();
 
       expect(mockRNOneSignal.preventDefault).toHaveBeenCalledWith(notificationId);
+      expect(event.isDefaultPrevented()).toBe(true);
       expect(result).toBeUndefined();
     });
 
@@ -81,6 +82,16 @@ describe('NotificationWillDisplayEvent', () => {
 
       expect(mockRNOneSignal.preventDefault).toHaveBeenCalledTimes(3);
       expect(mockRNOneSignal.preventDefault).toHaveBeenCalledWith('test-notification-id');
+      expect(event.isDefaultPrevented()).toBe(true);
+    });
+  });
+
+  describe('isDefaultPrevented', () => {
+    test('should be false before preventDefault is called', () => {
+      const notification = new OSNotification(baseNotificationData);
+      const event = new NotificationWillDisplayEvent(notification);
+
+      expect(event.isDefaultPrevented()).toBe(false);
     });
   });
 

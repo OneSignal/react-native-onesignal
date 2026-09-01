@@ -195,7 +195,6 @@ function useOneSignalState(): UseOneSignalReturn {
 
     const handleForegroundWillDisplay = (e: NotificationWillDisplayEvent) => {
       console.log(`Notification foregroundWillDisplay: ${e.getNotification().title ?? ''}`);
-      e.getNotification().display();
     };
 
     const pushSubHandler = (event: PushSubscriptionChangedState) => {

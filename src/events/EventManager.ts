@@ -72,10 +72,11 @@ export default class EventManager {
         this.dispatchHandlers(USER_STATE_CHANGED, payload);
       }),
       this.RNOneSignal.onNotificationWillDisplay((payload) => {
-        this.dispatchHandlers(
-          NOTIFICATION_WILL_DISPLAY,
-          new NotificationWillDisplayEvent(payload as OSNotification),
-        );
+        const event = new NotificationWillDisplayEvent(payload as OSNotification);
+        this.dispatchHandlers(NOTIFICATION_WILL_DISPLAY, event);
+        if (!event.isDefaultPrevented()) {
+          event.getNotification().display();
+        }
       }),
       this.RNOneSignal.onNotificationClicked((payload) => {
         this.dispatchHandlers(NOTIFICATION_CLICKED, payload);
