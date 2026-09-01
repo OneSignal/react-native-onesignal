@@ -2,7 +2,10 @@ import { describe, expect, test } from 'vite-plus/test';
 
 import { mockRNOneSignal } from '../../__mocks__/react-native';
 import OSNotification, { type BaseNotificationData } from '../OSNotification';
-import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
+import NotificationWillDisplayEvent, {
+  isDefaultPrevented,
+  isDisplayRequested,
+} from './NotificationWillDisplayEvent';
 
 describe('NotificationWillDisplayEvent', () => {
   const notificationId = 'test-notification-id';
@@ -68,7 +71,7 @@ describe('NotificationWillDisplayEvent', () => {
       const result = event.preventDefault();
 
       expect(mockRNOneSignal.preventDefault).toHaveBeenCalledWith(notificationId);
-      expect(event.isDefaultPrevented()).toBe(true);
+      expect(isDefaultPrevented(event)).toBe(true);
       expect(result).toBeUndefined();
     });
 
@@ -82,7 +85,7 @@ describe('NotificationWillDisplayEvent', () => {
 
       expect(mockRNOneSignal.preventDefault).toHaveBeenCalledTimes(3);
       expect(mockRNOneSignal.preventDefault).toHaveBeenCalledWith('test-notification-id');
-      expect(event.isDefaultPrevented()).toBe(true);
+      expect(isDefaultPrevented(event)).toBe(true);
     });
   });
 
@@ -91,7 +94,7 @@ describe('NotificationWillDisplayEvent', () => {
       const notification = new OSNotification(baseNotificationData);
       const event = new NotificationWillDisplayEvent(notification);
 
-      expect(event.isDefaultPrevented()).toBe(false);
+      expect(isDefaultPrevented(event)).toBe(false);
     });
   });
 
@@ -100,12 +103,12 @@ describe('NotificationWillDisplayEvent', () => {
       const notification = new OSNotification(baseNotificationData);
       const event = new NotificationWillDisplayEvent(notification);
 
-      expect(event.isDisplayRequested()).toBe(false);
+      expect(isDisplayRequested(event)).toBe(false);
 
       event.getNotification().display();
       event.getNotification().display();
 
-      expect(event.isDisplayRequested()).toBe(true);
+      expect(isDisplayRequested(event)).toBe(true);
       expect(mockRNOneSignal.displayNotification).toHaveBeenCalledOnce();
       expect(mockRNOneSignal.displayNotification).toHaveBeenCalledWith(notificationId);
     });

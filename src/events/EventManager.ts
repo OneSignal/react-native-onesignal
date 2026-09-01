@@ -24,7 +24,10 @@ import type {
 import type { NotificationClickEvent } from '../types/notificationEvents';
 import type { PushSubscriptionChangedState } from '../types/subscription';
 import type { UserChangedState } from '../types/user';
-import NotificationWillDisplayEvent from './NotificationWillDisplayEvent';
+import NotificationWillDisplayEvent, {
+  isDefaultPrevented,
+  isDisplayRequested,
+} from './NotificationWillDisplayEvent';
 
 export interface EventListenerMap {
   [PERMISSION_CHANGED]: (event: boolean) => void;
@@ -76,7 +79,7 @@ export default class EventManager {
         try {
           this.dispatchNotificationWillDisplayHandlers(event);
         } finally {
-          if (!event.isDefaultPrevented() && !event.isDisplayRequested()) {
+          if (!isDefaultPrevented(event) && !isDisplayRequested(event)) {
             event.getNotification().display();
           }
         }
