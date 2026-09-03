@@ -126,7 +126,7 @@ public class RNUtils {
             }
             notificationHash.put("actionButtons", actionButtons);
         }
-        notificationHash.put("rawPayload", notification.getRawPayload());
+        notificationHash.put("rawPayload", convertJSONObjectToHashMap(new JSONObject(notification.getRawPayload())));
 
         return notificationHash;
     }
