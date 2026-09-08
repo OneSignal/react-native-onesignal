@@ -8,10 +8,8 @@
 + (void)didReceiveNotificationRequest:(UNNotificationRequest *)request
                           withContent:
                               (UNMutableNotificationContent *_Nullable)content {
-  // OneSignal 5.6.0 removed the 2-arg selector; nil handler is the old sync path.
   [OneSignal didReceiveNotificationExtensionRequest:request
-                     withMutableNotificationContent:content
-                                 withContentHandler:nil];
+                     withMutableNotificationContent:content];
 }
 
 + (void)didReceiveNotificationRequest:(UNNotificationRequest *)request
