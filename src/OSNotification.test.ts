@@ -77,7 +77,7 @@ describe('OSNotification', () => {
           collapseId: 'collapse-1',
           fromProjectNumber: '123456789',
           smallIconAccentColor: 'FFFF0000',
-          lockScreenVisibility: '1',
+          lockScreenVisibility: 1,
           androidNotificationId: 456,
         };
         const notification = new OSNotification(androidData);
@@ -93,7 +93,7 @@ describe('OSNotification', () => {
         expect(notification.collapseId).toBe('collapse-1');
         expect(notification.fromProjectNumber).toBe('123456789');
         expect(notification.smallIconAccentColor).toBe('FFFF0000');
-        expect(notification.lockScreenVisibility).toBe('1');
+        expect(notification.lockScreenVisibility).toBe(1);
         expect(notification.androidNotificationId).toBe(456);
       });
 

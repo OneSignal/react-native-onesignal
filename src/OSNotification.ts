@@ -26,7 +26,7 @@ interface AndroidNotificationData extends BaseNotificationData {
   collapseId?: string;
   fromProjectNumber?: string;
   smallIconAccentColor?: string;
-  lockScreenVisibility?: string;
+  lockScreenVisibility?: number;
   androidNotificationId?: number;
 }
 
@@ -68,7 +68,7 @@ export default class OSNotification {
   collapseId?: string;
   fromProjectNumber?: string;
   smallIconAccentColor?: string;
-  lockScreenVisibility?: string;
+  lockScreenVisibility?: number;
   androidNotificationId?: number;
   // ios only
   badge?: string;
