@@ -66,4 +66,5 @@ dependencies {
     }
 
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.json:json:20240303'
 }

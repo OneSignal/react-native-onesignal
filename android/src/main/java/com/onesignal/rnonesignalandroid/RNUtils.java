@@ -126,9 +126,19 @@ public class RNUtils {
             }
             notificationHash.put("actionButtons", actionButtons);
         }
-        notificationHash.put("rawPayload", convertJSONObjectToHashMap(new JSONObject(notification.getRawPayload())));
+        notificationHash.put("rawPayload", convertRawPayloadToHashMap(notification.getRawPayload()));
 
         return notificationHash;
+    }
+
+    static HashMap<String, Object> convertRawPayloadToHashMap(String rawPayload) {
+        if (rawPayload == null || rawPayload.trim().isEmpty()) return new HashMap<>();
+
+        try {
+            return convertJSONObjectToHashMap(new JSONObject(rawPayload));
+        } catch (JSONException exception) {
+            return new HashMap<>();
+        }
     }
 
     private static HashMap<String, Object> convertInAppMessageToMap(IInAppMessage message) {
