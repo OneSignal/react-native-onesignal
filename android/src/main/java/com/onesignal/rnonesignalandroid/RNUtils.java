@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.onesignal.debug.internal.logging.Logging;
 import com.onesignal.inAppMessages.IInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessageClickEvent;
 import com.onesignal.inAppMessages.IInAppMessageClickResult;
@@ -137,6 +138,7 @@ public class RNUtils {
         try {
             return convertJSONObjectToHashMap(new JSONObject(rawPayload));
         } catch (JSONException exception) {
+            Logging.error("Failed to parse notification raw payload", exception);
             return new HashMap<>();
         }
     }
