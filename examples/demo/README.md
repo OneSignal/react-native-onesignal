@@ -73,6 +73,18 @@ When you want to forcefully reload, for example to reset the state of your app, 
 - **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
 - **iOS**: Press <kbd>R</kbd> in iOS Simulator.
 
+## Testing iOS Action Button Icons
+
+The iOS demo bundles shared action button icons in both the `demo` and
+`OneSignalNotificationServiceExtension` targets. Create an image notification
+in the OneSignal dashboard with these action buttons:
+
+- **Save Story** with icon `template-bookmark-icon`
+- **Share** with icon `template-share-icon`
+
+Enter the icon names without the `.png` extension. On an iOS 15 or newer
+physical device, expand the notification to verify that both icons render.
+
 ## Congratulations! :tada:
 
 You've successfully run and modified your React Native App. :partying_face:

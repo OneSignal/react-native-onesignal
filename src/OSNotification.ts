@@ -8,7 +8,7 @@ export interface BaseNotificationData {
   sound?: string;
   title?: string;
   launchURL?: string;
-  rawPayload: object | string; // platform bridges return different types
+  rawPayload: object;
   actionButtons?: object[];
   additionalData?: object;
   notificationId: string;
@@ -26,7 +26,7 @@ interface AndroidNotificationData extends BaseNotificationData {
   collapseId?: string;
   fromProjectNumber?: string;
   smallIconAccentColor?: string;
-  lockScreenVisibility?: string;
+  lockScreenVisibility?: number;
   androidNotificationId?: number;
 }
 
@@ -52,7 +52,7 @@ export default class OSNotification {
   sound?: string;
   title?: string;
   launchURL?: string;
-  rawPayload: object | string; // platform bridges return different types
+  rawPayload: object;
   actionButtons?: object[];
   additionalData?: object;
   notificationId: string;
@@ -68,7 +68,7 @@ export default class OSNotification {
   collapseId?: string;
   fromProjectNumber?: string;
   smallIconAccentColor?: string;
-  lockScreenVisibility?: string;
+  lockScreenVisibility?: number;
   androidNotificationId?: number;
   // ios only
   badge?: string;

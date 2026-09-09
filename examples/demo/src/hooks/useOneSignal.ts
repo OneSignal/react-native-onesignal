@@ -191,15 +191,35 @@ function useOneSignalState(): UseOneSignalReturn {
 
     const handleNotificationClick = (e: NotificationClickEvent) => {
       console.log(`Notification click: ${e.notification.title ?? ''}`);
+
+      // uncomment to see the full event object
+      // console.log('[OneSignal] click event: ', e);
     };
 
     const handleForegroundWillDisplay = (e: NotificationWillDisplayEvent) => {
       console.log(`Notification foregroundWillDisplay: ${e.getNotification().title ?? ''}`);
+
+      // uncomment to see the full event object
+      // console.log('[OneSignal] will display event: ', e.getNotification());
+
       // uncomment to test preventing the default display behavior
       // e.preventDefault();
 
       // can call this after preventDefault (within ~25 seconds) to force display of notification
       // e.getNotification().display();
+
+      // example with a delay (assumes preventDefault was called)
+      // console.log('[OneSignal] forcing display of notification in x seconds');
+      // let seconds = 24;
+      // const interval = setInterval(() => {
+      //   seconds--;
+      //   console.log(`[OneSignal] displaying notification in ${seconds} seconds`);
+      //   if (seconds <= 0) {
+      //     console.log('[OneSignal] displaying notification');
+      //     e.getNotification().display();
+      //     clearInterval(interval);
+      //   }
+      // }, 1000);
     };
 
     const pushSubHandler = (event: PushSubscriptionChangedState) => {

@@ -40,7 +40,7 @@ describe('OSNotification', () => {
     test('should initialize with optional common properties as undefined', () => {
       const notificationData = {
         body: 'Test body',
-        rawPayload: '',
+        rawPayload: {},
         notificationId: 'id-123',
       };
       const notification = new OSNotification(notificationData);
@@ -77,7 +77,7 @@ describe('OSNotification', () => {
           collapseId: 'collapse-1',
           fromProjectNumber: '123456789',
           smallIconAccentColor: 'FFFF0000',
-          lockScreenVisibility: '1',
+          lockScreenVisibility: 1,
           androidNotificationId: 456,
         };
         const notification = new OSNotification(androidData);
@@ -93,7 +93,7 @@ describe('OSNotification', () => {
         expect(notification.collapseId).toBe('collapse-1');
         expect(notification.fromProjectNumber).toBe('123456789');
         expect(notification.smallIconAccentColor).toBe('FFFF0000');
-        expect(notification.lockScreenVisibility).toBe('1');
+        expect(notification.lockScreenVisibility).toBe(1);
         expect(notification.androidNotificationId).toBe(456);
       });
 
@@ -198,7 +198,7 @@ describe('OSNotification', () => {
     });
   });
 
-  describe('rawPayload types', () => {
+  describe('rawPayload', () => {
     test('should accept object as rawPayload', () => {
       const notificationData = {
         ...baseNotificationData,
@@ -212,16 +212,6 @@ describe('OSNotification', () => {
       });
     });
 
-    test('should accept string as rawPayload', () => {
-      const notificationData = {
-        ...baseNotificationData,
-        rawPayload: '{"key":"value"}',
-      };
-      const notification = new OSNotification(notificationData);
-
-      expect(notification.rawPayload).toBe('{"key":"value"}');
-    });
-
     test('should accept empty object as rawPayload', () => {
       const notificationData = {
         ...baseNotificationData,
@@ -230,16 +220,6 @@ describe('OSNotification', () => {
       const notification = new OSNotification(notificationData);
 
       expect(notification.rawPayload).toEqual({});
-    });
-
-    test('should accept empty string as rawPayload', () => {
-      const notificationData = {
-        ...baseNotificationData,
-        rawPayload: '',
-      };
-      const notification = new OSNotification(notificationData);
-
-      expect(notification.rawPayload).toBe('');
     });
   });
 });
