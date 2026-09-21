@@ -180,6 +180,12 @@ describe('OneSignal', () => {
       OneSignal.login('external-123');
       expect(mockRNOneSignal.login).not.toHaveBeenCalled();
     });
+
+    test('should not login if externalId is null', () => {
+      OneSignal.login(null as unknown as string);
+      expect(mockRNOneSignal.login).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith('OneSignal: login: externalId is required');
+    });
   });
 
   describe('logout', () => {

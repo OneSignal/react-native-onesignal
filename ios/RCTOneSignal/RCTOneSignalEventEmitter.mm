@@ -138,6 +138,10 @@ RCT_EXPORT_METHOD(initialize : (NSString *_Nonnull)appId) {
 }
 
 RCT_EXPORT_METHOD(login : (NSString *)externalId) {
+  if (externalId == nil) {
+    NSLog(@"OneSignal: login called with a nil externalId");
+    return;
+  }
   [OneSignal login:externalId];
 }
 
