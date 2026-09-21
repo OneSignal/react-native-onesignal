@@ -5,6 +5,7 @@ import { IOS_NULL_SENTINEL } from './constants/internal';
 import {
   encodeNullsForIOS,
   isNativeModuleLoaded,
+  isNonEmptyString,
   isObjectSerializable,
   isValidCallback,
 } from './helpers';
@@ -64,6 +65,23 @@ describe('helpers', () => {
       const result = isNativeModuleLoaded({} as NativeModule);
       expect(result).toBe(true);
     });
+  });
+
+  describe('isNonEmptyString', () => {
+    test.each([
+      { description: 'a non-empty string', value: 'id', expected: true },
+      { description: 'a whitespace string', value: ' ', expected: true },
+      { description: 'an empty string', value: '', expected: false },
+      { description: 'null', value: null, expected: false },
+      { description: 'undefined', value: undefined, expected: false },
+      { description: 'a number', value: 1, expected: false },
+      { description: 'a boolean', value: true, expected: false },
+    ])(
+      'should return $expected for $description',
+      ({ value, expected }: { description: string; value: unknown; expected: boolean }) => {
+        expect(isNonEmptyString(value)).toBe(expected);
+      },
+    );
   });
 
   describe('isObjectSerializable', () => {
