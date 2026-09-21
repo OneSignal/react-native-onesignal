@@ -274,7 +274,7 @@ The `project.pbxproj` needs native target entries for both extensions. These are
 - `PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.example.NSE` (must be prefixed with the parent app bundle ID)
 - `CODE_SIGN_ENTITLEMENTS = OneSignalNotificationServiceExtension/OneSignalNotificationServiceExtension.entitlements`
 - `INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist`
-- `SKIP_INSTALL = YES`, `SWIFT_VERSION = 5.0`, `IPHONEOS_DEPLOYMENT_TARGET = 13.0`
+- `SKIP_INSTALL = YES`, `SWIFT_VERSION = 5.0`, `IPHONEOS_DEPLOYMENT_TARGET = 15.1`
 
 **OneSignalWidgetExtension target** (`com.apple.product-type.app-extension`):
 
