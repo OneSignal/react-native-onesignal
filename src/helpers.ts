@@ -18,6 +18,10 @@ export function isNativeModuleLoaded(module: object | null | undefined): boolean
   return true;
 }
 
+export function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.length > 0;
+}
+
 /**
  * Returns true if the value is a JSON-serializable object.
  */

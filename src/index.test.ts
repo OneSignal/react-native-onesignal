@@ -112,6 +112,18 @@ describe('OneSignal', () => {
       expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
     });
 
+    test('should not initialize if appId is null', () => {
+      OneSignal.initialize(null as unknown as string);
+      expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith('OneSignal: initialize: appId is required');
+    });
+
+    test('should not initialize if appId is empty', () => {
+      OneSignal.initialize('');
+      expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith('OneSignal: initialize: appId is required');
+    });
+
     test('should keep a permission event that arrives before the startup read resolves', async () => {
       let resolveStartupRead: ((granted: boolean) => void) | undefined;
       vi.mocked(mockRNOneSignal.hasNotificationPermission).mockReturnValueOnce(
@@ -183,6 +195,12 @@ describe('OneSignal', () => {
 
     test('should not login if externalId is null', () => {
       OneSignal.login(null as unknown as string);
+      expect(mockRNOneSignal.login).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith('OneSignal: login: externalId is required');
+    });
+
+    test('should not login if externalId is empty', () => {
+      OneSignal.login('');
       expect(mockRNOneSignal.login).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith('OneSignal: login: externalId is required');
     });
@@ -754,6 +772,18 @@ describe('OneSignal', () => {
         OneSignal.User.addEmail(EMAIL);
         expect(mockRNOneSignal.addEmail).not.toHaveBeenCalled();
       });
+
+      test('should not add email if email is null', () => {
+        OneSignal.User.addEmail(null as unknown as string);
+        expect(mockRNOneSignal.addEmail).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith('OneSignal: addEmail: email is required');
+      });
+
+      test('should not add email if email is empty', () => {
+        OneSignal.User.addEmail('');
+        expect(mockRNOneSignal.addEmail).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith('OneSignal: addEmail: email is required');
+      });
     });
 
     describe('removeEmail', () => {
@@ -1312,16 +1342,16 @@ describe('OneSignal', () => {
           expect(mockRNOneSignal.addTrigger).toHaveBeenCalledWith('key', 'value');
         });
 
-        test('should log error but still call native method if key is missing', () => {
+        test('should not add trigger if key is missing', () => {
           OneSignal.InAppMessages.addTrigger('', 'value');
           expect(errorSpy).toHaveBeenCalled();
-          expect(mockRNOneSignal.addTrigger).toHaveBeenCalledWith('', 'value');
+          expect(mockRNOneSignal.addTrigger).not.toHaveBeenCalled();
         });
 
-        test('should log error but still call native method if value is null', () => {
+        test('should not add trigger if value is null', () => {
           OneSignal.InAppMessages.addTrigger('key', null as unknown as string);
           expect(errorSpy).toHaveBeenCalled();
-          expect(mockRNOneSignal.addTrigger).toHaveBeenCalledWith('key', null);
+          expect(mockRNOneSignal.addTrigger).not.toHaveBeenCalled();
         });
 
         test('should not add trigger if native module is not loaded', () => {

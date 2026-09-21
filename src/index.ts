@@ -18,6 +18,7 @@ import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent'
 import {
   encodeNullsForIOS,
   isNativeModuleLoaded,
+  isNonEmptyString,
   isObjectSerializable,
   isValidCallback,
 } from './helpers';
@@ -107,6 +108,10 @@ export namespace OneSignal {
   /** Initializes the OneSignal SDK. This should be called during startup of the application. */
   export function initialize(appId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
+    if (!isNonEmptyString(appId)) {
+      console.error('OneSignal: initialize: appId is required');
+      return;
+    }
 
     RNOneSignal.initialize(appId);
 
@@ -121,7 +126,7 @@ export namespace OneSignal {
    */
   export function login(externalId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
-    if (externalId == null) {
+    if (!isNonEmptyString(externalId)) {
       console.error('OneSignal: login: externalId is required');
       return;
     }
@@ -452,6 +457,10 @@ export namespace OneSignal {
     /** Explicitly set a 2-character language code for the user. */
     export function setLanguage(language: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isNonEmptyString(language)) {
+        console.error('OneSignal: setLanguage: language is required');
+        return;
+      }
 
       RNOneSignal.setLanguage(language);
     }
@@ -459,6 +468,10 @@ export namespace OneSignal {
     /** Set an alias for the current user. If this alias label already exists on this user, it will be overwritten with the new alias id. */
     export function addAlias(label: string, id: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isNonEmptyString(label) || !isNonEmptyString(id)) {
+        console.error('OneSignal: addAlias: must include a label and an id');
+        return;
+      }
 
       RNOneSignal.addAlias(label, id);
     }
@@ -473,6 +486,10 @@ export namespace OneSignal {
     /** Remove an alias from the current user. */
     export function removeAlias(label: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isNonEmptyString(label)) {
+        console.error('OneSignal: removeAlias: label is required');
+        return;
+      }
 
       RNOneSignal.removeAlias(label);
     }
@@ -487,6 +504,10 @@ export namespace OneSignal {
     /** Add a new email subscription to the current user. */
     export function addEmail(email: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isNonEmptyString(email)) {
+        console.error('OneSignal: addEmail: email is required');
+        return;
+      }
 
       RNOneSignal.addEmail(email);
     }
@@ -497,6 +518,10 @@ export namespace OneSignal {
      */
     export function removeEmail(email: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isNonEmptyString(email)) {
+        console.error('OneSignal: removeEmail: email is required');
+        return;
+      }
 
       RNOneSignal.removeEmail(email);
     }
@@ -504,6 +529,10 @@ export namespace OneSignal {
     /** Add a new SMS subscription to the current user. */
     export function addSms(smsNumber: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isNonEmptyString(smsNumber)) {
+        console.error('OneSignal: addSms: smsNumber is required');
+        return;
+      }
 
       RNOneSignal.addSms(smsNumber);
     }
@@ -514,6 +543,10 @@ export namespace OneSignal {
      */
     export function removeSms(smsNumber: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isNonEmptyString(smsNumber)) {
+        console.error('OneSignal: removeSms: smsNumber is required');
+        return;
+      }
 
       RNOneSignal.removeSms(smsNumber);
     }
@@ -525,7 +558,7 @@ export namespace OneSignal {
     export function addTag(key: string, value: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      if (!key || value === undefined || value === null) {
+      if (!isNonEmptyString(key) || value == null) {
         console.error('OneSignal: addTag: must include a key and a value');
         return;
       }
@@ -547,6 +580,10 @@ export namespace OneSignal {
     /** Remove the data tag with the provided key from the current user. */
     export function removeTag(key: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isNonEmptyString(key)) {
+        console.error('OneSignal: removeTag: key is required');
+        return;
+      }
 
       RNOneSignal.removeTag(key);
     }
@@ -791,9 +828,10 @@ export namespace OneSignal {
     export function addTrigger(key: string, value: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      // value can be assigned to `false` so we cannot just check `!value`
-      if (!key || value == null) {
+      // false is a valid trigger value, so reject only null/undefined for value.
+      if (!isNonEmptyString(key) || value == null) {
         console.error('OneSignal: addTrigger: must include a key and a value');
+        return;
       }
 
       RNOneSignal.addTrigger(key, value);
@@ -812,6 +850,10 @@ export namespace OneSignal {
     /** Remove the trigger with the provided key from the current user. */
     export function removeTrigger(key: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isNonEmptyString(key)) {
+        console.error('OneSignal: removeTrigger: key is required');
+        return;
+      }
 
       RNOneSignal.removeTrigger(key);
     }
