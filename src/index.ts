@@ -121,6 +121,10 @@ export namespace OneSignal {
    */
   export function login(externalId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
+    if (externalId == null) {
+      console.error('OneSignal: login: externalId is required');
+      return;
+    }
 
     RNOneSignal.login(externalId);
   }
