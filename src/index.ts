@@ -454,10 +454,10 @@ export namespace OneSignal {
       return RNOneSignal.getExternalId();
     }
 
-    /** Explicitly set a 2-character language code for the user. */
+    /** Explicitly set a 2-character language code for the user. Empty string resets to the device language. */
     export function setLanguage(language: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-      if (!isNonEmptyString(language)) {
+      if (typeof language !== 'string') {
         console.error('OneSignal: setLanguage: language is required');
         return;
       }
