@@ -700,6 +700,16 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.setLanguage).toHaveBeenCalledWith('en');
       });
 
+      test('forwards an empty language so native can reset', () => {
+        OneSignal.User.setLanguage('');
+        expect(mockRNOneSignal.setLanguage).toHaveBeenCalledWith('');
+      });
+
+      test('does not set a null language', () => {
+        OneSignal.User.setLanguage(null as unknown as string);
+        expect(mockRNOneSignal.setLanguage).not.toHaveBeenCalled();
+      });
+
       test('should not set language if native module is not loaded', () => {
         isNativeLoadedSpy.mockReturnValue(false);
         OneSignal.User.setLanguage('en');
