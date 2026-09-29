@@ -5,7 +5,7 @@ import { IOS_NULL_SENTINEL } from './constants/internal';
 import {
   encodeNullsForIOS,
   isNativeModuleLoaded,
-  isNonEmptyString,
+  isMissing,
   isObjectSerializable,
   isValidCallback,
 } from './helpers';
@@ -67,19 +67,19 @@ describe('helpers', () => {
     });
   });
 
-  describe('isNonEmptyString', () => {
+  describe('isMissing', () => {
     test.each([
-      { description: 'a non-empty string', value: 'id', expected: true },
-      { description: 'a whitespace string', value: ' ', expected: true },
-      { description: 'an empty string', value: '', expected: false },
-      { description: 'null', value: null, expected: false },
-      { description: 'undefined', value: undefined, expected: false },
-      { description: 'a number', value: 1, expected: false },
-      { description: 'a boolean', value: true, expected: false },
+      { description: 'a non-empty string', value: 'id', expected: false },
+      { description: 'a whitespace string', value: ' ', expected: false },
+      { description: 'an empty string', value: '', expected: true },
+      { description: 'null', value: null, expected: true },
+      { description: 'undefined', value: undefined, expected: true },
+      { description: 'a number', value: 1, expected: true },
+      { description: 'a boolean', value: true, expected: true },
     ])(
       'should return $expected for $description',
       ({ value, expected }: { description: string; value: unknown; expected: boolean }) => {
-        expect(isNonEmptyString(value)).toBe(expected);
+        expect(isMissing(value, 'login: externalId')).toBe(expected);
       },
     );
   });

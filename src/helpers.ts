@@ -18,8 +18,10 @@ export function isNativeModuleLoaded(module: object | null | undefined): boolean
   return true;
 }
 
-export function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.length > 0;
+export function isMissing(value: unknown, api: string): boolean {
+  if (typeof value === 'string' && value.length > 0) return false;
+  console.error(`OneSignal: ${api} is required`);
+  return true;
 }
 
 /**
