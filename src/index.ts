@@ -17,6 +17,8 @@ import EventManager from './events/EventManager';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import {
   encodeNullsForIOS,
+  hasMissingEntries,
+  hasMissingItems,
   isNativeModuleLoaded,
   isMissing,
   isObjectSerializable,
@@ -56,6 +58,13 @@ export enum LogLevel {
   Info,
   Debug,
   Verbose,
+}
+
+// Native maps the level straight onto its own enum without a range check.
+function isValidLogLevel(level: unknown, api: string): boolean {
+  if (typeof level === 'number' && Number.isInteger(level) && level in LogLevel) return true;
+  console.error(`OneSignal: ${api}: level must be a LogLevel value`);
+  return false;
 }
 
 let notificationPermission = false;
@@ -163,6 +172,7 @@ export namespace OneSignal {
      */
     export function setLogLevel(nsLogLevel: LogLevel) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isValidLogLevel(nsLogLevel, 'setLogLevel')) return;
 
       RNOneSignal.setLogLevel(nsLogLevel);
     }
@@ -173,6 +183,7 @@ export namespace OneSignal {
      */
     export function setAlertLevel(visualLogLevel: LogLevel) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isValidLogLevel(visualLogLevel, 'setAlertLevel')) return;
 
       RNOneSignal.setAlertLevel(visualLogLevel);
     }
@@ -470,6 +481,7 @@ export namespace OneSignal {
     /** Set aliases for the current user. If any alias already exists, it will be overwritten to the new values. */
     export function addAliases(aliases: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingEntries(aliases, 'addAliases')) return;
 
       RNOneSignal.addAliases(aliases);
     }
@@ -485,6 +497,7 @@ export namespace OneSignal {
     /** Remove aliases from the current user. */
     export function removeAliases(labels: string[]) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingItems(labels, 'removeAliases', 'label')) return;
 
       RNOneSignal.removeAliases(labels);
     }
@@ -550,6 +563,7 @@ export namespace OneSignal {
      */
     export function addTags(tags: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingEntries(tags, 'addTags', true)) return;
 
       RNOneSignal.addTags(tags);
     }
@@ -565,6 +579,7 @@ export namespace OneSignal {
     /** Remove multiple tags with the provided keys from the current user. */
     export function removeTags(keys: string[]) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingItems(keys, 'removeTags', 'key')) return;
 
       RNOneSignal.removeTags(keys);
     }
@@ -582,9 +597,10 @@ export namespace OneSignal {
     /** Track custom events for the current user. */
     export function trackEvent(name: string, properties: Record<string, unknown> = {}) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(name, 'trackEvent: name')) return;
 
       if (!isObjectSerializable(properties)) {
-        console.error('Properties must be a JSON-serializable object');
+        console.error('OneSignal: trackEvent: properties must be a JSON-serializable object');
         return;
       }
 
@@ -818,6 +834,7 @@ export namespace OneSignal {
      */
     export function addTriggers(triggers: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingEntries(triggers, 'addTriggers', true)) return;
 
       RNOneSignal.addTriggers(triggers);
     }
@@ -833,6 +850,7 @@ export namespace OneSignal {
     /** Remove multiple triggers from the current user. */
     export function removeTriggers(keys: string[]) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingItems(keys, 'removeTriggers', 'key')) return;
 
       RNOneSignal.removeTriggers(keys);
     }
@@ -897,6 +915,7 @@ export namespace OneSignal {
     /** Increases the "Count" of this Outcome by 1 and will be counted each time sent. */
     export function addOutcome(name: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(name, 'addOutcome: name')) return;
 
       RNOneSignal.addOutcome(name);
     }
@@ -904,6 +923,7 @@ export namespace OneSignal {
     /** Increases "Count" by 1 only once. This can only be attributed to a single notification. */
     export function addUniqueOutcome(name: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(name, 'addUniqueOutcome: name')) return;
 
       RNOneSignal.addUniqueOutcome(name);
     }
@@ -915,7 +935,15 @@ export namespace OneSignal {
     export function addOutcomeWithValue(name: string, value: string | number) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      RNOneSignal.addOutcomeWithValue(name, Number(value));
+      if (isMissing(name, 'addOutcomeWithValue: name')) return;
+
+      const numericValue = typeof value === 'string' && value.trim() !== '' ? Number(value) : value;
+      if (typeof numericValue !== 'number' || !Number.isFinite(numericValue)) {
+        console.error('OneSignal: addOutcomeWithValue: value must be a finite number');
+        return;
+      }
+
+      RNOneSignal.addOutcomeWithValue(name, numericValue);
     }
   }
 }

@@ -257,6 +257,17 @@ describe('OneSignal', () => {
         OneSignal.Debug.setLogLevel(LogLevel.Info);
         expect(mockRNOneSignal.setLogLevel).not.toHaveBeenCalled();
       });
+
+      test.each([-1, 7, 2.5, '2', null, undefined, NaN])(
+        'should not set log level for invalid level %s',
+        (level) => {
+          OneSignal.Debug.setLogLevel(level as unknown as LogLevel);
+          expect(mockRNOneSignal.setLogLevel).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith(
+            'OneSignal: setLogLevel: level must be a LogLevel value',
+          );
+        },
+      );
     });
 
     describe('setAlertLevel', () => {
@@ -269,6 +280,14 @@ describe('OneSignal', () => {
         isNativeLoadedSpy.mockReturnValue(false);
         OneSignal.Debug.setAlertLevel(LogLevel.Warn);
         expect(mockRNOneSignal.setAlertLevel).not.toHaveBeenCalled();
+      });
+
+      test('should not set alert level for an invalid level', () => {
+        OneSignal.Debug.setAlertLevel(99 as LogLevel);
+        expect(mockRNOneSignal.setAlertLevel).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(
+          'OneSignal: setAlertLevel: level must be a LogLevel value',
+        );
       });
     });
   });
@@ -742,6 +761,17 @@ describe('OneSignal', () => {
         OneSignal.User.addAliases({});
         expect(mockRNOneSignal.addAliases).not.toHaveBeenCalled();
       });
+
+      test.each([
+        { description: 'an empty label', aliases: { '': 'id' } },
+        { description: 'an empty id', aliases: { label: '' } },
+        { description: 'a null id', aliases: { label: null } },
+        { description: 'a non-object', aliases: ['x'] },
+      ])('should not add aliases with $description', ({ aliases }) => {
+        OneSignal.User.addAliases(aliases as unknown as Record<string, string>);
+        expect(mockRNOneSignal.addAliases).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalled();
+      });
     });
 
     describe('removeAlias', () => {
@@ -768,6 +798,20 @@ describe('OneSignal', () => {
         isNativeLoadedSpy.mockReturnValue(false);
         OneSignal.User.removeAliases(['label']);
         expect(mockRNOneSignal.removeAliases).not.toHaveBeenCalled();
+      });
+
+      test('should not remove aliases with an empty label', () => {
+        OneSignal.User.removeAliases(['label', '']);
+        expect(mockRNOneSignal.removeAliases).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith('OneSignal: removeAliases: label is required');
+      });
+
+      test('should not remove aliases if labels is not an array', () => {
+        OneSignal.User.removeAliases(null as unknown as string[]);
+        expect(mockRNOneSignal.removeAliases).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(
+          'OneSignal: removeAliases: labels must be an array of strings',
+        );
       });
     });
 
@@ -872,6 +916,22 @@ describe('OneSignal', () => {
         OneSignal.User.addTags({ key: 'value' });
         expect(mockRNOneSignal.addTags).not.toHaveBeenCalled();
       });
+
+      test('should allow an empty tag value', () => {
+        OneSignal.User.addTags({ level: '' });
+        expect(mockRNOneSignal.addTags).toHaveBeenCalledWith({ level: '' });
+      });
+
+      test.each([
+        { description: 'an empty key', tags: { '': 'value' } },
+        { description: 'a null value', tags: { key: null } },
+        { description: 'a non-object', tags: 'abc' },
+        { description: 'null', tags: null },
+      ])('should not add tags with $description', ({ tags }) => {
+        OneSignal.User.addTags(tags as unknown as Record<string, string>);
+        expect(mockRNOneSignal.addTags).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalled();
+      });
     });
 
     describe('removeTag', () => {
@@ -898,6 +958,20 @@ describe('OneSignal', () => {
         isNativeLoadedSpy.mockReturnValue(false);
         OneSignal.User.removeTags(['key']);
         expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
+      });
+
+      test('should not remove tags with an empty key', () => {
+        OneSignal.User.removeTags(['']);
+        expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith('OneSignal: removeTags: key is required');
+      });
+
+      test('should not remove tags if keys is not an array', () => {
+        OneSignal.User.removeTags('key' as unknown as string[]);
+        expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(
+          'OneSignal: removeTags: keys must be an array of strings',
+        );
       });
     });
 
@@ -937,17 +1011,27 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
       });
 
+      test.each(['', null, undefined])('should not track event with name %s', (name) => {
+        OneSignal.User.trackEvent(name as unknown as string);
+        expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith('OneSignal: trackEvent: name is required');
+      });
+
       test('should not track event if properties are not serializable', () => {
         const circular: Record<string, unknown> = {};
         circular.self = circular;
         OneSignal.User.trackEvent('event', circular);
-        expect(errorSpy).toHaveBeenCalledWith('Properties must be a JSON-serializable object');
+        expect(errorSpy).toHaveBeenCalledWith(
+          'OneSignal: trackEvent: properties must be a JSON-serializable object',
+        );
         expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
       });
 
       test('should not track event if properties is not an object', () => {
         OneSignal.User.trackEvent('event', 'invalid' as unknown as Record<string, unknown>);
-        expect(errorSpy).toHaveBeenCalledWith('Properties must be a JSON-serializable object');
+        expect(errorSpy).toHaveBeenCalledWith(
+          'OneSignal: trackEvent: properties must be a JSON-serializable object',
+        );
         expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
       });
 
@@ -1383,6 +1467,21 @@ describe('OneSignal', () => {
           OneSignal.InAppMessages.addTriggers({ key: 'value' });
           expect(mockRNOneSignal.addTriggers).not.toHaveBeenCalled();
         });
+
+        test('should allow an empty trigger value', () => {
+          OneSignal.InAppMessages.addTriggers({ key: '' });
+          expect(mockRNOneSignal.addTriggers).toHaveBeenCalledWith({ key: '' });
+        });
+
+        test.each([
+          { description: 'an empty key', triggers: { '': 'value' } },
+          { description: 'a null value', triggers: { key: null } },
+          { description: 'a non-object', triggers: ['a'] },
+        ])('should not add triggers with $description', ({ triggers }) => {
+          OneSignal.InAppMessages.addTriggers(triggers as unknown as Record<string, string>);
+          expect(mockRNOneSignal.addTriggers).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalled();
+        });
       });
 
       describe('removeTrigger', () => {
@@ -1409,6 +1508,20 @@ describe('OneSignal', () => {
           isNativeLoadedSpy.mockReturnValue(false);
           OneSignal.InAppMessages.removeTriggers(['key']);
           expect(mockRNOneSignal.removeTriggers).not.toHaveBeenCalled();
+        });
+
+        test('should not remove triggers with an empty key', () => {
+          OneSignal.InAppMessages.removeTriggers(['']);
+          expect(mockRNOneSignal.removeTriggers).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith('OneSignal: removeTriggers: key is required');
+        });
+
+        test('should not remove triggers if keys is not an array', () => {
+          OneSignal.InAppMessages.removeTriggers('key' as unknown as string[]);
+          expect(mockRNOneSignal.removeTriggers).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith(
+            'OneSignal: removeTriggers: keys must be an array of strings',
+          );
         });
       });
 
@@ -1513,6 +1626,12 @@ describe('OneSignal', () => {
           OneSignal.Session.addOutcome(OUTCOME_NAME);
           expect(mockRNOneSignal.addOutcome).not.toHaveBeenCalled();
         });
+
+        test.each(['', null])('should not add outcome with name %s', (name) => {
+          OneSignal.Session.addOutcome(name as unknown as string);
+          expect(mockRNOneSignal.addOutcome).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith('OneSignal: addOutcome: name is required');
+        });
       });
 
       describe('addUniqueOutcome', () => {
@@ -1525,6 +1644,12 @@ describe('OneSignal', () => {
           isNativeLoadedSpy.mockReturnValue(false);
           OneSignal.Session.addUniqueOutcome(OUTCOME_NAME);
           expect(mockRNOneSignal.addUniqueOutcome).not.toHaveBeenCalled();
+        });
+
+        test('should not add unique outcome with an empty name', () => {
+          OneSignal.Session.addUniqueOutcome('');
+          expect(mockRNOneSignal.addUniqueOutcome).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith('OneSignal: addUniqueOutcome: name is required');
         });
       });
 
@@ -1543,6 +1668,28 @@ describe('OneSignal', () => {
           isNativeLoadedSpy.mockReturnValue(false);
           OneSignal.Session.addOutcomeWithValue(OUTCOME_NAME, 100);
           expect(mockRNOneSignal.addOutcomeWithValue).not.toHaveBeenCalled();
+        });
+
+        test.each([-5, 0, 0.5])('should allow value %s', (value) => {
+          OneSignal.Session.addOutcomeWithValue(OUTCOME_NAME, value);
+          expect(mockRNOneSignal.addOutcomeWithValue).toHaveBeenCalledWith(OUTCOME_NAME, value);
+        });
+
+        test.each([NaN, Infinity, 'abc', '', ' ', null, undefined])(
+          'should not add outcome with value %s',
+          (value) => {
+            OneSignal.Session.addOutcomeWithValue(OUTCOME_NAME, value as unknown as number);
+            expect(mockRNOneSignal.addOutcomeWithValue).not.toHaveBeenCalled();
+            expect(errorSpy).toHaveBeenCalledWith(
+              'OneSignal: addOutcomeWithValue: value must be a finite number',
+            );
+          },
+        );
+
+        test('should not add outcome with an empty name', () => {
+          OneSignal.Session.addOutcomeWithValue('', 1);
+          expect(mockRNOneSignal.addOutcomeWithValue).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith('OneSignal: addOutcomeWithValue: name is required');
         });
       });
     });

@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, test, vi, type MockInstance } from 'vite-
 import { IOS_NULL_SENTINEL } from './constants/internal';
 import {
   encodeNullsForIOS,
+  hasMissingEntries,
+  hasMissingItems,
   isNativeModuleLoaded,
   isMissing,
   isObjectSerializable,
@@ -82,6 +84,52 @@ describe('helpers', () => {
         expect(isMissing(value, 'login: externalId')).toBe(expected);
       },
     );
+  });
+
+  describe('hasMissingEntries', () => {
+    test.each([
+      { description: 'null', values: null, allowEmptyValue: false, expected: true },
+      { description: 'an array', values: ['x'], allowEmptyValue: false, expected: true },
+      { description: 'an empty key', values: { '': 'id' }, allowEmptyValue: false, expected: true },
+      { description: 'an empty value', values: { a: '' }, allowEmptyValue: false, expected: true },
+      { description: 'a numeric value', values: { a: 5 }, allowEmptyValue: false, expected: true },
+      {
+        description: 'an allowed empty value',
+        values: { a: '' },
+        allowEmptyValue: true,
+        expected: false,
+      },
+      {
+        description: 'an allowed numeric value',
+        values: { a: 5 },
+        allowEmptyValue: true,
+        expected: false,
+      },
+      { description: 'a null value', values: { a: null }, allowEmptyValue: true, expected: true },
+      {
+        description: 'valid entries',
+        values: { a: 'id' },
+        allowEmptyValue: false,
+        expected: false,
+      },
+    ])('should return $expected for $description', ({ values, allowEmptyValue, expected }) => {
+      expect(
+        hasMissingEntries(values as Record<string, unknown> | null, 'addAliases', allowEmptyValue),
+      ).toBe(expected);
+    });
+  });
+
+  describe('hasMissingItems', () => {
+    test.each([
+      { description: 'null', values: null, expected: true },
+      { description: 'a string', values: 'key', expected: true },
+      { description: 'an empty item', values: ['a', ''], expected: true },
+      { description: 'a non-string item', values: ['a', 1], expected: true },
+      { description: 'valid items', values: ['a', 'b'], expected: false },
+      { description: 'an empty array', values: [], expected: false },
+    ])('should return $expected for $description', ({ values, expected }) => {
+      expect(hasMissingItems(values, 'removeTags', 'key')).toBe(expected);
+    });
   });
 
   describe('isObjectSerializable', () => {
