@@ -275,14 +275,20 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.setLogLevel).not.toHaveBeenCalled();
       });
 
-      test.each([-1, 7, 2.5, '2', null, undefined, NaN])(
-        'should not set log level for invalid level %s',
+      test.each([-1, 7])('should not set log level for out-of-range level %s', (level) => {
+        OneSignal.Debug.setLogLevel(level as LogLevel);
+        expect(mockRNOneSignal.setLogLevel).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(
+          'OneSignal: setLogLevel: level must be a LogLevel value',
+        );
+      });
+
+      test.each([2.5, '2', null, undefined, NaN])(
+        'should not set log level for non-integer level %s',
         (level) => {
           OneSignal.Debug.setLogLevel(level as unknown as LogLevel);
           expect(mockRNOneSignal.setLogLevel).not.toHaveBeenCalled();
-          expect(errorSpy).toHaveBeenCalledWith(
-            'OneSignal: setLogLevel: level must be a LogLevel value',
-          );
+          expect(errorSpy).toHaveBeenCalledWith('OneSignal: setLogLevel: level must be an integer');
         },
       );
     });
@@ -1315,7 +1321,13 @@ describe('OneSignal', () => {
           expect(mockRNOneSignal.requestNotificationPermission).toHaveBeenCalledWith(false);
         });
 
-        test.each([null, 'true', 1])('should reject fallbackToSettings %s', async (value) => {
+        test('should treat null fallbackToSettings as false', async () => {
+          vi.mocked(mockRNOneSignal.requestNotificationPermission).mockResolvedValue(true);
+          await OneSignal.Notifications.requestPermission(null);
+          expect(mockRNOneSignal.requestNotificationPermission).toHaveBeenCalledWith(false);
+        });
+
+        test.each(['true', 1])('should reject fallbackToSettings %s', async (value) => {
           await expect(
             OneSignal.Notifications.requestPermission(value as unknown as boolean),
           ).rejects.toThrow('fallbackToSettings must be a boolean');
@@ -1486,6 +1498,14 @@ describe('OneSignal', () => {
           expect(mockRNOneSignal.removeNotification).toHaveBeenCalledWith(NOTIFICATION_ID);
         });
 
+        test.each(['123', null, 1.5, NaN])('should not remove for invalid id %s', (id) => {
+          OneSignal.Notifications.removeNotification(id as unknown as number);
+          expect(mockRNOneSignal.removeNotification).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith(
+            'OneSignal: removeNotification: id must be an integer',
+          );
+        });
+
         test('should not remove if native module is not loaded', () => {
           isNativeLoadedSpy.mockReturnValue(false);
           OneSignal.Notifications.removeNotification(NOTIFICATION_ID);
@@ -1638,11 +1658,19 @@ describe('OneSignal', () => {
           expect(mockRNOneSignal.addTrigger).not.toHaveBeenCalled();
         });
 
-        test('should not add trigger if value is null', () => {
-          OneSignal.InAppMessages.addTrigger('key', null as unknown as string);
-          expect(errorSpy).toHaveBeenCalled();
-          expect(mockRNOneSignal.addTrigger).not.toHaveBeenCalled();
+        test('should allow an empty value', () => {
+          OneSignal.InAppMessages.addTrigger('key', '');
+          expect(mockRNOneSignal.addTrigger).toHaveBeenCalledWith('key', '');
         });
+
+        test.each([null, undefined, false, 5, {}])(
+          'should not add trigger for value %s',
+          (value) => {
+            OneSignal.InAppMessages.addTrigger('key', value as unknown as string);
+            expect(errorSpy).toHaveBeenCalledWith('OneSignal: addTrigger: value must be a string');
+            expect(mockRNOneSignal.addTrigger).not.toHaveBeenCalled();
+          },
+        );
 
         test('should not add trigger if native module is not loaded', () => {
           isNativeLoadedSpy.mockReturnValue(false);

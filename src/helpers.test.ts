@@ -7,6 +7,7 @@ import {
   hasMissingEntries,
   hasMissingItems,
   isBoolean,
+  isInteger,
   isNativeModuleLoaded,
   isMissing,
   isObjectSerializable,
@@ -79,6 +80,18 @@ describe('helpers', () => {
     test.each([undefined, null, 'true', 0, {}])('should reject %s', (value) => {
       expect(isBoolean(value, 'api: flag')).toBe(false);
       expect(errorSpy).toHaveBeenCalledWith('OneSignal: api: flag must be a boolean');
+    });
+  });
+
+  describe('isInteger', () => {
+    test.each([0, 5, -3])('should accept %s', (value) => {
+      expect(isInteger(value, 'api: id')).toBe(true);
+      expect(errorSpy).not.toHaveBeenCalled();
+    });
+
+    test.each([undefined, null, '1', 1.5, NaN, Infinity])('should reject %s', (value) => {
+      expect(isInteger(value, 'api: id')).toBe(false);
+      expect(errorSpy).toHaveBeenCalledWith('OneSignal: api: id must be an integer');
     });
   });
 

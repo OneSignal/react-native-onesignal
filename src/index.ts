@@ -20,6 +20,7 @@ import {
   hasMissingEntries,
   hasMissingItems,
   isBoolean,
+  isInteger,
   isNativeModuleLoaded,
   isFunction,
   isMissing,
@@ -65,7 +66,8 @@ export enum LogLevel {
 
 // Native maps the level straight onto its own enum without a range check.
 function isValidLogLevel(level: unknown, api: string): boolean {
-  if (typeof level === 'number' && Number.isInteger(level) && level in LogLevel) return true;
+  if (!isInteger(level, `${api}: level`)) return false;
+  if (level in LogLevel) return true;
   console.error(`OneSignal: ${api}: level must be a LogLevel value`);
   return false;
 }
@@ -694,15 +696,16 @@ export namespace OneSignal {
      * notification permission. Use the fallbackToSettings parameter to prompt to open the settings app if a user has already
      * declined push permissions.
      */
-    export function requestPermission(fallbackToSettings = false): Promise<boolean> {
+    export function requestPermission(fallbackToSettings?: boolean | null): Promise<boolean> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
       }
-      if (!isBoolean(fallbackToSettings, 'requestPermission: fallbackToSettings')) {
+      const fallback = fallbackToSettings ?? false;
+      if (!isBoolean(fallback, 'requestPermission: fallbackToSettings')) {
         return Promise.reject(new Error('fallbackToSettings must be a boolean'));
       }
 
-      return RNOneSignal.requestNotificationPermission(fallbackToSettings);
+      return RNOneSignal.requestNotificationPermission(fallback);
     }
 
     /**
@@ -800,6 +803,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'android') {
+        if (!isInteger(id, 'removeNotification: id')) return;
         RNOneSignal.removeNotification(id);
       } else {
         console.warn('removeNotification: this function is not supported on iOS');
@@ -876,10 +880,9 @@ export namespace OneSignal {
     export function addTrigger(key: string, value: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      // false is a valid trigger value, so reject only null/undefined for value.
       if (isMissing(key, 'addTrigger: key')) return;
-      if (value == null) {
-        console.error('OneSignal: addTrigger: value is required');
+      if (typeof value !== 'string') {
+        console.error('OneSignal: addTrigger: value must be a string');
         return;
       }
 
