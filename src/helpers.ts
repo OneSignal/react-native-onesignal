@@ -9,13 +9,64 @@ export function isValidCallback(handler: Function) {
 export function isNativeModuleLoaded(module: object | null | undefined): boolean {
   if (module == null) {
     console.error(
-      'Could not load RNOneSignal native module. Make sure native dependencies are properly linked.',
+      '[OneSignal] Could not load RNOneSignal native module. Make sure native dependencies are properly linked.',
     );
 
     return false;
   }
 
   return true;
+}
+
+export function isMissing(value: unknown, api: string): boolean {
+  if (typeof value === 'string' && value.length > 0) return false;
+  console.error(`[OneSignal] ${api} is required`);
+  return true;
+}
+
+export function isBoolean(value: unknown, api: string): value is boolean {
+  if (typeof value === 'boolean') return true;
+  console.error(`[OneSignal] ${api} must be a boolean`);
+  return false;
+}
+
+export function isInteger(value: unknown, api: string): value is number {
+  if (Number.isInteger(value)) return true;
+  console.error(`[OneSignal] ${api} must be an integer`);
+  return false;
+}
+
+export function isObject(value: unknown, api: string): value is Record<string, unknown> {
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) return true;
+  console.error(`[OneSignal] ${api} must be an object`);
+  return false;
+}
+
+export function isFunction(value: unknown, api: string): value is Function {
+  if (typeof value === 'function') return true;
+  console.error(`[OneSignal] ${api} must be a function`);
+  return false;
+}
+
+export function hasMissingEntries(
+  values: Record<string, unknown> | null | undefined,
+  api: string,
+  allowEmptyValue = false,
+): boolean {
+  if (!isObject(values, `${api}: argument`)) return true;
+  return Object.entries(values).some(([key, item]) => {
+    if (isMissing(key, `${api}: key`)) return true;
+    if (!allowEmptyValue) return isMissing(item, `${api}: value`);
+    return item == null && isMissing(item, `${api}: value`);
+  });
+}
+
+export function hasMissingItems(values: unknown, api: string, item: string): boolean {
+  if (!Array.isArray(values)) {
+    console.error(`[OneSignal] ${api}: ${item}s must be an array of strings`);
+    return true;
+  }
+  return values.some((value) => isMissing(value, `${api}: ${item}`));
 }
 
 /**

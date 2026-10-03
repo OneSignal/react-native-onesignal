@@ -17,7 +17,14 @@ import EventManager from './events/EventManager';
 import NotificationWillDisplayEvent from './events/NotificationWillDisplayEvent';
 import {
   encodeNullsForIOS,
+  hasMissingEntries,
+  hasMissingItems,
+  isBoolean,
+  isInteger,
   isNativeModuleLoaded,
+  isFunction,
+  isMissing,
+  isObject,
   isObjectSerializable,
   isValidCallback,
 } from './helpers';
@@ -55,6 +62,29 @@ export enum LogLevel {
   Info,
   Debug,
   Verbose,
+}
+
+// Native maps the level straight onto its own enum without a range check.
+function isValidLogLevel(level: unknown, api: string): boolean {
+  if (!isInteger(level, `${api}: level`)) return false;
+  if (level in LogLevel) return true;
+  console.error(`[OneSignal] ${api}: level must be a LogLevel value`);
+  return false;
+}
+
+// iOS reads each flag with `boolValue`, which throws on objects, arrays, and NSNull.
+function isValidSetupOptions(options: unknown): boolean {
+  if (!isObject(options, 'setupDefault: options')) return false;
+  return (['enablePushToStart', 'enablePushToUpdate'] as const).every((flag) => {
+    if (options[flag] === undefined || typeof options[flag] === 'boolean') return true;
+    console.error(`[OneSignal] setupDefault: ${flag} must be a boolean`);
+    return false;
+  });
+}
+
+// iOS bridges tags into a Swift [String: String], which crashes on non-string values.
+function stringifyValues(values: Record<string, unknown>): Record<string, string> {
+  return Object.fromEntries(Object.entries(values).map(([key, value]) => [key, String(value)]));
 }
 
 let notificationPermission = false;
@@ -107,11 +137,12 @@ export namespace OneSignal {
   /** Initializes the OneSignal SDK. This should be called during startup of the application. */
   export function initialize(appId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
+    if (isMissing(appId, 'initialize: appId')) return;
 
     RNOneSignal.initialize(appId);
 
     void Promise.all([_addPermissionObserver(), _addPushSubscriptionObserver()]).catch((error) => {
-      console.warn('OneSignal: failed to read initial state', error);
+      console.warn('[OneSignal] failed to read initial state', error);
     });
   }
 
@@ -121,6 +152,7 @@ export namespace OneSignal {
    */
   export function login(externalId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
+    if (isMissing(externalId, 'login: externalId')) return;
 
     RNOneSignal.login(externalId);
   }
@@ -138,6 +170,7 @@ export namespace OneSignal {
   /** For GDPR users, your application should call this method before setting the App ID. */
   export function setConsentRequired(required: boolean) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
+    if (!isBoolean(required, 'setConsentRequired: required')) return;
 
     RNOneSignal.setPrivacyConsentRequired(required);
   }
@@ -149,6 +182,7 @@ export namespace OneSignal {
    */
   export function setConsentGiven(granted: boolean) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
+    if (!isBoolean(granted, 'setConsentGiven: granted')) return;
 
     RNOneSignal.setPrivacyConsentGiven(granted);
   }
@@ -160,6 +194,7 @@ export namespace OneSignal {
      */
     export function setLogLevel(nsLogLevel: LogLevel) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isValidLogLevel(nsLogLevel, 'setLogLevel')) return;
 
       RNOneSignal.setLogLevel(nsLogLevel);
     }
@@ -170,6 +205,7 @@ export namespace OneSignal {
      */
     export function setAlertLevel(visualLogLevel: LogLevel) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isValidLogLevel(visualLogLevel, 'setAlertLevel')) return;
 
       RNOneSignal.setAlertLevel(visualLogLevel);
     }
@@ -192,6 +228,13 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (
+          isMissing(activityId, 'enter: activityId') ||
+          isMissing(token, 'enter: token') ||
+          !isFunction(handler, 'enter: handler')
+        ) {
+          return;
+        }
         RNOneSignal.enterLiveActivity(activityId, token, handler);
       }
     }
@@ -208,6 +251,9 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (isMissing(activityId, 'exit: activityId') || !isFunction(handler, 'exit: handler')) {
+          return;
+        }
         RNOneSignal.exitLiveActivity(activityId, handler);
       }
     }
@@ -227,6 +273,12 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (
+          isMissing(activityType, 'setPushToStartToken: activityType') ||
+          isMissing(token, 'setPushToStartToken: token')
+        ) {
+          return;
+        }
         RNOneSignal.setPushToStartToken(activityType, token);
       }
     }
@@ -245,6 +297,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (isMissing(activityType, 'removePushToStartToken: activityType')) return;
         RNOneSignal.removePushToStartToken(activityType);
       }
     }
@@ -267,6 +320,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (options != null && !isValidSetupOptions(options)) return;
         RNOneSignal.setupDefaultLiveActivity(options ?? null);
       }
     }
@@ -287,6 +341,13 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (
+          isMissing(activityId, 'startDefault: activityId') ||
+          !isObject(attributes, 'startDefault: attributes') ||
+          !isObject(content, 'startDefault: content')
+        ) {
+          return;
+        }
         RNOneSignal.startDefaultLiveActivity(activityId, attributes, content);
       }
     }
@@ -324,7 +385,7 @@ export namespace OneSignal {
           return '';
         }
         console.warn(
-          'OneSignal: This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
+          '[OneSignal] This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
         );
 
         return pushSub.id ? pushSub.id : '';
@@ -346,7 +407,7 @@ export namespace OneSignal {
           return '';
         }
         console.warn(
-          'OneSignal: This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
+          '[OneSignal] This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
         );
 
         return pushSub.token ? pushSub.token : '';
@@ -369,7 +430,7 @@ export namespace OneSignal {
           return false;
         }
         console.warn(
-          'OneSignal: This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
+          '[OneSignal] This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
         );
 
         return pushSub.optedIn ?? false;
@@ -445,9 +506,13 @@ export namespace OneSignal {
       return RNOneSignal.getExternalId();
     }
 
-    /** Explicitly set a 2-character language code for the user. */
+    /** Explicitly set a 2-character language code for the user. Empty string resets to the device language. */
     export function setLanguage(language: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (typeof language !== 'string') {
+        console.error('[OneSignal] setLanguage: language is required');
+        return;
+      }
 
       RNOneSignal.setLanguage(language);
     }
@@ -455,6 +520,7 @@ export namespace OneSignal {
     /** Set an alias for the current user. If this alias label already exists on this user, it will be overwritten with the new alias id. */
     export function addAlias(label: string, id: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(label, 'addAlias: label') || isMissing(id, 'addAlias: id')) return;
 
       RNOneSignal.addAlias(label, id);
     }
@@ -462,6 +528,7 @@ export namespace OneSignal {
     /** Set aliases for the current user. If any alias already exists, it will be overwritten to the new values. */
     export function addAliases(aliases: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingEntries(aliases, 'addAliases')) return;
 
       RNOneSignal.addAliases(aliases);
     }
@@ -469,6 +536,7 @@ export namespace OneSignal {
     /** Remove an alias from the current user. */
     export function removeAlias(label: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(label, 'removeAlias: label')) return;
 
       RNOneSignal.removeAlias(label);
     }
@@ -476,6 +544,7 @@ export namespace OneSignal {
     /** Remove aliases from the current user. */
     export function removeAliases(labels: string[]) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingItems(labels, 'removeAliases', 'label')) return;
 
       RNOneSignal.removeAliases(labels);
     }
@@ -483,6 +552,7 @@ export namespace OneSignal {
     /** Add a new email subscription to the current user. */
     export function addEmail(email: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(email, 'addEmail: email')) return;
 
       RNOneSignal.addEmail(email);
     }
@@ -493,6 +563,7 @@ export namespace OneSignal {
      */
     export function removeEmail(email: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(email, 'removeEmail: email')) return;
 
       RNOneSignal.removeEmail(email);
     }
@@ -500,6 +571,7 @@ export namespace OneSignal {
     /** Add a new SMS subscription to the current user. */
     export function addSms(smsNumber: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(smsNumber, 'addSms: smsNumber')) return;
 
       RNOneSignal.addSms(smsNumber);
     }
@@ -510,6 +582,7 @@ export namespace OneSignal {
      */
     export function removeSms(smsNumber: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(smsNumber, 'removeSms: smsNumber')) return;
 
       RNOneSignal.removeSms(smsNumber);
     }
@@ -521,12 +594,13 @@ export namespace OneSignal {
     export function addTag(key: string, value: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      if (!key || value === undefined || value === null) {
-        console.error('OneSignal: addTag: must include a key and a value');
+      if (isMissing(key, 'addTag: key')) return;
+      if (value == null) {
+        console.error('[OneSignal] addTag: value is required');
         return;
       }
 
-      RNOneSignal.addTag(key, value);
+      RNOneSignal.addTag(key, String(value));
     }
 
     /**
@@ -536,13 +610,15 @@ export namespace OneSignal {
      */
     export function addTags(tags: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingEntries(tags, 'addTags', true)) return;
 
-      RNOneSignal.addTags(tags);
+      RNOneSignal.addTags(stringifyValues(tags));
     }
 
     /** Remove the data tag with the provided key from the current user. */
     export function removeTag(key: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(key, 'removeTag: key')) return;
 
       RNOneSignal.removeTag(key);
     }
@@ -550,6 +626,7 @@ export namespace OneSignal {
     /** Remove multiple tags with the provided keys from the current user. */
     export function removeTags(keys: string[]) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingItems(keys, 'removeTags', 'key')) return;
 
       RNOneSignal.removeTags(keys);
     }
@@ -564,19 +641,31 @@ export namespace OneSignal {
       return tags as { [key: string]: string };
     }
 
-    /** Track custom events for the current user. */
+    /**
+     * Track custom events for the current user.
+     *
+     * @param name - The event name.
+     * @param properties - A JSON-serializable object, sent as its `JSON.stringify` result:
+     * `NaN` and `Infinity` become `null`, `Date` values become ISO strings, and `undefined`
+     * values and functions are omitted.
+     */
     export function trackEvent(name: string, properties: Record<string, unknown> = {}) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(name, 'trackEvent: name')) return;
 
       if (!isObjectSerializable(properties)) {
-        console.error('Properties must be a JSON-serializable object');
+        console.error('[OneSignal] trackEvent: properties must be a JSON-serializable object');
         return;
       }
+
+      // Native JSON serializers reject NaN and Infinity (Android throws, iOS drops the event),
+      // so send the JSON round-trip, where they become null.
+      const json = JSON.parse(JSON.stringify(properties)) as Record<string, unknown>;
 
       // The iOS TurboModule bridge drops dictionary entries whose value is
       // `null`. Encode nulls as a sentinel string so the native side can
       // restore them as `NSNull`. See SDK-4386.
-      const payload = Platform.OS === 'ios' ? encodeNullsForIOS(properties) : properties;
+      const payload = Platform.OS === 'ios' ? encodeNullsForIOS(json) : json;
 
       RNOneSignal.trackEvent(name, payload);
     }
@@ -588,7 +677,7 @@ export namespace OneSignal {
      */
     export function hasPermission(): boolean {
       console.warn(
-        'OneSignal: This method has been deprecated. Use getPermissionAsync instead for getting notification permission status.',
+        '[OneSignal] This method has been deprecated. Use getPermissionAsync instead for getting notification permission status.',
       );
 
       return notificationPermission;
@@ -607,12 +696,16 @@ export namespace OneSignal {
      * notification permission. Use the fallbackToSettings parameter to prompt to open the settings app if a user has already
      * declined push permissions.
      */
-    export function requestPermission(fallbackToSettings: boolean): Promise<boolean> {
+    export function requestPermission(fallbackToSettings?: boolean | null): Promise<boolean> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
       }
+      const fallback = fallbackToSettings ?? false;
+      if (!isBoolean(fallback, 'requestPermission: fallbackToSettings')) {
+        return Promise.reject(new Error('fallbackToSettings must be a boolean'));
+      }
 
-      return RNOneSignal.requestNotificationPermission(fallbackToSettings);
+      return RNOneSignal.requestNotificationPermission(fallback);
     }
 
     /**
@@ -640,7 +733,7 @@ export namespace OneSignal {
         RNOneSignal.registerForProvisionalAuthorization(handler);
       } else {
         console.warn(
-          'registerForProvisionalAuthorization: this function is not supported on Android',
+          '[OneSignal] registerForProvisionalAuthorization: this function is not supported on Android',
         );
       }
     }
@@ -675,7 +768,6 @@ export namespace OneSignal {
         RNOneSignal.addNotificationForegroundLifecycleListener();
         eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, listener);
       } else if (event === 'permissionChange') {
-        isValidCallback(listener);
         RNOneSignal.addPermissionObserver();
         eventManager.addEventListener(PERMISSION_CHANGED, listener);
       }
@@ -711,9 +803,10 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'android') {
+        if (!isInteger(id, 'removeNotification: id')) return;
         RNOneSignal.removeNotification(id);
       } else {
-        console.warn('removeNotification: this function is not supported on iOS');
+        console.warn('[OneSignal] removeNotification: this function is not supported on iOS');
       }
     }
 
@@ -726,9 +819,12 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'android') {
+        if (isMissing(id, 'removeGroupedNotifications: id')) return;
         RNOneSignal.removeGroupedNotifications(id);
       } else {
-        console.warn('removeGroupedNotifications: this function is not supported on iOS');
+        console.warn(
+          '[OneSignal] removeGroupedNotifications: this function is not supported on iOS',
+        );
       }
     }
   }
@@ -765,7 +861,6 @@ export namespace OneSignal {
      */
     export function removeEventListener(...[event, listener]: InAppMessageListeners): void {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-      isValidCallback(listener);
 
       if (event === 'click') {
         eventManager.removeEventListener(IN_APP_MESSAGE_CLICKED, listener);
@@ -787,9 +882,10 @@ export namespace OneSignal {
     export function addTrigger(key: string, value: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      // value can be assigned to `false` so we cannot just check `!value`
-      if (!key || value == null) {
-        console.error('OneSignal: addTrigger: must include a key and a value');
+      if (isMissing(key, 'addTrigger: key')) return;
+      if (typeof value !== 'string') {
+        console.error('[OneSignal] addTrigger: value must be a string');
+        return;
       }
 
       RNOneSignal.addTrigger(key, value);
@@ -801,6 +897,7 @@ export namespace OneSignal {
      */
     export function addTriggers(triggers: Record<string, string>) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingEntries(triggers, 'addTriggers', true)) return;
 
       RNOneSignal.addTriggers(triggers);
     }
@@ -808,6 +905,7 @@ export namespace OneSignal {
     /** Remove the trigger with the provided key from the current user. */
     export function removeTrigger(key: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(key, 'removeTrigger: key')) return;
 
       RNOneSignal.removeTrigger(key);
     }
@@ -815,6 +913,7 @@ export namespace OneSignal {
     /** Remove multiple triggers from the current user. */
     export function removeTriggers(keys: string[]) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (hasMissingItems(keys, 'removeTriggers', 'key')) return;
 
       RNOneSignal.removeTriggers(keys);
     }
@@ -833,6 +932,7 @@ export namespace OneSignal {
      */
     export function setPaused(pause: boolean) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isBoolean(pause, 'setPaused: pause')) return;
 
       RNOneSignal.paused(pause);
     }
@@ -858,6 +958,7 @@ export namespace OneSignal {
     /** Disable or enable location collection (defaults to enabled if your app has location permission). */
     export function setShared(shared: boolean) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isBoolean(shared, 'setShared: shared')) return;
 
       RNOneSignal.setLocationShared(shared);
     }
@@ -879,6 +980,7 @@ export namespace OneSignal {
     /** Increases the "Count" of this Outcome by 1 and will be counted each time sent. */
     export function addOutcome(name: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(name, 'addOutcome: name')) return;
 
       RNOneSignal.addOutcome(name);
     }
@@ -886,6 +988,7 @@ export namespace OneSignal {
     /** Increases "Count" by 1 only once. This can only be attributed to a single notification. */
     export function addUniqueOutcome(name: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (isMissing(name, 'addUniqueOutcome: name')) return;
 
       RNOneSignal.addUniqueOutcome(name);
     }
@@ -897,7 +1000,15 @@ export namespace OneSignal {
     export function addOutcomeWithValue(name: string, value: string | number) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
-      RNOneSignal.addOutcomeWithValue(name, Number(value));
+      if (isMissing(name, 'addOutcomeWithValue: name')) return;
+
+      const numericValue = typeof value === 'string' && value.trim() !== '' ? Number(value) : value;
+      if (typeof numericValue !== 'number' || !Number.isFinite(numericValue)) {
+        console.error('[OneSignal] addOutcomeWithValue: value must be a finite number');
+        return;
+      }
+
+      RNOneSignal.addOutcomeWithValue(name, numericValue);
     }
   }
 }

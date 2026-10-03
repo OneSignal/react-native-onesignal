@@ -598,6 +598,10 @@ public class RNOneSignal extends NativeOneSignalSpec
 
     @Override
     public void login(String externalUserId) {
+        if (externalUserId == null || externalUserId.isEmpty()) {
+            Logging.error("login called with a null or empty externalUserId", null);
+            return;
+        }
         OneSignal.login(externalUserId);
     }
 
