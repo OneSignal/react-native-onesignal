@@ -68,7 +68,7 @@ export enum LogLevel {
 function isValidLogLevel(level: unknown, api: string): boolean {
   if (!isInteger(level, `${api}: level`)) return false;
   if (level in LogLevel) return true;
-  console.error(`OneSignal: ${api}: level must be a LogLevel value`);
+  console.error(`[OneSignal] ${api}: level must be a LogLevel value`);
   return false;
 }
 
@@ -77,7 +77,7 @@ function isValidSetupOptions(options: unknown): boolean {
   if (!isObject(options, 'setupDefault: options')) return false;
   return (['enablePushToStart', 'enablePushToUpdate'] as const).every((flag) => {
     if (options[flag] === undefined || typeof options[flag] === 'boolean') return true;
-    console.error(`OneSignal: setupDefault: ${flag} must be a boolean`);
+    console.error(`[OneSignal] setupDefault: ${flag} must be a boolean`);
     return false;
   });
 }
@@ -142,7 +142,7 @@ export namespace OneSignal {
     RNOneSignal.initialize(appId);
 
     void Promise.all([_addPermissionObserver(), _addPushSubscriptionObserver()]).catch((error) => {
-      console.warn('OneSignal: failed to read initial state', error);
+      console.warn('[OneSignal] failed to read initial state', error);
     });
   }
 
@@ -385,7 +385,7 @@ export namespace OneSignal {
           return '';
         }
         console.warn(
-          'OneSignal: This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
+          '[OneSignal] This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
         );
 
         return pushSub.id ? pushSub.id : '';
@@ -407,7 +407,7 @@ export namespace OneSignal {
           return '';
         }
         console.warn(
-          'OneSignal: This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
+          '[OneSignal] This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
         );
 
         return pushSub.token ? pushSub.token : '';
@@ -430,7 +430,7 @@ export namespace OneSignal {
           return false;
         }
         console.warn(
-          'OneSignal: This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
+          '[OneSignal] This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
         );
 
         return pushSub.optedIn ?? false;
@@ -510,7 +510,7 @@ export namespace OneSignal {
     export function setLanguage(language: string) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
       if (typeof language !== 'string') {
-        console.error('OneSignal: setLanguage: language is required');
+        console.error('[OneSignal] setLanguage: language is required');
         return;
       }
 
@@ -596,7 +596,7 @@ export namespace OneSignal {
 
       if (isMissing(key, 'addTag: key')) return;
       if (value == null) {
-        console.error('OneSignal: addTag: value is required');
+        console.error('[OneSignal] addTag: value is required');
         return;
       }
 
@@ -654,7 +654,7 @@ export namespace OneSignal {
       if (isMissing(name, 'trackEvent: name')) return;
 
       if (!isObjectSerializable(properties)) {
-        console.error('OneSignal: trackEvent: properties must be a JSON-serializable object');
+        console.error('[OneSignal] trackEvent: properties must be a JSON-serializable object');
         return;
       }
 
@@ -677,7 +677,7 @@ export namespace OneSignal {
      */
     export function hasPermission(): boolean {
       console.warn(
-        'OneSignal: This method has been deprecated. Use getPermissionAsync instead for getting notification permission status.',
+        '[OneSignal] This method has been deprecated. Use getPermissionAsync instead for getting notification permission status.',
       );
 
       return notificationPermission;
@@ -733,7 +733,7 @@ export namespace OneSignal {
         RNOneSignal.registerForProvisionalAuthorization(handler);
       } else {
         console.warn(
-          'registerForProvisionalAuthorization: this function is not supported on Android',
+          '[OneSignal] registerForProvisionalAuthorization: this function is not supported on Android',
         );
       }
     }
@@ -806,7 +806,7 @@ export namespace OneSignal {
         if (!isInteger(id, 'removeNotification: id')) return;
         RNOneSignal.removeNotification(id);
       } else {
-        console.warn('removeNotification: this function is not supported on iOS');
+        console.warn('[OneSignal] removeNotification: this function is not supported on iOS');
       }
     }
 
@@ -822,7 +822,9 @@ export namespace OneSignal {
         if (isMissing(id, 'removeGroupedNotifications: id')) return;
         RNOneSignal.removeGroupedNotifications(id);
       } else {
-        console.warn('removeGroupedNotifications: this function is not supported on iOS');
+        console.warn(
+          '[OneSignal] removeGroupedNotifications: this function is not supported on iOS',
+        );
       }
     }
   }
@@ -882,7 +884,7 @@ export namespace OneSignal {
 
       if (isMissing(key, 'addTrigger: key')) return;
       if (typeof value !== 'string') {
-        console.error('OneSignal: addTrigger: value must be a string');
+        console.error('[OneSignal] addTrigger: value must be a string');
         return;
       }
 
@@ -1002,7 +1004,7 @@ export namespace OneSignal {
 
       const numericValue = typeof value === 'string' && value.trim() !== '' ? Number(value) : value;
       if (typeof numericValue !== 'number' || !Number.isFinite(numericValue)) {
-        console.error('OneSignal: addOutcomeWithValue: value must be a finite number');
+        console.error('[OneSignal] addOutcomeWithValue: value must be a finite number');
         return;
       }
 

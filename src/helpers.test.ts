@@ -60,7 +60,7 @@ describe('helpers', () => {
         expect(result).toBe(false);
         expect(errorSpy).toHaveBeenCalledTimes(1);
         expect(errorSpy).toHaveBeenCalledWith(
-          'Could not load RNOneSignal native module. Make sure native dependencies are properly linked.',
+          '[OneSignal] Could not load RNOneSignal native module. Make sure native dependencies are properly linked.',
         );
       },
     );
@@ -79,7 +79,7 @@ describe('helpers', () => {
 
     test.each([undefined, null, 'true', 0, {}])('should reject %s', (value) => {
       expect(isBoolean(value, 'api: flag')).toBe(false);
-      expect(errorSpy).toHaveBeenCalledWith('OneSignal: api: flag must be a boolean');
+      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] api: flag must be a boolean');
     });
   });
 
@@ -91,7 +91,7 @@ describe('helpers', () => {
 
     test.each([undefined, null, '1', 1.5, NaN, Infinity])('should reject %s', (value) => {
       expect(isInteger(value, 'api: id')).toBe(false);
-      expect(errorSpy).toHaveBeenCalledWith('OneSignal: api: id must be an integer');
+      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] api: id must be an integer');
     });
   });
 

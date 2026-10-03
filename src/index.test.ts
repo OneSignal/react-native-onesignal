@@ -116,13 +116,13 @@ describe('OneSignal', () => {
     test('should not initialize if appId is null', () => {
       OneSignal.initialize(null as unknown as string);
       expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalledWith('OneSignal: initialize: appId is required');
+      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] initialize: appId is required');
     });
 
     test('should not initialize if appId is empty', () => {
       OneSignal.initialize('');
       expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalledWith('OneSignal: initialize: appId is required');
+      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] initialize: appId is required');
     });
 
     test('should keep a permission event that arrives before the startup read resolves', async () => {
@@ -176,7 +176,7 @@ describe('OneSignal', () => {
       await flushPromises();
 
       expect(console.warn).toHaveBeenCalledWith(
-        'OneSignal: failed to read initial state',
+        '[OneSignal] failed to read initial state',
         expect.any(Error),
       );
     });
@@ -197,13 +197,13 @@ describe('OneSignal', () => {
     test('should not login if externalId is null', () => {
       OneSignal.login(null as unknown as string);
       expect(mockRNOneSignal.login).not.toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalledWith('OneSignal: login: externalId is required');
+      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] login: externalId is required');
     });
 
     test('should not login if externalId is empty', () => {
       OneSignal.login('');
       expect(mockRNOneSignal.login).not.toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalledWith('OneSignal: login: externalId is required');
+      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] login: externalId is required');
     });
   });
 
@@ -236,7 +236,7 @@ describe('OneSignal', () => {
       OneSignal.setConsentRequired(value as unknown as boolean);
       expect(mockRNOneSignal.setPrivacyConsentRequired).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith(
-        'OneSignal: setConsentRequired: required must be a boolean',
+        '[OneSignal] setConsentRequired: required must be a boolean',
       );
     });
   });
@@ -257,7 +257,7 @@ describe('OneSignal', () => {
       OneSignal.setConsentGiven(value as unknown as boolean);
       expect(mockRNOneSignal.setPrivacyConsentGiven).not.toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledWith(
-        'OneSignal: setConsentGiven: granted must be a boolean',
+        '[OneSignal] setConsentGiven: granted must be a boolean',
       );
     });
   });
@@ -279,7 +279,7 @@ describe('OneSignal', () => {
         OneSignal.Debug.setLogLevel(level as LogLevel);
         expect(mockRNOneSignal.setLogLevel).not.toHaveBeenCalled();
         expect(errorSpy).toHaveBeenCalledWith(
-          'OneSignal: setLogLevel: level must be a LogLevel value',
+          '[OneSignal] setLogLevel: level must be a LogLevel value',
         );
       });
 
@@ -288,7 +288,9 @@ describe('OneSignal', () => {
         (level) => {
           OneSignal.Debug.setLogLevel(level as unknown as LogLevel);
           expect(mockRNOneSignal.setLogLevel).not.toHaveBeenCalled();
-          expect(errorSpy).toHaveBeenCalledWith('OneSignal: setLogLevel: level must be an integer');
+          expect(errorSpy).toHaveBeenCalledWith(
+            '[OneSignal] setLogLevel: level must be an integer',
+          );
         },
       );
     });
@@ -309,7 +311,7 @@ describe('OneSignal', () => {
         OneSignal.Debug.setAlertLevel(99 as LogLevel);
         expect(mockRNOneSignal.setAlertLevel).not.toHaveBeenCalled();
         expect(errorSpy).toHaveBeenCalledWith(
-          'OneSignal: setAlertLevel: level must be a LogLevel value',
+          '[OneSignal] setAlertLevel: level must be a LogLevel value',
         );
       });
     });
@@ -349,9 +351,9 @@ describe('OneSignal', () => {
       });
 
       test.each([
-        ['', 'token', 'OneSignal: enter: activityId is required'],
-        [123, 'token', 'OneSignal: enter: activityId is required'],
-        ['activity-id', null, 'OneSignal: enter: token is required'],
+        ['', 'token', '[OneSignal] enter: activityId is required'],
+        [123, 'token', '[OneSignal] enter: activityId is required'],
+        ['activity-id', null, '[OneSignal] enter: token is required'],
       ])('should not enter with activityId %s and token %s', (activityId, token, message) => {
         OneSignal.LiveActivities.enter(activityId as string, token as string);
         expect(mockRNOneSignal.enterLiveActivity).not.toHaveBeenCalled();
@@ -365,7 +367,7 @@ describe('OneSignal', () => {
           handler as unknown as (result: object) => void,
         );
         expect(mockRNOneSignal.enterLiveActivity).not.toHaveBeenCalled();
-        expect(errorSpy).toHaveBeenCalledWith('OneSignal: enter: handler must be a function');
+        expect(errorSpy).toHaveBeenCalledWith('[OneSignal] enter: handler must be a function');
       });
     });
 
@@ -400,7 +402,7 @@ describe('OneSignal', () => {
       test.each([null, '', 1])('should not exit with activityId %s', (activityId) => {
         OneSignal.LiveActivities.exit(activityId as string);
         expect(mockRNOneSignal.exitLiveActivity).not.toHaveBeenCalled();
-        expect(errorSpy).toHaveBeenCalledWith('OneSignal: exit: activityId is required');
+        expect(errorSpy).toHaveBeenCalledWith('[OneSignal] exit: activityId is required');
       });
 
       test.each([null, 'cb'])('should not exit with handler %s', (handler) => {
@@ -409,7 +411,7 @@ describe('OneSignal', () => {
           handler as unknown as (result: object) => void,
         );
         expect(mockRNOneSignal.exitLiveActivity).not.toHaveBeenCalled();
-        expect(errorSpy).toHaveBeenCalledWith('OneSignal: exit: handler must be a function');
+        expect(errorSpy).toHaveBeenCalledWith('[OneSignal] exit: handler must be a function');
       });
     });
 
@@ -433,8 +435,8 @@ describe('OneSignal', () => {
       });
 
       test.each([
-        [undefined, 'token', 'OneSignal: setPushToStartToken: activityType is required'],
-        ['activity-type', 7, 'OneSignal: setPushToStartToken: token is required'],
+        [undefined, 'token', '[OneSignal] setPushToStartToken: activityType is required'],
+        ['activity-type', 7, '[OneSignal] setPushToStartToken: token is required'],
       ])('should not set token with %s and %s', (activityType, token, message) => {
         OneSignal.LiveActivities.setPushToStartToken(activityType as string, token as string);
         expect(mockRNOneSignal.setPushToStartToken).not.toHaveBeenCalled();
@@ -465,7 +467,7 @@ describe('OneSignal', () => {
         OneSignal.LiveActivities.removePushToStartToken(activityType as string);
         expect(mockRNOneSignal.removePushToStartToken).not.toHaveBeenCalled();
         expect(errorSpy).toHaveBeenCalledWith(
-          'OneSignal: removePushToStartToken: activityType is required',
+          '[OneSignal] removePushToStartToken: activityType is required',
         );
       });
     });
@@ -505,17 +507,17 @@ describe('OneSignal', () => {
       });
 
       test.each([
-        ['a string', 'abc', 'OneSignal: setupDefault: options must be an object'],
-        ['an array', [], 'OneSignal: setupDefault: options must be an object'],
+        ['a string', 'abc', '[OneSignal] setupDefault: options must be an object'],
+        ['an array', [], '[OneSignal] setupDefault: options must be an object'],
         [
           'a null flag',
           { enablePushToStart: null },
-          'OneSignal: setupDefault: enablePushToStart must be a boolean',
+          '[OneSignal] setupDefault: enablePushToStart must be a boolean',
         ],
         [
           'an object flag',
           { enablePushToUpdate: {} },
-          'OneSignal: setupDefault: enablePushToUpdate must be a boolean',
+          '[OneSignal] setupDefault: enablePushToUpdate must be a boolean',
         ],
       ])('should not setup with %s', (_description, options, message) => {
         OneSignal.LiveActivities.setupDefault(options as unknown as LiveActivitySetupOptions);
@@ -550,10 +552,10 @@ describe('OneSignal', () => {
       });
 
       test.each([
-        [null, {}, {}, 'OneSignal: startDefault: activityId is required'],
-        ['activity-id', null, {}, 'OneSignal: startDefault: attributes must be an object'],
-        ['activity-id', {}, 'content', 'OneSignal: startDefault: content must be an object'],
-        ['activity-id', {}, [], 'OneSignal: startDefault: content must be an object'],
+        [null, {}, {}, '[OneSignal] startDefault: activityId is required'],
+        ['activity-id', null, {}, '[OneSignal] startDefault: attributes must be an object'],
+        ['activity-id', {}, 'content', '[OneSignal] startDefault: content must be an object'],
+        ['activity-id', {}, [], '[OneSignal] startDefault: content must be an object'],
       ])('should not start with %s, %s, %s', (activityId, attributes, content, message) => {
         OneSignal.LiveActivities.startDefault(
           activityId as string,
@@ -616,7 +618,7 @@ describe('OneSignal', () => {
         const result = OneSignal.User.pushSubscription.getPushSubscriptionId();
         expect(result).toBe('');
         expect(console.warn).toHaveBeenCalledWith(
-          'OneSignal: This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
+          '[OneSignal] This method has been deprecated. Use getIdAsync instead for getting push subscription id.',
         );
 
         // with a push id
@@ -657,7 +659,7 @@ describe('OneSignal', () => {
         const result = OneSignal.User.pushSubscription.getPushSubscriptionToken();
         expect(result).toBe('');
         expect(console.warn).toHaveBeenCalledWith(
-          'OneSignal: This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
+          '[OneSignal] This method has been deprecated. Use getTokenAsync instead for getting push subscription token.',
         );
 
         // with a push token
@@ -698,7 +700,7 @@ describe('OneSignal', () => {
         const result = OneSignal.User.pushSubscription.getOptedIn();
         expect(result).toBe(false);
         expect(console.warn).toHaveBeenCalledWith(
-          'OneSignal: This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
+          '[OneSignal] This method has been deprecated. Use getOptedInAsync instead for getting push subscription opted in status.',
         );
 
         // with a opted in status
@@ -921,14 +923,14 @@ describe('OneSignal', () => {
       test('should not remove aliases with an empty label', () => {
         OneSignal.User.removeAliases(['label', '']);
         expect(mockRNOneSignal.removeAliases).not.toHaveBeenCalled();
-        expect(errorSpy).toHaveBeenCalledWith('OneSignal: removeAliases: label is required');
+        expect(errorSpy).toHaveBeenCalledWith('[OneSignal] removeAliases: label is required');
       });
 
       test('should not remove aliases if labels is not an array', () => {
         OneSignal.User.removeAliases(null as unknown as string[]);
         expect(mockRNOneSignal.removeAliases).not.toHaveBeenCalled();
         expect(errorSpy).toHaveBeenCalledWith(
-          'OneSignal: removeAliases: labels must be an array of strings',
+          '[OneSignal] removeAliases: labels must be an array of strings',
         );
       });
     });
@@ -948,13 +950,13 @@ describe('OneSignal', () => {
       test('should not add email if email is null', () => {
         OneSignal.User.addEmail(null as unknown as string);
         expect(mockRNOneSignal.addEmail).not.toHaveBeenCalled();
-        expect(errorSpy).toHaveBeenCalledWith('OneSignal: addEmail: email is required');
+        expect(errorSpy).toHaveBeenCalledWith('[OneSignal] addEmail: email is required');
       });
 
       test('should not add email if email is empty', () => {
         OneSignal.User.addEmail('');
         expect(mockRNOneSignal.addEmail).not.toHaveBeenCalled();
-        expect(errorSpy).toHaveBeenCalledWith('OneSignal: addEmail: email is required');
+        expect(errorSpy).toHaveBeenCalledWith('[OneSignal] addEmail: email is required');
       });
     });
 
@@ -1094,14 +1096,14 @@ describe('OneSignal', () => {
       test('should not remove tags with an empty key', () => {
         OneSignal.User.removeTags(['']);
         expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
-        expect(errorSpy).toHaveBeenCalledWith('OneSignal: removeTags: key is required');
+        expect(errorSpy).toHaveBeenCalledWith('[OneSignal] removeTags: key is required');
       });
 
       test('should not remove tags if keys is not an array', () => {
         OneSignal.User.removeTags('key' as unknown as string[]);
         expect(mockRNOneSignal.removeTags).not.toHaveBeenCalled();
         expect(errorSpy).toHaveBeenCalledWith(
-          'OneSignal: removeTags: keys must be an array of strings',
+          '[OneSignal] removeTags: keys must be an array of strings',
         );
       });
     });
@@ -1186,7 +1188,7 @@ describe('OneSignal', () => {
       test.each(['', null, undefined])('should not track event with name %s', (name) => {
         OneSignal.User.trackEvent(name as unknown as string);
         expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
-        expect(errorSpy).toHaveBeenCalledWith('OneSignal: trackEvent: name is required');
+        expect(errorSpy).toHaveBeenCalledWith('[OneSignal] trackEvent: name is required');
       });
 
       test('should not track event if properties are not serializable', () => {
@@ -1194,7 +1196,7 @@ describe('OneSignal', () => {
         circular.self = circular;
         OneSignal.User.trackEvent('event', circular);
         expect(errorSpy).toHaveBeenCalledWith(
-          'OneSignal: trackEvent: properties must be a JSON-serializable object',
+          '[OneSignal] trackEvent: properties must be a JSON-serializable object',
         );
         expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
       });
@@ -1202,7 +1204,7 @@ describe('OneSignal', () => {
       test('should not track event if properties is not an object', () => {
         OneSignal.User.trackEvent('event', 'invalid' as unknown as Record<string, unknown>);
         expect(errorSpy).toHaveBeenCalledWith(
-          'OneSignal: trackEvent: properties must be a JSON-serializable object',
+          '[OneSignal] trackEvent: properties must be a JSON-serializable object',
         );
         expect(mockRNOneSignal.trackEvent).not.toHaveBeenCalled();
       });
@@ -1333,7 +1335,7 @@ describe('OneSignal', () => {
           ).rejects.toThrow('fallbackToSettings must be a boolean');
           expect(mockRNOneSignal.requestNotificationPermission).not.toHaveBeenCalled();
           expect(errorSpy).toHaveBeenCalledWith(
-            'OneSignal: requestPermission: fallbackToSettings must be a boolean',
+            '[OneSignal] requestPermission: fallbackToSettings must be a boolean',
           );
         });
       });
@@ -1381,7 +1383,7 @@ describe('OneSignal', () => {
 
           OneSignal.Notifications.registerForProvisionalAuthorization(handler);
           expect(console.warn).toHaveBeenCalledWith(
-            'registerForProvisionalAuthorization: this function is not supported on Android',
+            '[OneSignal] registerForProvisionalAuthorization: this function is not supported on Android',
           );
           expect(mockRNOneSignal.registerForProvisionalAuthorization).not.toHaveBeenCalled();
         });
@@ -1502,7 +1504,7 @@ describe('OneSignal', () => {
           OneSignal.Notifications.removeNotification(id as unknown as number);
           expect(mockRNOneSignal.removeNotification).not.toHaveBeenCalled();
           expect(errorSpy).toHaveBeenCalledWith(
-            'OneSignal: removeNotification: id must be an integer',
+            '[OneSignal] removeNotification: id must be an integer',
           );
         });
 
@@ -1544,7 +1546,7 @@ describe('OneSignal', () => {
 
           expect(mockRNOneSignal.removeGroupedNotifications).not.toHaveBeenCalled();
           expect(errorSpy).toHaveBeenCalledWith(
-            'OneSignal: removeGroupedNotifications: id is required',
+            '[OneSignal] removeGroupedNotifications: id is required',
           );
         });
 
@@ -1553,7 +1555,7 @@ describe('OneSignal', () => {
           OneSignal.Notifications.removeGroupedNotifications(GROUP_ID);
 
           expect(console.warn).toHaveBeenCalledWith(
-            'removeGroupedNotifications: this function is not supported on iOS',
+            '[OneSignal] removeGroupedNotifications: this function is not supported on iOS',
           );
           expect(mockRNOneSignal.removeGroupedNotifications).not.toHaveBeenCalled();
         });
@@ -1667,7 +1669,7 @@ describe('OneSignal', () => {
           'should not add trigger for value %s',
           (value) => {
             OneSignal.InAppMessages.addTrigger('key', value as unknown as string);
-            expect(errorSpy).toHaveBeenCalledWith('OneSignal: addTrigger: value must be a string');
+            expect(errorSpy).toHaveBeenCalledWith('[OneSignal] addTrigger: value must be a string');
             expect(mockRNOneSignal.addTrigger).not.toHaveBeenCalled();
           },
         );
@@ -1737,14 +1739,14 @@ describe('OneSignal', () => {
         test('should not remove triggers with an empty key', () => {
           OneSignal.InAppMessages.removeTriggers(['']);
           expect(mockRNOneSignal.removeTriggers).not.toHaveBeenCalled();
-          expect(errorSpy).toHaveBeenCalledWith('OneSignal: removeTriggers: key is required');
+          expect(errorSpy).toHaveBeenCalledWith('[OneSignal] removeTriggers: key is required');
         });
 
         test('should not remove triggers if keys is not an array', () => {
           OneSignal.InAppMessages.removeTriggers('key' as unknown as string[]);
           expect(mockRNOneSignal.removeTriggers).not.toHaveBeenCalled();
           expect(errorSpy).toHaveBeenCalledWith(
-            'OneSignal: removeTriggers: keys must be an array of strings',
+            '[OneSignal] removeTriggers: keys must be an array of strings',
           );
         });
       });
@@ -1777,7 +1779,7 @@ describe('OneSignal', () => {
         test.each([undefined, null, 'true', 1, {}])('should not set paused with %s', (value) => {
           OneSignal.InAppMessages.setPaused(value as unknown as boolean);
           expect(mockRNOneSignal.paused).not.toHaveBeenCalled();
-          expect(errorSpy).toHaveBeenCalledWith('OneSignal: setPaused: pause must be a boolean');
+          expect(errorSpy).toHaveBeenCalledWith('[OneSignal] setPaused: pause must be a boolean');
         });
       });
 
@@ -1827,7 +1829,7 @@ describe('OneSignal', () => {
         test.each([undefined, null, 'false', 0])('should not set shared with %s', (value) => {
           OneSignal.Location.setShared(value as unknown as boolean);
           expect(mockRNOneSignal.setLocationShared).not.toHaveBeenCalled();
-          expect(errorSpy).toHaveBeenCalledWith('OneSignal: setShared: shared must be a boolean');
+          expect(errorSpy).toHaveBeenCalledWith('[OneSignal] setShared: shared must be a boolean');
         });
       });
 
@@ -1866,7 +1868,7 @@ describe('OneSignal', () => {
         test.each(['', null])('should not add outcome with name %s', (name) => {
           OneSignal.Session.addOutcome(name as unknown as string);
           expect(mockRNOneSignal.addOutcome).not.toHaveBeenCalled();
-          expect(errorSpy).toHaveBeenCalledWith('OneSignal: addOutcome: name is required');
+          expect(errorSpy).toHaveBeenCalledWith('[OneSignal] addOutcome: name is required');
         });
       });
 
@@ -1885,7 +1887,7 @@ describe('OneSignal', () => {
         test('should not add unique outcome with an empty name', () => {
           OneSignal.Session.addUniqueOutcome('');
           expect(mockRNOneSignal.addUniqueOutcome).not.toHaveBeenCalled();
-          expect(errorSpy).toHaveBeenCalledWith('OneSignal: addUniqueOutcome: name is required');
+          expect(errorSpy).toHaveBeenCalledWith('[OneSignal] addUniqueOutcome: name is required');
         });
       });
 
@@ -1917,7 +1919,7 @@ describe('OneSignal', () => {
             OneSignal.Session.addOutcomeWithValue(OUTCOME_NAME, value as unknown as number);
             expect(mockRNOneSignal.addOutcomeWithValue).not.toHaveBeenCalled();
             expect(errorSpy).toHaveBeenCalledWith(
-              'OneSignal: addOutcomeWithValue: value must be a finite number',
+              '[OneSignal] addOutcomeWithValue: value must be a finite number',
             );
           },
         );
@@ -1925,7 +1927,9 @@ describe('OneSignal', () => {
         test('should not add outcome with an empty name', () => {
           OneSignal.Session.addOutcomeWithValue('', 1);
           expect(mockRNOneSignal.addOutcomeWithValue).not.toHaveBeenCalled();
-          expect(errorSpy).toHaveBeenCalledWith('OneSignal: addOutcomeWithValue: name is required');
+          expect(errorSpy).toHaveBeenCalledWith(
+            '[OneSignal] addOutcomeWithValue: name is required',
+          );
         });
       });
     });
