@@ -24,6 +24,18 @@ export function isMissing(value: unknown, api: string): boolean {
   return true;
 }
 
+export function isObject(value: unknown, api: string): value is Record<string, unknown> {
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) return true;
+  console.error(`OneSignal: ${api} must be an object`);
+  return false;
+}
+
+export function isFunction(value: unknown, api: string): value is Function {
+  if (typeof value === 'function') return true;
+  console.error(`OneSignal: ${api} must be a function`);
+  return false;
+}
+
 export function hasMissingEntries(
   values: Record<string, unknown> | null | undefined,
   api: string,

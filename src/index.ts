@@ -20,7 +20,9 @@ import {
   hasMissingEntries,
   hasMissingItems,
   isNativeModuleLoaded,
+  isFunction,
   isMissing,
+  isObject,
   isObjectSerializable,
   isValidCallback,
 } from './helpers';
@@ -65,6 +67,21 @@ function isValidLogLevel(level: unknown, api: string): boolean {
   if (typeof level === 'number' && Number.isInteger(level) && level in LogLevel) return true;
   console.error(`OneSignal: ${api}: level must be a LogLevel value`);
   return false;
+}
+
+// iOS reads each flag with `boolValue`, which throws on objects, arrays, and NSNull.
+function isValidSetupOptions(options: unknown): boolean {
+  if (!isObject(options, 'setupDefault: options')) return false;
+  return (['enablePushToStart', 'enablePushToUpdate'] as const).every((flag) => {
+    if (options[flag] === undefined || typeof options[flag] === 'boolean') return true;
+    console.error(`OneSignal: setupDefault: ${flag} must be a boolean`);
+    return false;
+  });
+}
+
+// iOS bridges tags into a Swift [String: String], which crashes on non-string values.
+function stringifyValues(values: Record<string, unknown>): Record<string, string> {
+  return Object.fromEntries(Object.entries(values).map(([key, value]) => [key, String(value)]));
 }
 
 let notificationPermission = false;
@@ -206,6 +223,13 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (
+          isMissing(activityId, 'enter: activityId') ||
+          isMissing(token, 'enter: token') ||
+          !isFunction(handler, 'enter: handler')
+        ) {
+          return;
+        }
         RNOneSignal.enterLiveActivity(activityId, token, handler);
       }
     }
@@ -222,6 +246,9 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (isMissing(activityId, 'exit: activityId') || !isFunction(handler, 'exit: handler')) {
+          return;
+        }
         RNOneSignal.exitLiveActivity(activityId, handler);
       }
     }
@@ -241,6 +268,12 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (
+          isMissing(activityType, 'setPushToStartToken: activityType') ||
+          isMissing(token, 'setPushToStartToken: token')
+        ) {
+          return;
+        }
         RNOneSignal.setPushToStartToken(activityType, token);
       }
     }
@@ -259,6 +292,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (isMissing(activityType, 'removePushToStartToken: activityType')) return;
         RNOneSignal.removePushToStartToken(activityType);
       }
     }
@@ -281,6 +315,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (options != null && !isValidSetupOptions(options)) return;
         RNOneSignal.setupDefaultLiveActivity(options ?? null);
       }
     }
@@ -301,6 +336,13 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'ios') {
+        if (
+          isMissing(activityId, 'startDefault: activityId') ||
+          !isObject(attributes, 'startDefault: attributes') ||
+          !isObject(content, 'startDefault: content')
+        ) {
+          return;
+        }
         RNOneSignal.startDefaultLiveActivity(activityId, attributes, content);
       }
     }
@@ -553,7 +595,7 @@ export namespace OneSignal {
         return;
       }
 
-      RNOneSignal.addTag(key, value);
+      RNOneSignal.addTag(key, String(value));
     }
 
     /**
@@ -565,7 +607,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
       if (hasMissingEntries(tags, 'addTags', true)) return;
 
-      RNOneSignal.addTags(tags);
+      RNOneSignal.addTags(stringifyValues(tags));
     }
 
     /** Remove the data tag with the provided key from the current user. */
@@ -757,6 +799,7 @@ export namespace OneSignal {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
 
       if (Platform.OS === 'android') {
+        if (isMissing(id, 'removeGroupedNotifications: id')) return;
         RNOneSignal.removeGroupedNotifications(id);
       } else {
         console.warn('removeGroupedNotifications: this function is not supported on iOS');

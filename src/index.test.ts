@@ -18,6 +18,7 @@ import { IOS_NULL_SENTINEL } from './constants/internal';
 import EventManager, { type EventListenerMap } from './events/EventManager';
 import * as helpers from './helpers';
 import { LogLevel, OneSignal, OSNotificationPermission } from './index';
+import type { LiveActivitySetupOptions } from './types/liveActivities';
 
 const mockPlatform = Platform;
 
@@ -324,6 +325,26 @@ describe('OneSignal', () => {
         OneSignal.LiveActivities.enter('activity-id', 'token');
         expect(mockRNOneSignal.enterLiveActivity).not.toHaveBeenCalled();
       });
+
+      test.each([
+        ['', 'token', 'OneSignal: enter: activityId is required'],
+        [123, 'token', 'OneSignal: enter: activityId is required'],
+        ['activity-id', null, 'OneSignal: enter: token is required'],
+      ])('should not enter with activityId %s and token %s', (activityId, token, message) => {
+        OneSignal.LiveActivities.enter(activityId as string, token as string);
+        expect(mockRNOneSignal.enterLiveActivity).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(message);
+      });
+
+      test.each([null, 1, {}])('should not enter with handler %s', (handler) => {
+        OneSignal.LiveActivities.enter(
+          'activity-id',
+          'token',
+          handler as unknown as (result: object) => void,
+        );
+        expect(mockRNOneSignal.enterLiveActivity).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith('OneSignal: enter: handler must be a function');
+      });
     });
 
     describe('exit', () => {
@@ -353,6 +374,21 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.exitLiveActivity).not.toHaveBeenCalled();
         mockPlatform.OS = 'ios';
       });
+
+      test.each([null, '', 1])('should not exit with activityId %s', (activityId) => {
+        OneSignal.LiveActivities.exit(activityId as string);
+        expect(mockRNOneSignal.exitLiveActivity).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith('OneSignal: exit: activityId is required');
+      });
+
+      test.each([null, 'cb'])('should not exit with handler %s', (handler) => {
+        OneSignal.LiveActivities.exit(
+          'activity-id',
+          handler as unknown as (result: object) => void,
+        );
+        expect(mockRNOneSignal.exitLiveActivity).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith('OneSignal: exit: handler must be a function');
+      });
     });
 
     describe('setPushToStartToken', () => {
@@ -373,6 +409,15 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.setPushToStartToken).not.toHaveBeenCalled();
         mockPlatform.OS = 'ios';
       });
+
+      test.each([
+        [undefined, 'token', 'OneSignal: setPushToStartToken: activityType is required'],
+        ['activity-type', 7, 'OneSignal: setPushToStartToken: token is required'],
+      ])('should not set token with %s and %s', (activityType, token, message) => {
+        OneSignal.LiveActivities.setPushToStartToken(activityType as string, token as string);
+        expect(mockRNOneSignal.setPushToStartToken).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(message);
+      });
     });
 
     describe('removePushToStartToken', () => {
@@ -392,6 +437,14 @@ describe('OneSignal', () => {
         OneSignal.LiveActivities.removePushToStartToken('activity-type');
         expect(mockRNOneSignal.removePushToStartToken).not.toHaveBeenCalled();
         mockPlatform.OS = 'ios';
+      });
+
+      test.each([null, '', {}])('should not remove token with activityType %s', (activityType) => {
+        OneSignal.LiveActivities.removePushToStartToken(activityType as string);
+        expect(mockRNOneSignal.removePushToStartToken).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(
+          'OneSignal: removePushToStartToken: activityType is required',
+        );
       });
     });
 
@@ -419,6 +472,34 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.setupDefaultLiveActivity).not.toHaveBeenCalled();
         mockPlatform.OS = 'ios';
       });
+
+      test('should allow options with only one flag', () => {
+        OneSignal.LiveActivities.setupDefault({
+          enablePushToStart: false,
+        } as LiveActivitySetupOptions);
+        expect(mockRNOneSignal.setupDefaultLiveActivity).toHaveBeenCalledWith({
+          enablePushToStart: false,
+        });
+      });
+
+      test.each([
+        ['a string', 'abc', 'OneSignal: setupDefault: options must be an object'],
+        ['an array', [], 'OneSignal: setupDefault: options must be an object'],
+        [
+          'a null flag',
+          { enablePushToStart: null },
+          'OneSignal: setupDefault: enablePushToStart must be a boolean',
+        ],
+        [
+          'an object flag',
+          { enablePushToUpdate: {} },
+          'OneSignal: setupDefault: enablePushToUpdate must be a boolean',
+        ],
+      ])('should not setup with %s', (_description, options, message) => {
+        OneSignal.LiveActivities.setupDefault(options as unknown as LiveActivitySetupOptions);
+        expect(mockRNOneSignal.setupDefaultLiveActivity).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(message);
+      });
     });
 
     describe('startDefault', () => {
@@ -444,6 +525,21 @@ describe('OneSignal', () => {
         OneSignal.LiveActivities.startDefault('activity-id', {}, {});
         expect(mockRNOneSignal.startDefaultLiveActivity).not.toHaveBeenCalled();
         mockPlatform.OS = 'ios';
+      });
+
+      test.each([
+        [null, {}, {}, 'OneSignal: startDefault: activityId is required'],
+        ['activity-id', null, {}, 'OneSignal: startDefault: attributes must be an object'],
+        ['activity-id', {}, 'content', 'OneSignal: startDefault: content must be an object'],
+        ['activity-id', {}, [], 'OneSignal: startDefault: content must be an object'],
+      ])('should not start with %s, %s, %s', (activityId, attributes, content, message) => {
+        OneSignal.LiveActivities.startDefault(
+          activityId as string,
+          attributes as object,
+          content as object,
+        );
+        expect(mockRNOneSignal.startDefaultLiveActivity).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(message);
       });
     });
   });
@@ -897,6 +993,14 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.addTag).not.toHaveBeenCalled();
       });
 
+      test.each([
+        [5, '5'],
+        [false, 'false'],
+      ])('should convert tag value %s to a string', (value, expected) => {
+        OneSignal.User.addTag('key', value as unknown as string);
+        expect(mockRNOneSignal.addTag).toHaveBeenCalledWith('key', expected);
+      });
+
       test('should not add tag if native module is not loaded', () => {
         isNativeLoadedSpy.mockReturnValue(false);
         OneSignal.User.addTag('key', 'value');
@@ -920,6 +1024,11 @@ describe('OneSignal', () => {
       test('should allow an empty tag value', () => {
         OneSignal.User.addTags({ level: '' });
         expect(mockRNOneSignal.addTags).toHaveBeenCalledWith({ level: '' });
+      });
+
+      test('should convert non-string tag values to strings', () => {
+        OneSignal.User.addTags({ age: 5, vip: true } as unknown as Record<string, string>);
+        expect(mockRNOneSignal.addTags).toHaveBeenCalledWith({ age: '5', vip: 'true' });
       });
 
       test.each([
@@ -1335,6 +1444,15 @@ describe('OneSignal', () => {
           OneSignal.Notifications.removeGroupedNotifications(GROUP_ID);
 
           expect(mockRNOneSignal.removeGroupedNotifications).not.toHaveBeenCalled();
+        });
+
+        test.each([null, undefined, ''])('should not remove with group id %s', (id) => {
+          OneSignal.Notifications.removeGroupedNotifications(id as string);
+
+          expect(mockRNOneSignal.removeGroupedNotifications).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith(
+            'OneSignal: removeGroupedNotifications: id is required',
+          );
         });
 
         test('should log message on iOS', () => {
