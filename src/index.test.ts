@@ -231,6 +231,14 @@ describe('OneSignal', () => {
       OneSignal.setConsentRequired(true);
       expect(mockRNOneSignal.setPrivacyConsentRequired).not.toHaveBeenCalled();
     });
+
+    test.each([undefined, null, 'true', 1])('should not set consent required with %s', (value) => {
+      OneSignal.setConsentRequired(value as unknown as boolean);
+      expect(mockRNOneSignal.setPrivacyConsentRequired).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith(
+        'OneSignal: setConsentRequired: required must be a boolean',
+      );
+    });
   });
 
   describe('setConsentGiven', () => {
@@ -243,6 +251,14 @@ describe('OneSignal', () => {
       isNativeLoadedSpy.mockReturnValue(false);
       OneSignal.setConsentGiven(true);
       expect(mockRNOneSignal.setPrivacyConsentGiven).not.toHaveBeenCalled();
+    });
+
+    test.each([undefined, null, 'false', 0])('should not set consent given with %s', (value) => {
+      OneSignal.setConsentGiven(value as unknown as boolean);
+      expect(mockRNOneSignal.setPrivacyConsentGiven).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith(
+        'OneSignal: setConsentGiven: granted must be a boolean',
+      );
     });
   });
 
@@ -1292,6 +1308,22 @@ describe('OneSignal', () => {
             'OneSignal native module not loaded',
           );
         });
+
+        test('should default fallbackToSettings to false', async () => {
+          vi.mocked(mockRNOneSignal.requestNotificationPermission).mockResolvedValue(true);
+          await OneSignal.Notifications.requestPermission();
+          expect(mockRNOneSignal.requestNotificationPermission).toHaveBeenCalledWith(false);
+        });
+
+        test.each([null, 'true', 1])('should reject fallbackToSettings %s', async (value) => {
+          await expect(
+            OneSignal.Notifications.requestPermission(value as unknown as boolean),
+          ).rejects.toThrow('fallbackToSettings must be a boolean');
+          expect(mockRNOneSignal.requestNotificationPermission).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith(
+            'OneSignal: requestPermission: fallbackToSettings must be a boolean',
+          );
+        });
       });
 
       describe('canRequestPermission', () => {
@@ -1587,6 +1619,11 @@ describe('OneSignal', () => {
           OneSignal.InAppMessages.removeEventListener(eventName as any, listener);
           expect(removeEventManagerListenerSpy).toHaveBeenCalledWith(eventConstant, listener);
         });
+
+        test('should not validate the listener', () => {
+          OneSignal.InAppMessages.removeEventListener('click', null as unknown as () => void);
+          expect(isValidCallbackSpy).not.toHaveBeenCalled();
+        });
       });
 
       describe('addTrigger', () => {
@@ -1708,6 +1745,12 @@ describe('OneSignal', () => {
           OneSignal.InAppMessages.setPaused(true);
           expect(mockRNOneSignal.paused).not.toHaveBeenCalled();
         });
+
+        test.each([undefined, null, 'true', 1, {}])('should not set paused with %s', (value) => {
+          OneSignal.InAppMessages.setPaused(value as unknown as boolean);
+          expect(mockRNOneSignal.paused).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith('OneSignal: setPaused: pause must be a boolean');
+        });
       });
 
       describe('getPaused', () => {
@@ -1751,6 +1794,12 @@ describe('OneSignal', () => {
           isNativeLoadedSpy.mockReturnValue(false);
           OneSignal.Location.setShared(true);
           expect(mockRNOneSignal.setLocationShared).not.toHaveBeenCalled();
+        });
+
+        test.each([undefined, null, 'false', 0])('should not set shared with %s', (value) => {
+          OneSignal.Location.setShared(value as unknown as boolean);
+          expect(mockRNOneSignal.setLocationShared).not.toHaveBeenCalled();
+          expect(errorSpy).toHaveBeenCalledWith('OneSignal: setShared: shared must be a boolean');
         });
       });
 

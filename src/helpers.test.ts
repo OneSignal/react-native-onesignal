@@ -6,6 +6,7 @@ import {
   encodeNullsForIOS,
   hasMissingEntries,
   hasMissingItems,
+  isBoolean,
   isNativeModuleLoaded,
   isMissing,
   isObjectSerializable,
@@ -66,6 +67,18 @@ describe('helpers', () => {
     test('should return true when module is loaded', () => {
       const result = isNativeModuleLoaded({} as NativeModule);
       expect(result).toBe(true);
+    });
+  });
+
+  describe('isBoolean', () => {
+    test.each([true, false])('should accept %s', (value) => {
+      expect(isBoolean(value, 'api: flag')).toBe(true);
+      expect(errorSpy).not.toHaveBeenCalled();
+    });
+
+    test.each([undefined, null, 'true', 0, {}])('should reject %s', (value) => {
+      expect(isBoolean(value, 'api: flag')).toBe(false);
+      expect(errorSpy).toHaveBeenCalledWith('OneSignal: api: flag must be a boolean');
     });
   });
 

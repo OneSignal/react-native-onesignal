@@ -19,6 +19,7 @@ import {
   encodeNullsForIOS,
   hasMissingEntries,
   hasMissingItems,
+  isBoolean,
   isNativeModuleLoaded,
   isFunction,
   isMissing,
@@ -167,6 +168,7 @@ export namespace OneSignal {
   /** For GDPR users, your application should call this method before setting the App ID. */
   export function setConsentRequired(required: boolean) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
+    if (!isBoolean(required, 'setConsentRequired: required')) return;
 
     RNOneSignal.setPrivacyConsentRequired(required);
   }
@@ -178,6 +180,7 @@ export namespace OneSignal {
    */
   export function setConsentGiven(granted: boolean) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
+    if (!isBoolean(granted, 'setConsentGiven: granted')) return;
 
     RNOneSignal.setPrivacyConsentGiven(granted);
   }
@@ -691,9 +694,12 @@ export namespace OneSignal {
      * notification permission. Use the fallbackToSettings parameter to prompt to open the settings app if a user has already
      * declined push permissions.
      */
-    export function requestPermission(fallbackToSettings: boolean): Promise<boolean> {
+    export function requestPermission(fallbackToSettings = false): Promise<boolean> {
       if (!isNativeModuleLoaded(RNOneSignal)) {
         return Promise.reject(new Error('OneSignal native module not loaded'));
+      }
+      if (!isBoolean(fallbackToSettings, 'requestPermission: fallbackToSettings')) {
+        return Promise.reject(new Error('fallbackToSettings must be a boolean'));
       }
 
       return RNOneSignal.requestNotificationPermission(fallbackToSettings);
@@ -849,7 +855,6 @@ export namespace OneSignal {
      */
     export function removeEventListener(...[event, listener]: InAppMessageListeners): void {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
-      isValidCallback(listener);
 
       if (event === 'click') {
         eventManager.removeEventListener(IN_APP_MESSAGE_CLICKED, listener);
@@ -922,6 +927,7 @@ export namespace OneSignal {
      */
     export function setPaused(pause: boolean) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isBoolean(pause, 'setPaused: pause')) return;
 
       RNOneSignal.paused(pause);
     }
@@ -947,6 +953,7 @@ export namespace OneSignal {
     /** Disable or enable location collection (defaults to enabled if your app has location permission). */
     export function setShared(shared: boolean) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
+      if (!isBoolean(shared, 'setShared: shared')) return;
 
       RNOneSignal.setLocationShared(shared);
     }
