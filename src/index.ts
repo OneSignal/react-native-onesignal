@@ -759,7 +759,6 @@ export namespace OneSignal {
         RNOneSignal.addNotificationForegroundLifecycleListener();
         eventManager.addEventListener(NOTIFICATION_WILL_DISPLAY, listener);
       } else if (event === 'permissionChange') {
-        isValidCallback(listener);
         RNOneSignal.addPermissionObserver();
         eventManager.addEventListener(PERMISSION_CHANGED, listener);
       }
