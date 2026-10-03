@@ -1109,6 +1109,47 @@ describe('OneSignal', () => {
         expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('purchase', properties);
       });
 
+      describe.each(['android', 'ios'] as const)('JSON round-trip on %s', (os) => {
+        const sent = (value: Record<string, unknown>) =>
+          os === 'ios' ? helpers.encodeNullsForIOS(value) : value;
+
+        beforeEach(() => {
+          mockPlatform.OS = os;
+        });
+
+        test.each([
+          {
+            description: 'NaN and Infinity as null',
+            properties: { abc: NaN, def: Infinity, nested: { items: [1, -Infinity] } },
+            expected: { abc: null, def: null, nested: { items: [1, null] } },
+          },
+          {
+            description: 'a Date as an ISO string',
+            properties: { at: new Date('2026-01-02T03:04:05.000Z') },
+            expected: { at: '2026-01-02T03:04:05.000Z' },
+          },
+          {
+            description: 'undefined values and functions dropped',
+            properties: { kept: 'yes', missing: undefined, fn: () => {} },
+            expected: { kept: 'yes' },
+          },
+          {
+            description: 'JSON values unchanged',
+            properties: { s: 'x', n: 1.5, b: false, nil: null, list: ['a', { deep: 2 }] },
+            expected: { s: 'x', n: 1.5, b: false, nil: null, list: ['a', { deep: 2 }] },
+          },
+        ])('should send $description', ({ properties, expected }) => {
+          OneSignal.User.trackEvent('purchase', properties);
+          expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('purchase', sent(expected));
+        });
+
+        test('should not mutate the caller properties', () => {
+          const properties = { abc: NaN };
+          OneSignal.User.trackEvent('purchase', properties);
+          expect(properties.abc).toBeNaN();
+        });
+      });
+
       test('should track event with just name using default empty properties', () => {
         OneSignal.User.trackEvent('page_view');
         expect(mockRNOneSignal.trackEvent).toHaveBeenCalledWith('page_view', {});

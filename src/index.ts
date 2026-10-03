@@ -636,7 +636,14 @@ export namespace OneSignal {
       return tags as { [key: string]: string };
     }
 
-    /** Track custom events for the current user. */
+    /**
+     * Track custom events for the current user.
+     *
+     * @param name - The event name.
+     * @param properties - A JSON-serializable object, sent as its `JSON.stringify` result:
+     * `NaN` and `Infinity` become `null`, `Date` values become ISO strings, and `undefined`
+     * values and functions are omitted.
+     */
     export function trackEvent(name: string, properties: Record<string, unknown> = {}) {
       if (!isNativeModuleLoaded(RNOneSignal)) return;
       if (isMissing(name, 'trackEvent: name')) return;
@@ -646,10 +653,14 @@ export namespace OneSignal {
         return;
       }
 
+      // Native JSON serializers reject NaN and Infinity (Android throws, iOS drops the event),
+      // so send the JSON round-trip, where they become null.
+      const json = JSON.parse(JSON.stringify(properties)) as Record<string, unknown>;
+
       // The iOS TurboModule bridge drops dictionary entries whose value is
       // `null`. Encode nulls as a sentinel string so the native side can
       // restore them as `NSNull`. See SDK-4386.
-      const payload = Platform.OS === 'ios' ? encodeNullsForIOS(properties) : properties;
+      const payload = Platform.OS === 'ios' ? encodeNullsForIOS(json) : json;
 
       RNOneSignal.trackEvent(name, payload);
     }
