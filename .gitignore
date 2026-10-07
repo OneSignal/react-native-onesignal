@@ -45,3 +45,4 @@ examples/*/ios/*.xcodeproj/xcuserdata
 examples/*/ios/*.xcworkspace/xcshareddata
 examples/*/ios/*.xcworkspace/xcuserdata
 examples/*/ios/Pods/Pods.xcodeproj/xcuserdata
+.vitest/
