@@ -99,7 +99,7 @@ jobs:
         uses: OneSignal/sdk-shared/.github/actions/setup-git-user@main
 
       - name: Set up Vite+
-        uses: voidzero-dev/setup-vp@v1
+        uses: voidzero-dev/setup-vp@v1.21.1
         with:
           cache: true
           run-install: true

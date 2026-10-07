@@ -34,7 +34,7 @@ export default defineConfig({
     clearMocks: true,
     exclude: ['examples/**', 'node_modules/**'],
     coverage: {
-      exclude: ['__mocks__'],
+      exclude: ['__mocks__/**'],
       enabled: true,
       reporter: ['text-summary', 'lcov'],
       reportOnFailure: true,
