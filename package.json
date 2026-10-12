@@ -52,15 +52,13 @@
     "@vitest/coverage-v8": "5.0.3",
     "typescript": "^7.0.2",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0",
-    "vite-plus": "1.1.0",
-    "vitest": "5.0.3"
+    "vite-plus": "1.1.0"
   },
   "peerDependencies": {
     "react-native": ">=0.79.0"
   },
   "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0",
-    "vitest": "5.0.3"
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0"
   },
   "packageManager": "bun@1.4.0",
   "codegenConfig": {
