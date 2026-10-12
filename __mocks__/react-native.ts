@@ -1,8 +1,8 @@
-import { vi } from 'vite-plus/test';
+import { type Mock, vi } from 'vite-plus/test';
 
 const createEventEmitterMock = () => vi.fn(() => ({ remove: vi.fn() }));
 
-const mockRNOneSignal = {
+const mockRNOneSignal: Record<string, Mock> = {
   initialize: vi.fn(),
   login: vi.fn(),
   logout: vi.fn(),
