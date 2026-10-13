@@ -139,6 +139,8 @@ function useOneSignalState(): UseOneSignalReturn {
 
   const requestSequenceRef = useRef(0);
 
+  const loginSequenceRef = useRef(0);
+
   const fetchUserDataFromApi = useCallback(async () => {
     const requestId = requestSequenceRef.current + 1;
     requestSequenceRef.current = requestId;
@@ -360,6 +362,7 @@ function useOneSignalState(): UseOneSignalReturn {
   }, [fetchUserDataFromApi]);
 
   const loginUser = async (nextExternalUserId: string) => {
+    loginSequenceRef.current++;
     requestSequenceRef.current++;
     setAliasesList([]);
     setEmailsList([]);
@@ -387,7 +390,8 @@ function useOneSignalState(): UseOneSignalReturn {
     sms: string,
     jwt: string,
   ) => {
-    const requestId = ++requestSequenceRef.current;
+    const loginId = ++loginSequenceRef.current;
+    requestSequenceRef.current++;
     setAliasesList([]);
     setEmailsList([]);
     setSmsNumbersList([]);
@@ -401,7 +405,7 @@ function useOneSignalState(): UseOneSignalReturn {
       jwt || null,
     );
     // A logout or another login during the await owns the state now.
-    if (requestSequenceRef.current !== requestId) return;
+    if (loginSequenceRef.current !== loginId) return;
     if (!result.success) {
       const details = (result.error ?? []).map((e) => `${e.code}: ${e.message}`).join(', ');
       console.error(`Login with profile error: ${details}`);
@@ -422,6 +426,7 @@ function useOneSignalState(): UseOneSignalReturn {
   };
 
   const logoutUser = async () => {
+    loginSequenceRef.current++;
     requestSequenceRef.current++;
     setIsLoading(false);
     OneSignal.logout();
