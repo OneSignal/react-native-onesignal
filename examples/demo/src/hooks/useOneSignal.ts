@@ -387,7 +387,7 @@ function useOneSignalState(): UseOneSignalReturn {
     sms: string,
     jwt: string,
   ) => {
-    requestSequenceRef.current++;
+    const requestId = ++requestSequenceRef.current;
     setAliasesList([]);
     setEmailsList([]);
     setSmsNumbersList([]);
@@ -400,6 +400,8 @@ function useOneSignalState(): UseOneSignalReturn {
       { email: email || undefined, sms: sms || undefined },
       jwt || null,
     );
+    // A logout or another login during the await owns the state now.
+    if (requestSequenceRef.current !== requestId) return;
     if (!result.success) {
       const details = (result.error ?? []).map((e) => `${e.code}: ${e.message}`).join(', ');
       console.error(`Login with profile error: ${details}`);
@@ -407,11 +409,16 @@ function useOneSignalState(): UseOneSignalReturn {
       return;
     }
 
-    await preferences.setExternalUserId(nextExternalUserId);
-    setExternalUserId(nextExternalUserId);
-    console.log(`Logged in with profile as: ${nextExternalUserId}`);
-    // The user 'change' listener does not fire when the external id is unchanged.
-    await fetchUserDataFromApi();
+    try {
+      await preferences.setExternalUserId(nextExternalUserId);
+      setExternalUserId(nextExternalUserId);
+      console.log(`Logged in with profile as: ${nextExternalUserId}`);
+      // The user 'change' listener does not fire when the external id is unchanged.
+      await fetchUserDataFromApi();
+    } catch (err) {
+      console.error(`Login with profile error: ${String(err)}`);
+      setIsLoading(false);
+    }
   };
 
   const logoutUser = async () => {

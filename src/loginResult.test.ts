@@ -149,6 +149,14 @@ describe('parseLoginResult', () => {
     ['an array', []],
     ['a missing success flag', { data: null }],
     ['a non-boolean success flag', { success: 'true' }],
+    [
+      'a success that carries errors',
+      {
+        success: true,
+        data: { onesignalId: 'os', externalId: 'ext' },
+        error: [{ code: 'BACKEND_ERROR', source: 'BACKEND', message: 'x' }],
+      },
+    ],
   ])('returns UNKNOWN failure for %s', (_label, value) => {
     expect(parseLoginResult(value)).toEqual(unknownFailure('Malformed loginWithProfile result'));
   });

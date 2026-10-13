@@ -81,6 +81,9 @@ export function parseLoginResult(value: unknown): OneSignalResult<LoginData> {
   }
 
   if (raw.success) {
+    if (Array.isArray(raw.error) && raw.error.length > 0) {
+      return loginFailure('Malformed loginWithProfile result');
+    }
     const data = parseLoginData(raw.data);
     if (!data) return loginFailure('Malformed loginWithProfile data');
     return { success: true, data, error: null };

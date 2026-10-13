@@ -651,14 +651,19 @@ public class RNOneSignal extends NativeOneSignalSpec
                 payload = RNUtils.convertMapToWritableMap(((OneSignalResult<?>) result).toMap());
             } else {
                 Throwable error = result instanceof Result.Failure ? ((Result.Failure) result).exception : null;
+                if (error != null) Logging.error("loginWithProfile failed", error);
                 payload = loginWithProfileFailure(
-                        error != null ? String.valueOf(error.getMessage()) : "Unexpected loginWithProfile result");
+                        error != null ? describe(error) : "Unexpected loginWithProfile result");
             }
         } catch (Throwable t) {
             Logging.error("Failed to serialize loginWithProfile result", t);
-            payload = loginWithProfileFailure(String.valueOf(t.getMessage()));
+            payload = loginWithProfileFailure(describe(t));
         }
         promise.resolve(payload);
+    }
+
+    private static String describe(Throwable t) {
+        return t.getMessage() != null ? t.getMessage() : t.toString();
     }
 
     private static WritableMap loginWithProfileFailure(String message) {

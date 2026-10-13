@@ -205,7 +205,13 @@ export namespace OneSignal {
     if (isMissing(externalId, 'loginWithProfile: externalId')) {
       return loginFailure('externalId is required', 'INVALID_ARGUMENT');
     }
-    const payload = toLoginProfilePayload(profile);
+    let payload: Record<string, unknown> | null;
+    try {
+      payload = toLoginProfilePayload(profile);
+    } catch (error) {
+      console.error('[OneSignal] loginWithProfile: profile could not be read', error);
+      payload = null;
+    }
     if (!payload) return loginFailure('profile is invalid', 'INVALID_ARGUMENT');
     if (jwtBearerToken != null && typeof jwtBearerToken !== 'string') {
       console.error('[OneSignal] loginWithProfile: jwtBearerToken must be a string');

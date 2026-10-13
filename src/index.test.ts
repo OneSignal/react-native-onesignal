@@ -320,6 +320,13 @@ describe('OneSignal', () => {
       expect(result).toEqual(failure('INVALID_ARGUMENT', 'profile is invalid'));
     });
 
+    test('resolves INVALID_ARGUMENT when a tag value cannot be stringified', async () => {
+      const profile = { tags: { a: Object.create(null) } };
+      const result = await OneSignal.loginWithProfile('external-123', profile as never);
+      expect(mockRNOneSignal.loginWithProfile).not.toHaveBeenCalled();
+      expect(result).toEqual(failure('INVALID_ARGUMENT', 'profile is invalid'));
+    });
+
     test('rejects a non-string jwt as INVALID_ARGUMENT', async () => {
       const result = await OneSignal.loginWithProfile('external-123', {}, 5 as never);
       expect(mockRNOneSignal.loginWithProfile).not.toHaveBeenCalled();
