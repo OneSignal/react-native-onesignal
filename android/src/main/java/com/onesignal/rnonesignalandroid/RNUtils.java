@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.onesignal.OneSignalUserProfile;
 import com.onesignal.debug.internal.logging.Logging;
 import com.onesignal.inAppMessages.IInAppMessage;
 import com.onesignal.inAppMessages.IInAppMessageClickEvent;
@@ -289,6 +290,79 @@ public class RNUtils {
         }
 
         return stringMap;
+    }
+
+    public static OneSignalUserProfile convertReadableMapToUserProfile(ReadableMap profile) {
+        String email = null;
+        String sms = null;
+        Map<String, String> tags = new HashMap<>();
+        Map<String, String> aliases = new HashMap<>();
+        if (profile != null) {
+            if (profile.hasKey("email") && profile.getType("email") == ReadableType.String) {
+                email = profile.getString("email");
+            }
+            if (profile.hasKey("sms") && profile.getType("sms") == ReadableType.String) {
+                sms = profile.getString("sms");
+            }
+            if (profile.hasKey("tags") && profile.getType("tags") == ReadableType.Map) {
+                tags = convertReadableMapIntoStringMap(profile.getMap("tags"));
+            }
+            if (profile.hasKey("aliases") && profile.getType("aliases") == ReadableType.Map) {
+                aliases = convertReadableMapIntoStringMap(profile.getMap("aliases"));
+            }
+        }
+        return new OneSignalUserProfile(email, sms, tags, aliases);
+    }
+
+    public static WritableMap convertMapToWritableMap(Map<?, ?> map) {
+        WritableMap writableMap = Arguments.createMap();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            Object value = entry.getValue();
+
+            if (value == null) {
+                writableMap.putNull(key);
+            } else if (value instanceof String) {
+                writableMap.putString(key, (String) value);
+            } else if (value instanceof Boolean) {
+                writableMap.putBoolean(key, (Boolean) value);
+            } else if (value instanceof Integer) {
+                writableMap.putInt(key, (Integer) value);
+            } else if (value instanceof Number) {
+                writableMap.putDouble(key, ((Number) value).doubleValue());
+            } else if (value instanceof Map) {
+                writableMap.putMap(key, convertMapToWritableMap((Map<?, ?>) value));
+            } else if (value instanceof Iterable) {
+                writableMap.putArray(key, convertIterableToWritableArray((Iterable<?>) value));
+            } else {
+                writableMap.putString(key, String.valueOf(value));
+            }
+        }
+        return writableMap;
+    }
+
+    private static WritableArray convertIterableToWritableArray(Iterable<?> items) {
+        WritableArray writableArray = Arguments.createArray();
+        for (Object item : items) {
+            if (item == null) {
+                writableArray.pushNull();
+            } else if (item instanceof String) {
+                writableArray.pushString((String) item);
+            } else if (item instanceof Boolean) {
+                writableArray.pushBoolean((Boolean) item);
+            } else if (item instanceof Integer) {
+                writableArray.pushInt((Integer) item);
+            } else if (item instanceof Number) {
+                writableArray.pushDouble(((Number) item).doubleValue());
+            } else if (item instanceof Map) {
+                writableArray.pushMap(convertMapToWritableMap((Map<?, ?>) item));
+            } else if (item instanceof Iterable) {
+                writableArray.pushArray(convertIterableToWritableArray((Iterable<?>) item));
+            } else {
+                writableArray.pushString(String.valueOf(item));
+            }
+        }
+        return writableArray;
     }
 
     public static HashMap<String, Object> convertPermissionToMap(boolean granted) {

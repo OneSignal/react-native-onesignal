@@ -146,6 +146,26 @@ RCT_EXPORT_METHOD(login : (NSString *)externalId) {
   [OneSignal login:externalId];
 }
 
+// Required by the shared TurboModule spec. There is no iOS native API yet.
+RCT_EXPORT_METHOD(loginWithProfile : (NSString *)externalId
+                  profile : (NSDictionary *)profile
+                  jwt : (NSString *_Nullable)jwt
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  resolve(@{
+    @"success" : @NO,
+    @"data" : [NSNull null],
+    @"error" : @[ @{
+      @"code" : @"UNKNOWN",
+      @"source" : @"CLIENT",
+      @"backendCode" : [NSNull null],
+      @"httpStatus" : [NSNull null],
+      @"message" : @"loginWithProfile is only supported on Android",
+      @"meta" : [NSNull null]
+    } ]
+  });
+}
+
 RCT_EXPORT_METHOD(logout) { [OneSignal logout]; }
 
 RCT_EXPORT_METHOD(enterLiveActivity : (NSString *)activityId

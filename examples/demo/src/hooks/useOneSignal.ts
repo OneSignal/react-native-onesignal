@@ -77,6 +77,12 @@ export type UseOneSignalReturn = {
   isLoading: boolean;
   isReady: boolean;
   loginUser: (externalUserId: string) => Promise<void>;
+  loginUserWithProfile: (
+    externalUserId: string,
+    email: string,
+    sms: string,
+    jwt: string,
+  ) => Promise<void>;
   logoutUser: () => Promise<void>;
   setConsentRequired: (required: boolean) => Promise<void>;
   setConsentGiven: (granted: boolean) => Promise<void>;
@@ -375,6 +381,39 @@ function useOneSignalState(): UseOneSignalReturn {
     }
   };
 
+  const loginUserWithProfile = async (
+    nextExternalUserId: string,
+    email: string,
+    sms: string,
+    jwt: string,
+  ) => {
+    requestSequenceRef.current++;
+    setAliasesList([]);
+    setEmailsList([]);
+    setSmsNumbersList([]);
+    setTagsList([]);
+    setTriggersList([]);
+    setIsLoading(true);
+
+    const result = await OneSignal.loginWithProfile(
+      nextExternalUserId,
+      { email: email || undefined, sms: sms || undefined },
+      jwt || null,
+    );
+    if (!result.success) {
+      const details = (result.error ?? []).map((e) => `${e.code}: ${e.message}`).join(', ');
+      console.error(`Login with profile error: ${details}`);
+      setIsLoading(false);
+      return;
+    }
+
+    await preferences.setExternalUserId(nextExternalUserId);
+    setExternalUserId(nextExternalUserId);
+    console.log(`Logged in with profile as: ${nextExternalUserId}`);
+    // The user 'change' listener does not fire when the external id is unchanged.
+    await fetchUserDataFromApi();
+  };
+
   const logoutUser = async () => {
     requestSequenceRef.current++;
     setIsLoading(false);
@@ -598,6 +637,7 @@ function useOneSignalState(): UseOneSignalReturn {
     isLoading,
     isReady,
     loginUser,
+    loginUserWithProfile,
     logoutUser,
     setConsentRequired,
     setConsentGiven,

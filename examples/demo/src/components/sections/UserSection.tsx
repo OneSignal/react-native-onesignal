@@ -1,23 +1,45 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
+import LoginWithProfileModal from '../modals/LoginWithProfileModal';
 import SingleInputModal from '../modals/SingleInputModal';
 import SectionCard from '../SectionCard';
 
 interface Props {
   externalUserId: string | undefined;
   onLogin: (externalUserId: string) => Promise<void>;
+  onLoginWithProfile: (
+    externalUserId: string,
+    email: string,
+    sms: string,
+    jwt: string,
+  ) => Promise<void>;
   onLogout: () => Promise<void>;
 }
 
-export default function UserSection({ externalUserId, onLogin, onLogout }: Props) {
+export default function UserSection({
+  externalUserId,
+  onLogin,
+  onLoginWithProfile,
+  onLogout,
+}: Props) {
   const [loginOpen, setLoginOpen] = useState(false);
+  const [loginWithProfileOpen, setLoginWithProfileOpen] = useState(false);
   const isLoggedIn = !!externalUserId;
 
   const handleLogin = async (userId: string) => {
     await onLogin(userId);
+  };
+
+  const handleLoginWithProfile = async (
+    userId: string,
+    email: string,
+    sms: string,
+    jwt: string,
+  ) => {
+    await onLoginWithProfile(userId, email, sms, jwt);
   };
 
   const handleLogout = async () => {
@@ -49,6 +71,14 @@ export default function UserSection({ externalUserId, onLogin, onLogout }: Props
         onPress={() => setLoginOpen(true)}
         testID="login_user_button"
       />
+      {Platform.OS === 'android' && (
+        <ActionButton
+          label="LOGIN WITH PROFILE"
+          onPress={() => setLoginWithProfileOpen(true)}
+          variant="outlined"
+          testID="composite_login_button"
+        />
+      )}
       {isLoggedIn && (
         <ActionButton
           label="LOGOUT USER"
@@ -65,6 +95,11 @@ export default function UserSection({ externalUserId, onLogin, onLogout }: Props
         onConfirm={handleLogin}
         onClose={() => setLoginOpen(false)}
         testID="login_user_id_input"
+      />
+      <LoginWithProfileModal
+        visible={loginWithProfileOpen}
+        onConfirm={handleLoginWithProfile}
+        onClose={() => setLoginWithProfileOpen(false)}
       />
     </SectionCard>
   );

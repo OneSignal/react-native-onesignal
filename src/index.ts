@@ -28,6 +28,7 @@ import {
   isObjectSerializable,
   isValidCallback,
 } from './helpers';
+import { IOS_UNSUPPORTED_MESSAGE, loginFailure, parseLoginResult } from './loginResult';
 import NativeOneSignal from './NativeOneSignal';
 import type {
   InAppMessage,
@@ -39,6 +40,7 @@ import type {
   InAppMessageWillDisplayEvent,
 } from './types/inAppMessage';
 import type { LiveActivitySetupOptions } from './types/liveActivities';
+import type { LoginData, OneSignalResult, OneSignalUserProfile } from './types/login';
 import type { NotificationClickEvent, NotificationListeners } from './types/notificationEvents';
 import type { PushSubscriptionChangedState, PushSubscriptionState } from './types/subscription';
 import type { UserChangedState, UserState } from './types/user';
@@ -85,6 +87,35 @@ function isValidSetupOptions(options: unknown): boolean {
 // iOS bridges tags into a Swift [String: String], which crashes on non-string values.
 function stringifyValues(values: Record<string, unknown>): Record<string, string> {
   return Object.fromEntries(Object.entries(values).map(([key, value]) => [key, String(value)]));
+}
+
+function toLoginProfilePayload(profile: unknown): Record<string, unknown> | null {
+  if (!isObject(profile, 'loginWithProfile: profile')) return null;
+  const payload: Record<string, unknown> = {};
+
+  for (const field of ['email', 'sms'] as const) {
+    const value = profile[field];
+    if (value == null) continue;
+    if (typeof value !== 'string') {
+      console.error(`[OneSignal] loginWithProfile: ${field} must be a string`);
+      return null;
+    }
+    payload[field] = value;
+  }
+
+  const { tags, aliases } = profile as {
+    tags?: Record<string, unknown>;
+    aliases?: Record<string, unknown>;
+  };
+  if (tags != null) {
+    if (hasMissingEntries(tags, 'loginWithProfile: tags', true)) return null;
+    payload.tags = stringifyValues(tags);
+  }
+  if (aliases != null) {
+    if (hasMissingEntries(aliases, 'loginWithProfile: aliases')) return null;
+    payload.aliases = aliases;
+  }
+  return payload;
 }
 
 let notificationPermission = false;
@@ -155,6 +186,42 @@ export namespace OneSignal {
     if (isMissing(externalId, 'login: externalId')) return;
 
     RNOneSignal.login(externalId);
+  }
+
+  /**
+   * Logs in and applies the profile in a single request, resolving with the outcome. Never rejects.
+   * Android only for now: on iOS this resolves with a failure result.
+   */
+  export async function loginWithProfile(
+    externalId: string,
+    profile: OneSignalUserProfile,
+    jwtBearerToken?: string | null,
+  ): Promise<OneSignalResult<LoginData>> {
+    if (!isNativeModuleLoaded(RNOneSignal)) {
+      return loginFailure('OneSignal native module not loaded');
+    }
+    if (Platform.OS !== 'android') return loginFailure(IOS_UNSUPPORTED_MESSAGE);
+
+    if (isMissing(externalId, 'loginWithProfile: externalId')) {
+      return loginFailure('externalId is required', 'INVALID_ARGUMENT');
+    }
+    const payload = toLoginProfilePayload(profile);
+    if (!payload) return loginFailure('profile is invalid', 'INVALID_ARGUMENT');
+    if (jwtBearerToken != null && typeof jwtBearerToken !== 'string') {
+      console.error('[OneSignal] loginWithProfile: jwtBearerToken must be a string');
+      return loginFailure('jwtBearerToken must be a string', 'INVALID_ARGUMENT');
+    }
+
+    try {
+      const result = await RNOneSignal.loginWithProfile(
+        externalId,
+        payload,
+        jwtBearerToken || null,
+      );
+      return parseLoginResult(result);
+    } catch (error) {
+      return loginFailure(error instanceof Error ? error.message : String(error));
+    }
   }
 
   /**
@@ -1030,5 +1097,12 @@ export {
 
 export { default as OSNotification } from './OSNotification';
 export type { InAppMessageClickResult } from './types/inAppMessage';
+export type {
+  LoginData,
+  OneSignalErrorCode,
+  OneSignalErrorDetail,
+  OneSignalResult,
+  OneSignalUserProfile,
+} from './types/login';
 export type { NotificationClickResult } from './types/notificationEvents';
 export type { PushSubscriptionState } from './types/subscription';

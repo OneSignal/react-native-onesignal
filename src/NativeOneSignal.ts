@@ -7,6 +7,7 @@ export interface Spec extends TurboModule {
   // OneSignal root
   initialize(appId: string): void;
   login(externalId: string): void;
+  loginWithProfile(externalId: string, profile: Object, jwt: string | null): Promise<Object>;
   logout(): void;
   setPrivacyConsentRequired(required: boolean): void;
   setPrivacyConsentGiven(granted: boolean): void;
