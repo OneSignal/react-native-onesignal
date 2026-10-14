@@ -11,6 +11,7 @@ export default function LogView() {
   const logs = useLogs();
   const scrollRef = useRef<ScrollView>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const scrollToEnd = () => scrollRef.current?.scrollToEnd({ animated: false });
 
   return (
     <View style={styles.container} testID="log_view">
@@ -46,7 +47,8 @@ export default function LogView() {
         ref={scrollRef}
         style={collapsed ? styles.bodyCollapsed : styles.body}
         contentContainerStyle={styles.bodyContent}
-        onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
+        onContentSizeChange={scrollToEnd}
+        onLayout={scrollToEnd}
         nestedScrollEnabled
       >
         {logs.length === 0 ? (
