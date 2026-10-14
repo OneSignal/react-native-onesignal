@@ -311,7 +311,12 @@ public class RNUtils {
                 aliases = convertReadableMapIntoStringMap(profile.getMap("aliases"));
             }
         }
-        return new OneSignalUserProfile(email, sms, tags, aliases);
+        return OneSignalUserProfile.builder()
+                .setEmail(email)
+                .setSms(sms)
+                .setTags(tags)
+                .setAliases(aliases)
+                .build();
     }
 
     public static WritableMap convertMapToWritableMap(Map<?, ?> map) {
