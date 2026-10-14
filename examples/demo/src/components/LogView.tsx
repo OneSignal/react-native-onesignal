@@ -42,25 +42,25 @@ export default function LogView() {
           </Pressable>
         </View>
       </View>
-      {/* Collapsed via height so entries stay in the view hierarchy. */}
-      <ScrollView
-        ref={scrollRef}
-        style={collapsed ? styles.bodyCollapsed : styles.body}
-        contentContainerStyle={styles.bodyContent}
-        onContentSizeChange={scrollToEnd}
-        onLayout={scrollToEnd}
-        nestedScrollEnabled
-      >
-        {logs.length === 0 ? (
-          <Text style={[styles.entry, styles.muted]}>No logs yet</Text>
-        ) : (
-          logs.map((entry, index) => (
-            <Text key={entry.id} style={styles.entry} testID={`log_entry_${index}`}>
-              <Text style={styles.muted}>{entry.time}</Text> {entry.message}
-            </Text>
-          ))
-        )}
-      </ScrollView>
+      {!collapsed && (
+        <ScrollView
+          ref={scrollRef}
+          style={styles.body}
+          contentContainerStyle={styles.bodyContent}
+          onContentSizeChange={scrollToEnd}
+          onLayout={scrollToEnd}
+        >
+          {logs.length === 0 ? (
+            <Text style={[styles.entry, styles.muted]}>No logs yet</Text>
+          ) : (
+            logs.map((entry, index) => (
+              <Text key={entry.id} style={styles.entry} testID={`log_entry_${index}`}>
+                <Text style={styles.muted}>{entry.time}</Text> {entry.message}
+              </Text>
+            ))
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -92,9 +92,6 @@ const styles = StyleSheet.create({
   },
   body: {
     height: 100,
-  },
-  bodyCollapsed: {
-    height: 0,
   },
   bodyContent: {
     paddingHorizontal: 16,
