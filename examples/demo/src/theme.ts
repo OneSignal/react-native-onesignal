@@ -12,6 +12,8 @@ export const AppColors = {
   osDivider: '#E8EAED',
   osWarningBackground: '#FFF8E1',
   osBackdrop: 'rgba(0,0,0,0.54)',
+  osLogBackground: '#1E1E1E',
+  osLogText: '#D4D4D4',
   white: '#FFFFFF',
 } as const;
 

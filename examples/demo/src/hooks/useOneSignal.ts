@@ -24,6 +24,7 @@ import {
 } from 'react-native-onesignal';
 
 import { NotificationType } from '../models/NotificationType';
+import { log } from '../services/LogService';
 import OneSignalApiService from '../services/OneSignalApiService';
 import PreferencesService from '../services/PreferencesService';
 
@@ -170,34 +171,37 @@ function useOneSignalState(): UseOneSignalReturn {
     let userChanged = false;
 
     const handleIamWillDisplay = (e: InAppMessageWillDisplayEvent) => {
-      console.log(`IAM willDisplay: ${e.message.messageId}`);
+      log(`IAM willDisplay: ${e.message.messageId}`);
     };
 
     const handleIamDidDisplay = (e: InAppMessageDidDisplayEvent) => {
-      console.log(`IAM didDisplay: ${e.message.messageId}`);
+      log(`IAM didDisplay: ${e.message.messageId}`);
     };
 
     const handleIamWillDismiss = (e: InAppMessageWillDismissEvent) => {
-      console.log(`IAM willDismiss: ${e.message.messageId}`);
+      log(`IAM willDismiss: ${e.message.messageId}`);
     };
 
     const handleIamDidDismiss = (e: InAppMessageDidDismissEvent) => {
-      console.log(`IAM didDismiss: ${e.message.messageId}`);
+      log(`IAM didDismiss: ${e.message.messageId}`);
     };
 
     const handleIamClick = (e: InAppMessageClickEvent) => {
-      console.log(`IAM click: ${e.message.messageId}`);
+      log(`IAM click: ${e.message.messageId}`);
     };
 
     const handleNotificationClick = (e: NotificationClickEvent) => {
-      console.log(`Notification click: ${e.notification.title ?? ''}`);
+      log(`Notification click: ${e.notification.notificationId} ${e.notification.title ?? ''}`);
 
       // uncomment to see the full event object
       // console.log('[OneSignal] click event: ', e);
     };
 
     const handleForegroundWillDisplay = (e: NotificationWillDisplayEvent) => {
-      console.log(`Notification foregroundWillDisplay: ${e.getNotification().title ?? ''}`);
+      const notification = e.getNotification();
+      log(
+        `Notification foregroundWillDisplay: ${notification.notificationId} ${notification.title ?? ''}`,
+      );
 
       // uncomment to see the full event object
       // console.log('[OneSignal] will display event: ', e.getNotification());
@@ -224,12 +228,18 @@ function useOneSignalState(): UseOneSignalReturn {
 
     const pushSubHandler = (event: PushSubscriptionChangedState) => {
       pushChanged = true;
-      setPushSubscriptionId(event.current.id ?? undefined);
-      setIsPushEnabled(event.current.optedIn);
+      const { previous, current } = event;
+      const fmtToken = (t: string | undefined) => (t ? `${t.slice(0, 8)}…` : 'null');
+      log(
+        `Push subscription changed: id=${previous.id ?? 'null'} → ${current.id ?? 'null'}, optedIn=${previous.optedIn} → ${current.optedIn}, token=${fmtToken(previous.token)} → ${fmtToken(current.token)}`,
+      );
+      setPushSubscriptionId(current.id ?? undefined);
+      setIsPushEnabled(current.optedIn);
     };
 
     const permissionHandler = (granted: boolean) => {
       permissionChanged = true;
+      log(`Permission changed: ${granted}`);
       setHasNotificationPermission(granted);
     };
 
@@ -237,7 +247,7 @@ function useOneSignalState(): UseOneSignalReturn {
       userChanged = true;
       requestSequenceRef.current++;
       const nextOnesignalId = event.current.onesignalId ?? null;
-      console.log(
+      log(
         `User changed: onesignalId=${nextOnesignalId ?? 'null'}, externalId=${event.current.externalId ?? 'null'}`,
       );
 
