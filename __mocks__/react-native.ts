@@ -5,6 +5,7 @@ const createEventEmitterMock = () => vi.fn(() => ({ remove: vi.fn() }));
 const mockRNOneSignal: Record<string, Mock> = {
   initialize: vi.fn(),
   login: vi.fn(),
+  loginWithProfile: vi.fn(),
   logout: vi.fn(),
   setPrivacyConsentRequired: vi.fn(),
   setPrivacyConsentGiven: vi.fn(),

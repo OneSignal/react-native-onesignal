@@ -43,9 +43,12 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.onesignal.Continue;
+import com.onesignal.LoginData;
 import com.onesignal.OneSignal;
+import com.onesignal.OneSignalResult;
 import com.onesignal.common.OneSignalWrapper;
 import com.onesignal.debug.LogLevel;
 import com.onesignal.debug.internal.logging.Logging;
@@ -70,6 +73,12 @@ import com.onesignal.user.subscriptions.PushSubscriptionChangedState;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import kotlin.Result;
+import kotlin.coroutines.Continuation;
+import kotlin.coroutines.CoroutineContext;
+import kotlin.coroutines.EmptyCoroutineContext;
+import kotlin.coroutines.intrinsics.IntrinsicsKt;
 import org.json.JSONException;
 
 public class RNOneSignal extends NativeOneSignalSpec
@@ -603,6 +612,77 @@ public class RNOneSignal extends NativeOneSignalSpec
             return;
         }
         OneSignal.login(externalUserId);
+    }
+
+    @Override
+    public void loginWithProfile(String externalId, ReadableMap profile, @Nullable String jwt, Promise promise) {
+        AtomicBoolean settled = new AtomicBoolean(false);
+        Continuation<OneSignalResult<LoginData>> continuation = new Continuation<OneSignalResult<LoginData>>() {
+            @Override
+            public CoroutineContext getContext() {
+                return EmptyCoroutineContext.INSTANCE;
+            }
+
+            @Override
+            public void resumeWith(Object result) {
+                settleLoginWithProfile(promise, settled, result);
+            }
+        };
+
+        Object returned;
+        try {
+            returned = OneSignal.login(externalId, RNUtils.convertReadableMapToUserProfile(profile), jwt, continuation);
+        } catch (Throwable t) {
+            settleLoginWithProfile(promise, settled, new Result.Failure(t));
+            return;
+        }
+        // A non-suspending call returns its result here and never invokes resumeWith.
+        if (returned != IntrinsicsKt.getCOROUTINE_SUSPENDED()) {
+            settleLoginWithProfile(promise, settled, returned);
+        }
+    }
+
+    private static void settleLoginWithProfile(Promise promise, AtomicBoolean settled, Object result) {
+        if (!settled.compareAndSet(false, true)) return;
+
+        WritableMap payload;
+        try {
+            if (result instanceof OneSignalResult) {
+                payload = RNUtils.convertMapToWritableMap(((OneSignalResult<?>) result).toMap());
+            } else {
+                Throwable error = result instanceof Result.Failure ? ((Result.Failure) result).exception : null;
+                if (error != null) Logging.error("loginWithProfile failed", error);
+                payload = loginWithProfileFailure(
+                        error != null ? describe(error) : "Unexpected loginWithProfile result");
+            }
+        } catch (Throwable t) {
+            Logging.error("Failed to serialize loginWithProfile result", t);
+            payload = loginWithProfileFailure(describe(t));
+        }
+        promise.resolve(payload);
+    }
+
+    private static String describe(Throwable t) {
+        return t.getMessage() != null ? t.getMessage() : t.toString();
+    }
+
+    private static WritableMap loginWithProfileFailure(String message) {
+        WritableMap error = Arguments.createMap();
+        error.putString("code", "UNKNOWN");
+        error.putString("source", "CLIENT");
+        error.putNull("backendCode");
+        error.putNull("httpStatus");
+        error.putString("message", message);
+        error.putNull("meta");
+
+        WritableArray errors = Arguments.createArray();
+        errors.pushMap(error);
+
+        WritableMap payload = Arguments.createMap();
+        payload.putBoolean("success", false);
+        payload.putNull("data");
+        payload.putArray("error", errors);
+        return payload;
     }
 
     @Override

@@ -78,6 +78,12 @@ export type UseOneSignalReturn = {
   isLoading: boolean;
   isReady: boolean;
   loginUser: (externalUserId: string) => Promise<void>;
+  loginUserWithProfile: (
+    externalUserId: string,
+    email: string,
+    sms: string,
+    jwt: string,
+  ) => Promise<void>;
   logoutUser: () => Promise<void>;
   setConsentRequired: (required: boolean) => Promise<void>;
   setConsentGiven: (granted: boolean) => Promise<void>;
@@ -133,6 +139,8 @@ function useOneSignalState(): UseOneSignalReturn {
   const [isReady, setIsReady] = useState(false);
 
   const requestSequenceRef = useRef(0);
+
+  const loginSequenceRef = useRef(0);
 
   const fetchUserDataFromApi = useCallback(async () => {
     const requestId = requestSequenceRef.current + 1;
@@ -364,6 +372,7 @@ function useOneSignalState(): UseOneSignalReturn {
   }, [fetchUserDataFromApi]);
 
   const loginUser = async (nextExternalUserId: string) => {
+    loginSequenceRef.current++;
     requestSequenceRef.current++;
     setAliasesList([]);
     setEmailsList([]);
@@ -385,7 +394,49 @@ function useOneSignalState(): UseOneSignalReturn {
     }
   };
 
+  const loginUserWithProfile = async (
+    nextExternalUserId: string,
+    email: string,
+    sms: string,
+    jwt: string,
+  ) => {
+    const loginId = ++loginSequenceRef.current;
+    requestSequenceRef.current++;
+    setAliasesList([]);
+    setEmailsList([]);
+    setSmsNumbersList([]);
+    setTagsList([]);
+    setTriggersList([]);
+    setIsLoading(true);
+
+    const result = await OneSignal.loginWithProfile(
+      nextExternalUserId,
+      { email: email || undefined, sms: sms || undefined },
+      jwt || null,
+    );
+    // A logout or another login during the await owns the state now.
+    if (loginSequenceRef.current !== loginId) return;
+    if (!result.success) {
+      const details = (result.error ?? []).map((e) => `${e.code}: ${e.message}`).join(', ');
+      console.error(`Login with profile error: ${details}`);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await preferences.setExternalUserId(nextExternalUserId);
+      setExternalUserId(nextExternalUserId);
+      console.log(`Logged in with profile as: ${nextExternalUserId}`);
+      // The user 'change' listener does not fire when the external id is unchanged.
+      await fetchUserDataFromApi();
+    } catch (err) {
+      console.error(`Login with profile error: ${String(err)}`);
+      setIsLoading(false);
+    }
+  };
+
   const logoutUser = async () => {
+    loginSequenceRef.current++;
     requestSequenceRef.current++;
     setIsLoading(false);
     OneSignal.logout();
@@ -608,6 +659,7 @@ function useOneSignalState(): UseOneSignalReturn {
     isLoading,
     isReady,
     loginUser,
+    loginUserWithProfile,
     logoutUser,
     setConsentRequired,
     setConsentGiven,

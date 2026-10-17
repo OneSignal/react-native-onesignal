@@ -207,6 +207,136 @@ describe('OneSignal', () => {
     });
   });
 
+  describe('loginWithProfile', () => {
+    const SUCCESS = {
+      success: true,
+      data: { onesignalId: 'os-id', externalId: 'external-123', emailSubscriptionId: 'email-sub' },
+      error: null,
+    };
+    const failure = (code: string, message: string) => ({
+      success: false,
+      data: null,
+      error: [{ code, source: 'CLIENT', backendCode: null, httpStatus: null, message, meta: null }],
+    });
+
+    beforeEach(() => {
+      mockPlatform.OS = 'android';
+    });
+
+    test('marshals arguments and parses the native result', async () => {
+      mockRNOneSignal.loginWithProfile.mockResolvedValue(SUCCESS);
+      const result = await OneSignal.loginWithProfile(
+        'external-123',
+        {
+          email: 'a@b.co',
+          sms: '+15555550100',
+          tags: { level: 5 as unknown as string },
+          aliases: { crm: 'c-1' },
+        },
+        'jwt-token',
+      );
+      expect(mockRNOneSignal.loginWithProfile).toHaveBeenCalledWith(
+        'external-123',
+        { email: 'a@b.co', sms: '+15555550100', tags: { level: '5' }, aliases: { crm: 'c-1' } },
+        'jwt-token',
+      );
+      expect(result).toEqual(SUCCESS);
+    });
+
+    test('drops absent fields and sends a null jwt when omitted', async () => {
+      mockRNOneSignal.loginWithProfile.mockResolvedValue(SUCCESS);
+      await OneSignal.loginWithProfile('external-123', { email: undefined, sms: null as never });
+      expect(mockRNOneSignal.loginWithProfile).toHaveBeenCalledWith('external-123', {}, null);
+    });
+
+    test('sends a null jwt when empty', async () => {
+      mockRNOneSignal.loginWithProfile.mockResolvedValue(SUCCESS);
+      await OneSignal.loginWithProfile('external-123', {}, '');
+      expect(mockRNOneSignal.loginWithProfile).toHaveBeenCalledWith('external-123', {}, null);
+    });
+
+    test('returns a failure for a malformed native result', async () => {
+      mockRNOneSignal.loginWithProfile.mockResolvedValue({ success: 'yes' });
+      const result = await OneSignal.loginWithProfile('external-123', {});
+      expect(result).toEqual(failure('UNKNOWN', 'Malformed loginWithProfile result'));
+    });
+
+    test.each([
+      ['an Error', new Error('bridge down'), 'bridge down'],
+      ['a non-Error', 'bridge down', 'bridge down'],
+    ])('resolves a failure when native rejects with %s', async (_label, reason, message) => {
+      mockRNOneSignal.loginWithProfile.mockRejectedValue(reason);
+      const result = await OneSignal.loginWithProfile('external-123', {});
+      expect(result).toEqual(failure('UNKNOWN', message));
+    });
+
+    test('returns the unsupported failure on iOS without calling native', async () => {
+      mockPlatform.OS = 'ios';
+      const result = await OneSignal.loginWithProfile('external-123', { email: 'a@b.co' });
+      expect(mockRNOneSignal.loginWithProfile).not.toHaveBeenCalled();
+      expect(result).toEqual(failure('UNKNOWN', 'loginWithProfile is only supported on Android'));
+    });
+
+    test('returns a failure if native module is not loaded', async () => {
+      isNativeLoadedSpy.mockReturnValue(false);
+      const result = await OneSignal.loginWithProfile('external-123', {});
+      expect(mockRNOneSignal.loginWithProfile).not.toHaveBeenCalled();
+      expect(result).toEqual(failure('UNKNOWN', 'OneSignal native module not loaded'));
+    });
+
+    test.each([
+      ['null', null],
+      ['empty', ''],
+    ])('rejects a %s externalId as INVALID_ARGUMENT', async (_label, externalId) => {
+      const result = await OneSignal.loginWithProfile(externalId as string, {});
+      expect(mockRNOneSignal.loginWithProfile).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] loginWithProfile: externalId is required');
+      expect(result).toEqual(failure('INVALID_ARGUMENT', 'externalId is required'));
+    });
+
+    test.each([
+      ['a non-object profile', null, '[OneSignal] loginWithProfile: profile must be an object'],
+      ['a non-string email', { email: 5 }, '[OneSignal] loginWithProfile: email must be a string'],
+      ['a non-string sms', { sms: true }, '[OneSignal] loginWithProfile: sms must be a string'],
+      [
+        'non-object tags',
+        { tags: 'x' },
+        '[OneSignal] loginWithProfile: tags: argument must be an object',
+      ],
+      [
+        'a null tag value',
+        { tags: { a: null } },
+        '[OneSignal] loginWithProfile: tags: value is required',
+      ],
+      [
+        'an empty alias id',
+        { aliases: { crm: '' } },
+        '[OneSignal] loginWithProfile: aliases: value is required',
+      ],
+    ])('rejects %s as INVALID_ARGUMENT', async (_label, profile, message) => {
+      const result = await OneSignal.loginWithProfile('external-123', profile as never);
+      expect(mockRNOneSignal.loginWithProfile).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith(message);
+      expect(result).toEqual(failure('INVALID_ARGUMENT', 'profile is invalid'));
+    });
+
+    test('resolves INVALID_ARGUMENT when a tag value cannot be stringified', async () => {
+      const profile = { tags: { a: Object.create(null) } };
+      const result = await OneSignal.loginWithProfile('external-123', profile as never);
+      expect(mockRNOneSignal.loginWithProfile).not.toHaveBeenCalled();
+      expect(result).toEqual(failure('INVALID_ARGUMENT', 'profile is invalid'));
+    });
+
+    test('rejects a non-string jwt as INVALID_ARGUMENT', async () => {
+      const result = await OneSignal.loginWithProfile('external-123', {}, 5 as never);
+      expect(mockRNOneSignal.loginWithProfile).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith(
+        '[OneSignal] loginWithProfile: jwtBearerToken must be a string',
+      );
+      expect(result).toEqual(failure('INVALID_ARGUMENT', 'jwtBearerToken must be a string'));
+    });
+  });
+
   describe('logout', () => {
     test('should logout', () => {
       OneSignal.logout();

@@ -69,6 +69,7 @@ export default function HomeScreen() {
         <UserSection
           externalUserId={os.externalUserId}
           onLogin={os.loginUser}
+          onLoginWithProfile={os.loginUserWithProfile}
           onLogout={os.logoutUser}
         />
 
