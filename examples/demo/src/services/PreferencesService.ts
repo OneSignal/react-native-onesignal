@@ -6,6 +6,7 @@ const KEYS = {
   EXTERNAL_USER_ID: 'onesignal_external_user_id',
   LOCATION_SHARED: 'onesignal_location_shared',
   IAM_PAUSED: 'onesignal_iam_paused',
+  LANGUAGE: 'onesignal_language',
 } as const;
 
 class PreferencesService {
@@ -64,6 +65,14 @@ class PreferencesService {
 
   async setIamPaused(paused: boolean): Promise<void> {
     await AsyncStorage.setItem(KEYS.IAM_PAUSED, String(paused));
+  }
+
+  async getLanguage(): Promise<string> {
+    return (await AsyncStorage.getItem(KEYS.LANGUAGE)) ?? '';
+  }
+
+  async setLanguage(language: string): Promise<void> {
+    await AsyncStorage.setItem(KEYS.LANGUAGE, language);
   }
 }
 

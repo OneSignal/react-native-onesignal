@@ -155,7 +155,9 @@ Use the `OneSignal` object from `react-native-onesignal`:
 | SendUniqueOutcome(name)           | `OneSignal.Session.addUniqueOutcome(name)`                |
 | SendOutcomeWithValue(name, value) | `OneSignal.Session.addOutcomeWithValue(name, value)`      |
 | TrackEvent(name, properties)      | `OneSignal.User.trackEvent(name, properties)`             |
+| SetLanguage(language)             | `OneSignal.User.setLanguage(language)`                    |
 | GetPushSubscriptionId()           | `await OneSignal.User.pushSubscription.getIdAsync()`      |
+| GetPushSubscriptionToken()        | `await OneSignal.User.pushSubscription.getTokenAsync()`   |
 | IsPushOptedIn()                   | `await OneSignal.User.pushSubscription.getOptedInAsync()` |
 | OptInPush()                       | `OneSignal.User.pushSubscription.optIn()`                 |
 | OptOutPush()                      | `OneSignal.User.pushSubscription.optOut()`                |
@@ -232,6 +234,7 @@ OneSignal.User.addEventListener('change', handler);
 ### Persistence
 
 - `PreferencesService` wraps `AsyncStorage`
+- Selected language is persisted for the User section dropdown only; the native SDK keeps its own language, so it is not re-applied on launch. Login and logout reset the picker to Device Default by clearing the cached value only. They don't call `setLanguage`, since `''` sends the device language and would overwrite the user's backend value.
 - Triggers list (`triggersList`) is NOT persisted
 
 ### SDK State Restoration
