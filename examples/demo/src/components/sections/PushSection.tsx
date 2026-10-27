@@ -8,6 +8,7 @@ import ToggleRow from '../ToggleRow';
 
 interface Props {
   pushSubscriptionId: string | undefined;
+  pushSubscriptionToken: string | undefined;
   isPushEnabled: boolean;
   hasNotificationPermission: boolean;
   onSetPushEnabled: (value: boolean) => void;
@@ -17,12 +18,15 @@ interface Props {
 
 export default function PushSection({
   pushSubscriptionId,
+  pushSubscriptionToken,
   isPushEnabled,
   hasNotificationPermission,
   onSetPushEnabled,
   onPromptPush,
   onInfoTap,
 }: Props) {
+  const isSubscribed = isPushEnabled && hasNotificationPermission && !!pushSubscriptionToken;
+
   return (
     <SectionCard title="Push" onInfoTap={onInfoTap} sectionKey="push">
       <View style={AppTheme.card}>
@@ -38,8 +42,15 @@ export default function PushSection({
           </Text>
         </View>
         <View style={styles.divider} />
+        <View style={styles.idRow}>
+          <Text style={styles.idLabel}>Status</Text>
+          <Text style={styles.statusValue} testID="push_subscription_status">
+            {isSubscribed ? 'Subscribed' : 'Unsubscribed'}
+          </Text>
+        </View>
+        <View style={styles.divider} />
         <ToggleRow
-          label="Enabled"
+          label="Opted In"
           value={isPushEnabled}
           onValueChange={onSetPushEnabled}
           disabled={!hasNotificationPermission}
@@ -73,6 +84,10 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     marginLeft: 8,
     fontFamily: 'monospace',
+  },
+  statusValue: {
+    ...AppTextStyles.bodySmall,
+    color: AppColors.osGrey700,
   },
   divider: {
     height: 1,
