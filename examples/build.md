@@ -234,7 +234,7 @@ OneSignal.User.addEventListener('change', handler);
 ### Persistence
 
 - `PreferencesService` wraps `AsyncStorage`
-- Selected language is persisted for the User section dropdown only; the native SDK keeps its own language, so it is not re-applied on launch. Logout resets it to Device Default (`''`).
+- Selected language is persisted for the User section dropdown only; the native SDK keeps its own language, so it is not re-applied on launch. Login and logout reset the picker to Device Default by clearing the cached value only. They don't call `setLanguage`, since `''` sends the device language and would overwrite the user's backend value.
 - Triggers list (`triggersList`) is NOT persisted
 
 ### SDK State Restoration
