@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
+import DropdownMenu, { type DropdownAnchor, type DropdownOption } from '../DropdownMenu';
 import SingleInputModal from '../modals/SingleInputModal';
-import SingleSelectModal, { type SelectOption } from '../modals/SingleSelectModal';
 import SectionCard from '../SectionCard';
 
-const LANGUAGE_OPTIONS: SelectOption[] = [
+const LANGUAGE_OPTIONS: DropdownOption[] = [
   { label: 'Device Default', value: '' },
   { label: 'English', value: 'en' },
   { label: 'Arabic', value: 'ar' },
@@ -71,7 +71,8 @@ export default function UserSection({
   onSetLanguage,
 }: Props) {
   const [loginOpen, setLoginOpen] = useState(false);
-  const [languageOpen, setLanguageOpen] = useState(false);
+  const [languageAnchor, setLanguageAnchor] = useState<DropdownAnchor | null>(null);
+  const languageRowRef = useRef<View>(null);
   const isLoggedIn = !!externalUserId;
   const languageLabel =
     LANGUAGE_OPTIONS.find((option) => option.value === language)?.label ?? language;
@@ -82,6 +83,12 @@ export default function UserSection({
 
   const handleLogout = async () => {
     await onLogout();
+  };
+
+  const openLanguageMenu = () => {
+    languageRowRef.current?.measureInWindow((x, y, width, height) => {
+      setLanguageAnchor({ x, y, width, height });
+    });
   };
 
   return (
@@ -105,8 +112,9 @@ export default function UserSection({
         </View>
         <View style={styles.divider} />
         <TouchableOpacity
+          ref={languageRowRef}
           style={styles.row}
-          onPress={() => setLanguageOpen(true)}
+          onPress={openLanguageMenu}
           testID="user_language_dropdown"
         >
           <Text style={styles.label}>Language</Text>
@@ -140,13 +148,12 @@ export default function UserSection({
         onClose={() => setLoginOpen(false)}
         testID="login_user_id_input"
       />
-      <SingleSelectModal
-        visible={languageOpen}
-        title="Language"
+      <DropdownMenu
+        anchor={languageAnchor}
         options={LANGUAGE_OPTIONS}
         selectedValue={language}
         onSelect={onSetLanguage}
-        onClose={() => setLanguageOpen(false)}
+        onClose={() => setLanguageAnchor(null)}
         testIDPrefix="language_option"
       />
     </SectionCard>
