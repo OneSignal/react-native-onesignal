@@ -1,77 +1,75 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# OneSignal React Native Demo
 
-# Getting Started
+Reference app for `react-native-onesignal`. It showcases SDK features including push notifications, in-app messaging, user management, tags, triggers, outcomes, live activities, and more, using the SDK packed from this repository.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+The demo uses package/bundle id `com.onesignal.example`.
 
-## Step 1: Start Metro
+## Prerequisites
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- [React Native environment setup](https://reactnative.dev/docs/set-up-your-environment) for Android and iOS
+- Vite+ (`vp`) and Bun
+- Ruby with Bundler, for CocoaPods
+- Android Studio with a running emulator, and/or Xcode with a booted simulator
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Setup
 
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+Install the SDK's dependencies from the repository root, since setup builds and packs the SDK from there:
 
 ```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+vp install
 ```
 
-### iOS
+Then, in this directory:
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+```sh
+cp .env.example .env
+```
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Set your OneSignal credentials in `.env`:
+
+```sh
+ONESIGNAL_APP_ID=your-onesignal-app-id
+ONESIGNAL_API_KEY=your-onesignal-api-key
+ONESIGNAL_ANDROID_CHANNEL_ID=
+```
+
+- `ONESIGNAL_APP_ID`: falls back to a built-in default App ID when empty.
+- `ONESIGNAL_API_KEY`: REST API key, used to update and end live activities. Sending notifications from the demo doesn't need it.
+- `ONESIGNAL_ANDROID_CHANNEL_ID`: optional Android notification channel for the sound test notification. Falls back to a built-in default channel.
+
+The OneSignal app needs FCM credentials for Android and APNs credentials for the `com.onesignal.example` bundle ID on iOS.
+
+For iOS, install CocoaPods on first run:
 
 ```sh
 bundle install
+cd ios && bundle exec pod install && cd ..
 ```
 
-Then, and every time you update your native dependencies, run:
+## Run
 
 ```sh
-bundle exec pod install
+vp run android
+vp run ios
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+Each command first runs `setup` (`../setup.sh`), which:
 
-```sh
-# Using npm
-npm run ios
+1. Restarts this demo's Metro server if `.env` changed, so the new values are picked up
+2. Builds and packs the SDK from the repository root
+3. Installs the packed SDK (and the demo's dependencies) into the demo when it changed
 
-# OR using Yarn
-yarn ios
-```
+It then builds and launches the app with the React Native CLI, which starts Metro if it isn't running. If more than one emulator or simulator is running, the script asks you to pick one.
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## Other scripts
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+| Script                 | Purpose                                                              |
+| ---------------------- | -------------------------------------------------------------------- |
+| `vp run setup`         | Build, pack, and install the SDK into the demo.                      |
+| `vp run start`         | Start Metro.                                                         |
+| `vp run update:pods`   | Run `pod update OneSignalXCFramework` after native SDK changes.      |
+| `vp run clean:android` | Wipe Android build outputs and uninstall the app from the device.    |
+| `vp run clean:ios`     | Wipe iOS build outputs and `ios/Pods`. Run `pod install` again after. |
 
 ## Testing iOS Action Button Icons
 
@@ -85,25 +83,10 @@ in the OneSignal dashboard with these action buttons:
 Enter the icon names without the `.png` extension. On an iOS 15 or newer
 physical device, expand the notification to verify that both icons render.
 
-## Congratulations! :tada:
+## Other demos
 
-You've successfully run and modified your React Native App. :partying_face:
+- [`demo-no-location`](../demo-no-location): app without the native location module
 
-### Now what?
+## Build Guide
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+See [../build.md](../build.md) for the full set of prompts and requirements used to build this app, and [../build-ios.md](../build-ios.md) for the iOS push and live activity setup.
