@@ -16,12 +16,12 @@ end
 
 target 'OneSignalNotificationServiceExtension' do
   # use_frameworks! :linkage => :static
-  pod 'OneSignalXCFramework', '5.8.0'
+  pod 'OneSignalXCFramework', '5.8.1'
 end
 
 target 'OneSignalWidgetExtension' do
   # use_frameworks! :linkage => :static
-  pod 'OneSignalXCFramework', '5.8.0'
+  pod 'OneSignalXCFramework', '5.8.1'
 end
 
 target 'demo' do
