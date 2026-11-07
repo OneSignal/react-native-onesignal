@@ -223,26 +223,26 @@ jobs:
           git diff --staged --quiet && exit 0
           git commit -m "Release $NEW_VERSION" && git push
 
-      - name: Refresh demo Podfile.lock
-        if: inputs.ios_version != ''
+      - name: Refresh demo lockfiles
+        env:
+          IOS_VERSION: ${{ inputs.ios_version }}
         run: |
           # Runs after all version edits (package.json + podspec) so the
           # repacked SDK tarball and OneSignalXCFramework pin both reflect
-          # the new release. pod install regenerates Podfile.lock entries
-          # for the path-based react-native-onesignal pod and any changed
-          # native pins in a single resolve.
-          (
-            cd examples/demo
-            vp run setup
-            cd ios
-            pod update OneSignalXCFramework
-          )
-          echo "✓ Refreshed examples/demo/ios/Podfile.lock"
+          # the new release. setup always runs because every version bump
+          # changes the tarball integrity recorded in the demo bun.lock.
+          (cd examples/demo && vp run setup)
+          echo "✓ Refreshed examples/demo/bun.lock"
+
+          if [ -n "$IOS_VERSION" ]; then
+            (cd examples/demo/ios && pod update OneSignalXCFramework)
+            echo "✓ Refreshed examples/demo/ios/Podfile.lock"
+          fi
 
           # Only commit if there are changes
           git add -A
           git diff --staged --quiet && exit 0
-          git commit -m "Update demo Podfile.lock" && git push
+          git commit -m "Update demo lockfiles" && git push
 
   create-pr:
     needs: [prep, update_version]
