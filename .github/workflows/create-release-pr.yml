@@ -175,6 +175,14 @@ jobs:
           fi
           echo "✓ Updated react-native-onesignal.podspec with iOS SDK ${VERSION}"
 
+          PODFILE=examples/demo/ios/Podfile
+          sed -i '' -E "s/^([[:space:]]*pod 'OneSignalXCFramework', )'[^']+'.*$/\1'${VERSION}'/" "$PODFILE"
+          if [ "$(grep -c "pod 'OneSignalXCFramework', '${VERSION}'$" "$PODFILE")" -ne 2 ]; then
+            echo "::error::Failed to update OneSignalXCFramework pins in ${PODFILE} to ${VERSION}"
+            exit 1
+          fi
+          echo "✓ Updated ${PODFILE} extension pods to iOS SDK ${VERSION}"
+
           # Only commit if there are changes
           git add -A
           git diff --staged --quiet && exit 0
