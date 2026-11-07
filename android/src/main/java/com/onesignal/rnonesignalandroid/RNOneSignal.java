@@ -224,7 +224,7 @@ public class RNOneSignal extends NativeOneSignalSpec
     @Override
     public void initialize(String appId) {
         OneSignalWrapper.setSdkType("reactnative");
-        OneSignalWrapper.setSdkVersion("050516");
+        OneSignalWrapper.setSdkVersion("050517");
 
         if (oneSignalInitDone) {
             Logging.debug("Already initialized the OneSignal React-Native SDK", null);
