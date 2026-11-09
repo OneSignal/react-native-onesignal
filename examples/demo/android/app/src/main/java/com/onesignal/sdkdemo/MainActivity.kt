@@ -1,4 +1,4 @@
-package com.onesignal.example
+package com.onesignal.sdkdemo
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

@@ -73,18 +73,29 @@ def enableProguardInReleaseBuilds = true
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
+def hasGoogleServices = file("google-services.json").exists()
+
+// Off by default so local builds keep the legacy token path. E2E opts in with
+// `-PFIREBASE_INSTALLATION_ID_ENABLED=true`; the flag does nothing without the default FirebaseApp.
+def firebaseInstallationIdEnabled =
+    (findProperty("FIREBASE_INSTALLATION_ID_ENABLED") ?: "false").toString().trim().toBoolean()
+if (firebaseInstallationIdEnabled && !hasGoogleServices) {
+    throw new GradleException("FIREBASE_INSTALLATION_ID_ENABLED requires examples/demo/android/app/google-services.json")
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.onesignal.example"
+    namespace "com.onesignal.sdkdemo"
     defaultConfig {
-        applicationId "com.onesignal.example"
+        applicationId "com.onesignal.sdkdemo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders.firebaseInstallationIdEnabled = firebaseInstallationIdEnabled.toString()
     }
     signingConfigs {
         debug {
@@ -127,10 +138,16 @@ apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    // OneSignal resolves firebase-messaging 24.x; Installation ID registration needs 25.1.2+.
+    implementation("com.google.firebase:firebase-messaging:25.1.3")
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
     }
+}
+
+if (hasGoogleServices) {
+    apply plugin: "com.google.gms.google-services"
 }
