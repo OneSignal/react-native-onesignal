@@ -1,5 +1,6 @@
 # Environment
 .env
+android/app/google-services.json
 .rn-demo-env.stamp
 
 # OSX

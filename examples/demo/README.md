@@ -2,7 +2,7 @@
 
 Reference app for `react-native-onesignal`. It showcases SDK features including push notifications, in-app messaging, user management, tags, triggers, outcomes, live activities, and more, using the SDK packed from this repository.
 
-The demo uses package/bundle id `com.onesignal.example`.
+The demo uses Android package `com.onesignal.sdkdemo` and iOS bundle id `com.onesignal.example`.
 
 ## Prerequisites
 
@@ -28,16 +28,18 @@ cp .env.example .env
 Set your OneSignal credentials in `.env`:
 
 ```sh
-ONESIGNAL_APP_ID=your-onesignal-app-id
+ONESIGNAL_APP_ID=
 ONESIGNAL_API_KEY=your-onesignal-api-key
 ONESIGNAL_ANDROID_CHANNEL_ID=
 ```
 
-- `ONESIGNAL_APP_ID`: falls back to a built-in default App ID when empty.
+- `ONESIGNAL_APP_ID`: required. `metro.config.js` fails the bundle when it's unset.
 - `ONESIGNAL_API_KEY`: REST API key, used to update and end live activities. Sending notifications from the demo doesn't need it.
 - `ONESIGNAL_ANDROID_CHANNEL_ID`: optional Android notification channel for the sound test notification. Falls back to a built-in default channel.
 
-The OneSignal app needs FCM credentials for Android and APNs credentials for the `com.onesignal.example` bundle ID on iOS.
+The OneSignal app needs FCM credentials for the `com.onesignal.sdkdemo` Android package and APNs credentials for the `com.onesignal.example` bundle ID on iOS.
+
+To use Firebase on Android, put a `google-services.json` with a `com.onesignal.sdkdemo` client in `android/app/`. It's gitignored, and the Google Services plugin is applied only when it exists. Pass `-PFIREBASE_INSTALLATION_ID_ENABLED=true` to Gradle to turn on Firebase Installation ID registration; the build fails if the flag is on without the file.
 
 For iOS, install CocoaPods on first run:
 
@@ -63,12 +65,12 @@ It then builds and launches the app with the React Native CLI, which starts Metr
 
 ## Other scripts
 
-| Script                 | Purpose                                                              |
-| ---------------------- | -------------------------------------------------------------------- |
-| `vp run setup`         | Build, pack, and install the SDK into the demo.                      |
-| `vp run start`         | Start Metro.                                                         |
-| `vp run update:pods`   | Run `pod update OneSignalXCFramework` after native SDK changes.      |
-| `vp run clean:android` | Wipe Android build outputs and uninstall the app from the device.    |
+| Script                 | Purpose                                                               |
+| ---------------------- | --------------------------------------------------------------------- |
+| `vp run setup`         | Build, pack, and install the SDK into the demo.                       |
+| `vp run start`         | Start Metro.                                                          |
+| `vp run update:pods`   | Run `pod update OneSignalXCFramework` after native SDK changes.       |
+| `vp run clean:android` | Wipe Android build outputs and uninstall the app from the device.     |
 | `vp run clean:ios`     | Wipe iOS build outputs and `ios/Pods`. Run `pod install` again after. |
 
 ## Testing iOS Action Button Icons

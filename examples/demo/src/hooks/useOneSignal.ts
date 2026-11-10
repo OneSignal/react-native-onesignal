@@ -28,10 +28,9 @@ import { log } from '../services/LogService';
 import OneSignalApiService from '../services/OneSignalApiService';
 import PreferencesService from '../services/PreferencesService';
 
-const DEFAULT_APP_ID = '77e32082-ea27-42e3-a898-c72e141824ef';
-
+// metro.config.js fails the bundle when this is unset.
 function resolveAppId(): string {
-  return ONESIGNAL_APP_ID?.trim() || DEFAULT_APP_ID;
+  return ONESIGNAL_APP_ID.trim();
 }
 
 const apiService = OneSignalApiService.getInstance();

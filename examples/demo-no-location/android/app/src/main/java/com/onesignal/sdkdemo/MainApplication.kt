@@ -1,4 +1,4 @@
-package com.onesignal.example
+package com.onesignal.sdkdemo
 
 import android.app.Application
 import com.facebook.react.PackageList
