@@ -30,6 +30,9 @@ jobs:
       github.event.inputs.platform == 'android' ||
       github.event.inputs.platform == 'both'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        fid: ['on', 'off']
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -50,6 +53,7 @@ jobs:
         uses: OneSignal/sdk-shared/.github/actions/setup-google-services@main
         with:
           google-services-json: ${{ secrets.APPIUM_GOOGLE_SERVICES_JSON }}
+          enabled: ${{ matrix.fid == 'on' }}
           path: examples/demo/android/app/google-services.json
 
       - name: Build release APK
@@ -59,12 +63,12 @@ jobs:
         # are all arm64-v8a.
         # FIREBASE_INSTALLATION_ID_ENABLED turns on Firebase Installation ID registration,
         # which needs the google-services.json written above.
-        run: ./gradlew assembleRelease -PciSingleAbi -PFIREBASE_INSTALLATION_ID_ENABLED=true --quiet --console=plain --warning-mode=summary
+        run: ./gradlew assembleRelease -PciSingleAbi -PFIREBASE_INSTALLATION_ID_ENABLED=${{ matrix.fid == 'on' }} --quiet --console=plain --warning-mode=summary
 
       - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
-          name: demo-apk
+          name: demo-apk${{ matrix.fid == 'off' && '-fid-off' || '' }}
           path: examples/demo/android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
           retention-days: 1
           compression-level: 0
@@ -150,6 +154,7 @@ jobs:
     with:
       platform: android
       app-artifact: demo-apk
+      fid-off-app-artifact: demo-apk-fid-off
       app-filename: app-arm64-v8a-release.apk
       sdk-type: react-native
       bundle-id: com.onesignal.sdkdemo
