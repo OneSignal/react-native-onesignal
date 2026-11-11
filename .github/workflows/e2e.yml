@@ -25,6 +25,7 @@ concurrency:
 
 jobs:
   build-android:
+    name: build-android (FID ${{ matrix.fid }})
     if: >-
       github.event_name == 'push' ||
       github.event.inputs.platform == 'android' ||
