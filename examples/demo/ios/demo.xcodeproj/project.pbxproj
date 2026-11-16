@@ -25,6 +25,7 @@
 		B10000000000000000000002 /* template-share-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* template-share-icon.png */; };
 		B10000000000000000000003 /* template-bookmark-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* template-bookmark-icon.png */; };
 		B10000000000000000000004 /* template-share-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* template-share-icon.png */; };
+		BB68C614BBE2B4BDEA04F2B6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFF24CDEE2A22243C2367DC /* SceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +89,7 @@
 		A20000000000000000000011 /* demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = demo.entitlements; path = demo/demo.entitlements; sourceTree = "<group>"; };
 		B20000000000000000000001 /* template-bookmark-icon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "template-bookmark-icon.png"; path = "demo/template-bookmark-icon.png"; sourceTree = "<group>"; };
 		B20000000000000000000002 /* template-share-icon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "template-share-icon.png"; path = "demo/template-share-icon.png"; sourceTree = "<group>"; };
+		BEFF24CDEE2A22243C2367DC /* SceneDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = demo/SceneDelegate.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -132,6 +134,7 @@
 				A20000000000000000000011 /* demo.entitlements */,
 				B20000000000000000000001 /* template-bookmark-icon.png */,
 				B20000000000000000000002 /* template-share-icon.png */,
+				BEFF24CDEE2A22243C2367DC /* SceneDelegate.swift */,
 			);
 			name = demo;
 			sourceTree = "<group>";
@@ -474,6 +477,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
+				BB68C614BBE2B4BDEA04F2B6 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
