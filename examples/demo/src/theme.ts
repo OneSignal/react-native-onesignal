@@ -64,6 +64,9 @@ export const AppDialogStyles = StyleSheet.create({
   },
   container: {
     flexShrink: 1,
+    width: '100%',
+    maxWidth: 640,
+    alignSelf: 'center',
     backgroundColor: AppColors.osCardBackground,
     borderRadius: 28,
     paddingTop: 24,

@@ -13,7 +13,10 @@ export default function DialogBackdrop({ children }: { children: React.ReactNode
   const insets = useSafeAreaInsets();
   return (
     <KeyboardAvoidingView
-      style={[AppDialogStyles.backdrop, { paddingTop: insets.top + 24 }]}
+      style={[
+        AppDialogStyles.backdrop,
+        { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
+      ]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {children}

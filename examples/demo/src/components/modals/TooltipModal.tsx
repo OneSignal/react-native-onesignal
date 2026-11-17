@@ -19,7 +19,10 @@ export default function TooltipModal({ visible, tooltip, onClose }: Props) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity
-        style={[AppDialogStyles.backdrop, { paddingTop: insets.top + 24 }]}
+        style={[
+          AppDialogStyles.backdrop,
+          { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
+        ]}
         activeOpacity={1}
         onPress={onClose}
         accessible={false}

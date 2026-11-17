@@ -127,7 +127,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   jsonInput: {
-    minHeight: 80,
+    minHeight: 90,
+    maxHeight: 200,
     textAlignVertical: 'top',
   },
   errorText: {

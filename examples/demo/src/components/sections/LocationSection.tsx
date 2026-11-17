@@ -50,7 +50,6 @@ export default function LocationSection({
         <ActionButton
           label="CHECK LOCATION"
           onPress={handleCheckLocation}
-          variant="outlined"
           testID="check_location_button"
         />
       </ButtonGrid>

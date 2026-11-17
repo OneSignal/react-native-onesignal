@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { TouchableOpacity, Text, StyleSheet, View, ActivityIndicator } from 'react-native';
 
 import { AppColors, AppSpacing } from '../theme';
+import { ButtonGridContext } from './ButtonGrid';
 
 interface Props {
   label: string;
@@ -28,6 +29,8 @@ export default function ActionButton({
   leftAligned,
   compact,
 }: Props) {
+  const inGrid = useContext(ButtonGridContext);
+  const singleLine = compact || inGrid;
   const bgColor = variant === 'primary' ? AppColors.osPrimary : 'transparent';
 
   const borderStyle =
@@ -44,7 +47,8 @@ export default function ActionButton({
         styles.button,
         { backgroundColor: bgColor },
         borderStyle,
-        compact && styles.compact,
+        singleLine && styles.compact,
+        inGrid && styles.gridCell,
         (disabled || loading) && styles.disabled,
       ]}
       activeOpacity={0.8}
@@ -55,9 +59,9 @@ export default function ActionButton({
         <View style={[styles.inner, leftAligned && styles.leftAligned]}>
           {icon && iconPosition === 'left' && <View style={styles.iconLeft}>{icon}</View>}
           <Text
-            style={[styles.text, { color: textColor }, compact && styles.compactText]}
-            numberOfLines={compact ? 1 : undefined}
-            adjustsFontSizeToFit={compact}
+            style={[styles.text, { color: textColor }, singleLine && styles.compactText]}
+            numberOfLines={singleLine ? 1 : undefined}
+            adjustsFontSizeToFit={singleLine}
           >
             {label}
           </Text>
@@ -94,6 +98,11 @@ const styles = StyleSheet.create({
   },
   compactText: {
     flexShrink: 1,
+  },
+  gridCell: {
+    width: 'auto',
+    flexGrow: 1,
+    flexBasis: '40%',
   },
   iconLeft: {
     marginRight: 8,
