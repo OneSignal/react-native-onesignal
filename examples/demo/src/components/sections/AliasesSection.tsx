@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
+import ButtonGrid from '../ButtonGrid';
 import { PairList, EmptyState, LoadingState } from '../ListWidgets';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import PairInputModal from '../modals/PairInputModal';
@@ -45,12 +46,18 @@ export default function AliasesSection({
           <PairList items={filtered} layout="stacked" sectionKey="aliases" />
         </View>
       )}
-      <ActionButton label="ADD ALIAS" onPress={() => setAddOpen(true)} testID="add_alias_button" />
-      <ActionButton
-        label="ADD MULTIPLE ALIASES"
-        onPress={() => setAddMultipleOpen(true)}
-        testID="add_multiple_aliases_button"
-      />
+      <ButtonGrid>
+        <ActionButton
+          label="ADD ALIAS"
+          onPress={() => setAddOpen(true)}
+          testID="add_alias_button"
+        />
+        <ActionButton
+          label="ADD ALIASES"
+          onPress={() => setAddMultipleOpen(true)}
+          testID="add_multiple_aliases_button"
+        />
+      </ButtonGrid>
       <PairInputModal
         visible={addOpen}
         title="Add Alias"

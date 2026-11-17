@@ -59,10 +59,11 @@ export const AppDialogStyles = StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: AppColors.osBackdrop,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     padding: 16,
   },
   container: {
+    flexShrink: 1,
     backgroundColor: AppColors.osCardBackground,
     borderRadius: 28,
     paddingTop: 24,

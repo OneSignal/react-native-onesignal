@@ -1,16 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
 import { AppColors, AppDialogStyles, AppInputProps } from '../../theme';
+import DialogBackdrop from './DialogBackdrop';
 
 interface Props {
   visible: boolean;
@@ -51,10 +43,7 @@ export default function SingleInputModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
-      <KeyboardAvoidingView
-        style={AppDialogStyles.backdrop}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+      <DialogBackdrop>
         <View style={AppDialogStyles.container}>
           <Text style={AppDialogStyles.title}>{title}</Text>
           <TextInput
@@ -89,7 +78,7 @@ export default function SingleInputModal({
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </DialogBackdrop>
     </Modal>
   );
 }

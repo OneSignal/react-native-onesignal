@@ -1,17 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { Modal, View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { AppColors, AppTextStyles, AppDialogStyles } from '../../theme';
+import DialogBackdrop from './DialogBackdrop';
 
 interface Props {
   visible: boolean;
@@ -55,10 +47,7 @@ export default function MultiSelectRemoveModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
-      <KeyboardAvoidingView
-        style={AppDialogStyles.backdrop}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+      <DialogBackdrop>
         <View style={[AppDialogStyles.container, styles.containerMaxHeight]}>
           <Text style={AppDialogStyles.title}>{title}</Text>
           <ScrollView style={styles.scroll}>
@@ -102,7 +91,7 @@ export default function MultiSelectRemoveModal({
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </DialogBackdrop>
     </Modal>
   );
 }
