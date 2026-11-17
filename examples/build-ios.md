@@ -58,6 +58,81 @@ In `demo/Info.plist`, add `UIBackgroundModes` and `NSSupportsLiveActivities` ins
 <true/>
 ```
 
+### Scene lifecycle
+
+Apps built with the iOS 27 SDK must use the UIScene lifecycle, or they crash at launch. The app delegate creates the React Native factory, and a scene delegate starts React Native in the scene's window.
+
+In `demo/AppDelegate.swift`, create the factory but no window:
+
+```swift
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+  var reactNativeDelegate: ReactNativeDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    let delegate = ReactNativeDelegate()
+    let factory = RCTReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+
+    return true
+  }
+}
+```
+
+Create `demo/SceneDelegate.swift` and add it to the `demo` target:
+
+```swift
+import UIKit
+import React
+
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+  var window: UIWindow?
+
+  func scene(
+    _ scene: UIScene,
+    willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
+  ) {
+    guard let windowScene = scene as? UIWindowScene,
+          let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+          let factory = appDelegate.reactNativeFactory else { return }
+
+    let window = UIWindow(windowScene: windowScene)
+    self.window = window
+    factory.startReactNative(withModuleName: "demo", in: window, launchOptions: nil)
+  }
+}
+```
+
+In `demo/Info.plist`, add the scene manifest inside the top-level `<dict>`:
+
+```xml
+<key>UIApplicationSceneManifest</key>
+<dict>
+    <key>UIApplicationSupportsMultipleScenes</key>
+    <false/>
+    <key>UISceneConfigurations</key>
+    <dict>
+        <key>UIWindowSceneSessionRoleApplication</key>
+        <array>
+            <dict>
+                <key>UISceneConfigurationName</key>
+                <string>Default Configuration</string>
+                <key>UISceneDelegateClassName</key>
+                <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+            </dict>
+        </array>
+    </dict>
+</dict>
+```
+
 ---
 
 ## 3. Notification Service Extension
