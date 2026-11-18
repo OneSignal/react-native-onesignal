@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
+import ButtonGrid from '../ButtonGrid';
 import SectionCard from '../SectionCard';
 import { useSnackbar } from '../ToastProvider';
 import ToggleRow from '../ToggleRow';
@@ -40,17 +41,18 @@ export default function LocationSection({
           testID="location_shared_toggle"
         />
       </View>
-      <ActionButton
-        label="PROMPT LOCATION"
-        onPress={onRequestLocationPermission}
-        testID="prompt_location_button"
-      />
-      <ActionButton
-        label="CHECK LOCATION SHARED"
-        onPress={handleCheckLocation}
-        variant="outlined"
-        testID="check_location_button"
-      />
+      <ButtonGrid>
+        <ActionButton
+          label="PROMPT LOCATION"
+          onPress={onRequestLocationPermission}
+          testID="prompt_location_button"
+        />
+        <ActionButton
+          label="CHECK LOCATION"
+          onPress={handleCheckLocation}
+          testID="check_location_button"
+        />
+      </ButtonGrid>
     </SectionCard>
   );
 }

@@ -1,16 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
 import { AppColors, AppTextStyles, AppSpacing, AppDialogStyles, AppInputProps } from '../../theme';
+import DialogBackdrop from './DialogBackdrop';
 
 interface Props {
   visible: boolean;
@@ -73,10 +65,7 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
-      <KeyboardAvoidingView
-        style={AppDialogStyles.backdrop}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+      <DialogBackdrop>
         <View style={AppDialogStyles.container}>
           <Text style={AppDialogStyles.title}>Track Event</Text>
           <Text style={styles.label}>Event Name</Text>
@@ -123,7 +112,7 @@ export default function TrackEventModal({ visible, onConfirm, onClose }: Props) 
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </DialogBackdrop>
     </Modal>
   );
 }
@@ -138,7 +127,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   jsonInput: {
-    minHeight: 80,
+    minHeight: 90,
+    maxHeight: 200,
     textAlignVertical: 'top',
   },
   errorText: {

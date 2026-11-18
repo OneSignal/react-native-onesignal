@@ -1,16 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
 import { AppColors, AppTextStyles, AppDialogStyles, AppInputProps } from '../../theme';
+import DialogBackdrop from './DialogBackdrop';
 
 type OutcomeType = 'normal' | 'unique' | 'withValue';
 
@@ -81,10 +73,7 @@ export default function OutcomeModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
-      <KeyboardAvoidingView
-        style={AppDialogStyles.backdrop}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+      <DialogBackdrop>
         <View style={AppDialogStyles.container}>
           <Text style={AppDialogStyles.title}>Send Outcome</Text>
           <RadioOption type="normal" label="Normal Outcome" testID="outcome_type_normal_radio" />
@@ -137,7 +126,7 @@ export default function OutcomeModal({
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </DialogBackdrop>
     </Modal>
   );
 }

@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
+import ButtonGrid from '../ButtonGrid';
 import { PairList, EmptyState } from '../ListWidgets';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import MultiSelectRemoveModal from '../modals/MultiSelectRemoveModal';
@@ -46,32 +47,34 @@ export default function TriggersSection({
           />
         </View>
       )}
-      <ActionButton
-        label="ADD TRIGGER"
-        onPress={() => setAddOpen(true)}
-        testID="add_trigger_button"
-      />
-      <ActionButton
-        label="ADD MULTIPLE TRIGGERS"
-        onPress={() => setAddMultipleOpen(true)}
-        testID="add_multiple_triggers_button"
-      />
-      {triggers.length > 0 && (
-        <>
-          <ActionButton
-            label="REMOVE TRIGGERS"
-            onPress={() => setRemoveOpen(true)}
-            variant="outlined"
-            testID="remove_triggers_button"
-          />
-          <ActionButton
-            label="CLEAR ALL TRIGGERS"
-            onPress={onClearAll}
-            variant="outlined"
-            testID="clear_triggers_button"
-          />
-        </>
-      )}
+      <ButtonGrid>
+        <ActionButton
+          label="ADD TRIGGER"
+          onPress={() => setAddOpen(true)}
+          testID="add_trigger_button"
+        />
+        <ActionButton
+          label="ADD TRIGGERS"
+          onPress={() => setAddMultipleOpen(true)}
+          testID="add_multiple_triggers_button"
+        />
+        {triggers.length > 0 && (
+          <>
+            <ActionButton
+              label="REMOVE TRIGGERS"
+              onPress={() => setRemoveOpen(true)}
+              variant="outlined"
+              testID="remove_triggers_button"
+            />
+            <ActionButton
+              label="CLEAR ALL"
+              onPress={onClearAll}
+              variant="outlined"
+              testID="clear_triggers_button"
+            />
+          </>
+        )}
+      </ButtonGrid>
       <PairInputModal
         visible={addOpen}
         title="Add Trigger"

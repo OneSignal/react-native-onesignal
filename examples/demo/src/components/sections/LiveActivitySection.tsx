@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
+import ButtonGrid from '../ButtonGrid';
 import SectionCard from '../SectionCard';
 
 const ORDER_STATUSES = [
@@ -81,26 +82,28 @@ export default function LiveActivitySection({
         />
       </View>
       <View style={styles.buttons}>
-        <ActionButton
-          label="START LIVE ACTIVITY"
-          onPress={handleStart}
-          disabled={!activityId.trim()}
-          testID="start_live_activity_button"
-        />
-        <ActionButton
-          label={`UPDATE → ${nextStatus.status.replace('_', ' ').toUpperCase()}`}
-          onPress={handleUpdate}
-          disabled={!activityId.trim() || updating || !hasApiKey}
-          loading={updating}
-          testID="update_live_activity_button"
-        />
-        <ActionButton
-          label="END LIVE ACTIVITY"
-          onPress={() => onEnd(activityId)}
-          disabled={!activityId.trim() || !hasApiKey}
-          variant="outlined"
-          testID="end_live_activity_button"
-        />
+        <ButtonGrid>
+          <ActionButton
+            label="START ACTIVITY"
+            onPress={handleStart}
+            disabled={!activityId.trim()}
+            testID="start_live_activity_button"
+          />
+          <ActionButton
+            label={`UPDATE → ${nextStatus.status.replaceAll('_', ' ').toUpperCase()}`}
+            onPress={handleUpdate}
+            disabled={!activityId.trim() || updating || !hasApiKey}
+            loading={updating}
+            testID="update_live_activity_button"
+          />
+          <ActionButton
+            label="END ACTIVITY"
+            onPress={() => onEnd(activityId)}
+            disabled={!activityId.trim() || !hasApiKey}
+            variant="outlined"
+            testID="end_live_activity_button"
+          />
+        </ButtonGrid>
       </View>
     </SectionCard>
   );

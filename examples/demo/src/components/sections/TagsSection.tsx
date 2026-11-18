@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
+import ButtonGrid from '../ButtonGrid';
 import { PairList, EmptyState, LoadingState } from '../ListWidgets';
 import MultiPairInputModal from '../modals/MultiPairInputModal';
 import MultiSelectRemoveModal from '../modals/MultiSelectRemoveModal';
@@ -50,20 +51,22 @@ export default function TagsSection({
           />
         </View>
       )}
-      <ActionButton label="ADD TAG" onPress={() => setAddOpen(true)} testID="add_tag_button" />
-      <ActionButton
-        label="ADD MULTIPLE TAGS"
-        onPress={() => setAddMultipleOpen(true)}
-        testID="add_multiple_tags_button"
-      />
-      {tags.length > 0 && (
+      <ButtonGrid>
+        <ActionButton label="ADD TAG" onPress={() => setAddOpen(true)} testID="add_tag_button" />
         <ActionButton
-          label="REMOVE TAGS"
-          onPress={() => setRemoveOpen(true)}
-          variant="outlined"
-          testID="remove_tags_button"
+          label="ADD TAGS"
+          onPress={() => setAddMultipleOpen(true)}
+          testID="add_multiple_tags_button"
         />
-      )}
+        {tags.length > 0 && (
+          <ActionButton
+            label="REMOVE TAGS"
+            onPress={() => setRemoveOpen(true)}
+            variant="outlined"
+            testID="remove_tags_button"
+          />
+        )}
+      </ButtonGrid>
       <PairInputModal
         visible={addOpen}
         title="Add Tag"

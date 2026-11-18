@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TooltipData } from '../../services/TooltipHelper';
 import { AppColors, AppTextStyles, AppDialogStyles } from '../../theme';
@@ -11,13 +12,17 @@ interface Props {
 }
 
 export default function TooltipModal({ visible, tooltip, onClose }: Props) {
+  const insets = useSafeAreaInsets();
   if (!tooltip) {
     return null;
   }
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity
-        style={AppDialogStyles.backdrop}
+        style={[
+          AppDialogStyles.backdrop,
+          { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
+        ]}
         activeOpacity={1}
         onPress={onClose}
         accessible={false}

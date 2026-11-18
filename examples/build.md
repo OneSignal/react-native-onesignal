@@ -22,7 +22,7 @@ mv demo examples/demo
 - Architecture: provider + hook (`OneSignalProvider` / `useOneSignal`), no repository class, no reducer
 - Separate component files per section
 - Support both Android and iOS
-- Android `namespace` and `applicationId` in `android/app/build.gradle` are `com.onesignal.sdkdemo`, to match the shared `google-services.json`. The iOS bundle id stays `com.onesignal.example`.
+- Android `namespace` and `applicationId` in `android/app/build.gradle` are `com.onesignal.sdkdemo`, to match the shared `google-services.json`. The iOS bundle id stays `com.onesignal.sdkdemo`.
 - Android applies the Google Services plugin only when `android/app/google-services.json` exists (gitignored), and depends on `firebase-messaging` 25.1.2+ for Firebase Installation ID registration. The `firebase_messaging_installation_id_enabled` manifest flag is off unless Gradle gets `-PFIREBASE_INSTALLATION_ID_ENABLED=true`, which also requires `google-services.json`.
 
 App bar logo: import SVG directly via `react-native-svg-transformer`:

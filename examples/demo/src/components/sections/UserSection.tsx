@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../../theme';
 import ActionButton from '../ActionButton';
+import ButtonGrid from '../ButtonGrid';
 import DropdownMenu, { type DropdownAnchor, type DropdownOption } from '../DropdownMenu';
 import SingleInputModal from '../modals/SingleInputModal';
 import SectionCard from '../SectionCard';
@@ -126,19 +127,21 @@ export default function UserSection({
           </View>
         </TouchableOpacity>
       </View>
-      <ActionButton
-        label={isLoggedIn ? 'SWITCH USER' : 'LOGIN USER'}
-        onPress={() => setLoginOpen(true)}
-        testID="login_user_button"
-      />
-      {isLoggedIn && (
+      <ButtonGrid>
         <ActionButton
-          label="LOGOUT USER"
-          onPress={handleLogout}
-          variant="outlined"
-          testID="logout_user_button"
+          label={isLoggedIn ? 'SWITCH USER' : 'LOGIN USER'}
+          onPress={() => setLoginOpen(true)}
+          testID="login_user_button"
         />
-      )}
+        {isLoggedIn && (
+          <ActionButton
+            label="LOGOUT USER"
+            onPress={handleLogout}
+            variant="outlined"
+            testID="logout_user_button"
+          />
+        )}
+      </ButtonGrid>
       <SingleInputModal
         visible={loginOpen}
         title="Login User"

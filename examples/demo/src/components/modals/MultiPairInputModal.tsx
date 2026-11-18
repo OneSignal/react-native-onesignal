@@ -7,12 +7,11 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { AppColors, AppDialogStyles, AppInputProps } from '../../theme';
+import DialogBackdrop from './DialogBackdrop';
 
 interface Row {
   id: number;
@@ -78,10 +77,7 @@ export default function MultiPairInputModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
-      <KeyboardAvoidingView
-        style={AppDialogStyles.backdrop}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+      <DialogBackdrop>
         <View style={[AppDialogStyles.container, styles.containerMaxHeight]}>
           <Text style={AppDialogStyles.title}>{title}</Text>
           <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
@@ -150,7 +146,7 @@ export default function MultiPairInputModal({
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </DialogBackdrop>
     </Modal>
   );
 }
