@@ -1,5 +1,5 @@
 import React from 'react';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppDialogStyles } from '../../theme';
@@ -13,13 +13,22 @@ export default function DialogBackdrop({ children }: { children: React.ReactNode
   const insets = useSafeAreaInsets();
   return (
     <KeyboardAvoidingView
-      style={[
-        AppDialogStyles.backdrop,
-        { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
-      ]}
+      style={styles.fill}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      {children}
+      {/* KeyboardAvoidingView overwrites its own paddingBottom, so the insets live here. */}
+      <View
+        style={[
+          AppDialogStyles.backdrop,
+          { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
+        ]}
+      >
+        {children}
+      </View>
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  fill: { flex: 1 },
+});
