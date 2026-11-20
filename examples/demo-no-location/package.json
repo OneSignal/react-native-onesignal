@@ -15,23 +15,23 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "react": "19.2.3",
-    "react-native": "0.84.0",
+    "react": "19.3.0",
+    "react-native": "0.88.1",
     "react-native-onesignal": "file:../../react-native-onesignal.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
-    "@react-native-community/cli": "20.1.0",
-    "@react-native-community/cli-platform-android": "20.1.0",
-    "@react-native-community/cli-platform-ios": "20.1.0",
-    "@react-native/babel-preset": "0.84.0",
-    "@react-native/metro-config": "0.84.0",
-    "@react-native/typescript-config": "0.84.0",
+    "@react-native-community/cli": "20.2.0",
+    "@react-native-community/cli-platform-android": "20.2.0",
+    "@react-native-community/cli-platform-ios": "20.2.0",
+    "@react-native/babel-preset": "0.88.1",
+    "@react-native/metro-config": "0.88.1",
+    "@react-native/typescript-config": "0.88.1",
     "@types/react": "^19.2.0",
     "react-native-dotenv": "^3.4.11",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": ">= 22.11.0"

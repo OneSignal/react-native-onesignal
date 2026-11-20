@@ -22,7 +22,7 @@ function App() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar backgroundColor={AppColors.osPrimary} barStyle="light-content" />
+      <StatusBar barStyle="light-content" />
       <ToastProvider>
         <OneSignalProvider>
           <NavigationContainer>

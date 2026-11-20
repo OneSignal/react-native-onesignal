@@ -118,7 +118,7 @@ export default function App() {
 
   return (
     <View style={styles.root}>
-      <StatusBar backgroundColor="#E54B4D" barStyle="light-content" />
+      <StatusBar barStyle="light-content" />
       <SafeAreaView style={styles.headerSafeArea}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>OneSignal</Text>
