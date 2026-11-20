@@ -1,0 +1,59 @@
+name: iOS Swift Package Manager
+
+# Builds examples/demo, which links the SDK through Package.swift. Nothing else
+# in CI builds the manifest.
+on:
+  pull_request:
+    paths:
+      - 'Package.swift'
+      - 'ios/**'
+      - 'package.json'
+      - 'examples/demo/**'
+      - '.github/workflows/ios-spm.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-demo:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up demo
+        uses: ./.github/actions/setup-demo
+        with:
+          # Debug simulator builds do not bundle JS, so the app never reads these.
+          onesignal-app-id: 00000000-0000-0000-0000-000000000000
+          onesignal-api-key: unused
+
+      - name: Cache React Native SwiftPM artifacts
+        uses: actions/cache@v5
+        with:
+          path: ~/Library/Caches/ReactNative/spm-artifacts
+          key: rn-spm-artifacts-${{ runner.os }}-${{ hashFiles('examples/demo/bun.lock') }}
+          restore-keys: rn-spm-artifacts-${{ runner.os }}-
+
+      - name: Generate SwiftPM packages
+        working-directory: examples/demo
+        run: vp run update:spm
+
+      - name: Build
+        working-directory: examples/demo/ios
+        run: |
+          xcodebuild build \
+            -project demo.xcodeproj \
+            -scheme demo \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            -quiet \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO
