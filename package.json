@@ -30,7 +30,8 @@
     "android/build.gradle",
     "android/proguard-rules.pro",
     "ios",
-    "react-native-onesignal.podspec"
+    "react-native-onesignal.podspec",
+    "Package.swift"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -73,5 +74,8 @@
         "OneSignal": "RCTOneSignalEventEmitter"
       }
     }
+  },
+  "swiftpmConfig": {
+    "name": "ReactNativeOneSignal"
   }
 }

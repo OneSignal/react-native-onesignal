@@ -175,6 +175,13 @@ jobs:
           fi
           echo "✓ Updated react-native-onesignal.podspec with iOS SDK ${VERSION}"
 
+          sed -i '' -E "s/(let oneSignalXCFrameworkVersion: Version = \")[^\"]+(\")/\1$VERSION\2/" Package.swift
+          if ! grep -q "let oneSignalXCFrameworkVersion: Version = \"${VERSION}\"" Package.swift; then
+            echo "::error::Failed to update iOS SDK version in Package.swift to ${VERSION}"
+            exit 1
+          fi
+          echo "✓ Updated Package.swift with iOS SDK ${VERSION}"
+
           PODFILE=examples/demo/ios/Podfile
           sed -i '' -E "s/^([[:space:]]*pod 'OneSignalXCFramework', )'[^']+'.*$/\1'${VERSION}'/" "$PODFILE"
           if [ "$(grep -c "pod 'OneSignalXCFramework', '${VERSION}'$" "$PODFILE")" -ne 2 ]; then

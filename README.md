@@ -31,6 +31,12 @@ If you run into any challenges or have concerns, please contact our support team
 
 See the [Setup Guide](https://documentation.onesignal.com/docs/react-native-sdk-setup) for setup instructions.
 
+#### Swift Package Manager (iOS)
+
+This package ships a `Package.swift` for React Native's Swift Package Manager mode (React Native `0.87` and later). In that mode it is the Swift package `ReactNativeOneSignal`, which brings in `OneSignal-XCFramework` at the same version the podspec uses. Run `npx react-native spm add` (or `npx react-native spm update` if SPM is already set up) after installing. CocoaPods apps are unaffected.
+
+A Notification Service Extension target is not managed by React Native's autolinker. Add the `OneSignalExtension` product from `https://github.com/OneSignal/OneSignal-XCFramework` to it in Xcode, at the same version.
+
 #### Disable Location Module
 
 By default, `react-native-onesignal` includes OneSignal's native location module so `OneSignal.Location` works without extra setup. If your app does not use location features, you can exclude the native location module from iOS and Android builds.
@@ -70,6 +76,8 @@ ONESIGNAL_DISABLE_LOCATION=true pod install
 ```
 
 Gradle re-reads the environment variable or `onesignal.disableLocation` property on each configuration, so a clean build after changing the flag is enough on Android.
+
+With Swift Package Manager, `Package.swift` reads the variable when packages are resolved. Export it in the shell that runs `npx react-native spm update` and `xcodebuild` (or launches Xcode), then run File > Packages > Reset Package Caches in Xcode after changing it.
 
 > [!IMPORTANT]
 > When using Xcode or Android Studio, launch the IDE from a terminal that has `ONESIGNAL_DISABLE_LOCATION` exported. An IDE launched from the Dock/Finder does not inherit variables set only in your shell profile. On CI, key any CocoaPods / Gradle caches on the value of `ONESIGNAL_DISABLE_LOCATION` so a restored cache does not resurrect the location module.
