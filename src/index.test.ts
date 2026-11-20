@@ -113,16 +113,20 @@ describe('OneSignal', () => {
       expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
     });
 
-    test('should not initialize if appId is null', () => {
+    test('should forward a null appId to native', () => {
       OneSignal.initialize(null as unknown as string);
-      expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] initialize: appId is required');
+      expect(mockRNOneSignal.initialize).toHaveBeenCalledWith(null);
     });
 
-    test('should not initialize if appId is empty', () => {
+    test('should forward an empty appId to native', () => {
       OneSignal.initialize('');
+      expect(mockRNOneSignal.initialize).toHaveBeenCalledWith('');
+    });
+
+    test('should not forward a non-string appId to native', () => {
+      OneSignal.initialize(42 as unknown as string);
       expect(mockRNOneSignal.initialize).not.toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] initialize: appId is required');
+      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] initialize: appId must be a string');
     });
 
     test('should keep a permission event that arrives before the startup read resolves', async () => {
@@ -194,16 +198,20 @@ describe('OneSignal', () => {
       expect(mockRNOneSignal.login).not.toHaveBeenCalled();
     });
 
-    test('should not login if externalId is null', () => {
+    test('should forward a null externalId to native', () => {
       OneSignal.login(null as unknown as string);
-      expect(mockRNOneSignal.login).not.toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] login: externalId is required');
+      expect(mockRNOneSignal.login).toHaveBeenCalledWith(null);
     });
 
-    test('should not login if externalId is empty', () => {
+    test('should forward an empty externalId to native', () => {
       OneSignal.login('');
+      expect(mockRNOneSignal.login).toHaveBeenCalledWith('');
+    });
+
+    test('should not forward a non-string externalId to native', () => {
+      OneSignal.login(42 as unknown as string);
       expect(mockRNOneSignal.login).not.toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] login: externalId is required');
+      expect(errorSpy).toHaveBeenCalledWith('[OneSignal] login: externalId must be a string');
     });
   });
 
