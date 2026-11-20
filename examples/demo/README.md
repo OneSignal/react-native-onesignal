@@ -87,6 +87,7 @@ physical device, expand the notification to verify that both icons render.
 
 ## Other demos
 
+- [`demo-pods`](../demo-pods): this app's iOS build on CocoaPods
 - [`demo-no-location`](../demo-no-location): app without the native location module
 
 ## Build Guide
