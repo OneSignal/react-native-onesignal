@@ -42,7 +42,7 @@ To use Firebase on Android, put a `google-services.json` with a `com.onesignal.s
 
 iOS builds with React Native's Swift Package Manager mode; there is no `pod install`. `vp run ios` generates the Swift packages (`vp run update:spm`) before building. For the CocoaPods build of this app, see [`demo-pods`](../demo-pods).
 
-`react-native-screens`, `@react-native-async-storage/async-storage`, and `react-native-vector-icons` do not ship a `Package.swift` yet, so `patches/` adds one to each (scaffolded with `react-native spm scaffold`, then fixed by hand) and Bun applies them on install. Drop a patch once its library ships its own manifest. `ios/Podfile` stays only because `@react-native-community/cli` finds the iOS project by it.
+`react-native-screens`, `@react-native-async-storage/async-storage`, and `react-native-vector-icons` do not ship a `Package.swift` yet, so `patches/` adds one to each (scaffolded with `react-native spm scaffold`, then fixed by hand) and Bun applies them on install. Drop a patch once its library ships its own manifest.
 
 ## Run
 
