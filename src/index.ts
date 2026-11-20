@@ -137,7 +137,6 @@ export namespace OneSignal {
   /** Initializes the OneSignal SDK. This should be called during startup of the application. */
   export function initialize(appId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
-    if (isMissing(appId, 'initialize: appId')) return;
 
     RNOneSignal.initialize(appId);
 
@@ -152,7 +151,6 @@ export namespace OneSignal {
    */
   export function login(externalId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
-    if (isMissing(externalId, 'login: externalId')) return;
 
     RNOneSignal.login(externalId);
   }
