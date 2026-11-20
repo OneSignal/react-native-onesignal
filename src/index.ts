@@ -24,6 +24,7 @@ import {
   isNativeModuleLoaded,
   isFunction,
   isMissing,
+  isNotStringOrNullish,
   isObject,
   isObjectSerializable,
   isValidCallback,
@@ -137,6 +138,7 @@ export namespace OneSignal {
   /** Initializes the OneSignal SDK. This should be called during startup of the application. */
   export function initialize(appId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
+    if (isNotStringOrNullish(appId, 'initialize: appId')) return;
 
     RNOneSignal.initialize(appId);
 
@@ -151,6 +153,7 @@ export namespace OneSignal {
    */
   export function login(externalId: string) {
     if (!isNativeModuleLoaded(RNOneSignal)) return;
+    if (isNotStringOrNullish(externalId, 'login: externalId')) return;
 
     RNOneSignal.login(externalId);
   }

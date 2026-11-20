@@ -133,7 +133,9 @@ RCT_EXPORT_MODULE(OneSignal)
 #pragma mark Exported Methods
 
 // OneSignal root namespace methods
-RCT_EXPORT_METHOD(initialize : (NSString *_Nonnull)appId) {
+// Nullable on purpose: native reads nil as "no app id supplied" and falls back to the one cached
+// by an earlier launch, so JS is allowed to pass null through.
+RCT_EXPORT_METHOD(initialize : (NSString *_Nullable)appId) {
   [OneSignal initialize:appId withLaunchOptions:NULL];
 }
 
