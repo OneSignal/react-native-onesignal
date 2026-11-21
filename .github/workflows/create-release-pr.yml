@@ -182,13 +182,14 @@ jobs:
           fi
           echo "✓ Updated Package.swift with iOS SDK ${VERSION}"
 
-          PODFILE=examples/demo/ios/Podfile
-          sed -i '' -E "s/^([[:space:]]*pod 'OneSignalXCFramework', )'[^']+'.*$/\1'${VERSION}'/" "$PODFILE"
-          if [ "$(grep -c "pod 'OneSignalXCFramework', '${VERSION}'$" "$PODFILE")" -ne 2 ]; then
-            echo "::error::Failed to update OneSignalXCFramework pins in ${PODFILE} to ${VERSION}"
-            exit 1
-          fi
-          echo "✓ Updated ${PODFILE} extension pods to iOS SDK ${VERSION}"
+          for PODFILE in examples/demo/ios/Podfile examples/demo-pods/ios/Podfile; do
+            sed -i '' -E "s/^([[:space:]]*pod 'OneSignalXCFramework', )'[^']+'.*$/\1'${VERSION}'/" "$PODFILE"
+            if [ "$(grep -c "pod 'OneSignalXCFramework', '${VERSION}'$" "$PODFILE")" -ne 2 ]; then
+              echo "::error::Failed to update OneSignalXCFramework pins in ${PODFILE} to ${VERSION}"
+              exit 1
+            fi
+            echo "✓ Updated ${PODFILE} extension pods to iOS SDK ${VERSION}"
+          done
 
           # Only commit if there are changes
           git add -A
@@ -238,17 +239,19 @@ jobs:
           # repacked SDK tarball and OneSignalXCFramework pin both reflect
           # the new release. setup always runs because every version bump
           # changes the tarball integrity recorded in the demo bun.lock.
-          (cd examples/demo && vp run setup)
-          echo "✓ Refreshed examples/demo/bun.lock"
+          for DEMO in examples/demo examples/demo-pods; do
+            (cd "$DEMO" && vp run setup)
+            echo "✓ Refreshed ${DEMO}/bun.lock"
 
-          if [ -n "$IOS_VERSION" ]; then
-            (cd examples/demo/ios && pod update OneSignalXCFramework)
-          else
-            # Still refresh the local react-native-onesignal pod's version and
-            # checksum; pod install keeps OneSignalXCFramework at its locked version.
-            (cd examples/demo/ios && pod install)
-          fi
-          echo "✓ Refreshed examples/demo/ios/Podfile.lock"
+            if [ -n "$IOS_VERSION" ]; then
+              (cd "$DEMO/ios" && pod update OneSignalXCFramework)
+            else
+              # Still refresh the local react-native-onesignal pod's version and
+              # checksum; pod install keeps OneSignalXCFramework at its locked version.
+              (cd "$DEMO/ios" && pod install)
+            fi
+            echo "✓ Refreshed ${DEMO}/ios/Podfile.lock"
+          done
 
           # Only commit if there are changes
           git add -A

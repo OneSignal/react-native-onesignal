@@ -1,0 +1,67 @@
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+
+import { AppColors, AppTextStyles, AppTheme, AppSpacing } from '../theme';
+
+interface Props {
+  title: string;
+  children?: React.ReactNode;
+  onInfoTap?: () => void;
+  sectionKey?: string;
+  style?: object;
+}
+
+export default function SectionCard({ title, children, onInfoTap, sectionKey, style }: Props) {
+  return (
+    <View style={[styles.wrapper, style]} testID={sectionKey ? `${sectionKey}_section` : undefined}>
+      <View style={styles.header}>
+        <Text style={styles.title}>{title}</Text>
+        {onInfoTap && (
+          <TouchableOpacity
+            onPress={onInfoTap}
+            style={styles.infoButton}
+            testID={sectionKey ? `${sectionKey}_info_icon` : undefined}
+          >
+            <Text style={styles.infoIcon}>ⓘ</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      {children}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  wrapper: {
+    marginHorizontal: 16,
+    marginBottom: AppSpacing.sectionVertical,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: AppSpacing.gap,
+    paddingHorizontal: 4,
+  },
+  title: {
+    ...AppTextStyles.bodySmall,
+    fontWeight: '700',
+    color: AppColors.osGrey700,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  infoButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: -11,
+  },
+  infoIcon: {
+    fontSize: 18,
+    color: AppColors.osGrey500,
+  },
+  card: {
+    ...AppTheme.card,
+  },
+});

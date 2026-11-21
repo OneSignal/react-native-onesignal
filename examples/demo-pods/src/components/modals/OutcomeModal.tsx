@@ -1,0 +1,163 @@
+import React, { useState } from 'react';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+
+import { AppColors, AppTextStyles, AppDialogStyles, AppInputProps } from '../../theme';
+import DialogBackdrop from './DialogBackdrop';
+
+type OutcomeType = 'normal' | 'unique' | 'withValue';
+
+interface Props {
+  visible: boolean;
+  onSendNormal: (name: string) => void;
+  onSendUnique: (name: string) => void;
+  onSendWithValue: (name: string, value: number) => void;
+  onClose: () => void;
+}
+
+export default function OutcomeModal({
+  visible,
+  onSendNormal,
+  onSendUnique,
+  onSendWithValue,
+  onClose,
+}: Props) {
+  const [outcomeType, setOutcomeType] = useState<OutcomeType>('normal');
+  const [name, setName] = useState('');
+  const [value, setValue] = useState('');
+
+  const numericValue = Number(value);
+  const canSubmit =
+    name.trim() && (outcomeType !== 'withValue' || (value.trim() && Number.isFinite(numericValue)));
+
+  const handleSend = () => {
+    if (!canSubmit) {
+      return;
+    }
+    switch (outcomeType) {
+      case 'normal':
+        onSendNormal(name.trim());
+        break;
+      case 'unique':
+        onSendUnique(name.trim());
+        break;
+      case 'withValue':
+        onSendWithValue(name.trim(), numericValue);
+        break;
+    }
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setName('');
+    setValue('');
+    setOutcomeType('normal');
+    onClose();
+  };
+
+  const RadioOption = ({
+    type,
+    label,
+    testID,
+  }: {
+    type: OutcomeType;
+    label: string;
+    testID: string;
+  }) => (
+    <TouchableOpacity style={styles.radioRow} onPress={() => setOutcomeType(type)} testID={testID}>
+      <View style={styles.radioOuter}>
+        {outcomeType === type && <View style={styles.radioInner} />}
+      </View>
+      <Text style={styles.radioLabel}>{label}</Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+      <DialogBackdrop>
+        <View style={AppDialogStyles.container}>
+          <Text style={AppDialogStyles.title}>Send Outcome</Text>
+          <RadioOption type="normal" label="Normal Outcome" testID="outcome_type_normal_radio" />
+          <RadioOption type="unique" label="Unique Outcome" testID="outcome_type_unique_radio" />
+          <RadioOption
+            type="withValue"
+            label="Outcome with Value"
+            testID="outcome_type_value_radio"
+          />
+          <TextInput
+            style={[AppDialogStyles.input, styles.inputSpacing]}
+            placeholder="Name"
+            placeholderTextColor={AppColors.osGrey600}
+            value={name}
+            onChangeText={setName}
+            autoFocus
+            {...AppInputProps}
+            testID="outcome_name_input"
+          />
+          {outcomeType === 'withValue' && (
+            <TextInput
+              style={[AppDialogStyles.input, styles.inputSpacing]}
+              placeholder="Value"
+              placeholderTextColor={AppColors.osGrey600}
+              value={value}
+              onChangeText={setValue}
+              keyboardType="numeric"
+              {...AppInputProps}
+              testID="outcome_value_input"
+            />
+          )}
+          <View style={AppDialogStyles.actions}>
+            <TouchableOpacity style={AppDialogStyles.actionBtn} onPress={handleClose}>
+              <Text style={AppDialogStyles.actionText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={AppDialogStyles.actionBtn}
+              onPress={handleSend}
+              disabled={!canSubmit}
+              testID="outcome_send_button"
+            >
+              <Text
+                style={[
+                  AppDialogStyles.actionText,
+                  !canSubmit && AppDialogStyles.actionTextDisabled,
+                ]}
+              >
+                Send
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </DialogBackdrop>
+    </Modal>
+  );
+}
+
+const styles = StyleSheet.create({
+  radioRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    gap: 10,
+  },
+  radioOuter: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: AppColors.osPrimary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: AppColors.osPrimary,
+  },
+  radioLabel: {
+    ...AppTextStyles.bodyLarge,
+    color: '#212121',
+  },
+  inputSpacing: {
+    marginTop: 12,
+  },
+});
