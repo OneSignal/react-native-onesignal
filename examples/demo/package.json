@@ -5,12 +5,12 @@
   "scripts": {
     "setup": "../setup.sh",
     "preandroid": "vp run setup",
-    "preios": "vp run setup",
+    "preios": "vp run setup && vp run update:spm",
     "android": "bash ../run-android.sh",
     "ios": "bash ../run-ios.sh",
-    "update:pods": "(cd ios && pod update OneSignalXCFramework)",
+    "update:spm": "react-native spm update",
     "clean:android": "rm -rf android/app/build android/app/.cxx android/build && adb uninstall com.onesignal.sdkdemo >/dev/null 2>&1 || true",
-    "clean:ios": "rm -rf ios/build ios/Pods",
+    "clean:ios": "rm -rf ios/build",
     "start": "react-native start"
   },
   "dependencies": {
@@ -30,9 +30,9 @@
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
-    "@react-native-community/cli": "20.2.0",
-    "@react-native-community/cli-platform-android": "20.2.0",
-    "@react-native-community/cli-platform-ios": "20.2.0",
+    "@react-native-community/cli": "21.0.0",
+    "@react-native-community/cli-platform-android": "21.0.0",
+    "@react-native-community/cli-platform-ios": "21.0.0",
     "@react-native/babel-preset": "0.88.1",
     "@react-native/metro-config": "0.88.1",
     "@react-native/typescript-config": "0.88.1",
@@ -45,5 +45,10 @@
   "engines": {
     "node": ">= 22.11.0"
   },
-  "packageManager": "bun@1.4.0"
+  "packageManager": "bun@1.4.0",
+  "patchedDependencies": {
+    "@react-native-async-storage/async-storage@2.2.0": "patches/@react-native-async-storage%2Fasync-storage@2.2.0.patch",
+    "react-native-screens@4.30.1": "patches/react-native-screens@4.30.1.patch",
+    "react-native-vector-icons@10.3.0": "patches/react-native-vector-icons@10.3.0.patch"
+  }
 }

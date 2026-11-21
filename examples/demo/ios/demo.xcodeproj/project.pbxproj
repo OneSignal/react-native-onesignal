@@ -7,18 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C80B921A6F3F58F76C31292 /* libPods-demo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-demo.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		17CA21E30A8FFCB9D0FC1E35 /* ReactNativeHeaders in Frameworks */ = {isa = PBXBuildFile; productRef = 920F69A9DF98D37C8308D020 /* ReactNativeHeaders */; };
+		3F1E298E4A2D7CA403A328B5 /* ReactCodegen in Frameworks */ = {isa = PBXBuildFile; productRef = 947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */; };
+		43AA2C6FE81293AEFCA89311 /* OneSignalExtension in Frameworks */ = {isa = PBXBuildFile; productRef = 5D9FF4652377552E5BB1D8C8 /* OneSignalExtension */; };
+		50A8621D202A6CFB97E2C1B5 /* ReactAppDependencyProvider in Frameworks */ = {isa = PBXBuildFile; productRef = F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */; };
 		5F8F7D5C84F8947D278D5B06 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
+		69A7AB74931112BD2779B631 /* ReactNativeDependenciesHeaders in Frameworks */ = {isa = PBXBuildFile; productRef = 8332BE36B9C49BD2E49347C1 /* ReactNativeDependenciesHeaders */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		94F7C9B714A718310DA6BE9C /* ReactHeaders in Frameworks */ = {isa = PBXBuildFile; productRef = 512EBECF5434FD7A6AF7C967 /* ReactHeaders */; };
+		971317A7133E69F342A69D73 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0AB64AE62938C7016FF5D5D /* MaterialCommunityIcons.ttf */; };
 		A10000000000000000000001 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* NotificationService.swift */; };
 		A10000000000000000000002 /* OneSignalWidgetLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* OneSignalWidgetLiveActivity.swift */; };
 		A10000000000000000000003 /* OneSignalWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* OneSignalWidgetBundle.swift */; };
 		A10000000000000000000004 /* OneSignalNotificationServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* OneSignalNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A10000000000000000000005 /* OneSignalWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* OneSignalWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		A10000000000000000000006 /* libPods-OneSignalNotificationServiceExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000F /* libPods-OneSignalNotificationServiceExtension.a */; };
-		A10000000000000000000007 /* libPods-OneSignalWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* libPods-OneSignalWidgetExtension.a */; };
 		A10000000000000000000008 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* WidgetKit.framework */; };
 		A10000000000000000000009 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* SwiftUI.framework */; };
 		B10000000000000000000001 /* template-bookmark-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* template-bookmark-icon.png */; };
@@ -26,6 +30,9 @@
 		B10000000000000000000003 /* template-bookmark-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* template-bookmark-icon.png */; };
 		B10000000000000000000004 /* template-share-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* template-share-icon.png */; };
 		BB68C614BBE2B4BDEA04F2B6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFF24CDEE2A22243C2367DC /* SceneDelegate.swift */; };
+		CA43A77D745E0E4B4935506E /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A3553ED0BBFEB56A1CCFC2E4 /* MaterialIcons.ttf */; };
+		D6BD17EA9023C9F39246B71F /* Autolinked in Frameworks */ = {isa = PBXBuildFile; productRef = 3AFDEFB917B01458307FDE0A /* Autolinked */; };
+		E885B6D9D4EF7CE70C3C29AD /* OneSignalFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 57276849FA0EFBB5ABFF896E /* OneSignalFramework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,13 +68,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		074F3370C5D61C114F081477 /* ReactNativeSPM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = ReactNativeSPM.xcconfig; path = ReactNativeSPM/ReactNativeSPM.xcconfig; sourceTree = SOURCE_ROOT; };
 		13B07F961A680F5B00A75B9A /* demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = demo/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = demo/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = demo/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		3B4392A12AC88292D35C810B /* Pods-demo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-demo.debug.xcconfig"; path = "Target Support Files/Pods-demo/Pods-demo.debug.xcconfig"; sourceTree = "<group>"; };
-		5709B34CF0A7D63546082F79 /* Pods-demo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-demo.release.xcconfig"; path = "Target Support Files/Pods-demo/Pods-demo.release.xcconfig"; sourceTree = "<group>"; };
-		5DCACB8F33CDC322A6C60F78 /* libPods-demo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-demo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = demo/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = demo/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A20000000000000000000001 /* OneSignalNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OneSignalNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -80,17 +85,12 @@
 		A20000000000000000000008 /* OneSignalWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneSignalWidgetBundle.swift; sourceTree = "<group>"; };
 		A20000000000000000000009 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A2000000000000000000000A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		A2000000000000000000000B /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; path = "Target Support Files/Pods-OneSignalNotificationServiceExtension/Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
-		A2000000000000000000000C /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalNotificationServiceExtension.release.xcconfig"; path = "Target Support Files/Pods-OneSignalNotificationServiceExtension/Pods-OneSignalNotificationServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
-		A2000000000000000000000D /* Pods-OneSignalWidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalWidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-OneSignalWidgetExtension/Pods-OneSignalWidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
-		A2000000000000000000000E /* Pods-OneSignalWidgetExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalWidgetExtension.release.xcconfig"; path = "Target Support Files/Pods-OneSignalWidgetExtension/Pods-OneSignalWidgetExtension.release.xcconfig"; sourceTree = "<group>"; };
-		A2000000000000000000000F /* libPods-OneSignalNotificationServiceExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneSignalNotificationServiceExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A20000000000000000000010 /* libPods-OneSignalWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneSignalWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000011 /* demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = demo.entitlements; path = demo/demo.entitlements; sourceTree = "<group>"; };
+		A3553ED0BBFEB56A1CCFC2E4 /* MaterialIcons.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = SOURCE_ROOT; };
 		B20000000000000000000001 /* template-bookmark-icon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "template-bookmark-icon.png"; path = "demo/template-bookmark-icon.png"; sourceTree = "<group>"; };
 		B20000000000000000000002 /* template-share-icon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "template-share-icon.png"; path = "demo/template-share-icon.png"; sourceTree = "<group>"; };
 		BEFF24CDEE2A22243C2367DC /* SceneDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = demo/SceneDelegate.swift; sourceTree = "<group>"; };
-		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F0AB64AE62938C7016FF5D5D /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,7 +98,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C80B921A6F3F58F76C31292 /* libPods-demo.a in Frameworks */,
+				94F7C9B714A718310DA6BE9C /* ReactHeaders in Frameworks */,
+				17CA21E30A8FFCB9D0FC1E35 /* ReactNativeHeaders in Frameworks */,
+				69A7AB74931112BD2779B631 /* ReactNativeDependenciesHeaders in Frameworks */,
+				D6BD17EA9023C9F39246B71F /* Autolinked in Frameworks */,
+				3F1E298E4A2D7CA403A328B5 /* ReactCodegen in Frameworks */,
+				50A8621D202A6CFB97E2C1B5 /* ReactAppDependencyProvider in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,7 +111,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A10000000000000000000006 /* libPods-OneSignalNotificationServiceExtension.a in Frameworks */,
+				43AA2C6FE81293AEFCA89311 /* OneSignalExtension in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,7 +121,7 @@
 			files = (
 				A10000000000000000000008 /* WidgetKit.framework in Frameworks */,
 				A10000000000000000000009 /* SwiftUI.framework in Frameworks */,
-				A10000000000000000000007 /* libPods-OneSignalWidgetExtension.a in Frameworks */,
+				E885B6D9D4EF7CE70C3C29AD /* OneSignalFramework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,12 +147,8 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				A20000000000000000000009 /* WidgetKit.framework */,
 				A2000000000000000000000A /* SwiftUI.framework */,
-				5DCACB8F33CDC322A6C60F78 /* libPods-demo.a */,
-				A2000000000000000000000F /* libPods-OneSignalNotificationServiceExtension.a */,
-				A20000000000000000000010 /* libPods-OneSignalWidgetExtension.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -168,7 +169,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				074F3370C5D61C114F081477 /* ReactNativeSPM.xcconfig */,
+				9BD38812D963C70E9A381D81 /* Fonts */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -183,6 +185,15 @@
 				A20000000000000000000002 /* OneSignalWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9BD38812D963C70E9A381D81 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				A3553ED0BBFEB56A1CCFC2E4 /* MaterialIcons.ttf */,
+				F0AB64AE62938C7016FF5D5D /* MaterialCommunityIcons.ttf */,
+			);
+			name = Fonts;
 			sourceTree = "<group>";
 		};
 		A30000000000000000000001 /* OneSignalNotificationServiceExtension */ = {
@@ -205,19 +216,6 @@
 			path = OneSignalWidget;
 			sourceTree = "<group>";
 		};
-		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				3B4392A12AC88292D35C810B /* Pods-demo.debug.xcconfig */,
-				5709B34CF0A7D63546082F79 /* Pods-demo.release.xcconfig */,
-				A2000000000000000000000B /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */,
-				A2000000000000000000000C /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */,
-				A2000000000000000000000D /* Pods-OneSignalWidgetExtension.debug.xcconfig */,
-				A2000000000000000000000E /* Pods-OneSignalWidgetExtension.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -225,14 +223,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "demo" */;
 			buildPhases = (
-				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
+				658A88AFBFD620F8BC6F91BA /* Sync SPM Autolinking */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
+				B174F870C259554596A4373B /* Embed React Native Flavored Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				A50000000000000000000001 /* Embed Foundation Extensions */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
-				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -241,6 +238,14 @@
 				AB0000000000000000000002 /* PBXTargetDependency */,
 			);
 			name = demo;
+			packageProductDependencies = (
+				512EBECF5434FD7A6AF7C967 /* ReactHeaders */,
+				920F69A9DF98D37C8308D020 /* ReactNativeHeaders */,
+				8332BE36B9C49BD2E49347C1 /* ReactNativeDependenciesHeaders */,
+				3AFDEFB917B01458307FDE0A /* Autolinked */,
+				947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */,
+				F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */,
+			);
 			productName = demo;
 			productReference = 13B07F961A680F5B00A75B9A /* demo.app */;
 			productType = "com.apple.product-type.application";
@@ -249,7 +254,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AA0000000000000000000001 /* Build configuration list for PBXNativeTarget "OneSignalNotificationServiceExtension" */;
 			buildPhases = (
-				F5322DC2C6EAF24684BAFC28 /* [CP] Check Pods Manifest.lock */,
 				A80000000000000000000001 /* Sources */,
 				A40000000000000000000001 /* Frameworks */,
 				A70000000000000000000001 /* Resources */,
@@ -259,6 +263,9 @@
 			dependencies = (
 			);
 			name = OneSignalNotificationServiceExtension;
+			packageProductDependencies = (
+				5D9FF4652377552E5BB1D8C8 /* OneSignalExtension */,
+			);
 			productName = OneSignalNotificationServiceExtension;
 			productReference = A20000000000000000000001 /* OneSignalNotificationServiceExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -267,7 +274,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AA0000000000000000000002 /* Build configuration list for PBXNativeTarget "OneSignalWidgetExtension" */;
 			buildPhases = (
-				17527FCB7CF62270D6986613 /* [CP] Check Pods Manifest.lock */,
 				A80000000000000000000002 /* Sources */,
 				A40000000000000000000002 /* Frameworks */,
 				A70000000000000000000002 /* Resources */,
@@ -277,6 +283,9 @@
 			dependencies = (
 			);
 			name = OneSignalWidgetExtension;
+			packageProductDependencies = (
+				57276849FA0EFBB5ABFF896E /* OneSignalFramework */,
+			);
 			productName = OneSignalWidgetExtension;
 			productReference = A20000000000000000000002 /* OneSignalWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -309,6 +318,12 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "xcframeworks" */,
+				C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "autolinking" */,
+				A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "ios" */,
+				C31BF71DE503D8C743B636AD /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -330,6 +345,8 @@
 				5F8F7D5C84F8947D278D5B06 /* PrivacyInfo.xcprivacy in Resources */,
 				B10000000000000000000001 /* template-bookmark-icon.png in Resources */,
 				B10000000000000000000002 /* template-share-icon.png in Resources */,
+				CA43A77D745E0E4B4935506E /* MaterialIcons.ttf in Resources */,
+				971317A7133E69F342A69D73 /* MaterialCommunityIcons.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -369,24 +386,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"\\\"$WITH_ENVIRONMENT\\\" \\\"$REACT_NATIVE_XCODE\\\"\"\n";
 		};
-		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-demo/Pods-demo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-demo/Pods-demo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-demo/Pods-demo-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		17527FCB7CF62270D6986613 /* [CP] Check Pods Manifest.lock */ = {
+		658A88AFBFD620F8BC6F91BA /* Sync SPM Autolinking */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -394,21 +394,17 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
 			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "Sync SPM Autolinking";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-OneSignalWidgetExtension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
+			shellPath = /bin/bash;
+			shellScript = "SCRIPT=\"$SRCROOT/ReactNativeSPM/Scripts/sync-autolinking.sh\"\nif [ ! -f \"$SCRIPT\" ]; then\n  echo \"error: $SCRIPT is missing. Run 'npx react-native spm update' to generate it.\"\n  exit 1\nfi\nexec /bin/bash \"$SCRIPT\"";
 		};
-		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
+		B174F870C259554596A4373B /* Embed React Native Flavored Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -416,58 +412,23 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
+				"$(SRCROOT)/build/xcframeworks/.artifact-stamp",
+				"$(SRCROOT)/ReactNativeSPM/Scripts/embed-flavored-frameworks.sh",
+				"$(RN_SPM_REACT_FRAMEWORK)",
+				"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK)",
+				"$(RN_SPM_HERMES_FRAMEWORK)",
 			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "Embed React Native Flavored Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-demo-checkManifestLockResult.txt",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/React.framework",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ReactNativeDependencies.framework",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/hermesvm.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-demo/Pods-demo-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-demo/Pods-demo-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-demo/Pods-demo-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F5322DC2C6EAF24684BAFC28 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-OneSignalNotificationServiceExtension-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
+			shellPath = /bin/bash;
+			shellScript = "SCRIPT=\"$SRCROOT/ReactNativeSPM/Scripts/embed-flavored-frameworks.sh\"\nif [ ! -f \"$SCRIPT\" ]; then\n  echo \"error: $SCRIPT is missing. Run 'npx react-native spm update' to generate it.\"\n  exit 1\nfi\nexec /bin/bash \"$SCRIPT\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -516,7 +477,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-demo.debug.xcconfig */;
+			baseConfigurationReference = 074F3370C5D61C114F081477 /* ReactNativeSPM.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -548,7 +509,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-demo.release.xcconfig */;
+			baseConfigurationReference = 074F3370C5D61C114F081477 /* ReactNativeSPM.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -660,7 +621,7 @@
 					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
 				PODFILE_DIR = "$(SRCROOT)";
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+				REACT_NATIVE_PATH = "$(SRCROOT)/../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
@@ -740,7 +701,7 @@
 					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
 				PODFILE_DIR = "$(SRCROOT)";
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+				REACT_NATIVE_PATH = "$(SRCROOT)/../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				USE_HERMES = true;
@@ -750,7 +711,6 @@
 		};
 		A90000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A2000000000000000000000B /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = OneSignalNotificationServiceExtension/OneSignalNotificationServiceExtension.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
@@ -774,7 +734,6 @@
 		};
 		A90000000000000000000002 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A2000000000000000000000C /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = OneSignalNotificationServiceExtension/OneSignalNotificationServiceExtension.entitlements;
 				CODE_SIGN_STYLE = Manual;
@@ -802,7 +761,6 @@
 		};
 		A90000000000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A2000000000000000000000D /* Pods-OneSignalWidgetExtension.debug.xcconfig */;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = DL8TF3X4K3;
@@ -825,7 +783,6 @@
 		};
 		A90000000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A2000000000000000000000E /* Pods-OneSignalWidgetExtension.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
@@ -890,6 +847,75 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "xcframeworks" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = build/xcframeworks;
+		};
+		A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "ios" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = build/generated/ios;
+		};
+		C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "autolinking" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = build/generated/autolinking;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C31BF71DE503D8C743B636AD /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/OneSignal/OneSignal-XCFramework";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3AFDEFB917B01458307FDE0A /* Autolinked */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "autolinking" */;
+			productName = Autolinked;
+		};
+		512EBECF5434FD7A6AF7C967 /* ReactHeaders */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "xcframeworks" */;
+			productName = ReactHeaders;
+		};
+		57276849FA0EFBB5ABFF896E /* OneSignalFramework */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C31BF71DE503D8C743B636AD /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */;
+			productName = OneSignalFramework;
+		};
+		5D9FF4652377552E5BB1D8C8 /* OneSignalExtension */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C31BF71DE503D8C743B636AD /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */;
+			productName = OneSignalExtension;
+		};
+		8332BE36B9C49BD2E49347C1 /* ReactNativeDependenciesHeaders */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "xcframeworks" */;
+			productName = ReactNativeDependenciesHeaders;
+		};
+		920F69A9DF98D37C8308D020 /* ReactNativeHeaders */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "xcframeworks" */;
+			productName = ReactNativeHeaders;
+		};
+		947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "ios" */;
+			productName = ReactCodegen;
+		};
+		F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "ios" */;
+			productName = ReactAppDependencyProvider;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }

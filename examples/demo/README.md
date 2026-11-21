@@ -8,7 +8,6 @@ The demo uses the app ID `com.onesignal.sdkdemo` on Android and iOS.
 
 - [React Native environment setup](https://reactnative.dev/docs/set-up-your-environment) for Android and iOS
 - Vite+ (`vp`) and Bun
-- Ruby with Bundler, for CocoaPods
 - Android Studio with a running emulator, and/or Xcode with a booted simulator
 
 ## Setup
@@ -41,12 +40,9 @@ The OneSignal app needs FCM (Android) and APNs (iOS) credentials for `com.onesig
 
 To use Firebase on Android, put a `google-services.json` with a `com.onesignal.sdkdemo` client in `android/app/`. It's gitignored, and the Google Services plugin is applied only when it exists. Pass `-PFIREBASE_INSTALLATION_ID_ENABLED=true` to Gradle to turn on Firebase Installation ID registration; the build fails if the flag is on without the file.
 
-For iOS, install CocoaPods on first run:
+iOS builds with React Native's Swift Package Manager mode; there is no `pod install`. `vp run ios` generates the Swift packages (`vp run update:spm`) before building. For the CocoaPods build of this app, see [`demo-pods`](../demo-pods).
 
-```sh
-bundle install
-cd ios && bundle exec pod install && cd ..
-```
+`react-native-screens`, `@react-native-async-storage/async-storage`, and `react-native-vector-icons` do not ship a `Package.swift` yet, so `patches/` adds one to each (scaffolded with `react-native spm scaffold`, then fixed by hand) and Bun applies them on install. Drop a patch once its library ships its own manifest.
 
 ## Run
 
@@ -65,13 +61,13 @@ It then builds and launches the app with the React Native CLI, which starts Metr
 
 ## Other scripts
 
-| Script                 | Purpose                                                               |
-| ---------------------- | --------------------------------------------------------------------- |
-| `vp run setup`         | Build, pack, and install the SDK into the demo.                       |
-| `vp run start`         | Start Metro.                                                          |
-| `vp run update:pods`   | Run `pod update OneSignalXCFramework` after native SDK changes.       |
-| `vp run clean:android` | Wipe Android build outputs and uninstall the app from the device.     |
-| `vp run clean:ios`     | Wipe iOS build outputs and `ios/Pods`. Run `pod install` again after. |
+| Script                 | Purpose                                                           |
+| ---------------------- | ----------------------------------------------------------------- |
+| `vp run setup`         | Build, pack, and install the SDK into the demo.                   |
+| `vp run start`         | Start Metro.                                                      |
+| `vp run update:spm`    | Regenerate the Swift packages after dependency or native changes. |
+| `vp run clean:android` | Wipe Android build outputs and uninstall the app from the device. |
+| `vp run clean:ios`     | Wipe iOS build outputs, including the generated Swift packages.   |
 
 ## Testing iOS Action Button Icons
 

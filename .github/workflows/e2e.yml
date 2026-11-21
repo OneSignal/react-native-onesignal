@@ -89,14 +89,24 @@ jobs:
         with:
           onesignal-app-id: ${{ vars.APPIUM_ONESIGNAL_APP_ID }}
           onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
-          install-pods: 'true'
+
+      - name: Cache React Native SwiftPM artifacts
+        uses: actions/cache@v5
+        with:
+          path: ~/Library/Caches/ReactNative/spm-artifacts
+          key: rn-spm-artifacts-${{ runner.os }}-${{ hashFiles('examples/demo/bun.lock') }}
+          restore-keys: rn-spm-artifacts-${{ runner.os }}-
 
       - name: Cache Xcode DerivedData
         uses: actions/cache@v5
         with:
           path: examples/demo/ios/build
-          key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/ios/Podfile.lock') }}
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/bun.lock', 'examples/demo/ios/demo.xcodeproj/project.pbxproj') }}
           restore-keys: deriveddata-${{ runner.os }}-
+
+      - name: Generate SwiftPM packages
+        working-directory: examples/demo
+        run: vp run update:spm
 
       - name: Set up iOS codesigning
         uses: OneSignal/sdk-shared/.github/actions/setup-ios-demo-codesigning@main
@@ -111,7 +121,7 @@ jobs:
         working-directory: examples/demo/ios
         run: |
           xcodebuild archive \
-            -workspace demo.xcworkspace \
+            -project demo.xcodeproj \
             -scheme demo \
             -configuration Release \
             -sdk iphoneos \

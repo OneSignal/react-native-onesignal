@@ -1,6 +1,8 @@
 # iOS Setup (React Native): Push Notifications + Live Activities
 
-Configure the React Native demo iOS project for OneSignal push notifications and live activities. Set the iOS app bundle id to `com.onesignal.sdkdemo` before completing the steps below. All paths below are relative to `examples/demo/ios/` unless stated otherwise.
+Configure the React Native demo iOS project for OneSignal push notifications and live activities. Set the iOS app bundle id to `com.onesignal.sdkdemo` before completing the steps below. All paths below are relative to `examples/demo-pods/ios/` unless stated otherwise.
+
+This guide describes the CocoaPods setup that [`demo-pods`](demo-pods) uses. [`demo`](demo) builds with Swift Package Manager instead: its extension targets link the `OneSignalExtension` (service extension) and `OneSignalFramework` (widget) products of `https://github.com/OneSignal/OneSignal-XCFramework`, and there is no Podfile target.
 
 ---
 
