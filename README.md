@@ -80,7 +80,7 @@ Gradle re-reads the environment variable or `onesignal.disableLocation` property
 With Swift Package Manager, `Package.swift` reads the variable when packages are resolved. Export it in the shell that runs `npx react-native spm update` and `xcodebuild` (or launches Xcode), then run File > Packages > Reset Package Caches in Xcode after changing it.
 
 > [!IMPORTANT]
-> When using Xcode or Android Studio, launch the IDE from a terminal that has `ONESIGNAL_DISABLE_LOCATION` exported. An IDE launched from the Dock/Finder does not inherit variables set only in your shell profile. On CI, key any CocoaPods / Gradle caches on the value of `ONESIGNAL_DISABLE_LOCATION` so a restored cache does not resurrect the location module.
+> When using Xcode or Android Studio, launch the IDE from a terminal that has `ONESIGNAL_DISABLE_LOCATION` exported. An IDE launched from the Dock/Finder does not inherit variables set only in your shell profile. On CI, key any CocoaPods, SwiftPM, Xcode DerivedData, and Gradle caches on the value of `ONESIGNAL_DISABLE_LOCATION` so a restored cache does not resurrect the location module.
 
 #### Change Log
 
