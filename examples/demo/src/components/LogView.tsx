@@ -9,7 +9,7 @@ const MONOSPACE = Platform.select({ ios: 'Menlo', default: 'monospace' });
 
 export default function LogView() {
   const logs = useLogs();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
   const [collapsed, setCollapsed] = useState(false);
   const scrollToEnd = () => scrollRef.current?.scrollToEnd({ animated: false });
 

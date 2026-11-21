@@ -73,7 +73,7 @@ export default function UserSection({
 }: Props) {
   const [loginOpen, setLoginOpen] = useState(false);
   const [languageAnchor, setLanguageAnchor] = useState<DropdownAnchor | null>(null);
-  const languageRowRef = useRef<View>(null);
+  const languageRowRef = useRef<React.ComponentRef<typeof TouchableOpacity>>(null);
   const isLoggedIn = !!externalUserId;
   const languageLabel =
     LANGUAGE_OPTIONS.find((option) => option.value === language)?.label ?? language;
