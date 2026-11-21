@@ -37,6 +37,13 @@ This package ships a `Package.swift` for React Native's Swift Package Manager mo
 
 A Notification Service Extension target is not managed by React Native's autolinker. Add the `OneSignalExtension` product from `https://github.com/OneSignal/OneSignal-XCFramework` to it in Xcode, at the same version.
 
+With pnpm, React Native's SwiftPM Release builds can fail with `hermesc: No such file or directory`, because React Native looks for `hermes-compiler` at the top level of `node_modules`. Hoist it in `pnpm-workspace.yaml` (or with `public-hoist-pattern[]=hermes-compiler` in `.npmrc` on pnpm 9 and earlier), then reinstall:
+
+```yaml
+publicHoistPattern:
+  - hermes-compiler
+```
+
 #### Disable Location Module
 
 By default, `react-native-onesignal` includes OneSignal's native location module so `OneSignal.Location` works without extra setup. If your app does not use location features, you can exclude the native location module from iOS and Android builds.
