@@ -1398,7 +1398,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-onesignal (5.5.17):
+  - react-native-onesignal (5.6.0):
     - hermes-engine
     - OneSignalXCFramework (= 5.8.1)
     - RCTRequired
@@ -2369,7 +2369,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 50c4d7a1ff3f18413cbaf897c8b5ce46baa491b3
   React-microtasksnativemodule: 0207d6133274a7cbfc3d0dae326e3055c8cfcf9e
   React-mutationobservernativemodule: b97a67c29f724d18a92379e7390f24350acb433a
-  react-native-onesignal: 4baa8eefce86aa0c2afe41ee811d47118749da9b
+  react-native-onesignal: 3a177d6ef7f6f560e34a6f490d744fefcbcfbb3c
   react-native-safe-area-context: 56700b839169ce88ffcec68c40447916fe512462
   React-NativeModulesApple: 8cfb2f308f48c48068c96b932e7f0e4297c23342
   React-networking: 3325cf73ecbdaacab0da91260b094baf36061a56
@@ -2417,4 +2417,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 62265cbdf51c93d93d8d8e93d3f3f4bb5ec9d38a
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.17.0
