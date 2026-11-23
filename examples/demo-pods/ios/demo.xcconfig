@@ -1,0 +1,6 @@
+// E2E builds pass DEMO_BUNDLE_ID=com.onesignal.sdkdemo DEMO_TEAM_ID=DL8TF3X4K3
+// to xcodebuild; that bundle ID is registered to the enterprise team only.
+DEMO_BUNDLE_ID = com.onesignal.example
+DEMO_TEAM_ID = 99SW8E36CT
+
+#include? "local.xcconfig"

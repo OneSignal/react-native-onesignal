@@ -4,3 +4,5 @@ Package.resolved
 build/generated/
 build/xcframeworks/
 .build/
+
+local.xcconfig

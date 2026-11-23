@@ -2,7 +2,7 @@
 
 Reference app for `react-native-onesignal`. It showcases SDK features including push notifications, in-app messaging, user management, tags, triggers, outcomes, live activities, and more, using the SDK packed from this repository.
 
-The demo uses the app ID `com.onesignal.sdkdemo` on Android and iOS.
+The demo uses the shared OneSignal app `1154c350-e715-4b71-a58b-1b84b6745baa` and the bundle ID and Android package `com.onesignal.example` by default.
 
 ## Prerequisites
 
@@ -18,13 +18,13 @@ Install the SDK's dependencies from the repository root, since setup builds and 
 vp install
 ```
 
-Then, in this directory:
+To use your own app or a REST API key, copy `.env.example` to `.env` in this directory:
 
 ```sh
 cp .env.example .env
 ```
 
-Set your OneSignal credentials in `.env`:
+Then set your values in `.env`:
 
 ```sh
 ONESIGNAL_APP_ID=
@@ -32,13 +32,15 @@ ONESIGNAL_API_KEY=your-onesignal-api-key
 ONESIGNAL_ANDROID_CHANNEL_ID=
 ```
 
-- `ONESIGNAL_APP_ID`: required. `metro.config.js` fails the bundle when it's unset.
+- `ONESIGNAL_APP_ID`: optional. Empty uses the shared demo app.
 - `ONESIGNAL_API_KEY`: REST API key, used to update and end live activities. Sending notifications from the demo doesn't need it.
 - `ONESIGNAL_ANDROID_CHANNEL_ID`: optional Android notification channel for the sound test notification. Falls back to a built-in default channel.
 
-The OneSignal app needs FCM (Android) and APNs (iOS) credentials for `com.onesignal.sdkdemo`.
+The OneSignal app needs FCM (Android) and APNs (iOS) credentials for `com.onesignal.example`. On Android, build with `-PDEMO_BUNDLE_ID=<package>` to use a different package.
 
-To use Firebase on Android, put a `google-services.json` with a `com.onesignal.sdkdemo` client in `android/app/`. It's gitignored, and the Google Services plugin is applied only when it exists. Pass `-PFIREBASE_INSTALLATION_ID_ENABLED=true` to Gradle to turn on Firebase Installation ID registration; the build fails if the flag is on without the file.
+iOS builds use bundle ID `com.onesignal.example` and team `99SW8E36CT` by default, set in `ios/demo.xcconfig`. To sign with your own team, copy `ios/local.xcconfig.example` to `ios/local.xcconfig` (gitignored) and set `DEMO_BUNDLE_ID` and `DEMO_TEAM_ID`. The extension and app group IDs derive from `DEMO_BUNDLE_ID`. E2E builds pass `DEMO_BUNDLE_ID=com.onesignal.sdkdemo DEMO_TEAM_ID=DL8TF3X4K3` to xcodebuild and `-PDEMO_BUNDLE_ID=com.onesignal.sdkdemo` to Gradle.
+
+To use Firebase on Android, put a `google-services.json` with a client for your Android package in `android/app/`. It's gitignored, and the Google Services plugin is applied only when it exists. Pass `-PFIREBASE_INSTALLATION_ID_ENABLED=true` to Gradle to turn on Firebase Installation ID registration; the build fails if the flag is on without the file.
 
 iOS builds with React Native's Swift Package Manager mode; there is no `pod install`. `vp run ios` generates the Swift packages (`vp run update:spm`) before building. For the CocoaPods build of this app, see [`demo-pods`](../demo-pods).
 

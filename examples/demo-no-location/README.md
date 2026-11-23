@@ -11,16 +11,10 @@ vp run android
 
 ## Setup
 
-Copy `.env.example` to `.env` and set your OneSignal app ID:
+The demo uses a shared OneSignal app (`1154c350-e715-4b71-a58b-1b84b6745baa`) by default, with bundle ID and Android package `com.onesignal.example`. To use your own app, copy `.env.example` to `.env` and set `ONESIGNAL_APP_ID`:
 
 ```sh
 cp .env.example .env
-```
-
-Then edit `.env`:
-
-```sh
-ONESIGNAL_APP_ID=your-onesignal-app-id
 ```
 
 Both platforms exclude the native location module by setting the
