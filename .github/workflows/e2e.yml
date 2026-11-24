@@ -64,7 +64,7 @@ jobs:
         # are all arm64-v8a.
         # FIREBASE_INSTALLATION_ID_ENABLED turns on Firebase Installation ID registration,
         # which needs the google-services.json written above.
-        run: ./gradlew assembleRelease -PciSingleAbi -PFIREBASE_INSTALLATION_ID_ENABLED=${{ matrix.fid == 'on' }} --quiet --console=plain --warning-mode=summary
+        run: ./gradlew assembleRelease -PciSingleAbi -PDEMO_BUNDLE_ID=com.onesignal.sdkdemo -PFIREBASE_INSTALLATION_ID_ENABLED=${{ matrix.fid == 'on' }} --quiet --console=plain --warning-mode=summary
 
       - name: Upload APK
         uses: actions/upload-artifact@v7
@@ -131,6 +131,8 @@ jobs:
             -quiet \
             -hideShellScriptEnvironment \
             CODE_SIGN_STYLE=Manual \
+            DEMO_BUNDLE_ID=com.onesignal.sdkdemo \
+            DEMO_TEAM_ID=DL8TF3X4K3 \
             COMPILER_INDEX_STORE_ENABLE=NO
           xcodebuild -exportArchive \
             -archivePath build/demo.xcarchive \

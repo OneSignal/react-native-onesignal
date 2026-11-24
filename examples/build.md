@@ -22,7 +22,8 @@ mv demo examples/demo
 - Architecture: provider + hook (`OneSignalProvider` / `useOneSignal`), no repository class, no reducer
 - Separate component files per section
 - Support both Android and iOS
-- Android `namespace` and `applicationId` in `android/app/build.gradle` are `com.onesignal.sdkdemo`, to match the shared `google-services.json`. The iOS bundle id stays `com.onesignal.sdkdemo`.
+- Android `applicationId` defaults to `com.onesignal.example`; `-PDEMO_BUNDLE_ID=<package>` overrides it (E2E passes `com.onesignal.sdkdemo` to match its `google-services.json`). `namespace` stays `com.onesignal.sdkdemo`.
+- iOS bundle id and team come from `ios/demo.xcconfig` (`DEMO_BUNDLE_ID` = `com.onesignal.example`, `DEMO_TEAM_ID` = `99SW8E36CT`), with an optional gitignored `ios/local.xcconfig` override. E2E passes `DEMO_BUNDLE_ID=com.onesignal.sdkdemo DEMO_TEAM_ID=DL8TF3X4K3` to xcodebuild.
 - Android applies the Google Services plugin only when `android/app/google-services.json` exists (gitignored), and depends on `firebase-messaging` 25.1.2+ for Firebase Installation ID registration. The `firebase_messaging_installation_id_enabled` manifest flag is off unless Gradle gets `-PFIREBASE_INSTALLATION_ID_ENABLED=true`, which also requires `google-services.json`.
 
 App bar logo: import SVG directly via `react-native-svg-transformer`:
@@ -57,7 +58,7 @@ Package scripts (`examples/demo/package.json`):
     "android": "bash ../run-android.sh",
     "ios": "bash ../run-ios.sh",
     "update:pods": "(cd ios && pod update OneSignalXCFramework --no-repo-update)",
-    "clean:android": "rm -rf android/app/build android/app/.cxx android/build && adb uninstall com.onesignal.sdkdemo >/dev/null 2>&1 || true",
+    "clean:android": "rm -rf android/app/build android/app/.cxx android/build && adb uninstall com.onesignal.example >/dev/null 2>&1 || true",
     "clean:ios": "rm -rf ios/build ios/Pods",
     "start": "react-native start"
   },
@@ -128,7 +129,7 @@ apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
   - `ONESIGNAL_APP_ID` -- app id passed to `OneSignal.initialize(...)`.
   - `ONESIGNAL_API_KEY` -- REST key used by `OneSignalApiService` for sends and Live Activity update/end.
   - `ONESIGNAL_ANDROID_CHANNEL_ID` -- channel id sent with the WITH SOUND push (`android_channel_id`).
-- `ONESIGNAL_APP_ID` is required. `metro.config.js` fails the bundle when it's unset; there is no default app id.
+- An empty `ONESIGNAL_APP_ID` falls back to the shared demo app `1154c350-e715-4b71-a58b-1b84b6745baa`.
 
 ---
 

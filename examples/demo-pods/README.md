@@ -12,7 +12,7 @@ Install the SDK's dependencies from the repository root, since setup builds and 
 vp install
 ```
 
-Then, in this directory, copy `.env.example` to `.env` and set your credentials as described in the [`demo` README](../demo/README.md#setup). Install CocoaPods on first run:
+To use your own app, copy `.env.example` to `.env` as described in the [`demo` README](../demo/README.md#setup); bundle ID and signing overrides work the same way. Install CocoaPods on first run:
 
 ```sh
 bundle install

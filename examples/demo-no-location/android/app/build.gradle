@@ -80,7 +80,7 @@ android {
 
     namespace "com.onesignal.sdkdemo"
     defaultConfig {
-        applicationId "com.onesignal.sdkdemo"
+        applicationId "com.onesignal.example"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

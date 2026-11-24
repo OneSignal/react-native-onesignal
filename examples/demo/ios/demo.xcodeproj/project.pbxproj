@@ -68,6 +68,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DE30C0F1A2B3C4D5E6F70001 /* demo.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = demo.xcconfig; sourceTree = SOURCE_ROOT; };
 		074F3370C5D61C114F081477 /* ReactNativeSPM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = ReactNativeSPM.xcconfig; path = ReactNativeSPM/ReactNativeSPM.xcconfig; sourceTree = SOURCE_ROOT; };
 		13B07F961A680F5B00A75B9A /* demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = demo/Images.xcassets; sourceTree = "<group>"; };
@@ -169,6 +170,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+				DE30C0F1A2B3C4D5E6F70001 /* demo.xcconfig */,
 				074F3370C5D61C114F081477 /* ReactNativeSPM.xcconfig */,
 				9BD38812D963C70E9A381D81 /* Fonts */,
 			);
@@ -483,7 +485,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = demo/demo.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DL8TF3X4K3;
+				DEVELOPMENT_TEAM = "$(DEMO_TEAM_ID)";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = demo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -497,7 +499,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.sdkdemo;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(DEMO_BUNDLE_ID)";
 				PRODUCT_NAME = demo;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -517,7 +519,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = DL8TF3X4K3;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "$(DEMO_TEAM_ID)";
 				INFOPLIST_FILE = demo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -530,7 +532,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.sdkdemo;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(DEMO_BUNDLE_ID)";
 				PRODUCT_NAME = demo;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Appium Demo - Main";
@@ -543,6 +545,7 @@
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DE30C0F1A2B3C4D5E6F70001 /* demo.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CC = "";
@@ -631,6 +634,7 @@
 		};
 		83CBBA211A601CBA00E9B192 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DE30C0F1A2B3C4D5E6F70001 /* demo.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CC = "";
@@ -714,7 +718,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = OneSignalNotificationServiceExtension/OneSignalNotificationServiceExtension.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DL8TF3X4K3;
+				DEVELOPMENT_TEAM = "$(DEMO_TEAM_ID)";
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -723,7 +727,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.sdkdemo.NSE;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(DEMO_BUNDLE_ID).NSE";
 				PRODUCT_NAME = OneSignalNotificationServiceExtension;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -739,7 +743,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = DL8TF3X4K3;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "$(DEMO_TEAM_ID)";
 				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -748,7 +752,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.sdkdemo.NSE;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(DEMO_BUNDLE_ID).NSE";
 				PRODUCT_NAME = OneSignalNotificationServiceExtension;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Appium Demo - NSE";
@@ -763,7 +767,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DL8TF3X4K3;
+				DEVELOPMENT_TEAM = "$(DEMO_TEAM_ID)";
 				INFOPLIST_FILE = OneSignalWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -772,7 +776,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.sdkdemo.LA;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(DEMO_BUNDLE_ID).LA";
 				PRODUCT_NAME = OneSignalWidgetExtension;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -787,7 +791,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = DL8TF3X4K3;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "$(DEMO_TEAM_ID)";
 				INFOPLIST_FILE = OneSignalWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -796,7 +800,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.onesignal.sdkdemo.LA;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(DEMO_BUNDLE_ID).LA";
 				PRODUCT_NAME = OneSignalWidgetExtension;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Appium Demo - Live Activity";

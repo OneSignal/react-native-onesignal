@@ -1,0 +1,3 @@
+// Copy to local.xcconfig (gitignored) to sign with your own team.
+DEMO_BUNDLE_ID = com.yourcompany.onesignaldemo
+DEMO_TEAM_ID = YOURTEAMID
