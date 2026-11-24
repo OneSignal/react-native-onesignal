@@ -24,6 +24,17 @@ export function isMissing(value: unknown, api: string): boolean {
   return true;
 }
 
+/**
+ * Rejects a value native cannot marshal as a string, while letting null, undefined and "" through
+ * for native to decide on. Use where native owns the empty and missing cases but the TurboModule
+ * would still throw a conversion error on, say, a number.
+ */
+export function isNotStringOrNullish(value: unknown, api: string): boolean {
+  if (value == null || typeof value === 'string') return false;
+  console.error(`[OneSignal] ${api} must be a string`);
+  return true;
+}
+
 export function isBoolean(value: unknown, api: string): value is boolean {
   if (typeof value === 'boolean') return true;
   console.error(`[OneSignal] ${api} must be a boolean`);

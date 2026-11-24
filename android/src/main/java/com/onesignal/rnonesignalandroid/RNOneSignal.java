@@ -240,7 +240,14 @@ public class RNOneSignal extends NativeOneSignalSpec
         Logging.debug(
                 "OneSignal initialize using context: " + context.getClass().getSimpleName(), null);
         OneSignal.initWithContext(context, appId);
-        oneSignalInitDone = true;
+
+        // Latch only once an app id is present. Without one, and with nothing cached, init fails,
+        // so latching would turn a later initialize with a real app id into the no-op branch above
+        // for the rest of the process. initWithContext's return value cannot stand in here: it
+        // reports that init was queued, before the app id has been resolved.
+        if (appId != null && !appId.isEmpty()) {
+            oneSignalInitDone = true;
+        }
     }
 
     @Override
